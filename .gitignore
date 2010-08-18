@@ -1,5 +1,6 @@
 # ignore anywhere in the tree
 *.gz
+*~
 # ignore directory in drupal root directory
 cache/*
 progs/*

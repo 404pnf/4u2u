@@ -1,0 +1,13 @@
+; $Id$
+name = SWFObject API
+description = Implements the SWFObject Library, makes it easy for developers to add flash content
+core = 6.x
+project = "swfobject_api"
+version = "6.x-2.0"
+
+; Information added by drupal.org packaging script on 2009-01-27
+version = "6.x-1.0-beta1"
+core = "6.x"
+project = "swfobject_api"
+datestamp = "1233092753"
+

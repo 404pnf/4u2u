@@ -1,0 +1,6 @@
+; $Id: $
+
+name = shipinviews Export Module
+description = Exports some views of shipinviews
+dependencies[] = views
+core = 6.x

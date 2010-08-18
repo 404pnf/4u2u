@@ -1,0 +1,57 @@
+
+.disney-book-content {
+border-bottom:1px dashed #CCCCCC;
+margin:10px;
+width:270px;
+}
+.disney-image {
+float:left;
+height:100px;
+margin-right:15px;
+}
+.disney-book-name, .disney-auido {
+line-height:1.5em;
+overflow:hidden;
+white-space:nowrap;
+}
+.disney-row-odd {
+float:left;
+}
+.disney-series {
+clear:both;
+width:600px;
+}
+.disney-row-even {
+float:right;
+}
+
+
+.disney-series-name {
+border-bottom:2px solid #CCCCCC;
+font-size:1.5em;
+font-weight:bold;
+padding:20px;
+}
+
+.page-disney .title{
+display:none;
+}
+#block-block-68 .block-inner {
+border:1px solid #D1D1D1;
+line-height:25px;
+}
+.block h2.title {
+display:block;
+}
+#block-block-68 .content  {
+padding:0 20px;
+}
+/* ie6 通栏上有太大空白 */
+*html #block-block-62{
+margin-top:-50px;
+padding:0px;
+}
+#block-block-68 .h2Container{
+margin-top:-1px;
+}
+

@@ -1,0 +1,549 @@
+<DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>搭建巴别塔翻译乐活大会</title>
+<link href="xupyfanyi/css.css" rel="stylesheet" type="text/css" />
+<script>
+function setTab(m,n){
+var tli=document.getElementById("menu"+m).getElementsByTagName("li");
+var mli=document.getElementById("main"+m).getElementsByTagName("ul");
+for(i=0;i<tli.length;i++){
+   tli[i].className=i==n?"hover":"";
+   mli[i].style.display=i==n?"block":"none";
+}
+}
+</script>
+
+<style type="text/css">
+<!--
+.STYLE1 {font-size: 12px}
+.STYLE2 {color: #99CC00}
+-->
+</style>
+</head>
+
+<body>
+<div class="div-logo">
+  <table width="560" border="0" align="right" cellpadding="0" cellspacing="0">
+    <tr>
+      <td width="560" height="40"><a href="http://2u4u.com.cn/yuedulibrary" target="_blank">电子图书馆</a><span class="text">│</span><a href="http://2u4u.com.cn/chongzhi" target="_blank">积分充值</a><span class="text">│</span><a href="http://2u4u.com.cn/jifenduihuan" target="_blank">积分换礼</a><span class="text">│</span><a href="http://2u4u.com.cn/quizcenter" target="_blank">测试中心</a><span class="text">│</span><a href="http://2u4u.com.cn/xiaozu" target="_blank">小组</a><span class="text">│</span><a href="http://2u4u.com.cn/duomeiti" target="_blank">多媒体课堂</a><span class="text">│</span><a href="http://test.2u4u.com.cn/online/" target="_blank">在线词典</a><span class="text">│</span><a href="http://2u4u.com.cn/wenda" target="_blank">有问有答</a><span class="text">│</span><a href="http://2u4u.com.cn/node/51779" target="_blank">按需印刷</a>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+    </tr>
+  </table>
+</div>
+<div class="div-top"><img src="xupyfanyi/image_02.gif" width="807" height="388" border="0" usemap="#Map" />
+<map name="Map" id="Map"><area shape="rect" coords="456,335,582,364" href="#" /><area shape="rect" coords="598,335,675,364" href="#" /><area shape="rect" coords="689,336,766,364" href="#" /></map></div>
+<div class="div-bg">
+  <div class="div-left">
+    <table width="560" height="161" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="560" height="10" bgcolor="#FFFFFF"><img src="xupyfanyi/image_10.gif" width="560" height="10" /></td>
+      </tr>
+      <tr>
+        <td height="150" bgcolor="#FFFFFF">
+		
+		
+		
+		<div id="tabs1">
+<div class="menu1box">
+   <ul id="menu1">
+    <li onmouseover="setTab(1,0)">小编推荐</a></li>
+    <li onmouseover="setTab(1,1)">人气译作</a></li>
+    <li onmouseover="setTab(1,2)">人气译者</a></li>
+   </ul>
+</div>
+<div class="main1box">
+   <div class="main" id="main1">
+    <ul class="block">
+	<table width="520" height="100" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="100" height="68"><img src="file:///E|/工作/巴别塔/网页新/images/image_38.gif" width="100" height="100" /></td>
+    <td width="160"><table width="146" height="78" border="0" align="center" cellspacing="0">
+      <tr>
+        <td width="144" height="24"><div align="center"><a href="#"  class="title">《茶花女》</a></div></td>
+      </tr>
+      <tr>
+        <td><div align="left">是小仲马的代表作，其中刻画的爱情荡气回肠。这部世界文学经典曾被多次搬上舞台荧幕。</div></td>
+      </tr>
+    </table></td>
+    <td width="100"><img src="xupyfanyi/image_39.gif" width="100" height="100" /></td>
+    <td width="160"><table width="146" height="78" border="0" align="center" cellspacing="0">
+      <tr>
+        <td width="144" height="24"><div align="center" class="text-2">《悠游度过一天24小时》</div></td>
+      </tr>
+      <tr>
+        <td><div align="left">
+          本书是英国多产作家阿诺德·本涅特的非小说类作品，被誉为“一本关于时间管理的经典之作”
+        </div></td>
+      </tr>
+    </table></td>
+  </tr>
+</table>
+	</ul>
+    <ul><li>
+	<table width="520" height="100" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="100" height="68"><img src="file:///E|/工作/巴别塔/网页新/images/image_40.gif" width="100" height="100" /></td>
+    <td width="140"><table width="140" height="78" border="0" align="center" cellspacing="0">
+      <tr>
+        <td width="149" height="24"><div align="center" class="text-2">《呼啸山庄》</div></td>
+      </tr>
+      <tr>
+        <td><div align="center">作者<br />
+          艾米莉·勃朗特</div></td>
+      </tr>
+    </table></td>
+    <td width="40">&nbsp;</td>
+    <td width="100"><img src="file:///E|/工作/巴别塔/网页新/images/image_41.gif" width="100" height="100" /></td>
+    <td width="140"><table width="140" height="78" border="0" align="center" cellspacing="0">
+      <tr>
+        <td width="138" height="24"><div align="center" class="text-2">《绿野仙踪》</div></td>
+      </tr>
+      <tr>
+        <td><div align="center">作者<br />
+          莱曼·弗兰克·鲍姆</div></td>
+      </tr>
+    </table></td>
+  </tr>
+</table>
+	</li></ul>
+    <ul><li> 
+	<table width="520" height="92" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td width="8%" height="34"><img src="file:///E|/工作/巴别塔/网页新/images/image_42.gif" width="70" height="70" /></td>
+    <td width="8%" rowspan="2">&nbsp;</td>
+    <td width="8%"><img src="file:///E|/工作/巴别塔/网页新/images/image_43.gif" width="70" height="70" /></td>
+    <td width="8%" rowspan="2">&nbsp;</td>
+    <td width="8%"><img src="file:///E|/工作/巴别塔/网页新/images/image_44.gif" width="70" height="70" /></td>
+    <td width="8%" rowspan="2">&nbsp;</td>
+    <td width="8%"><img src="file:///E|/工作/巴别塔/网页新/images/image_45.gif" width="70" height="70" /></td>
+    <td width="8%" rowspan="2">&nbsp;</td>
+    <td width="8%"><img src="file:///E|/工作/巴别塔/网页新/images/image_46.gif" width="70" height="70" /></td>
+  </tr>
+  <tr>
+    <td width="8%" height="22"><div align="center">霍小M</div></td>
+    <td width="8%"><div align="center">陶佳佳</div></td>
+    <td width="8%"><div align="center">丁丁猫</div></td>
+    <td width="8%"><div align="center">Tracy</div></td>
+    <td width="8%"><div align="center">Enya</div></td>
+  </tr>
+</table>
+	
+	
+	
+	
+	</li></ul>
+   </div>
+</div>
+</div>
+
+
+      </td>
+      </tr>
+    </table>
+    <br />
+    <table width="550" border="0" align="center" cellpadding="0" cellspacing="0" bgcolor="#FDFAEC">
+      <tr>
+        <td><img src="xupyfanyi/image_11.gif" width="560" height="41" /></td>
+      </tr>
+      <tr>
+        <td height="66" bgcolor="#FFFFFF"><table width="521" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="92" height="65" rowspan="3"><img src="xupyfanyi/image_05.gif" width="83" height="80" /></td>
+              <td width="429"></td>
+            </tr>
+            <tr>
+              <td><table width="171" border="0" align="right" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td width="33"><img src="xupyfanyi/image_27.gif" width="31" height="17" /></td>
+                    <td width="64" class="booklist-text">成书阅读</td>
+                    <td width="21"><img src="xupyfanyi/image_29.gif" width="21" height="17" /></td>
+                    <td width="53" class="booklist-text">火热评分</td>
+                  </tr>
+              </table></td>
+            </tr>
+            <tr>
+              <td><div align="justify"><span class="author">It is a truth  universally acknowledged that is a single man in possession of a good fortune, must  be in want of a wife. <br />
+  一个单身的男人一旦拥有了大笔财产，就会想到寻觅妻子，这是一个世界广泛公认的道理。          </span>        <br />
+              <em>　　　　　　　　　　　　　　　<span class="author">——Pride and Prejudice</span></em><span class="author">《傲慢与偏见》</span></div></td>
+            </tr>
+        </table></td>
+      </tr>
+      <tr>
+        <td height="2" bgcolor="#FFFFFF"><hr width="520" size="1" 
+		   color="#CBC54B" noshade="noshade" /></td>
+      </tr>
+      <tr>
+        <td height="55" bgcolor="#FFFFFF"><table width="515" height="46" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="234" height="48" rowspan="2" valign="top"><span class="bold">Wuthering Height </span>呼啸山庄 <br />
+                  <span class="bold">The Lady of the Camellias</span> 茶花女<br />
+                  <span class="bold">A Little Princess</span> 小公主</td>
+              <td width="243" rowspan="2"><span class="bold">Tender in the Night</span> 夜色温柔<br />
+                  <span class="bold">Tess of the D'Urbervilles</span> 德伯家的苔丝<br />
+                  <span class="bold">The Fair Maid of Perth</span> 珀思丽人</td>
+              <td width="38" height="25">&nbsp;</td>
+            </tr>
+            <tr>
+              <td height="20"><a href="#" target="_blank"><img src="xupyfanyi/image_47.gif" width="38" height="20" border="0" /></a></td>
+            </tr>
+        </table></td>
+      </tr>
+    </table>
+    <br />
+    <table width="550" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="560"><img src="xupyfanyi/image_12.gif" width="560" height="40" /></td>
+      </tr>
+      <tr>
+        <td bgcolor="#FFFFFF"><table width="521" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="92" height="65" rowspan="3"><img src="xupyfanyi/image_06.gif" width="83" height="80" /></td>
+              <td width="429"></td>
+            </tr>
+            <tr>
+              <td><table width="171" border="0" align="right" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td width="33"><img src="xupyfanyi/image_27.gif" width="31" height="17" /></td>
+                    <td width="64" class="booklist-text">成书阅读</td>
+                    <td width="21"><img src="xupyfanyi/image_29.gif" width="21" height="17" /></td>
+                    <td width="53" class="booklist-text">火热评分</td>
+                  </tr>
+              </table></td>
+            </tr>
+            <tr>
+              <td><div align="justify"><span class="author">That  blindness is an addition to courage, by concealing dangers from us. <br />
+                盲目可以使你增加勇气，因为你看不到什么危险。</span><br />
+              <em>　　　　　　　　　　　　　　　<span class="author">——</span></em><span class="author"><em>Gulliver’s  Travel </em>《格列佛游记》</span></div></td>
+            </tr>
+        </table></td>
+      </tr>
+      <tr>
+        <td height="2" bgcolor="#FFFFFF"><hr width="510" size="1" 
+		   color="#CBC54B" noshade="noshade" /></td>
+      </tr>
+      <tr>
+        <td height="55" bgcolor="#FFFFFF"><table width="520" height="48" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="283" height="48" valign="top"><span class="bold">A Sand County Almanac </span>沙郡年记 <br />
+                  <span class="bold">Roving East and Roving West</span> 漫游东西世界<br />
+                  <span class="bold">The Celtic Twilight </span> 凯尔特的薄暮</td>
+              <td width="251"><span class="bold">The Adventures of Tom Sawyer</span><br />
+                汤姆·索亚历险记<br />
+                <span class="bold">Guilliver’s Travels</span> 格列佛游记<br />
+                <span class="bold">The Adventures of Huckleberry Finn</span> <br />
+                哈克贝利·费恩历险记</td>
+            </tr>
+        </table></td>
+      </tr>
+    </table>
+    <br />
+    <table width="550" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="560"><img src="xupyfanyi/image_13.gif" width="560" height="40" /></td>
+      </tr>
+      <tr>
+        <td bgcolor="#FFFFFF"><table width="521" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="92" height="65" rowspan="3"><img src="xupyfanyi/image_07.gif" width="83" height="80" /></td>
+              <td width="429"></td>
+            </tr>
+            <tr>
+              <td><table width="171" border="0" align="right" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td width="33"><img src="xupyfanyi/image_27.gif" width="31" height="17" /></td>
+                    <td width="64" class="booklist-text">成书阅读</td>
+                    <td width="21"><img src="xupyfanyi/image_29.gif" width="21" height="17" /></td>
+                    <td width="53" class="booklist-text">火热评分</td>
+                  </tr>
+              </table></td>
+            </tr>
+            <tr>
+              <td><div align="justify"><span class="author">It matters nothing if  one is born in a duck-yard, if one has only lain in a swan’s egg. <br />
+                只要你是天鹅蛋，就是生在养鸡场也没什么关系。</span><br />
+              <em>　　　　　　　　　　　　　　　<span class="author">——</span></em><span class="author"> From <em>The Ugly Duckling</em>《丑小鸭》</span></div></td>
+            </tr>
+        </table></td>
+      </tr>
+      <tr>
+        <td height="2" bgcolor="#FFFFFF"><hr width="530" size="1" 
+		   color="#CBC54B" noshade="noshade" /></td>
+      </tr>
+      <tr>
+        <td height="55" bgcolor="#FFFFFF"><table width="520" height="48" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="292" height="48" valign="top">Brides on Their Trial 选妻子<br />
+              Odds and Ends 线头的故事<br />
+              The Wise Servant 机智的仆人<br /></td>
+              <td width="247">The Peasant in Heaven 天堂的礼遇<br />
+              The Ear of Corn 麦穗<br />
+              Friendly Brook 友好的小溪</td>
+            </tr>
+        </table></td>
+      </tr>
+    </table>
+    <br />
+    <table width="550" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="560"><img src="xupyfanyi/image_14.gif" width="560" height="40" /></td>
+      </tr>
+      <tr>
+        <td bgcolor="#FFFFFF"><table width="521" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="92" height="65" rowspan="3"><img src="xupyfanyi/image_08.gif" width="83" height="80" /></td>
+              <td width="429"></td>
+            </tr>
+            <tr>
+              <td><table width="171" border="0" align="right" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td width="33"><img src="xupyfanyi/image_27.gif" width="31" height="17" /></td>
+                    <td width="64" class="booklist-text">成书阅读</td>
+                    <td width="21"><img src="xupyfanyi/image_29.gif" width="21" height="17" /></td>
+                    <td width="53" class="booklist-text">火热评分</td>
+                  </tr>
+              </table></td>
+            </tr>
+            <tr>
+              <td><div align="justify">
+                  <p><span class="author">A man  can be destroyed but not defeated. <br />
+                    一个人可以被毁灭，但不能被打败。 </span><br />
+                    <em><span class="author">　　　　　　　　　　　　　　　——The Old Man and the Sea </span></em><span class="author">《老人与海》</span></p>
+              </div></td>
+            </tr>
+        </table></td>
+      </tr>
+      <tr>
+        <td height="2" bgcolor="#FFFFFF"><hr width="530" size="1" 
+		   color="#CBC54B" noshade="noshade" /></td>
+      </tr>
+      <tr>
+        <td height="55" bgcolor="#FFFFFF"><table width="534" height="48" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="292" height="48" valign="top">A Cosmopolite in a Café 咖啡馆里的世界公民<br />
+              A Moveable Feast 流动的盛宴<br />
+              Dubiners 都柏林人</td>
+              <td width="247">The Old Man and the sea 老人与海<br />
+              Jude the Obscure 无名的裘德<br />
+              Queen Victoria 维多利亚女王</td>
+            </tr>
+        </table></td>
+      </tr>
+    </table>
+    <br />
+    <table width="550" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="560"><img src="xupyfanyi/image_37.gif" width="560" height="40" /></td>
+      </tr>
+      <tr>
+        <td bgcolor="#FFFFFF"><table width="521" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="92" height="65" rowspan="3"><img src="xupyfanyi/image_18.gif" width="83" height="80" /></td>
+              <td width="429"></td>
+            </tr>
+            <tr>
+              <td><table width="171" border="0" align="right" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td width="33"><img src="xupyfanyi/image_27.gif" width="31" height="17" /></td>
+                    <td width="64" class="booklist-text">成书阅读</td>
+                    <td width="21"><img src="xupyfanyi/image_29.gif" width="21" height="17" /></td>
+                    <td width="53" class="booklist-text">火热评分</td>
+                  </tr>
+              </table></td>
+            </tr>
+            <tr>
+              <td><span class="author">Certainly,  virtue is like precious odours, most fragrant when they are incensed, or crushed: for  prosperity doth best discover vice; but adversity doth best discover virtue.<br />
+                无疑地，美德犹如名香，经燃烧或压榨而其香愈烈，盖幸运最能显露恶德而厄运最能显露美德。</span><br />
+                <span class="author"><em>　　　　　　　　　　　　　　——Essays of  Francis Bacon</em>《培根论说文集》</span></td>
+            </tr>
+        </table></td>
+      </tr>
+      <tr>
+        <td height="2" bgcolor="#FFFFFF"><hr width="530" size="1" 
+		   color="#CBC54B" noshade="noshade" /></td>
+      </tr>
+      <tr>
+        <td height="55" bgcolor="#FFFFFF"><table width="534" height="48" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="292" height="48" valign="top">How to Live on 24 Hours A Day <br />
+                悠游度过一天的24小时<br />
+              All Trivia 琐事集<br />
+              Three Men in a Boat 三人同舟</td>
+              <td width="242">The Idle Thoughts of an Idle Fellow<br />
+              懒人闲思录<br />
+              The Hour Glass 时漏<br />
+              The Years 岁月</td>
+            </tr>
+        </table></td>
+      </tr>
+    </table>
+    <br />
+    <table width="550" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="560"><img src="xupyfanyi/image_19.gif" width="560" height="40" /></td>
+      </tr>
+      <tr>
+        <td bgcolor="#FFFFFF"><table width="521" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="92" height="65" rowspan="3"><img src="xupyfanyi/image_20.gif" width="83" height="80" /></td>
+              <td width="429"></td>
+            </tr>
+            <tr>
+              <td><table width="171" border="0" align="right" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td width="33"><img src="xupyfanyi/image_27.gif" width="31" height="17" /></td>
+                    <td width="64" class="booklist-text">成书阅读</td>
+                    <td width="21"><img src="xupyfanyi/image_29.gif" width="21" height="17" /></td>
+                    <td width="53" class="booklist-text">火热评分</td>
+                  </tr>
+              </table></td>
+            </tr>
+            <tr>
+              <td><p align="justify"><span class="author">One’s  ideas must be as broad as Nature if they are to interpret Nature.<br />
+                一个人如果要想说明大<em>自然</em>，那么，他的想象领域就必须像大<em>自然</em>一样的广阔。</span> <br />
+              <span class="author"><em>　　　　　　　　　　　——Stories of Sherlock Holmes</em>《福尔摩斯探案集》</span></p></td>
+            </tr>
+        </table></td>
+      </tr>
+      <tr>
+        <td height="2" bgcolor="#FFFFFF"><hr width="530" size="1" 
+		   color="#CBC54B" noshade="noshade" /></td>
+      </tr>
+      <tr>
+        <td height="55" bgcolor="#FFFFFF"><table width="534" height="48" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="274" height="48" valign="top">Stories of Sherlock Holmes1 福尔摩斯探案集1<br />
+              Stories of Sherlock Holmes2 福尔摩斯探案集2<br />
+              Stories of Sherlock Holmes3 福尔摩斯探案集3</td>
+              <td width="260">Stories of Sherlock Holmes4 福尔摩斯探案集4<br />
+              Stories of Sherlock Holmes5 福尔摩斯探案集5<br />
+              Stories of Sherlock Holmes6 福尔摩斯探案集6</td>
+            </tr>
+        </table></td>
+      </tr>
+    </table>
+    <br />
+    <table width="550" border="0" align="center" cellpadding="0" cellspacing="0">
+      <tr>
+        <td width="560"><img src="xupyfanyi/image_21.gif" width="560" height="40" /></td>
+      </tr>
+      <tr>
+        <td bgcolor="#FFFFFF"><table width="521" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="92" height="65" rowspan="3"><img src="xupyfanyi/image_23.gif" width="80" height="83" /></td>
+              <td width="429"></td>
+            </tr>
+            <tr>
+              <td><table width="171" border="0" align="right" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td width="33"><img src="xupyfanyi/image_27.gif" width="31" height="17" /></td>
+                    <td width="64" class="booklist-text">成书阅读</td>
+                    <td width="21"><img src="xupyfanyi/image_29.gif" width="21" height="17" /></td>
+                    <td width="53" class="booklist-text">火热评分</td>
+                  </tr>
+              </table></td>
+            </tr>
+            <tr>
+              <td><p><span class="author">Anything  one man can imagine, other men can make real. <br />
+  但凡人能想象到的事物,必定有人能将它实现   </span>       <br />
+              <span class="author"><em>　　　　　　　　　　　　——Around  the World in 80 Days</em>《80天环游世界》</span></p></td>
+            </tr>
+        </table></td>
+      </tr>
+      <tr>
+        <td height="2" bgcolor="#FFFFFF"><hr width="530" size="1" 
+		   color="#CBC54B" noshade="noshade" /></td>
+      </tr>
+      <tr>
+        <td height="55" bgcolor="#FFFFFF"><table width="534" height="48" border="0" align="center" cellpadding="0" cellspacing="0">
+            <tr>
+              <td width="292" height="48" valign="top">The Time Machine 时间机器<br />
+              The First Men in the Moon 月球上的第一个人<br />
+              The Island of Dr Morau，1896 莫洛博士岛</td>
+              <td width="247">The Invisible Man，1897 隐身人<br />
+              The War in the Air，1908 空中战争<br />
+              War of the World-Book1，1898 星际战争</td>
+            </tr>
+        </table></td>
+      </tr>
+    </table>
+  </div>
+  <div class="div-right">
+    <table width="212" border="0" cellpadding="0" cellspacing="0">
+      <tr>
+        <td height="24"><img src="xupyfanyi/image_16.gif" width="212" height="24" /></td>
+      </tr>
+      <tr>
+        <td height="151" bgcolor="#F8EAD5"><table width="185" height="128" border="0" align="center" cellpadding="0" cellspacing="0">
+          <tr>
+            <td width="179" height="15">·金巴别塔用户抽奖赠送200份...</td>
+          </tr>
+          <tr>
+            <td height="15">·金巴别塔用户抽奖赠送200份...</td>
+          </tr>
+          <tr>
+            <td height="15">·金巴别塔用户抽奖赠送200份...</td>
+          </tr>
+          <tr>
+            <td height="15">·金巴别塔用户抽奖赠送200份...</td>
+          </tr>
+          <tr>
+            <td height="16">·金巴别塔用户抽奖赠送200份...</td>
+          </tr>
+        </table></td>
+      </tr>
+    </table>
+    <br />
+    <table width="212" border="0" cellpadding="0" cellspacing="0">
+      <tr>
+        <td height="24"><img src="xupyfanyi/image_17.gif" width="212" height="24" /></td>
+      </tr>
+      <tr>
+        <td height="152" bgcolor="#F8EAD5"><table width="185" height="128" border="0" align="center" cellpadding="0" cellspacing="0">
+          <tr>
+            <td width="179" height="15">·金巴别塔用户抽奖赠送200份...</td>
+          </tr>
+          <tr>
+            <td height="15">·金巴别塔用户抽奖赠送200份...</td>
+          </tr>
+          <tr>
+            <td height="15">·金巴别塔用户抽奖赠送200份...</td>
+          </tr>
+          <tr>
+            <td height="15">·金巴别塔用户抽奖赠送200份...</td>
+          </tr>
+          <tr>
+            <td height="16">·金巴别塔用户抽奖赠送200份...</td>
+          </tr>
+        </table></td>
+      </tr>
+    </table>
+    <br />
+    <table width="212" border="0" cellpadding="0" cellspacing="0">
+    <tr>
+      <td height="24"><img src="xupyfanyi/image_25.gif" width="212" height="24" /></td>
+    </tr>
+    <tr>
+      <td height="156" bgcolor="#F8EAD5"><table width="185" height="128" border="0" align="center" cellpadding="0" cellspacing="0">
+        <tr>
+          <td width="179" height="15">·金巴别塔用户抽奖赠送200份...</td>
+        </tr>
+        <tr>
+          <td height="15">·金巴别塔用户抽奖赠送200份...</td>
+        </tr>
+        <tr>
+          <td height="15">·金巴别塔用户抽奖赠送200份...</td>
+        </tr>
+        <tr>
+          <td height="15">·金巴别塔用户抽奖赠送200份...</td>
+        </tr>
+        <tr>
+          <td height="16">·金巴别塔用户抽奖赠送200份...</td>
+        </tr>
+      </table></td>
+    </tr>
+  </table>
+  </div>
+</div>
+</body>
+</html>
+

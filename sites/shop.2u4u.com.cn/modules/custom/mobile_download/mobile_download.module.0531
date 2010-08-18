@@ -1,0 +1,147 @@
+<?php
+function mobile_download_menu(){
+	
+   $items['mobile/download'] = array (
+      'title' => t('手机软件下载'),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('download_form'),
+      'access callback'=>true, 
+      'type' => MENU_CALLBACK,
+   );
+   
+      return $items;
+}
+
+function download_page(){
+	
+	return drupal_get_form("download_form");
+	
+}
+
+
+function download_form($form_state){
+	//var_dump($form_state);
+   $form = array();
+	ahah_helper_register($form, $form_state);
+   $form['choose_taxonomy'] = array(
+      '#type' => 'fieldset',
+      '#prefix' => '<div id="root-wrapper">', // This is our wrapper div
+      '#suffix' => '</div>',
+      '#tree' => TRUE, // don't forget to set #tree!
+      );
+	
+	$root_taxonomy = get_taxonomy_info(0);
+	
+    $choice0 = $form_state['values']['choose_taxonomy']['depth0'];
+    
+	$form['choose_taxonomy']['depth0'] = array(
+	  '#title' => 'root',
+	  '#type' => 'select',
+	  '#options' => $root_taxonomy,
+	  '#default_value' => $choice0,
+      '#ahah' => array(
+        'event' => 'change',
+        'path' => ahah_helper_path(array('choose_taxonomy')),
+        'wrapper' => 'root-wrapper',
+        'method' => 'replace',
+        ),
+     );
+
+
+   if($choice0){
+   	
+   	$taxonomy1 = get_taxonomy_info($choice0);    
+   	
+	if($taxonomy1){
+    $choice1 = $form_state['values']['choose_taxonomy']['depth1'];
+    
+	$form['choose_taxonomy'] ['depth1'] = array(
+	  '#title' => 'level 1',
+	  '#type' => 'select',
+	  '#options' => $taxonomy1,
+	  '#default_value' => $choice1,
+	  '#ahah' => array(
+        'event' => 'change',
+        'path' => ahah_helper_path(array('choose_taxonomy')),
+        'wrapper' => 'root-wrapper',
+        'method' => 'replace',
+        ),
+
+     );
+   }
+  } 
+
+ 
+  if($choice1){
+   	
+   	$taxonomy2 = get_taxonomy_info($choice1);    
+   	
+	if($taxonomy2){
+    $choice1 = $form_state['values']['choose_taxonomy']['depth2'];
+    
+	$form['choose_taxonomy'] ['depth2'] = array(
+	  '#title' => '',
+	  '#type' => 'select',
+	  '#options' => $taxonomy2,
+	  '#default_value' => $choice1,
+	  '#ahah' => array(
+        'event' => 'change',
+        'path' => ahah_helper_path(array('choose_taxonomy')),
+        'wrapper' => 'root-wrapper',
+        'method' => 'replace',
+        ),
+
+     );
+   }
+ } 
+ 
+ 
+	 $form['choose_taxonomy']['submit']	= array(
+      '#type' => 'submit',
+      '#value' => t('Submit It')
+          
+     );
+  
+	  return $form;
+}
+
+
+function get_taxonomy_info($tid){
+	
+/*	
+	$sql = "SELECT th.tid,name 
+	FROM `term_hierarchy` th 
+	LEFT JOIN `term_data` td ON td.tid=th.tid WHERE `parent`=".$tid;
+*/
+	
+	$sql = "SELECT td.tid, vid, name
+			FROM `term_data` td
+			LEFT JOIN `term_hierarchy` th ON th.tid = td.tid
+			WHERE td.vid =32
+			AND th.parent =".$tid;
+	
+	$rs = db_query($sql);
+	   $options[] = "请选择";	
+	while($row = db_fetch_object($rs)){		
+		$options[$row->tid] = $row->name;		
+	}
+	
+	return $options;
+	
+}
+
+function download_form_submit($form,&$form_state){
+        $views_name = 'download_Resources';
+    	   if(!empty($form_state['values']['depth2']))
+	        $tid = $form_state['values']['depth2'];
+	   elseif(!empty($form_state['values']['depth1']))
+	        $tid = $form_state['values']['depth1'];
+	   elseif(!empty($form_state['values']['depth0']))
+	        $tid = $form_state['values']['depth0']; 
+      var_dump($form_state); 
+     // print views_embed_view($views_name, 'default',$tid);
+        
+}
+
+
+?>

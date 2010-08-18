@@ -1,0 +1,5 @@
+; $Id$
+name = Import ERP
+description = "Import ERP data to site."
+core = 6.x
+package = 2u4u

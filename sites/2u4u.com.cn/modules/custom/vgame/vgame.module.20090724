@@ -1,0 +1,826 @@
+<?php
+ 
+/*
+ * Menu hook
+ */
+function vgame_menu(){
+	$items = array();
+	$items['vgame/mygame']=array(
+		'title'=>t('My game space'),
+		'access callback'=>true,
+		'page callback'=>'vgame_my_game',
+		'type'=>MENU_CALLBACK,
+	);
+	$items['vgame/donate']=array(
+		'title'=>'积分捐赠',
+		'access callback'=>true,
+		'page callback'=>'vgame_donate',
+		'type'=>MENU_CALLBACK,
+	);
+	$items['vgame/play']=array(
+		//'title'=>t('Donate'),
+		'access callback'=>true,
+		'page callback'=>'vgame_play',
+		'type'=>MENU_CALLBACK,
+	);
+	
+	//Registration form for new game players
+	$items['vgame/register'] = array(
+		'title' => '单词大赛注册',
+		'access callback' => true,
+		'page callback' => 'vgame_reg',
+		'type' => MENU_CALLBACK,
+	);
+	 
+	$items['vgame/time_slots_baixiaoyu']=array(
+		'access callback'=>true,
+		'page callback'=>'vgame_time_slots',
+		'type'=>MENU_CALLBACK,
+	);
+	
+	$items['vgame/test']=array(
+		'access callback'=>true,
+		'page callback'=>'vgame_test',
+		'type'=>MENU_CALLBACK,
+	);
+	//单词大赛排行榜
+	$items['vgame/rank']=array(
+		'access callback'=>true,
+		'page callback'=>'vgame_rank',
+		'page arguments'=>array('小学组'),
+		'type'=>MENU_CALLBACK,
+	);
+	$items['vgame/rank/primary']=array(
+		'title' => 'SUPER小学生单词王',
+		'access callback'=>true,
+		'page callback'=>'vgame_rank',
+		'page arguments'=>array('小学组'),
+		'type'=>MENU_DEFAULT_LOCAL_TASK,
+		'weight'=>-10,
+	);
+	$items['vgame/rank/middle']=array(
+		'title' => 'SUPER初中单词王',
+		'access callback'=>true,
+		'page callback'=>'vgame_rank',
+		'page arguments'=>array('初中组'),
+		'type'=>MENU_LOCAL_TASK,
+		'weight'=>-9,
+	);
+	$items['vgame/rank/high']=array(
+		'title' => 'SUPER高中单词王',
+		'access callback'=>true,
+		'page callback'=>'vgame_rank',
+		'page arguments'=>array('高中组'),
+		'type'=>MENU_LOCAL_TASK,
+		'weight'=>-8,
+	);
+	$items['vgame/rank/university']=array(
+		'title' => 'SUPER大学单词王',
+		'access callback'=>true,
+		'page callback'=>'vgame_rank',
+		'page arguments'=>array('大学组'),
+		'type'=>MENU_LOCAL_TASK,
+		'weight'=>-7,
+	);
+	$items['vgame/rank/adult']=array(
+		'title' => 'SUPER成人单词王',
+		'access callback'=>true,
+		'page callback'=>'vgame_rank',
+		'page arguments'=>array('成人组'),
+		'type'=>MENU_LOCAL_TASK,
+		'weight'=>-6,
+	);
+	//单词大赛排行榜
+	
+	$items['admin/settings/vgame']=array(
+		'title'=>t('Vocabluary Game Pize'),
+		'access callback'=>true,
+		'page callback'=>'vgame_prize_setting',
+		'type'=>MENU_DEFAULT_LOCAL_TASK,
+		
+	);
+	$items['admin/settings/vgame/prize']=array(
+		'title'=>t('Vocabluary Game Pize'),
+		'access callback'=>true,
+		'page callback'=>'vgame_prize_setting',
+		'type'=>MENU_LOCAL_TASK,
+		
+	);
+	$items['admin/settings/vgame/slots']=array(
+		'title'=>t('Time Slots'),
+		'access callback'=>true,
+		'page callback'=>'vgame_time_slots_page',
+		'type'=>MENU_LOCAL_TASK,
+		'weight' =>10,
+		
+	);
+	return $items;
+}
+
+/**
+ * Implementation of hook_xmlrpc().
+ *
+ * Maps external names of XML-RPC methods to callback functions.
+ */
+function vgame_xmlrpc() {
+   return array('vgame_get_cat'=> 'vgame_get_cat','vgame_set_award'=>'vgame_set_award');
+}
+
+function vgame_get_cat($uname)
+{
+	$user=user_load(array('name' => $uname));
+	if($user){
+		return $user->profile_vgame_cat;
+	}else 
+		return false;
+}
+
+function vgame_set_award($uname,$prize_num){
+	$user=user_load(array('name' => $uname));
+	if($user->uid>0){
+		$prizes=variable_get('prizes',array());
+		vgame_prize_notify($user,$prizes[$prize_num]);
+	}else 
+		return false;
+}
+
+
+/*
+ * Block hook
+ */
+function vgame_block($op = 'list', $delta = 0, $edit = array()) {
+  global $user;
+  switch ($op) {
+    case 'list':
+      $blocks[0]['info'] = t('Donation');
+      $blocks[1]['info'] = '我的比赛成绩';
+      $blocks[2]['info'] = "SUPER小学生单词王排名";
+	  $blocks[3]['info'] = "SUPER初中单词王排名";
+	  $blocks[4]['info'] = "SUPER高中单词王排名";
+	  $blocks[5]['info'] = "SUPER大学单词王排名";
+	  $blocks[6]['info'] = "SUPER成人单词王排名";
+      return $blocks;
+     case 'view':
+	if($delta==0){
+	    $block['subject'] = t('Donation');
+	    // We theme our array of links as an unordered list.
+	    $block['content'] = drupal_get_form('vgame_donate_form');
+	}
+	if($delta==1){
+	  
+   	   $ranks = xmlrpc('http://gps.2u4u.com.cn/xmlrpc.php', 'askUserRank',$user->name);
+	   $infos = xmlrpc('http://gps.2u4u.com.cn/xmlrpc.php', 'askUserInfo',$user->name);
+	   $block['subject']= '我的比赛成绩';
+	   //print_r($infos);
+	   $rows = array();
+       if($infos){
+	   foreach($infos as $info){
+		 $rows[] = array ($info['title'],$info['level'],$info['pass'],$info['time']);
+
+	   }}
+	   else{ 
+			$rows[] = array('暂无成绩','','','');
+	   }
+ 	   $block['content'] .=  theme('table', array('所属小组','通过关数','通过率','所用时间'), $rows);
+
+	   $rows=array();
+	   if($ranks){
+	   foreach($ranks as $rank)
+	   {
+		$rows[] = array ($rank['title'],$rank['rank_num']);
+
+	   }}
+	   else{
+		$rows[] = array('暂无成绩','');}
+	   $block['content'] .=  theme('table', array('所属小组','我的排名'), $rows);
+	}  
+  	if($delta==2){
+	    $block['subject'] = t('Donation');
+	    // We theme our array of links as an unordered list.
+	    $block['content'] .= vgame_rank('SUPER小学生单词王(各关都有奖测试)',15);
+	}
+  	if($delta==3){
+	    $block['subject'] .= 'SUPER初中单词王排名';
+	    // We theme our array of links as an unordered list.
+	     $block['content'] .= vgame_rank('SUPER初中单词王',15);
+	}
+  	if($delta==4){
+	    $block['subject'] ='SUPER高中词王排名';
+	    // We theme our array of links as an unordered list.
+	     $block['content'] .= vgame_rank('SUPER高中单词王',15);
+	}
+  	if($delta==5){
+	    $block['subject'] = 'SUPER大学单词王排名';
+	    // We theme our array of links as an unordered list.
+	     $block['content'] = vgame_rank('SUPER大学单词王',15);
+	}
+  	if($delta==6){
+	    $block['subject'] ='SUPER成人单词王排名';
+	    // We theme our array of links as an unordered list.
+	     $block['content'] .= vgame_rank('SUPER成人单词王',15);
+	}
+	  return $block;
+  }
+}
+
+/*
+ * Donation Form
+ */
+function vgame_donate_form(){
+	$form = array();
+	$form['donate']=array(
+		'#type'=>'textfield',
+		'#size'=>20,
+	);
+	$form['submit']=array(
+		'#type'=> 'submit',
+		'#value'=>t('捐赠'),	
+	);
+	return $form;
+}
+
+function vgame_donate_form_submit($form,$form_stats){
+	global $user;
+	if($user->uid > 0){
+		$values=$form_stats['values'];
+		//Also add 5 points to the currently logged in user
+		//TODO: check user existing points first
+		
+		$maxpoint = userpoints_get_max_points($user->uid,'all');  
+		if($maxpoint>$values['donate']){
+		    $params = array (
+		      'uid' => $user->uid,
+		      'points' => -($values['donate']),
+		    );
+		    userpoints_userpointsapi($params); 
+		    $params = array (
+		      'uid' => 726,
+		      'points' => ($values['donate']),
+		    );
+		    userpoints_userpointsapi($params);
+		    drupal_goto('juanzeng');
+		}else 
+		{
+			drupal_set_message('您的积分不足');
+		}
+	} else {
+		drupal_set_message(l('请先登录或注册','user'));
+	}
+}
+
+function vgame_my_game(){
+	global $user;
+	$user=user_load($user->uid);
+	// If first time, go to the register form
+	if(!isset($user->profile_vgame_entry)){
+		drupal_set_message(t('需要填写以下信息才可参加比赛'));
+		drupal_goto("user/$user->uid/edit/单词大赛信息",array('destination'=>'vgame/mygame'));
+	}else {
+		drupal_goto("vgame/myvgame");
+	}
+	
+}
+
+function vgame_donate(){
+	global $user;
+	return drupal_get_form('vgame_donate_form');
+}
+
+function vgame_play(){
+	global $user;
+	
+	//print_r($user);
+	if($user->uid>0){
+		//print_r($user);
+		//$user=user_load($user->uid);
+		// If first time, go to the register form
+		if(!isset($user->profile_vgame_entry)){
+			drupal_set_message(t('需要填写以下信息才可参加比赛'));
+			drupal_goto("user/$user->uid/edit/单词大赛信息",array('destination'=>'vgame/mygame'));
+		}else {
+			if(vgame_lottery())
+			{
+				
+				$prizes=variable_get('prizes',array());
+				vgame_prize_notify($user,$prizes[0]);
+				$num_of_points = 50;
+  				userpoints_userpointsapi($num_of_points);
+				
+			}
+				$sql = "SELECT sid FROM {sessions} where uid = %d";
+			   	$sid = db_result(db_query($sql,$user->uid));
+			   	$cat = urlencode($user->profile_vgame_cat);
+			   	$uname = urlencode($user->name);
+			   	$brow = browinfo();
+			   	if($brow == "Internet Explorer 6.0"){
+				          // 如果不加header 有些浏览器对encoding判断不对。url应该用utf-8来传
+				          //  为了ie6 + sp3能够正确跨网域不出错误，需要强制在新窗口打开
+			                  echo   "<html> <head> <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />";
+			   		  echo   "<SCRIPT   LANGUAGE='javascript'>";  
+					  echo   "window.open('http://gps.2u4u.com.cn/neo/login.php?uname=$uname&session=$sid&direct_group=$cat')";    
+					  echo   "</SCRIPT></head></html>";   
+				}else 
+				{
+					drupal_goto("http://gps.2u4u.com.cn/neo/login.php?uname=$uname&session=$sid&direct_group=$cat");
+				}
+			}
+	}else
+	{
+		drupal_set_message(t('需要登录才能参赛。如果没有账号，请<a href="http://2u4u.com.cn/user/register">注册</a>一个。'));
+		drupal_goto('user');
+	}
+}
+
+
+function vgame_terms_form(){
+	$form=array();
+	$form['terms']=array(
+		'#title' =>t('Term of use'),
+		'#type'=>'textarea',
+	);
+	$form['agree']=array(
+		'#type'=>'checkbox',
+		'#title'=>t('I Agree'),
+	);
+	$form['enter']=array(
+		'#value'=> t('Enter'),
+		'#type'=>'submit',
+	);
+	return $form;
+}
+
+function vgame_terms_form_validate($form,$form_stats)
+{
+	$values=$form_stats['values'];
+	if(!$values['agree']){
+		form_set_error('agree',t('To play the games, you have to agree the terms.'));
+	}
+}
+
+function vgame_terms_form_submit($form,$form_stats){
+	global $user;
+//	if(vgame_lottery())
+//	{
+//		
+//		$prizes=variable_get('prizes',array());
+//		vgame_prize_notify($user,$prizes[0]);
+//		
+//	}
+	$sql = "SELECT sid FROM {sessions} where uid = %d";
+   	$sid = db_result(db_query($sql,$user->uid));
+   	drupal_goto("http://gps.2u4u.com.cn/neo/login.php?uname=$user->name&session=$sid&direct_group=$user->profile_vgame_cat");
+}
+
+
+function vgame_lottery(){
+	global $user;
+	//Get today's time slots
+	$slots=variable_get('time_slots',array());	
+	
+	if(sizeof($slots)>0)
+	{
+	
+		$sql = "SELECT created FROM {node} n WHERE type = 'vgame_prize' AND uid = $user->uid ORDER BY n.created DESC";
+		$created = db_result(db_query($sql));
+		$now=time();
+// fuck the robots
+
+		if($now - $user->created < 48*3600){
+
+			return false;
+
+		} 
+		$oneday=$now+(60*60*24);
+		// Only one lottery per day per person
+
+		if($now-$created > $oneday || !$created){
+		//TODO: Generate time lottery prize
+			
+			$recent=$slots[sizeof($slots)-1];
+			$now=time();
+			if($now>$recent){
+				array_pop($slots);
+				variable_set('time_slots',$slots);
+				return true;
+			}
+		}
+	}else 
+	{
+		if($user->uid==1)
+			drupal_set_message(t('Please set time slots first.'));
+	}
+	return false;
+}
+
+
+/*
+ * Generate time slots for lottery every 24 hours
+ */
+function vgame_time_slots($num=200){
+	
+	//Generate 200 time slots
+	$now=time();
+	
+	// 13 hours per day ( 8 -21)
+	$next=$now+(60*60*13);
+	$slots=array();
+	for($i=0;$i<$num;$i++)
+	{
+		$slots[]=rand($now,$next);
+	}
+	rsort($slots,SORT_NUMERIC);
+	$slots[sizeof($slots)-1]=time();
+	variable_set('time_slots',$slots);
+	exit();
+	
+}
+
+/*
+ * Prize management
+ */
+function vgame_prize_setting(){
+	return drupal_get_form('vgame_prize_setting_form');
+}
+
+
+function vgame_time_slots_page(){
+	
+	$slots=variable_get('time_slots',array());
+	$output='';
+	foreach ($slots as $slot){
+		$output.= date(DATE_RFC822,$slot)."<br>";
+	}
+	return $output;
+}
+
+/*
+ * Prize Management setting form
+ */
+function vgame_prize_setting_form(){
+	$form = array();	
+	$prizes=variable_get('prizes',array());
+	$form['prize_names']=array(
+		'#title'=>t('Prize Names'),
+		'#type'=>'fieldset',
+	);
+	$form['prize_names']['prize_one']=array(
+		'#title'=>t('Name of Prize One'),
+		'#type'=>'textfield',
+		'#default_value'=>$prizes[0],
+	);
+	$form['prize_names']['prize_two']=array(
+		'#title'=>t('Name of Prize Two'),
+		'#type'=>'textfield',
+		'#default_value'=>$prizes[1],
+	);
+	$form['prize_names']['prize_three']=array(
+		'#title'=>t('Name of Prize Three'),
+		'#type'=>'textfield',
+		'#default_value'=>$prizes[2],
+	);
+	$form['prize_names']['prize_four']=array(
+		'#title'=>t('Name of Prize Four'),
+		'#type'=>'textfield',
+		'#default_value'=>$prizes[3],
+	);
+	$form['prize_names']['prize_five']=array(
+		'#title'=>t('Name of Prize Five'),
+		'#type'=>'textfield',
+		'#default_value'=>$prizes[4],
+	);
+	$form['prize_names']['prize_six']=array(
+		'#title'=>t('Name of Prize Six'),
+		'#type'=>'textfield',
+		'#default_value'=>$prizes[5],
+	);
+	$form['prize_names']['prize_seven']=array(
+		'#title'=>t('Name of Prize Seven'),
+		'#type'=>'textfield',
+		'#default_value'=>$prizes[6],
+	);
+	$form['prize_names']['prize_eight']=array(
+		'#title'=>t('Name of Prize Eight'),
+		'#type'=>'textfield',
+		'#default_value'=>$prizes[7],
+	);
+	$form['prize_names']['prize_nine']=array(
+		'#title'=>t('Name of Prize Nine'),
+		'#type'=>'textfield',
+		'#default_value'=>$prizes[8],
+	);
+	$form['prize_names']['prize_ten']=array(
+		'#title'=>t('Name of Prize Ten'),
+		'#type'=>'textfield',
+		'#default_value'=>$prizes[9],
+	);
+	$form['prize_names']['prize_eleven']=array(
+		'#title'=>t('Name of Prize Eleven'),
+		'#type'=>'textfield',
+		'#default_value'=>$prizes[10],
+	);
+	$form['prize_names']['prize_twelve']=array(
+		'#title'=>t('Name of Prize Twelve'),
+		'#type'=>'textfield',
+		'#default_value'=>$prizes[11],
+	);
+	
+	$form['submit']=array(
+		'#type'=>'submit',
+		'#value'=>t('submit'),
+	);
+	return $form;
+	
+}
+
+function vgame_prize_setting_form_submit($form,$form_stats)
+{
+	$prizes=array();
+	$values=$form_stats['values'];
+	$prizes[]=$values['prize_one'];
+	$prizes[]=$values['prize_two'];
+	$prizes[]=$values['prize_three'];
+	$prizes[]=$values['prize_four'];
+	$prizes[]=$values['prize_five'];
+	$prizes[]=$values['prize_six'];
+	$prizes[]=$values['prize_seven'];
+	$prizes[]=$values['prize_eight'];
+	$prizes[]=$values['prize_nine'];
+	$prizes[]=$values['prize_ten'];
+	$prizes[]=$values['prize_eleven'];
+	$prizes[]=$values['prize_twelve'];
+	variable_set('prizes',$prizes);
+}
+
+
+function vgame_prize_notify($user,$prize_name)
+{
+	
+	$node = new StdClass();
+	$node->type = 'vgame_prize';
+	$node->status = 1;		
+	
+	$node->uid=$user->uid;
+	$node->title = "获得奖励 - ".$prize_name;
+	node_save($node);
+	$params['account'] = $user;
+	$params['prize_name'] = $prize_name;
+    drupal_mail('vgame', 'notice', $user->mail, user_preferred_language($user), $params);
+    
+    drupal_set_message(t('Congratulation!!! You\'ve won a '.$prize_name));
+	
+}
+
+/*
+ * Mail hook
+ */ 
+function vgame_mail($key, &$message, $params) { 
+	$user = $params['account'];
+	$language = $message['language']; 
+	$variables = user_mail_tokens($params['account'], $language); 
+	switch($key) { 
+		case 'notice': 
+			$message['subject'] = t('@user，恭喜您获得了2u4u百日单词大赛 @prize_name奖', array('@user' => $user->name, '@prize_name' =>$params['prize_name'] )); 
+			$path=drupal_get_path('module', 'vgame');
+			$path=$path.'/mail.txt';
+			
+			$fh = fopen($path, "rb");
+			$mailbody = fread($fh, filesize($path));
+			fclose($fh);
+			$message['body'] = t($mailbody, array('@user' => $user->name, '@prize_name' =>$params['prize_name'] )); 
+			break; 
+	} 
+}
+ 
+function vgame_test(){
+	global $user;
+	print_r($user);
+//	$emno = gift_points_get_emno("F1GMMVKWA5F3");
+//	
+//	 $emfield = variable_get('gpoints_award','').'_value';
+//	print_r($emfield);
+	
+}
+
+
+/*
+ * Registration Page for new game players
+ */
+function vgame_reg(){	
+	$output = '';
+	global $user;
+	if(!empty($user->profile_vgame_entry)){
+		$output = t('您已经报名参赛了。用户不能修改自己的参赛信息。您可以重新注册一个账号。');
+	}else{
+		$output =drupal_get_form('vgame_reg_form');
+	}
+	return $output;
+}
+
+/*
+ * Registration Form for new game players
+ */
+function vgame_reg_form(){
+	global $user;
+	
+	$path=drupal_get_path('module','vgame');
+	drupal_add_js($path."/js_reg.js");
+	$form = array();
+	if(!$user->uid){
+		
+		$form['name'] = array(
+			'#title' => t('Name'),
+			'#type' => 'textfield',
+			'#required' => true,
+		);
+		$form['password'] = array(
+			'#title' => t('Password'),
+			'#type' => 'password',
+			'#required' => true,
+		);
+		$form['re-password'] = array(
+			'#title' => t('Re-Enter Password'),
+			'#type' => 'password',
+			'#required' => true,
+		);
+		
+	}
+	
+	
+	$fields = profile_form_profile($edit, $user, '单词大赛信息', false);
+	foreach ($fields['单词大赛信息'] as &$field)
+	{
+		if(is_array($field))
+		{
+			if($field['#title'] == '参赛口' || $field['#title'] == '比赛小组' )
+				$field['#required'] = true;
+		}
+	}
+	
+	$form = array_merge ($form, $fields);
+	
+	$path=drupal_get_path('module', 'vgame');
+	$path=$path.'/tou.txt';
+	
+	$fh = fopen($path, "rb");
+	$data = fread($fh, filesize($path));
+	fclose($fh);
+	
+	
+	
+	$form['terms']=array(
+			'#title' =>'用户协议',
+			'#type'=>'textarea',
+			'#value'=>$data,
+			'#weight' =>18,
+			'#size'=>1000
+	);
+	$form['agree']=array(
+		'#type'=>'checkbox',
+		'#title'=>'我同意',
+			'#weight' =>19,
+	);
+	$form['submit'] = array(
+		'#value' => '注册',
+		'#weight' =>20,
+		'#type' => 'submit',
+		
+	);
+	return $form ;
+}
+
+function vgame_reg_form_validate($form,$form_state)
+{
+	$values = $form_state['values'];
+	//print_r($values);
+//	if(strcmp($values['profile_vgame_entry'],'集体')==0)
+//	{
+//		
+//		if (is_numeric($values['profile_school'])){
+//			form_error($form,'请选择学校');
+//		}
+//		if ($values['profile_class']==''){
+//			form_error($form,'请填写班级');
+//		}
+//	}
+//	if(strcmp($values['profile_vgame_entry'],'个人')==0)
+//	{
+//		if (strcmp($values['profile_vgame_cat'],'大学')==0){
+//			
+//			if (is_numeric($values['profile_school'])){
+//				form_error($form,'请选择学校');
+//			}
+//		}
+//		
+//	}
+
+	if(strcmp($values['password'],$values['re-password'])!=0)
+	{
+		form_error($form,t('Two passwords do not match!'));
+	}
+	if(!$values['agree']){
+		form_set_error('agree','您必须同意大赛赛制说明才可以进行比赛');
+	}
+
+}
+
+
+/*
+ * Registration form submit
+ */
+function vgame_reg_form_submit($form,$form_state)
+{
+	global $user;
+	$values = $form_state['values'];
+	//Create a user if necessary
+	if(!$user->uid && isset($values['name']))
+	{
+		$newuser = array(
+		  'name' => $values['name'],
+		  'status' => 1,
+		  'pass' => $values['password'],
+		  'language' => 'zh-hans',
+		);
+		
+		$user = user_save('', $newuser);
+	}
+	
+	$profile_fields = array();
+	foreach ($values as $key => $value)
+	{
+		if( strpos($key,'profile')>-1)
+			$profile_fields[$key] = $value;
+	}
+	
+	$user=user_save($user,$profile_fields);
+
+	drupal_goto('vgame/myvgame');
+}
+
+
+
+function vgame_rank($cat,$num=100){
+	$results = xmlrpc('http://gps.2u4u.com.cn/xmlrpc.php', 'askUserChartInfo',$num,$cat);
+	
+	if (xmlrpc_error()) {
+	  $error_num = xmlrpc_errno();
+	  $error = xmlrpc_error();
+	  drupal_set_message(t('Could not get state name because the remote site said:
+	    %error'), array('%error' => $error->message . '(' . $error_num . ')'));
+
+	}
+	$rows=array();
+	if($results){
+		foreach ($results as $result){
+			$rows[] = array ($result['index_r'],$result['uid'],$result['e_level'],$result['pass'],$result['all_time']);
+		}
+	}
+	return theme('table', array('排名','用户名','通过关数','通关率','所用时间'), $rows);
+	
+}
+
+
+//By taiwan jackson
+function browinfo()
+{
+    if (strpos($_SERVER["HTTP_USER_AGENT"], "MSIE 8.0"))
+    {
+        $visitor_browser = "Internet Explorer 8.0";
+    } elseif (strpos($_SERVER["HTTP_USER_AGENT"], "MSIE 7.0"))
+    {
+        $visitor_browser = "Internet Explorer 7.0";
+    } elseif (strpos($_SERVER["HTTP_USER_AGENT"], "MSIE 6.0"))
+    {
+        $visitor_browser = "Internet Explorer 6.0";
+    } elseif (strpos($_SERVER["HTTP_USER_AGENT"], "MSIE 5.5"))
+    {
+        $visitor_browser = "Internet Explorer 5.5";
+    } elseif (strpos($_SERVER["HTTP_USER_AGENT"], "MSIE 5.0"))
+    {
+        $visitor_browser = "Internet Explorer 5.0";
+    } elseif (strpos($_SERVER["HTTP_USER_AGENT"], "MSIE 4.01"))
+    {
+        $visitor_browser = "Internet Explorer 4.01";
+    } elseif (strpos($_SERVER["HTTP_USER_AGENT"], "NetCaptor"))
+    {
+        $visitor_browser = "NetCaptor";
+    } elseif (strpos($_SERVER["HTTP_USER_AGENT"], "Netscape"))
+    {
+        $visitor_browser = "Netscape";
+    } elseif (strpos($_SERVER["HTTP_USER_AGENT"], "Lynx"))
+    {
+        $visitor_browser = "Lynx";
+    } elseif (strpos($_SERVER["HTTP_USER_AGENT"], "Opera"))
+    {
+        $visitor_browser = "Opera";
+    } elseif (strpos($_SERVER["HTTP_USER_AGENT"], "Konqueror"))
+    {
+        $visitor_browser = "Konqueror";
+    } elseif (strpos($_SERVER["HTTP_USER_AGENT"], "Mozilla/5.0"))
+    {
+        $visitor_browser = "Mozilla";
+    } else
+    {
+        $visitor_browser = "others";
+    }
+    return $visitor_browser;
+}

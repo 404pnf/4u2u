@@ -1,0 +1,6 @@
+UL.shipin-tabs{ background-image:url(shipinkt_tabulbg.gif); background-repeat:repeat-x;z-index:2;}
+UL.shipin-tabs li{display:inline;}
+UL.shipin-tabs a{ background-image:url(shipinkt_tabbg.jpg);background-repeat:no-repeat; font-size:14px; width:97px; height:27px; line-height:27px; padding:5px 30px 15px 20px; color:#FFFFFF;}
+*html UL.shipin-tabs a{ background-image:url(shipinkt_tabbg.jpg);background-repeat:no-repeat; font-size:14px; width:97px; height:27px; line-height:27px; padding:4px 30px 15px 20px; color:#FFFFFF;}
+UL.shipin-tabs a.current{ background-image:url(shipinkt_tabbgcurrent.jpg); background-repeat:no-repeat; font-size:14px; width:97px; height:27px; line-height:27px; padding:4px 30px 15px 20px; color:#000000;}
+*html UL.shipin-tabs a.current{ background-image:url(shipinkt_tabbgcurrent.jpg); background-repeat:no-repeat; font-size:14px; width:97px; height:27px; line-height:27px; padding:3px 30px 15px 20px; color:#000000;}

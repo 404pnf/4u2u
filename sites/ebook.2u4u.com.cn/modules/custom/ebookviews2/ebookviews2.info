@@ -1,0 +1,6 @@
+; $Id: $
+
+name = ebookviews2 Export Module
+description = Exports some views of ebookviews2
+dependencies[] = views
+core = 6.x

@@ -1,0 +1,184 @@
+@charset "utf-8";
+/* CSS Document */
+
+/* addtional */
+.title-content{
+	background-repeat:repeat-x;
+	height:35px;
+	line-height:35px;
+	display:block; 
+	float:left;
+	}
+#content-area{
+min-height:500px;
+height:auto !important;
+height:500px;
+}
+
+
+
+#content  ul  li.login_duhougan a{
+-moz-border-radius:5px 5px 5px 5px;
+-moz-box-shadow:0 1px 3px rgba(0, 0, 0, 0.5);
+background:none repeat scroll 0 0 #FF5C00;
+border-color:-moz-use-text-color -moz-use-text-color rgba(0, 0, 0, 0.25);
+border-style:none none solid;
+border-width:medium medium 1px;
+color:#FFFFFF;
+cursor:pointer;
+
+font-size:12px;
+line-height:1;
+padding:6px 14px 5px;
+position:relative;
+text-decoration:none;
+text-shadow:0 -1px 1px rgba(0, 0, 0, 0.25);
+
+}
+#content  ul li.login_duhougan a:hover{
+background:#ffb515;
+}
+
+
+.terms .links .login_duhougan a{
+display: none;
+}
+.flag-duhougan-tuijian a:link, a:visited{
+font-size:14px;
+color:#FF0000; !important;
+}
+
+#confirm_message .confirm-links li{
+	margin:10px 0;
+	list-style:none;
+	
+}
+#confirm_message .confirm-links li a{
+-moz-border-radius:5px 5px 5px 5px;
+-moz-box-shadow:0 1px 3px rgba(0, 0, 0, 0.5);
+background:none repeat scroll 0 0 #58C16D;
+border-color:-moz-use-text-color -moz-use-text-color rgba(0, 0, 0, 0.25);
+border-style:none none solid;
+border-width:medium medium 1px;
+color:#FFFFFF;
+cursor:pointer;
+display:inline-block;
+font-size:14px;
+font-weight:bold;
+line-height:1;
+padding:8px 14px 9px;
+position:relative;
+text-decoration:none;
+text-shadow:0 -1px 1px rgba(0, 0, 0, 0.25);
+}
+#confirm_message .confirm-links li a:hover{
+	background:#67C124;
+}
+
+	
+.node-type-readthink .field-field-dhg-zhengwen{
+	width:390px;
+}
+.node-type-readthink .content,
+.node-type-readthink .field-field-dhg-fubiaoti{
+	margin-top:10px;
+}
+/*view-duhougan-fenlie  应该为fenlei*/
+
+.page-fenlei .view-duhougan-fenlie{
+	padding:0 10px; 
+}
+.page-fenlei .view-duhougan-fenlie li{
+	overflow:hidden;
+	height:170px;
+    padding:10px;
+	position:relative;
+	width:560px;
+	border-bottom:1px dashed #CCC;
+}
+.page-fenlei .view-duhougan-fenlie .views-field-field-yuedu-cover-fid{
+	float:left;
+	width:120px;
+	display:inline;
+}
+.page-fenlei .view-duhougan-fenlie .views-field-field-yuedu-summary-value{
+	line-height:1.8;
+}
+.page-fenlei .view-duhougan-fenlie li .views-field-view-node{
+	position:absolute;
+	bottom:10px;
+	right:10px;
+}
+/*结束  view-duhougan-fenlie */
+
+.section-node-add #page #page-inner #main #main-inner #content #content-inner #content-area form div .node-form .standard #edit-title-wrapper label  {
+float:none;
+font-weight:bold;
+text-align:left;
+}
+.section-node-add #page #page-inner #main #main-inner #content #content-inner #content-area form div .node-form .standard #edit-title-wrapper .form-text,
+.section-node-add #page #page-inner #main #main-inner #content #content-inner #content-area form div .node-form .standard #edit-field-dhg-fubiaoti-0-value-wrapper .form-text
+{
+height:20px;
+width:433px;
+}
+.section-taxonomy #main #main-inner #content,
+.page-all-duhougan #main #main-inner #content {
+width:710px;
+}
+.view-duhougan-all-children .view-content .views-table,
+.view-taxonomy-term .view-content .views-table {
+width:98%;
+margin-left:8px;
+}
+.view-all-duhougan .view-content .views-table tr, .view-users-duhougan .view-content .views-table tr, .view-duhougan-all-children .view-content .views-table tr,.view-taxonomy-term .view-content .views-table tr {
+background-color:#FFFFFF;
+border-bottom:2px solid #E5EBE1;
+}
+.view-all-duhougan .view-content .views-table tr th, .view-users-duhougan .view-content .views-table tr th, .view-duhougan-all-children .view-content .views-table tr th,.view-taxonomy-term .view-content .views-table tr th{
+background-color:#FFFFFF;
+font-size:14px;
+height:33px;
+line-height:33px;
+}
+.view-taxonomy-term .view-content .views-table tbody td.views-field-title {
+height:33px;
+line-height:33px;
+overflow:hidden;
+white-space:nowrap;
+width:230px;
+font-size:14px;
+}
+.page-dhgps #content .field-items .field-item {
+line-height:22px;
+text-indent:0;
+}
+.section-node-add #page #page-inner #main #main-inner #content #content-inner #content-area form div .node-form .standard #edit-title-wrapper label  {
+float:none;
+font-weight:bold;
+text-align:left;
+}
+.section-node-add #page #page-inner #main #main-inner #content #content-inner #content-area form div .node-form .standard #edit-title-wrapper .form-text,
+.section-node-add #page #page-inner #main #main-inner #content #content-inner #content-area form div .node-form .standard #edit-field-dhg-fubiaoti-0-value-wrapper .form-text
+{
+height:20px;
+width:433px;
+}
+.page-all-duhougan #main #main-inner #content {
+width:710px;
+}
+.view-duhougan-all-children .view-content .views-table {
+width:98%;
+}
+.page-dhgps #main #main-inner #content  #content-inner #content-header
+{height:35px;background-image: url(images/video_titleall.jpg); line-height:35px;}
+.page-dhgps #main #main-inner #content
+{border:#D1D1D1 1px solid;width:610px; border-top:none; padding:0 10px;}
+#content .views-exposed-form .views-exposed-widget .form-submit {
+margin-top:1.05em;
+}
+.view-duhougan .view-content li.views-row{
+	border-bottom:1px dashed #CCC;
+
+}
+

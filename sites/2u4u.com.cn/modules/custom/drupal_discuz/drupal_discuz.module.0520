@@ -1,0 +1,142 @@
+<?php
+function drupal_discuz_block($op = 'list', $delta = 0, $edit = array()){
+  if ($op == 'list') {
+    $blocks[0]['info'] = t('DISCUZ 各版块最新的帖子');
+    $blocks[0]['cache'] = BLOCK_CACHE_GLOBAL;
+    
+    $blocks[1]['info'] = t('DISCUZ 最新资源');
+    $blocks[1]['cache'] = BLOCK_CACHE_GLOBAL;
+    
+    $blocks[2]['info'] = t('UHOME 博客精华');
+    $blocks[2]['cache'] = BLOCK_CACHE_GLOBAL; 
+    return $blocks;
+  }
+	
+  if($op == 'view'){
+  	$block = array();
+    switch ($delta) {
+      case 0:
+	      	$block['subject'] = t('社区');
+		  	$block['content'] = get_discuz_newpost(5);
+		  	return $block;
+      case 1:
+	      	$block['subject'] = t('热门资源');
+		  	$block['content'] = discuz_source(7);
+		  	return $block;
+      case 2:
+	      	$block['subject'] = t('博客精华');
+		  	$block['content'] = uhome_hotblog(7,4);
+		  	return $block; 	 
+    }
+  }   
+}
+
+
+/*
+ *   获取论坛各版块 中最新的一篇帖子
+ *   @wzs 20100518
+ * 
+ */
+
+function get_discuz_newpost($num=10){
+	global $discuz_url ;
+	$discuz_url = "http://localhost/project/ucenter/";
+	db_set_active('ucenter');	
+	$sql = "SELECT uf.name, uf.lastpost, ut.fid, ut.tid
+			FROM `cdb_forums` uf
+			LEFT JOIN `cdb_threads` ut ON ut.fid = uf.fid
+			GROUP BY ut.fid
+			ORDER BY ut.dateline DESC LIMIT %d";
+	
+	$rs = db_query($sql,$num);
+	while($row = db_fetch_object($rs)){
+		  if(strpos($row->lastpost,"	"))
+	           $array = explode("	",$row->lastpost);
+		   $content .= "<li>[<a href='".$discuz_url."bbs/forumdisplay.php?fid=".$row->fid."'>".$row->name."</a>]
+		   <a href='".$discuz_url."viewthread.php?tid=".$row->tid."'>".$array[1]."</a></li>";
+		
+	}
+	db_set_active('default');
+	return $content;
+}
+
+/*
+ *   论坛的最新资源
+ */
+
+function discuz_source($num =10){
+	global $discuz_url ;
+	db_set_active('ucenter');
+	$sql = "SELECT ut.subject, ua.filetype,ut.tid
+			FROM cdb_attachments ua
+			LEFT JOIN cdb_threads ut ON ua.tid = ut.tid
+			WHERE ut.fid >0
+			AND ut.fid
+			IN ( 23, 28, 35, 39, 43 ) 
+			GROUP BY ua.tid
+			ORDER BY ua.dateline DESC LIMIT %d";
+	
+	$rs = db_query($sql,$num);
+	
+	while($row = db_fetch_object($rs)){
+		
+        switch($row->filetype){
+		    case "application/msword":
+		         $img = "doc.jpg";
+		         break;
+		    case "application/x-zip-compressed":
+		    	 $img = "rar.jpg";
+		         break;
+		    case "application/vnd.ms-powerpoint":
+		    	 $img = "ppt.jpg";
+		         break;
+		    case "application/pdf":
+		    	 $img = "pdf.jpg";
+		         break;
+		    
+        }      
+		$content .= "<ul><li><span><img src=''></a></span>
+		<a href='".$discuz_url."bbs/viewthread.php?tid=".$row->tid."'>".$row->subject."</a>
+		</li></ul>";
+		
+		
+	}
+	
+	db_set_active('default');
+	return $content;
+}
+
+/*
+ *   首页热门博客
+ *   默认取一周中四篇博客，按热门排行
+ *   
+ */
+function uhome_hotblog($day=7,$num=4){		
+	global $discuz_url;
+	db_set_active('ucenter');
+	$time = strtotime("today");
+    $sql = "SELECT blogid,uid,username,subject 
+		    FROM `uchome_blog` 
+		    WHERE dateline>$time-86400*$day GROUP BY uid ORDER BY hot DESC,viewnum DESC 
+		     LIMIT $num";		    
+    $rs = db_query($sql);
+    
+   //uhome的目录需要手动定义
+    $dir = 'F:/xampp/htdocs/project/ucenter/home';
+    include_once($dir.'./common.php');
+    include_once(S_ROOT.'./source/function_cp.php');
+    while($row = db_fetch_object($rs)){
+    	$photo = '';
+    	$photo = ckavatar($row->uid) ? avatar($row->uid, 'small',true) : UC_API.'/images/noavatar_small.gif';
+    	$content .=  "<li><a href='".$discuz_url."home/space.php?uid=".$row->uid."'><img src ='".$photo."'></a></li>";
+    	$content .= "<li><a href='".$discuz_url."home/space.php?uid=".$row->uid."'>".$row->username."</a></li>";
+        $content .= "<li><a href='".$discuz_url."home/space.php?uid=".$row->uid."&do=blog&id=".$row->blogid."'>".$row->subject."</a></li>";
+    	
+    }
+    
+	db_set_active('default');
+	return $content;	    
+		    
+}
+
+?>

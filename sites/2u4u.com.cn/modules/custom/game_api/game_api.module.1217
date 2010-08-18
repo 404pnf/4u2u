@@ -1,0 +1,71 @@
+<?php
+// $Id$
+/**
+* @file
+* Lets users add private annotations to nodes.
+*
+* Adds a text field when a node is displayed
+* so that authenticated users may make notes.
+*/
+function game_api_menu() {
+	
+ $items = array();
+
+ $items['game/link']=array(
+     'title' => 'play game',
+     'page callback' => 'game_url',
+     'type' => MENU_CALLBACK,   
+     'access callback' => true,
+   );
+   
+  $items['dict']=array(
+     'title' => 'online dictionary',
+     'page callback' => 'dict_url',
+     'type' => MENU_CALLBACK,
+     'access callback' => true,
+   );  
+   
+     return $items; 
+}
+
+function game_url()
+{
+   global $user;
+   if($user->uid>0){
+	   $sql = "SELECT sid FROM {sessions} where uid = %d";
+	   $sid = db_result(db_query($sql,$user->uid));
+	   $url = "http://2u4u.com.cn/games/index.php".'?sid='.$sid;
+	   drupal_goto($url);
+   }else{
+   	   $url = "http://2u4u.com.cn/user?destination=game/link";
+	   drupal_goto($url);
+   	
+   }
+}
+
+
+function dict_url()
+{
+   global $user;
+   if($user->uid>0){
+	   $sql = "SELECT sid FROM {sessions} where uid = %d";
+	   $sid = db_result(db_query($sql,$user->uid));
+	   $url = "http://test.2u4u.com.cn/online/add_word.php?sid=".$sid;
+	   drupal_goto($url);
+   }else{
+   	   $url = "http://2u4u.com.cn/user?destination=dict";
+	   drupal_goto($url);
+   	
+   }   
+}  
+/*	
+$brow = browinfo();
+	if($brow == "Internet Explorer 6.0"){
+		echo   "<SCRIPT   LANGUAGE='javascript'>";  
+		echo   "window.open('$url')";    
+		echo   "</SCRIPT></head></html>";   
+	}else 
+	{
+		drupal_goto($url);
+	}
+   */

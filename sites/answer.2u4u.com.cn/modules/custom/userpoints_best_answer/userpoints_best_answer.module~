@@ -1,0 +1,316 @@
+<?php
+/*
+ * Menu hook
+ */
+function userpoints_best_answer_menu() {
+	$items = array ();
+	$items ['admin/settings/best_answer'] = array (
+		'title' => t ( 'User Point Best Answer Settings' ), 
+		'page callback' => 'drupal_get_form', 
+		'page arguments' => array ('userpoints_best_answer_admin_setting' ), 
+		'access arguments' => array ('administer best answer' ), 
+		'description' => t ( "Administer best answer settings." ) 
+	);
+	$items ['node/%node/award'] = array(
+		'title' => t('Best Answer'),
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('userpoints_best_answer_award'),
+		'access arguments' =>  array ('administer best answer' ), 
+		'type' => MENU_CALLBACK,
+	);
+	
+	return $items;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function userpoints_best_perm() {
+	return array ('answer questions', 'create questions', 'administer best answer' );
+}
+
+function userpoints_best_answer_admin_setting() {
+	$form = array ();
+	$form ['question_node_type'] = array (
+		'#title' => t ( 'Question Node Type' ), 
+		'#required' => true,
+		'#default_value'=>variable_get('question_node_type',''), 
+		'#type' => 'textfield', 
+		'#description' => t ( 'Enter the machine name of the question node type created with CCK.' ), 
+		'#size' => 20 );
+	$form ['userpoint_field_name'] = array (
+		'#title' => t ( 'Award Field Name' ), 
+		'#required' => true,
+		'#default_value'=>variable_get('userpoint_field_name',''), 
+		'#type' => 'textfield', 
+		'#description' => t ( 'Enter the machine name of the userpoints within the Question Node Type.' ), 
+		'#size' => 20 );
+	$form ['answer_nid_holder'] = array (
+		'#title' => t ( 'Answer Node Nid Field Name' ), 
+		'#required' => true,
+		'#default_value'=>variable_get('answer_nid_holder',''), 
+		'#type' => 'textfield', 
+		'#description' => t ( 'Enter the machine name of the field which holds the nid of the answer.' ), 
+		'#size' => 20 );
+	$form ['best_answer_tid'] = array (
+		'#title' => t ( 'Taxonomy ID of the userpoint category.' ), 
+		'#required' => true,
+		'#default_value'=>variable_get('best_answer_tid',''), 
+		'#type' => 'textfield', 
+		'#description' => t ( 'Enter the tid of the category that you want this module to use.' ), 
+		'#size' => 20 );
+	$form ['submit'] = array ('#type' => 'submit', '#value' => t ( 'Save' ) );
+	return $form;
+}
+
+/*
+ * Validate the setting form.
+ * Checks if the node type and file field exist.
+ */
+function userpoints_best_answer_admin_setting_validate($form, &$form_state) {
+	$form_values = $form_state ['values'];
+	$node_type = $form_values ['question_node_type'];
+	//Load all node types
+	$types = node_get_types ();
+	$exist = FALSE;
+	
+	foreach ( $types as $type ) {
+		if (strcmp ( $type->type, $node_type ) == 0) {
+			$exist = true;
+			break;
+		}
+	}
+	
+	if (! $exist) {
+		form_set_error ( 'question_node_type', t ( 'Incorrect node type.' ) );
+	}
+	
+//TODO: check the field
+}
+
+/*
+ * Setting form submit
+ */
+function userpoints_best_answer_admin_setting_submit($form, &$form_state) {
+	$form_values = $form_state ['values'];
+	variable_set('question_node_type',$form_values ['question_node_type']);
+	variable_set('userpoint_field_name',$form_values ['userpoint_field_name']);
+	variable_set('answer_nid_holder',$form_values ['answer_nid_holder']);
+	variable_set('best_answer_tid',$form_values ['best_answer_tid']);
+	drupal_set_message(t("Settings have been saved"));
+}
+
+/*
+ * nodeapi hook
+ */
+function userpoints_best_answer_nodeapi(&$node, $op, $teaser, $page){
+	global $user;
+	
+	if(strcmp($node->type,variable_get('question_node_type',''))==0)
+	{
+		if($op=='view')
+		{
+			$afield=variable_get('answer_nid_holder','');
+			$anid=$node->$afield;
+			$anode=node_load($anid[0]['value']);
+			if($anode){
+				$answer['answer']=array(
+					'#title'=>t('Best Answer'),
+					'#type'=>'fieldset'
+				);
+				$answer['answer']['title']=array(
+					'#type'=>'item',
+					'#prefix'=>'<div class="best_answer_title">',
+					'#suffix'=>'</div>',
+					'#value'=>$anode->title,
+				);
+				$answer['answer']['body']=array(
+					'#type'=>'item',
+					'#prefix'=>'<div class="best_answer_body">',
+					'#suffix'=>'</div>',
+					'#value'=>$anode->body,
+				);
+				$node->content[]=$answer;
+			}
+		}
+		
+		if($op=='validate')
+		{
+			$ufield=variable_get('userpoint_field_name','');
+			$award=$node->$ufield;
+			$current_points=userpoints_get_current_points($user->uid);
+			$award_points=(int)$award[0]['value'];
+			if($award_points>$current_points)
+			{
+				form_set_error('',t('Invalid.'));
+			}
+			if($award_points>$current_points)
+			{
+				form_set_error('',t('You do not have enough user points.'));
+				
+			}
+		}
+		//Take user points form the questioner in case refuse the award the answerer
+		if($op=='insert')
+		{
+			$ufield=variable_get('userpoint_field_name','');
+			$award=$node->$ufield;
+			
+			$award_points=(int)$award[0]['value'];
+			userpoints_userpointsapi(array(
+			  'uid' => $user->uid,
+			  'points' => -$award_points,
+			  'tid' => variable_get('best_answer_tid','')
+			));
+			userpoints_userpointsapi(-$award_points);
+		}
+		
+		
+		if($op=='delete')
+		{
+			//If there is no answer to the question, the questioner can delete the question and get the userpoints back.
+			if($node->comment_count==0)
+			{
+				$ufield=variable_get('userpoint_field_name','');
+				$award=$node->$ufield;
+				
+				$award_points=(int)$award[0]['value'];
+				userpoints_userpointsapi(array(
+				  'uid' => $user->uid,
+				  'points' => -$award_points,
+				  'tid' => variable_get('best_answer_tid','')
+				));
+				userpoints_userpointsapi($award_points);
+			}
+		}
+	}
+
+}
+
+
+/*
+ * link hook
+ */
+function userpoints_best_answer_link($type, $node = NULL, $teaser = FALSE) {
+	global $user;
+	//If a node has this attr, I assume it is a node comment.
+	if(isset($node->comment_target_nid))
+	{
+		$parent_node=node_load($node->comment_target_nid);
+		if(strcmp($parent_node->type,variable_get('question_node_type',''))==0)
+		{
+			//Only the questioner can see the award link.
+			if($parent_node->uid==$user->uid)
+			{
+				//The questioner cannot answer the question himself and earn the userpoints.
+				if($parent_node->uid!=$node->uid)
+				{
+				   $links['best_answer'] = array(
+			 	 	 'title' => t('award'),
+				      'href' => 'node/'.$node->comment_target_nid.'/award/'.$node->nid,
+			        ); 
+				}
+	          return $links;
+			}
+		}
+		
+	}
+
+}
+
+function userpoints_best_answer_award()
+{
+	$node=node_load(arg(1));
+	
+	$afield=variable_get('answer_nid_holder','');
+	$field=$node->$afield;
+	if($field[0]['value'])
+	{
+		drupal_set_message(t('Question Closed.'));
+		return ;
+	}
+	
+	
+	$answer_node=node_load(arg(3));
+	// Questioner cannot award himself
+	if($node->uid==$answer_node->uid)
+	{
+		drupal_set_message(t('Questioner cannot award himself!'));
+		return ;
+	}
+	$form['award']=array(
+		'#type'=>'fieldset',
+		'#title'=>t('Award'),
+		'#description'=>t('Is this the best answer to your question?')
+	);
+	$form['award']['question']=array(
+		'#type'=>'item',
+		'#value'=>'<strong>'.t('Question').':</strong> '.$node->title,
+	);
+	$form['award']['answer']=array(
+		'#type'=>'item',
+		'#value'=>'<strong>'.t('Answer').':</strong> '.$answer_node->title,
+	);
+	$form['confirm']=array(
+		'#type'=>'checkbox',
+		'#title'=>t('Confirm')
+	);
+	$form['submit']=array(
+		'#type'=>'submit',
+		'#value'=>t('Submit')
+	);
+	return $form;
+}
+
+function userpoints_best_answer_award_validate($form,$form_state)
+{
+	$form_values = $form_state ['values'];
+	if(!$form_values['confirm'])
+	{
+		form_set_error('confirm',t('Please confirm your submission.'));
+	}
+}
+
+function userpoints_best_answer_award_submit($form,$form_state)
+{
+	$qnode=node_load(arg(1));
+	$anode=node_load(arg(3));
+	$afield=variable_get('answer_nid_holder','');
+	$field=$qnode->$afield;
+	$field[0]['value']=arg(3);
+	$qnode->$afield=$field;
+	node_save($qnode);
+	$award=$qnode->field_award;
+	$points=(int)$award[0]['value'];
+	userpoints_userpointsapi(array(
+	  'uid' => $anode->uid,
+	  'points' => $points,
+	  'tid' => variable_get('best_answer_tid','')
+	));
+	drupal_goto('node/'.arg(1));
+	
+}
+/*
+ * The form alter hook. 
+ */
+function userpoints_best_answer_form_alter(&$form, $form_state, $form_id){
+	$node=node_load(arg(1));
+	$answer_holder=variable_get('answer_nid_holder','');
+	if(arg(2)==variable_get('question_node_type',''))
+	{
+		$form[$answer_holder]['#type']='hidden';
+	}
+	if ($node->type==variable_get('question_node_type',''))
+	{
+		
+			$afield=variable_get('answer_nid_holder','');
+			$anid=$node->$afield;
+			$anode=node_load($anid[0]['value']);
+			if($anode){
+				$ufield=variable_get('userpoint_field_name','');
+				$form[$ufield]['#type']='hidden';
+				$form[$answer_holder]['#type']='hidden';
+			}
+		$form[$answer_holder]['#type']='hidden';
+	}
+}

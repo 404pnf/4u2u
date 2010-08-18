@@ -1,0 +1,201 @@
+<?php 
+function sitehub_menu(){
+	$items = array();
+	$items['admin/settings/sitehub']=array(
+		'title' => 'Site Hub',
+		'description' => 'Site Hub (a user sync service)',
+		'page callback'=>'sitehub_list',
+		'access arguments' => array('administer access control'),
+	);
+	$items['admin/settings/sitehub/list']=array(
+		'title' => 'Site List',
+		'page callback'=>'sitehub_list',
+		'access arguments' => array('administer access control'),
+		'type' => MENU_DEFAULT_LOCAL_TASK,
+	);
+	$items['admin/settings/sitehub/add']=array(
+		'title' => 'Add Site',
+		'description' => 'Add a site to the hub',
+		'page callback'=>'sitehub_add',
+		'access arguments' => array('administer access control'),
+		'type' => MENU_LOCAL_TASK,
+		'weight' => 10,
+	);
+	$items['sitehub/delete']=array(
+		'title' => 'Site List',
+		'page callback'=>'sitehub_delete',
+		'access arguments' => array('administer access control'),
+		'type' => MENU_CALLBACK,
+	);
+	$items['sitehub/test']=array(
+		'title' => 'Site List',
+		'page callback'=>'sitehub_test',
+		'access arguments' => array('administer access control'),
+		'type' => MENU_CALLBACK,
+	);
+	return $items;
+	
+}
+
+function sitehub_list(){
+	$sites = variable_get('sitehub','');
+	if (!is_array($sites))
+	{
+		drupal_set_message('No site yet, please add one.');
+	}else 
+	{
+		
+		$rows = array();
+		
+		foreach ($sites as $key=>$value)
+		{
+			$delete = l('Delete','sitehub/delete/'.$key);
+			$rows[] = array($key,$value,$delete);
+		}
+		$output =  theme('table', array('Domain','API key','Operation'), $rows);
+		return $output;
+	}
+	return '';
+}
+
+function sitehub_delete($domain){
+	$sites = variable_get('sitehub','');
+	unset($sites[$domain]);
+	variable_set('sitehub',$sites);
+	drupal_goto('admin/settings/sitehub/list');
+}
+
+function sitehub_test(){
+$account = user_load(9);
+
+  user_delete($account, $uid);
+
+
+	return;
+}
+
+function sitehub_add(){
+	return drupal_get_form('sitehub_add_form');
+}
+
+
+function sitehub_add_form(){
+	$form = array();
+	$form['domain']= array(
+		'#type' => 'textfield',
+		'#title' => 'Domain',
+		'#description' => 'Domain name of the partner site. eg: zuowen.2u4u.com.cn (do not add http://)',
+	);
+	$form['apikey']= array(
+		'#type' => 'textfield',
+		'#title' => 'API Key',
+		'#description' => 'API Key authorized by this domain. You can get it from the partner site\'s service setting',
+	);
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#value' => 'Add',
+	);
+	return $form;
+}
+
+function sitehub_add_form_submit($form,$form_state){
+	$values = $form_state['values'];
+	$sites = variable_get('sitehub','');
+	if(is_array($sites))
+	{
+		$sites=array_merge($sites,array($values['domain']=>$values['apikey']));
+		variable_set('sitehub',$sites);
+	}else {
+		variable_set('sitehub',array($values['domain']=>$values['apikey']));
+	}
+	
+	drupal_goto('admin/settings/sitehub/list');
+}
+
+
+/*
+ * User Hook
+ */
+function sitehub_user($op, &$edit, &$account, $category = NULL){
+
+	
+		switch ($op)
+		{
+			case 'insert':
+				//If the language option is set, the request is from user, else from web service
+				if(isset($account->language)){
+					
+					$sites = variable_get('sitehub','');
+					if(is_array($sites)){
+						foreach ($sites as $domain=>$apikey){
+							$xmlrpc_url = 'http://'.$domain.'/services/xmlrpc';
+							$anon_session = xmlrpc($xmlrpc_url, 'system.connect');
+							$timestamp = (string) time();
+							$nonce = user_password();
+							$hash = hash_hmac('sha256', $timestamp .';'.$_SERVER['SERVER_NAME'] .';'. $nonce .';'.'user.register', $apikey);
+							$user=array();
+							$user['name']=$account->name;
+							$user['pass']=$account->pass; 
+							xmlrpc($xmlrpc_url, 'user.register', $hash,$_SERVER['SERVER_NAME'],$timestamp,$nonce,$anon_session['sessid'],$user);
+						}	
+					}
+				}
+			break;
+			case "update":
+				
+				if(isset($edit['pass']))
+				{
+					$sites = variable_get('sitehub','');
+					if(is_array($sites)){
+						
+						foreach ($sites as $domain=>$apikey){
+							$xmlrpc_url = 'http://'.$domain.'/services/xmlrpc';
+							$anon_session = xmlrpc($xmlrpc_url, 'system.connect');
+							$timestamp = (string) time();
+							$nonce = user_password();
+							$hash = hash_hmac('sha256', $timestamp .';'.$_SERVER['SERVER_NAME'] .';'. $nonce .';'.'user.changePassword', $apikey);
+							
+							$result=xmlrpc($xmlrpc_url, 'user.changePassword', $hash,$_SERVER['SERVER_NAME'],$timestamp,$nonce,$anon_session['sessid'],$account->name,$edit['pass']);
+							
+						}	
+					}
+				}
+				if(isset($edit['mail']))
+				{
+					$sites = variable_get('sitehub','');
+					if(is_array($sites)){
+						
+						foreach ($sites as $domain=>$apikey){
+							$xmlrpc_url = 'http://'.$domain.'/services/xmlrpc';
+							$anon_session = xmlrpc($xmlrpc_url, 'system.connect');
+							$timestamp = (string) time();
+							$nonce = user_password();
+							$hash = hash_hmac('sha256', $timestamp .';'.$_SERVER['SERVER_NAME'] .';'. $nonce .';'.'user.changeEmail', $apikey);
+							
+							$result=xmlrpc($xmlrpc_url, 'user.changeEmail', $hash,$_SERVER['SERVER_NAME'],$timestamp,$nonce,$anon_session['sessid'],$account->name,$edit['mail']);
+							
+						}	
+					}
+				}
+			break;
+			case "delete":
+				if(is_array($edit)){
+					$sites = variable_get('sitehub','');
+					if(is_array($sites)){
+						 foreach ($sites as $domain=>$apikey){
+								$xmlrpc_url = 'http://'.$domain.'/services/xmlrpc';
+								$anon_session = xmlrpc($xmlrpc_url, 'system.connect');
+								$timestamp = (string) time();
+								$nonce = user_password();
+								$hash = hash_hmac('sha256', $timestamp .';'.$_SERVER['SERVER_NAME'] .';'. $nonce .';'.'user.delete', $apikey);
+								
+								$result=xmlrpc($xmlrpc_url, 'user.delete', $hash,$_SERVER['SERVER_NAME'],$timestamp,$nonce,$anon_session['sessid'],$account->name);
+								
+							}	
+					}
+				}
+			break;
+		}
+	
+}
+

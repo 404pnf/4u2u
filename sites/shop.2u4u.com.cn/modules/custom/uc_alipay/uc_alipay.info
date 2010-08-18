@@ -1,0 +1,16 @@
+; $Id: uc_alipay.info,v 1.1 2009/01/05 23:27:34 yangyicn Exp $
+name = alipay
+description = 使用支付宝来处理支付.
+dependencies[] = uc_payment
+package = Ubercart - payment
+core = 6.x
+php = 5.0
+
+
+
+; Information added by drupal.org packaging script on 2009-01-05
+version = "6.x-1.0-beta1"
+core = "6.x"
+project = "uc_alipay"
+datestamp = "1231198544"
+

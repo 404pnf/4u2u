@@ -1,0 +1,11 @@
+; $Id$
+name = Node Comment
+description = Allows users to comment on and discuss published content using nodes.
+dependencies[] = views
+core = 6.x
+; Information added by drupal.org packaging script on 2008-10-08
+version = "6.x-1.2-rc2"
+core = "6.x"
+project = "nodecomment"
+datestamp = "1223497224"
+

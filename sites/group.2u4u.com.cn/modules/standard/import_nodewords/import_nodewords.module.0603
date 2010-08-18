@@ -1,0 +1,83 @@
+<?php
+
+
+/**
+ *    为了网站的seo，为文章页添加description等meta信息，向nodewords数据库插入数据
+ * 
+ *     by @wzs 20100603
+ */
+
+
+function import_nodewords_menu(){
+	$items = array();
+	$items['import/nodewords'] = array(
+	       'title' => '添加 meta tags',
+	       'access callback'=>true, 
+	       'page callback' => 'import_nodewords',
+	       'type' => MENU_CALLBACK,
+	      
+	);
+	return $items;	
+	
+}
+
+
+function import_nodewords(){
+	
+	$node_type = array ("ebook","shipin","quiz","blog","best_answer");
+
+	foreach($node_type as $type){
+        if($type == 'ebook'){
+           	$sql = "SELECT `field_yuedu_summary_value` summary, ce.nid, ce.vid
+					FROM `content_type_ebook` ce
+					LEFT JOIN `node` n ON n.nid = ce.nid
+					WHERE `field_yuedu_summary_value` IS NOT NULL 
+					AND n.status =1
+					AND NOT 
+					EXISTS (
+					
+					SELECT * 
+					FROM `content_type_ebook` 
+					WHERE vid > ce.vid
+					AND nid = ce.nid)";
+           	$rs = db_query($sql);
+            while($row = db_fetch_object($rs)){
+            	
+           		if($row->vid>0&$row->nid>0){
+           			$query = "SELECT name FROM `term_data` td
+           			          LEFT JOIN `term_node` tn ON tn.tid = td.tid
+           			          WHERE tn.nid=%d AND tn.vid=%d";
+           		    $result = db_query($query,$row->nid,$row->vid);
+           			$keywords = '';
+           			while($arr = db_fetch_object($result)){           			
+           			     $keywords .= $arr->name.",";
+           			}
+           		}
+           	     $id = $row->nid;
+           	     $description = drupal_substr(strip_tags($row->summary),0,120);
+           	     
+           	     $meta = array(
+		           	     "keywords" => array("value"=>substr($keywords,0,-1)),
+		           	     "description" => array("value"=>$description),       	     
+           	     );
+ 
+           		nodewords_save_tags('node', $id, $meta, TRUE);
+           	}
+        	
+           	
+        }
+	
+	 
+	
+	}
+
+	
+	
+}
+
+
+
+
+
+
+?>

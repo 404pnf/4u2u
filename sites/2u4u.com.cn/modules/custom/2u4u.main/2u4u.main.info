@@ -1,0 +1,11 @@
+name = 2u4u.main
+description = dependencies holder
+core = 6.x
+version = 6.01
+dependencies[] = link
+dependencies[] = userpoints
+dependencies[] = rules
+dependencies[] = text
+dependencies[] = fckeditor
+dependencies[] = imce
+

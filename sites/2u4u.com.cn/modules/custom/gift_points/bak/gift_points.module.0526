@@ -1,0 +1,347 @@
+<?php
+
+function gift_points_menu(){
+   $items['chongzhi'] = array (
+      'title' => t('积分充值'),
+      'page callback' => 'gift_points_topup_page',
+      'access callback' => true,      
+      'type' => MENU_CALLBACK,
+   );
+   $items['admin/settings/gift_points'] = array(
+	'title'=>t('Gift Points Settings'),
+	'page callback' => 'drupal_get_form', 
+	'page arguments' => array('gift_points_setting_form'),
+	'access arguments' => array('administer users'),
+   );
+   $items['userpoints/gift/promote'] = array(
+   	'title' => t(''),
+   	'page callback' => 'gift_points_promote',
+    'page arguments' =>array(3),
+   	'access callback'=>true,
+   );
+   return $items;
+} 
+
+function gift_points_topup_page(){
+	global $user;
+	if($user->uid >0)
+		return drupal_get_form('gift_points_topup_form');
+	else {
+		return '您好，只有<a href="http://2u4u.com.cn/user?destination=chongzhi">登录</a>后，才能把积分充入您的账号。如果您还没有账号，<a
+href="http://2u4u.com.cn/user/register">注册</a>只需半分钟。';
+	}
+	
+}
+
+function gift_points_setting_form()
+{
+   $form = array();
+   $form['content_type'] = array(
+	'#title'=>t('Media/Book Product Content Type'),
+	'#type' => 'textfield',
+	'#default_value' => variable_get('gpoints_type',''),
+   ); 
+   $form['emno_field'] = array(
+	'#title'=>t('Matieral number field name'),
+	'#type' => 'textfield',
+	'#default_value' => variable_get('gpoints_emno',''),
+   );
+   $form['award_field'] = array(
+	'#title' => t('Userpoints field name'),
+	'#type' => 'textfield',
+	'#default_value' => variable_get('gpoints_award',''),
+   );
+   $form['userpoints_tid']= array (
+	'#title' => t('Userpoints tid'),
+	'#type' => 'textfield',
+	'#default_value' => variable_get('gpoints_tid',''),
+   );
+   $form['submit'] = array (
+	'#value'=>t('Submit'),
+	'#type' => 'submit',
+
+   );
+   return $form;
+
+}
+
+function gift_points_setting_form_submit($form,$form_stat){
+   $values = $form_stat['values'];
+   variable_set('gpoints_type',$values['content_type']);   
+   variable_set('gpoints_emno',$values['emno_field']);
+   variable_set('gpoints_award',$values['award_field']);
+   variable_set('gpoints_tid',$values['userpoints_tid']);
+}
+
+/**
+ * 
+ *  首页充值区块
+ * 
+ *  by wzs 091124
+ * 
+ * 
+ * 
+ */
+
+function gift_points_block($op = 'list', $delta = 0, $edit = array()){
+  global $user;
+
+  if ($op == 'list') {
+    $blocks[0]['info'] = t('首页用户充值');
+    // Not worth caching.
+    $blocks[0]['cache'] = BLOCK_NO_CACHE;
+    return $blocks;
+  }
+	
+  if($op == 'view'){
+  	$block['content'] = drupal_get_form('gift_points_chongzhi_form');
+  	return $block;
+  }   
+}
+
+function gift_points_chongzhi_form(){
+   $form = array();
+   $form ['tips'] = array(
+	'#value' => '请您登录后再充值',
+	'#type' => 'item',
+
+   );
+   $form['gcode'] = array(
+	'#title' => t('请输入外研社图书验证码'),
+	'#description' => t(''),
+     '#type' => 'textfield',
+   );
+   $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('立即充值'),
+   );
+   
+   $form ['help'] = array(
+	'#value' => '<a href=http://2u4u.com.cn/chongzhi>帮助</a>',
+	'#type' => 'item',
+
+   );
+   
+	return $form;
+	
+}
+
+function gift_points_chongzhi_form_submit($form,$form_stat){
+	 global $user;
+	 if($user->uid>0){
+	 	gift_points_topup_form_submit($form,$form_stat);
+	 }else { 
+	 	drupal_set_message ("请先登录");
+	     drupal_goto("http://2u4u.com.cn/user?destination=chongzhi");	
+	 }
+}
+
+function gift_points_topup_form()
+{
+   $form = array();
+   $form ['tips'] = array(
+	'#value' => '您所购买的外研社图书封底贴有蓝色帖纸，刮开下方覆盖层即可看到图书验证码。请在下框内输入图书验证码并提交，即可获得相应的积分，积分将累积在您的悠游账户内，长期有效。注意：验证码之间没有空格！',
+	'#type' => 'item',
+
+   );
+ 
+   $form['gcode'] = array(
+	'#title' => t('输入图书验证码'),
+	'#description' => t(''),
+        '#type' => 'textfield',
+   );
+   $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Submit'),
+   );
+
+//占位给css用
+  $form ['tips-tishi'] = array(
+'#value' => '<div id=tishi_title_img>tishi</div>',
+'#type' => 'item',
+   );
+//占位结束 
+
+   $path=drupal_get_path('module', 'gift_points');
+	$path=$path.'/caution.txt';
+	
+	$fh = fopen($path, "rb");
+	$data = fread($fh, filesize($path));
+	fclose($fh);
+   $form['caution']=array(
+	'#title'=>'提示',
+   	'#type'=>'textarea',
+   	'#disabled'=>true,
+   	'#rows' => 11,
+   	'#value'=> $data,   
+   );
+   return $form;
+
+}
+
+
+function gift_points_topup_form_submit($form,$form_stat){
+
+  global $user;
+  $values = $form_stat['values'];
+  $emno = gift_points_get_emno($values['gcode']);
+  
+  if(!$emno[0]){
+	//TODO: sleep a while
+	drupal_set_message ("您输入的验证码不对。请再试一次。",'error');
+	return;
+  }else{
+	if($emno[2]){
+	  drupal_set_message("您输入的验证码已经被使用过。",'error');
+	  return;
+	}
+  }
+ 
+  
+  $em = gift_points_get_em(gift_points_full_emno($emno[0]));
+  $emfield = variable_get('gpoints_award','').'_value';
+  
+
+  
+  
+  //  获取奖励的积分，优先取本地数组，本地没有则用erp返回值，都没有则加10分
+  
+  $local_points = (int)$em->$emfield;    //本地数据库中查到的积分
+
+  if($local_points>0){
+  	 $local_price = $em->field_erp_dingjia_value;
+        // $local_price = $em->$emfield;   
+	 $points = $local_points;
+  	 $price = $local_price;
+  	 $is_add = 1;   	
+  }else{
+  	 $erp_info = gift_points_erp_info($emno[0]);  //erp接口返回值   1->价格 4->产品组 6->是否有返回值（1/0）
+  	 if($erp_info[6]){        
+  	 	$price = $erp_info[1];
+  	    $points = (int)$erp_info[1];
+  	    $is_add = 3;   	//加的是社内erp积分
+  	 }
+  }
+  
+ if($points<=0){
+  	 $points = 10;
+  	 $price = 0;
+  	  $is_add = 2;   	//积分不全	
+  }
+  
+  
+  $params = array (
+      'uid' => $user->uid,
+      'points' => $points,
+     // 'tid' => variable_get('gpoints_tid',''),
+	  'description' => '积分充值.图书验证码',
+   );
+  
+  //$points = $points*2;
+  // 继续实行双倍积分。当erp返回充值成功但本数据库中还没有该物料号对应积分的时候
+  //给用户20个积分。
+  //$points=$points>0?$points:10; 
+  //print_r($em->field_award_value);
+
+  $add_status = userpoints_userpointsapi($params);  
+  
+  gift_points_set_emno($values['gcode']);   //申明验证码失效
+   
+ if($add_status['status']==FALSE|$points<=0){  
+	 $is_add = 0;
+ }
+
+   db_query("INSERT INTO {topup} (uid, gcode, emno, time,status,points,price) VALUES (%d, '%s','%s',%d,%d,%d,%f)",$user->uid, $values['gcode'],gift_points_full_emno($emno[0]),time(),$is_add,$points,$price);
+	 // drupal_set_message(t('充值成功。 增加了 '.$points.' 个积分。'));
+   drupal_goto('userpoints/gift/promote/'.$points);
+ 
+}
+
+function gift_points_get_emno($gcode)
+{
+  $client = new SoapClient("http://nps.fltrp.com/webs/getsn.cfc?wsdl", array('login' => "getsn",'password'=> "fltrp<>?{}|"));
+  return $client->getsn($gcode);
+}
+
+function gift_points_set_emno($gcode)
+{
+  $client = new SoapClient("http://nps.fltrp.com/webs/setsn/setsn.cfc?wsdl", array('login' => "getsn",'password'=> "fltrp<>?{}|"));
+  return $client->setsn($gcode);
+  
+}
+
+/**
+ * 从ERP中获取图书相关信息
+ * 输入物料号
+ * 输入参数： 物料号  返回是一个数组。 一共有7个值
+
+	数组【1】：书名
+	数组【2】：价格
+	数组【3】：书号
+	数组【4】：条码
+	数组【5】：产品组
+	数组【6】：作者
+	数组【7】：标志 为“1”时 表示 通过物料号查询有值，为“0”时表示 通过物料号查询无值
+
+ * @wzs 20100316
+ */
+
+function gift_points_erp_info($emno)
+{
+  $client = new SoapClient("http://nps.fltrp.com/webs/wlinfo/wlinfo.cfc?wsdl", array('login' => "getsn",'password'=> "fltrp<>?{}|"));
+  return $client->wlinfo($emno);
+  
+}
+
+
+function gift_points_get_em($emno){
+   $ctype = 'content_type_'.variable_get('gpoints_type','');
+   $emfield = variable_get('gpoints_emno','').'_value';
+   $sql = "SELECT * FROM {".$ctype."} n WHERE ".$emfield." = '%s'";
+   $result = db_query(db_rewrite_sql($sql),$emno);
+   $data = db_fetch_object($result);
+   return $data;
+}
+
+function gift_points_full_emno($emno){
+	
+	return $emno;
+   $len = strlen($emno);
+   //Fix length
+   $delta = 18-$len;
+   for($i=0;$i<$delta;$i++){
+	$emno = '0'.$emno;
+   }
+   return $emno;
+
+}
+
+function gift_points_promote($point)
+{
+	$output  ='';
+	$output .='<div id="chongzhichenggong">
+ 	<div id="chongzhichenggong-xianshi">
+    	<div id="jifentitletop"></div>
+        <div id="chongzhichenggong-content">
+        	<div id="chongzhichenggong-content1"></div>
+            <div id="chongzhichenggong-content2">
+              <div id="chonfzhichenggongtitle">充值成功</div>
+                  <div id="chonfzhichenggongtitle-bottom">您已经充值成功，充值积分为<span>'.$point.'</span>分</div>
+              <div id="backindexbottomthree"><div>
+               <a href="/fp">返回首页</a></div>
+              </div>
+                  <div id="backindexbottom">
+                    <div>
+                       您的积分可以<a href="/jifenduihuan">兑换图书</a><strong>|</strong><a href="/yuedulibrary">阅读电子书</a>|<a href="/duomeiti">观看双语视频</a>                    </div>
+              </div>
+              </div>
+          <div id="chongzhichenggong-content3"></div>
+        </div>
+        <div id="chongzhichenggong-bottom"></div>
+    </div>
+</div>';
+	
+	return $output;
+}
+
+?>

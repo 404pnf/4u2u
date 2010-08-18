@@ -1,0 +1,20 @@
+<?php
+// Implements hook_menu
+function importerp_menu() {
+  $items = array();
+  $items['importerp'] = array(
+    'title'           => t('Import ERP'),
+    'description'     => t('Import ERP'),
+    'access callback' => 'importerp_config_erp_access',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('importerp_form'),
+	'file' => 'importerp.admin.inc',
+    'type' => MENU_NORMAL_ITEM,
+    'weight'          => -10,
+  ); 
+  return $items;
+}
+
+function importerp_config_erp_access() {
+  return (($GLOBALS['user']->uid == 1));
+}

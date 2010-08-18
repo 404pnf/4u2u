@@ -1,0 +1,12 @@
+; $Id: clone.info,v 1.8 2008/04/09 01:14:24 pwolanin Exp $
+; $Name: DRUPAL-6--1-1 $
+name = Clone module
+description = "Allows users to clone (copy then edit) an existing node."
+core = 6.x
+
+; Information added by drupal.org packaging script on 2010-08-01
+version = "6.x-1.1"
+core = "6.x"
+project = "node_clone"
+datestamp = "1280693775"
+

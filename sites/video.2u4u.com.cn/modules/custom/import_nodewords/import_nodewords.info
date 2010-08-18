@@ -1,0 +1,5 @@
+name = 添加Meta tags
+description = 更新网站页面description
+package = Meta tags
+core = 6.x
+

@@ -1,0 +1,3 @@
+name = 视频导入
+description = 导入文件夹下视频
+core = 6.x

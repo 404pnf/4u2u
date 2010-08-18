@@ -1,0 +1,11 @@
+; $Id:
+name = Comment closer
+description = Schedule automatic closing of comments for selected node types based on the age of the node
+core=6.x
+
+; Information added by drupal.org packaging script on 2009-01-10
+version = "6.x-1.3"
+core = "6.x"
+project = "commentcloser"
+datestamp = "1231614908"
+

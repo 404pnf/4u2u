@@ -1,0 +1,502 @@
+<?php
+
+function yuedu_menu() {
+  $items = array ();
+  $items ['yuedu/doc'] = array (
+    'page callback' => 'yuedu_transfer_page', 'access callback' => true, 'type' => MENU_CALLBACk 
+  );
+  $items ['yuedu/fullscreen'] = array (
+    'page callback' => 'yuedu_fullscreen', 'access callback' => true, 'type' => MENU_CALLBACk 
+  );
+  $items ['admin/settings/yuedu/import'] = array (
+    'title' => 'Ebook Bulk Import', 'page callback' => 'yuedu_import', 'access callback' => true 
+  );
+  $items['yuedu/buy']= array (
+    'page callback' => 'yuedu_buy_access', 'access callback' => true, 'type' => MENU_CALLBACk 
+  );
+  return $items;
+}
+
+
+/*
+ * Validate access permission before transfering the file
+ */
+function yuedu_transfer_page($nid, $page) {
+  $node = node_load($nid);
+  $preview_page = $node->field_yuedu_preview[0]['value'];
+  
+	$flag = flag_get_flag('yuedu_freebie');
+	
+	if ($flag && $flag->is_flagged($node->nid)) {
+	
+  	file_transfer(file_directory_path() . '/pdf/swf/' . $nid . '/' . $page . ".ds", array ());
+  }else
+  {
+	  if(yuedu_check_access($nid)){
+	  	if (node_access('view', $node)) 
+	  	{
+	  		file_transfer(file_directory_path() . '/pdf/swf/' . $nid . '/' . $page . ".ds", array ());
+	  	}
+	  }
+	  else
+	  {
+	  	if($page>$preview_page){
+	    file_transfer(file_directory_path() . '/access.ds', array ());
+	  	}else
+	  	{
+	  		file_transfer(file_directory_path() . '/pdf/swf/' . $nid . '/' . $page . ".ds", array ());
+	  	}
+	  }
+  }
+}
+
+/*
+ * Fullscreen view
+ */
+function yuedu_fullscreen($nid) {
+  drupal_add_css('fullscreen.css');
+  $node = node_load($nid);
+  $output = "<style type='text/css'>* {padding: 0;margin: 0;}</style>";
+  $file = $node->field_yuedu_pdf [0];
+  $path_parts = pathinfo($file ['filepath']);
+  $domain = $_SERVER ['SERVER_NAME'];
+  $swfUrl = "http://$domain/sites/$domain/files/Yuedu.swf";
+  $swfDir = file_directory_path() . '/pdf/swf/' . $node->nid;
+  $number = count(scandir($swfDir)) - 2;
+  $contentUrl = "http://$domain/yuedu/doc/" . $node->nid . '/';
+  foreach ($node->field_yuedu_mp3 as $audio) {
+    $audio_html .= "<a href=/" . $audio ['filepath'] . '>' . $audio ['filename'] . '</a> ';
+  }
+  $output .= $audio_html;
+  $output .= '<script type="text/javascript" src="http://mediaplayer.yahoo.com/js"></script>';
+  $output .= swf($swfUrl, array (
+    'params' => array (
+    'height' => '100%', 'width' => '100%', 'wmode' => 'window', 'allowscriptaccess' => 'samedomain', 'wmode' => 'window' 
+  ), 'flashvars' => array (
+    'num' => $number - 1, 'url' => $contentUrl, 'name' => $path_parts ['filename'], 'nid' => $node->nid 
+  ) 
+  ));
+  
+  print $output;
+}
+
+/*
+ * hook_file_delete
+ */
+function yuedu_file_delete($file) {
+  $nid = $file->delete_nid;
+  if ($nid > 0) {
+    $swfDir = file_directory_path() . '/pdf/swf/' . $nid;
+    delete_directory($swfDir);
+  }
+}
+
+/*
+ * Node hook
+ */
+function yuedu_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if ($node->type == 'ebook') {
+    switch ($op) {
+      case 'presave':
+        if (isset($node->field_yuedu_pdf)) {
+          //convert_pdf($node);
+          $node->field_yuedu_player [0] ['format'] = 2;
+        }
+        break;
+      case 'insert':
+        //if (isset($node->field_yuedu_pdf)) {
+          //convert_pdf($node);
+          //$node->field_yuedu_player [0] ['format'] = 2;
+          //node_save($node);
+        //}
+        break;
+      case 'view':
+        $mpath = drupal_get_path('module', 'yuedu');
+        drupal_add_js ( $mpath . '/browserScroll.js' );
+if($node->field_yuedu_player [0] ['value']==null){
+  $file = $node->field_yuedu_pdf [0];
+  $path_parts = pathinfo($file ['filepath']);
+  $filename = $path_parts ['filename'];
+  $fileext = $path_parts ['extension'];
+  $swfDir = file_directory_path() . '/pdf/swf/' . $node->nid;
+ 
+$domain = $_SERVER ['SERVER_NAME'];
+  $swfUrl = "http://$domain/sites/$domain/files/Yuedu.swf";
+  $number = count(scandir($swfDir)) - 2;
+  $contentUrl = "http://$domain/yuedu/doc/" . $node->nid . '/';
+  $node->field_yuedu_player [0] ['value'] = swf($swfUrl, array (
+    'params' => array (
+    'height' => '700', 'width' => '100%', 'wmode' => 'window', 'allowscriptaccess' => 'samedomain', 'wmode' => 'transparent'
+  ), 'flashvars' => array (
+    'num' => $number - 1, 'url' => $contentUrl, 'name' => $path_parts ['filename'], 'nid' => $node->nid
+  )
+  ));
+
+  $preview =(int)$number*0.4;
+  if($preview <= 20){
+        $preview = 20;
+  }
+  $node->field_yuedu_preview[0]['value'] = $preview;
+  $cover = $node->field_yuedu_cover;
+node_save($node); 
+}
+      break;
+    }
+  }
+}
+
+function convert_pdf(&$node) {
+	global $user;
+  $numberOfFiles = count($node->field_yuedu_pdf);
+  if ($numberOfFiles > 1) {
+    $swfDir = file_directory_path() . '/pdf/swf/' . $node->nid;
+    if (! is_dir($swfDir)) {
+      foreach ($node->field_yuedu_pdf as $file) {
+        $filesAbsolutePath .= ' ' . $file ['filepath'];
+      }
+      $firstFileName = $node->field_yuedu_pdf [0] ['filepath'];
+      $newFileName = str_replace(".pdf", "-combine.pdf", $firstFileName);
+      $command = "gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=$newFileName  " . $filesAbsolutePath;
+      shell_exec($command);
+      $node->field_yuedu_pdf [0] ['filepath'] = $newFileName;
+      
+    //drupal_set_message ($command );
+    }
+  }
+  $file = $node->field_yuedu_pdf [0];
+  $path_parts = pathinfo($file ['filepath']);
+  $filename = $path_parts ['filename'];
+  $fileext = $path_parts ['extension'];
+  $swfDir = file_directory_path() . '/pdf/swf/' . $node->nid;
+  if (! is_dir($swfDir)) {
+    mkdir($swfDir);
+    $dest = $file ['filepath'];
+    $path_parts = pathinfo($dest);
+    $out = exec("/usr/local/bin/pdf2swf $dest -o $swfDir/%.ds >> /tmp/output");
+  }
+  
+  $domain = $_SERVER ['SERVER_NAME'];
+  $swfUrl = "http://$domain/sites/$domain/files/Yuedu.swf";
+  $number = count(scandir($swfDir)) - 2;
+  $contentUrl = "http://$domain/yuedu/doc/" . $node->nid . '/';
+  $node->field_yuedu_player [0] ['value'] = swf($swfUrl, array (
+    'params' => array (
+    'height' => '700', 'width' => '100%', 'wmode' => 'window', 'allowscriptaccess' => 'samedomain', 'wmode' => 'transparent' 
+  ), 'flashvars' => array (
+    'num' => $number - 1, 'url' => $contentUrl, 'name' => $path_parts ['filename'], 'nid' => $node->nid 
+  ) 
+  ));
+  
+  $preview =(int)$number*0.4;
+  if($preview <= 20){
+  	$preview = 20;
+  }
+  $node->field_yuedu_preview[0]['value'] = $preview;
+  $cover = $node->field_yuedu_cover;
+  if (! isset($cover [0]->data)) {
+    //drupal_set_message('hi');
+    $path_parts = pathinfo($file ['filename']);
+    $sku = $node->field_yuedu_sku[0]['value'];
+    if($sku =='')
+    {
+	$sku = 'cover';
+    }
+    $coverDir= file_directory_path() . '/pdf/swf/cover';
+    shell_exec("/usr/local/bin/swfrender $swfDir/1.ds -o $coverDir/$sku.jpg");
+    $filepath = "$coverDir/$sku.jpg";
+    if (file_exists($filepath)) {
+      $field = field_file_save_file($filepath, array (), file_directory_path());
+      $node->field_yuedu_cover = array (
+        0 => $field 
+      );
+    }
+  }
+}
+function delete_directory($dirname) {
+  if (is_dir($dirname)) $dir_handle = opendir($dirname);
+  if (! $dir_handle) return false;
+  while ($file = readdir($dir_handle)) {
+    if ($file != "." && $file != "..") {
+      if (! is_dir($dirname . "/" . $file)) unlink($dirname . "/" . $file);
+      else
+        delete_directory($dirname . '/' . $file);
+    }
+  }
+  closedir($dir_handle);
+  rmdir($dirname);
+  return true;
+}
+
+function yuedu_import() {
+//			    	$node = node_load(32859);
+//	
+//   foreach ($node->taxonomy as $vid => $nodeTerm) {
+//			   		 $term = getOrCreateTermFromString($nodeTerm->name);
+//	}
+  $newBooks = yuedu_get_new_books();
+  $header = array (
+    'SKU', 'Title' 
+  );
+  foreach ($newBooks as $newBook) {
+    $newBooksString .= $newBook ['sku'] . ',';
+  }
+  $newBooksString = trim($newBooksString, ',');
+  $renderedTable = theme_table($header, $newBooks);
+  $renderedForm = drupal_get_form('yuedu_import_form', $newBooksString);
+  
+  return $renderedTable . $renderedForm;
+
+}
+
+function yuedu_import_form(&$form_state, $booksToImport) {
+  $form = array ();
+  $form ['import'] = array (
+    '#type' => 'fieldset', '#title' => t('Import') 
+  );
+  // add a file upload file
+  $form ['import'] ['num'] = array (
+    '#type' => 'textfield', '#title' => 'Items', '#description' => t('Number of items to import') 
+  );
+  // add a submit button
+  $form ['import'] ['submit'] = array (
+    '#type' => 'submit', '#value' => 'Submit' 
+  );
+  $form ['newBooks'] = array (
+    '#type' => 'hidden', '#value' => $booksToImport 
+  );
+  return $form;
+}
+
+function yuedu_import_form_submit($form, &$form_state) {
+  $values = $form_state ['values'];
+  $newBooks = explode(',', $values ['newBooks']);
+  $num = $values ['num'];
+  //pop
+  if ($num > 0 && $num < count($newBooks)) {
+  	array_splice($newBooks, $num);
+  }
+   yuedu_create_node_from_sku_array($newBooks);
+
+}
+
+function yuedu_get_new_books() {
+  $newBooks = array ();
+  $dirname = "/var/www/html/2u4u/sites/2u4u.com.cn/files/pdf/";
+	if (is_dir($dirname)) $dir_handle = opendir($dirname);
+	  while ($file = readdir($dir_handle)) {
+	    	$fileparts = explode('.',$file);
+	    	if($fileparts[count($fileparts)-1]=='pdf'){
+	    	$sql = "select * from {content_type_erp} where field_erp_wuliaohao_value =%d";
+	      $result = db_fetch_object(db_query(db_rewrite_sql($sql), $fileparts[0]));
+		if($result != null){
+			$newBook = array ();
+	        $newBook ['sku'] = $fileparts[0];
+	        $newBook ['title'] =$result->field_erp_shuming_value;
+	        array_push($newBooks, $newBook);
+		}
+	    	}
+	    }
+	  
+  
+
+  return $newBooks;
+}
+
+//function yuedu_get_book_info_by_sku_array($skuArray) {
+//  $objWorksheet = yuedu_get_booklist_worksheet();
+//  $highestRow = $objWorksheet->getHighestRow();
+//  
+//  $bookInfoArrayArray = array ();
+//  
+//  foreach ($skuArray as $sku) {
+//    $bookInfoArray = array ();
+//    for ($row = 2; $row <= $highestRow; ++ $row) {
+//      $skuInList = $objWorksheet->getCellByColumnAndRow(0, $row)->getValue();
+//      if ($skuInList == $sku) {
+//        $bookInfoArray ['sku'] = $skuInList;
+//        $bookInfoArray ['title'] = $objWorksheet->getCellByColumnAndRow(1, $row)->getValue();
+//        $bookInfoArray ['summary'] = $objWorksheet->getCellByColumnAndRow(10, $row)->getValue();
+//        $bookInfoArray ['author'] = $objWorksheet->getCellByColumnAndRow(13, $row)->getValue();
+//        $bookInfoArray ['isbn'] = $objWorksheet->getCellByColumnAndRow(14, $row)->getValue();
+//        for($i = 5;$i<=8;$i++){
+//		$tag = $objWorksheet->getCellByColumnAndRow($i, $row)->getValue();
+//		if($tag != ''){
+//			$tags .= $tag.',';
+//		}
+//	}
+//	$bookInfoArray ['tags'] = $tags;
+//        array_push($bookInfoArrayArray, $bookInfoArray);
+//      }
+//    }
+//  }
+//  return $bookInfoArrayArray;
+//}
+
+function yuedu_get_booklist_worksheet() {
+  $modulePath = drupal_get_path('module', 'yuedu');
+  $bookListPath = '/var/www/html/2u4u/sites/2u4u.com.cn/files/pdf/booklist.xlsx';
+  include_once "$modulePath/Classes/PHPExcel.php";
+  include_once "$modulePath/Classes/PHPExcel/IOFactory.php";
+  $objReader = PHPExcel_IOFactory::createReader('Excel2007');
+  $objReader->setReadDataOnly(true);
+  $objPHPExcel = $objReader->load($bookListPath);
+  $objWorksheet = $objPHPExcel->getActiveSheet();
+  return $objWorksheet;
+}
+
+function yuedu_create_node_from_sku_array($skuArray) {
+  global $user;
+  foreach ($skuArray as $sku) {
+  	
+  	 $dirname = "/var/www/html/2u4u/sites/2u4u.com.cn/files/pdf/";
+	if (is_dir($dirname)) $dir_handle = opendir($dirname);
+	  while ($filename = readdir($dir_handle)) {
+	    if ($filename != "." && $filename != "..") {
+	    	$fileparts = explode('.',$filename);
+	    	if($fileparts[count($fileparts)-1]=='pdf' && $fileparts[0]==$sku){
+			    $file_drupal_path = file_directory_path() . "/pdf/$filename";
+			    $file = new stdClass();
+			    $file->filename = basename($file_drupal_path);
+			    $file->filepath = $file_drupal_path;
+			    $file->filesize = filesize($file_drupal_path);
+			    $file->uid = $user->uid;
+			    $file->status = FILE_STATUS_PERMANENT;
+			    $file->timestamp = time();
+			    drupal_write_record('files', $file);
+			    $file->fid = db_result(db_query("SELECT fid FROM {files} WHERE filepath = '%s'", $file->filepath));
+			    
+			    $sql = "select * from {content_type_erp} where field_erp_wuliaohao_value =%d";
+	      		$erp = db_fetch_object(db_query(db_rewrite_sql($sql), $fileparts[0]));
+	
+			    
+			    
+			    $node = new stdClass();
+			    $node->type = 'ebook';
+			    $node->status = 1;
+			    $node->uid = $user->uid;
+			    $node->title = $erp->field_erp_shuming_value;
+			    $node->field_yuedu_author [0] ['value'] = $erp->field_erp_zhuzuozhe_value;
+			    $node->field_yuedu_summary [0] ['value'] = $erp->field_erp_neirongtiyao_value;
+			    $node->field_yuedu_sku [0] ['value'] = $sku;
+			    $node->field_yuedu_isbn [0] ['value'] = $erp->field_erp_shuhaotiaoma_value;
+			    $node->field_yuedu_pricebypoints[0]['value'] = $erp->field_erp_dingjia_value;
+//			    $node->field_yuedu_preview[0]['value'] = 10;
+			    
+			    $erpNode = node_load($erp->nid);
+			    foreach ($erpNode->taxonomy as $vid => $nodeTerm) {
+			   		 $term = getOrCreateTermFromString($nodeTerm->name);
+			    }
+			    $node->taxonomy[$term->vid][$term->tid] = $term->tid;
+			    
+			    $node->field_yuedu_pdf = array (
+			      array (
+			      'fid' => $file->fid, 'title' => basename($file->filename), 'filename' => $file->filename, 'filepath' => $file->filepath, 'filesize' => $file->filesize, 'mimetype' => $mime, 'description' => basename($file->filename), 'list' => 1 
+			    ) 
+			    );
+
+			    $node->created = time();
+			    $node->changed = $node->created;
+			    $node->promote = 1;
+			    $node->sticky = 0;
+			    $node->format = 1;
+
+			    node_save($node);
+convert_pdf($node);
+node_save($node);
+//			    drupal_set_message($dirname.$file);
+			    unlink($dirname.$filename);
+	    	}
+	    }
+	}
+  }
+}
+
+
+function getOrCreateTermFromString($termName)
+{
+	$terms = taxonomy_get_term_by_name($termName);
+	if(count($terms)>1){
+		foreach($terms as $term){
+			if($term->vid == 19)
+				return $term;
+		}
+	}
+	 $autoterm = array(
+     'name' => $termName,  // or whatever you want the auto-term to be named
+     'parent' => 0,
+     'vid' => 19,
+    );
+     taxonomy_save_term($autoterm);
+	return getOrCreateTermFromString($termName);
+	
+}
+function yuedu_buy_access($nid){
+	global $user;
+	$node = node_load($nid);
+	if($node->type =='ebook'){
+		$sku = $node->field_yuedu_sku[0]['value'];
+		$price = $node->field_yuedu_pricebypoints[0]['value'];
+		if($user->uid <= 0)
+		{
+			drupal_set_message('请先登录');
+		}
+		$hasAccess = yuedu_check_access($nid);
+		if($hasAccess)
+		{
+			drupal_set_message('您已拥有访问权限，无需重复购买');
+		}else
+		{
+			$totalPoints = userpoints_get_current_points();
+			if($price>$totalPoints){
+				drupal_set_message('您的积分不足');
+			}else{
+				userpoints_userpointsapi(-$price);
+				if($price>0){
+                                  $sql = "insert into {yuedu_transaction} (nid, uid, sku, time,points) values(%d,%d,%d,%d,%d)";
+			          db_query($sql,$nid,$user->uid,$sku,time(),$price);
+				  drupal_set_message("成功购买，扣除积分 $price");
+                               }
+				$flag = flag_get_flag('yuedu_buy_this_book') or die('no "bookmarks" flag defined');
+				$flag->flag('flag', $nid); 
+			}
+		}
+	}
+	return drupal_goto("node/$nid");
+}
+
+
+function yuedu_check_access($nid){
+	global $user;
+
+	foreach($user->roles as $role){
+		if($role == "频道管理员" || $role == "频道编辑" || $role == "包月用户"  ){
+			return true;
+		}
+	}
+	//Anoym user
+	if($user->uid == null){
+		return false;
+	}
+	
+	$node = node_load($nid);
+	$price = $node->field_yuedu_pricebypoints[0]['value'];
+	
+	if($price){
+	 $sql = "select * from {yuedu_transaction} where nid=%d AND uid=%d";
+     $transaction = db_fetch_object(db_query($sql, $nid,$user->uid));
+     if($transaction!=null)
+     {
+     	
+     	return true;
+     }else
+     {
+     	return false;
+     }
+	}
+	else
+	{
+		return true;
+	}
+}
+
+?>

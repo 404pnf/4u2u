@@ -1,0 +1,161 @@
+@charset "utf-8"; /* CSS Document */
+
+/* prev, next, prevPage and nextPage buttons */
+.anniu{
+float:right;
+width:110px;
+display:inline;
+}
+a#prev1, a#next1 ,a#prev2, a#next2,a#prev3 ,a#next3,a#prev4, a#next4,a#prev5 ,a#next5,a#prev6, a#next6,a#prev7 ,a#next7{
+	width:18px;
+	height:18px;
+	background:url(images/left.png) 0 -18px no-repeat;
+	float:right;
+	cursor:pointer;
+	font-size:1px;
+}
+a#next1 ,a#next2,a#next3,a#next4,a#next5,a#next6,a#next7{
+	background:url(images/right.png) 0 -18px no-repeat;
+}
+
+a#prev1.disabled, a#next1.disabled, a#prev2.disabled, a#next2.disabled, a#prev3.disabled, a#next3.disabled, a#prev4.disabled, a#next4.disabled, a#prev5.disabled, a#next5.disabled, a#prev6.disabled, a#next6.disabled, a#prev7.disabled, a#next7.disabled{
+	background-position:0 0;		
+}
+/* position and dimensions of the navigator */
+#navi1,#navi2 ,.navi{
+	float:right;
+	margin-top:2px;
+}
+/* items inside navigator */
+#navi1 a ,#navi2 a ,.navi a {
+	width:8px;
+	height:8px;
+	float:left;
+	margin:3px;
+	background:url(images/navigator.png) 0 0 no-repeat;
+	font-size:1px;
+}
+/* mouseover state */
+#navi1 a:hover,#navi2 a:hover ,.navi a:hover{
+	background-position:0 -8px;      
+}
+/* active state (current page state) */
+#navi1 a.active ,#navi2 a.active ,.navi a.active {
+	background-position:0 -16px;     
+} 	
+
+/* ----------------------------------大礼包 开始 --------------------------*/
+/* 展开与折叠的css */
+a.libao{
+color:#6F0000;
+float:none;
+padding-left:26px;
+}
+.hidden{
+display:none;
+}
+
+.page-libao .view-whx-dalibao{
+margin-left:9px;
+}
+.page-libao .view-whx-dalibao .view-content tr {
+border-top:1px solid #DDDDDD;
+vertical-align:top;
+line-height:1.6em;
+}
+.page-libao .view-whx-dalibao .view-content td {
+width:270px;
+padding:5px 10px 15px 0;
+}
+.page-libao .view-whx-dalibao .view-content tr.row-first{
+border-top:0px;
+}
+
+/* 颜色设置 */
+/* 翻页、 标题、书的列表*/
+.page-libao .view-whx-dalibao .item-list ul li a{
+color:#380102;
+}
+.page-libao .view-whx-dalibao .item-list ul li.pager-current {
+font-weight:bold;
+color:#6F0000;
+}
+.page-libao .view-whx-dalibao .views-field-title {
+font-size:1.1em;
+font-weight:bold;
+color:#6F0000;
+cursor:pointer;
+}
+.page-libao .view-whx-dalibao .views-field-title a:hover{
+color:#FF0000
+}
+.page-libao .view-whx-dalibao .views-field-field-product-tuijian-value  ol,
+.page-libao .view-whx-dalibao .views-field-field-product-neirongtiyao-value ol{
+color:#380102;
+}
+/* 积分及按钮 */
+.page-libao .view-whx-dalibao .views-field-sell-price {
+float:left;
+color:#ee0000;
+padding:0 0 0 3px;
+} 
+
+
+
+
+
+/*--------------- 切换tabs ----------------*/
+UL.dl-tabs{ position:relative; z-index:5;clear:both;}
+UL.dl-tabs li {
+display:inline;
+}
+UL.dl-tabs li  a{
+float:left; 
+background:url("images/dl_images-05.gif") repeat-x scroll 0 0 transparent;
+border:1px solid #DDDDDD;
+padding:4px 0 3px;
+text-align:center;
+width:140px;
+list-style:none;
+display:block;
+}
+UL.dl-tabs li.active a{
+background:none;
+color:#961F1F;
+border-bottom:1px solid #FFFFFF;
+ z-index:7;
+}
+.dl-panes{
+border-top:1px solid #ddd;
+padding:10px;
+position:relative;
+top:-1px;
+z-index:1;
+}
+.dl-panes .pane {
+display:none;
+}
+#pane_tab1 ,#pane_tab4 {
+display:block;
+}
+/* 首页登录 区块显示设置*/
+#pane_ltab1 {
+display:block;
+}
+/* this makes it possible to add next button beside view-content */
+.gundong .view-content{
+position:relative;
+width:20000em;
+z-index:1;
+}
+.gundong  .view-content .views-row{
+float:left;
+width:120px;
+}
+.gundong .view-product-dl{
+	position:relative;
+	overflow:hidden;
+	width: 670px;
+	clear:both;
+}
+ 

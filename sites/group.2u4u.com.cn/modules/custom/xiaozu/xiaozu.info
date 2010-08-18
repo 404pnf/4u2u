@@ -1,0 +1,6 @@
+; $Id: $
+
+name = xiaozu Export Module
+description = Exports some views of xiaozu
+dependencies[] = views
+core = 6.x

@@ -1,0 +1,98 @@
+﻿<?php
+function drupal_discuz_block($op = 'list', $delta = 0, $edit = array()){
+  if ($op == 'list') {
+    $blocks[0]['info'] = t('discuz各版块最新的帖子');
+    // Not worth caching.
+    $blocks[0]['cache'] = BLOCK_NO_CACHE;
+    
+    $blocks[1]['info'] = t('discuz最新资源');
+    // Not worth caching.
+    $blocks[1]['cache'] = BLOCK_NO_CACHE;
+    
+    return $blocks;
+  }
+	
+  if($op == 'view'){
+  	$block = array();
+    switch ($delta) {
+      case 0:
+	      	$block['subject'] = t('社区');
+		  	$block['content'] = get_discuz_newpost(5);
+		  	return $block;
+      case 1:
+	      	$block['subject'] = t('热门资源');
+		  	$block['content'] = discuz_source(7);
+		  	return $block;
+      	 
+    }
+  }   
+}
+
+
+/*
+ *   获取论坛各版块 中最新的一篇帖子
+ *   @wzs 20100518
+ * 
+ */
+
+function get_discuz_newpost($num=10){
+	global $discuz_url ;
+	$discuz_url = "http://localhost/project/ucenter/bbs/";
+	db_set_active('ucenter');	
+	$sql = "SELECT uf.name, uf.lastpost, ut.fid, ut.tid
+			FROM `cdb_forums` uf
+			LEFT JOIN `cdb_threads` ut ON ut.fid = uf.fid
+			GROUP BY ut.fid
+			ORDER BY ut.dateline DESC LIMIT %d";
+	
+	$rs = db_query($sql,$num);
+	while($row = db_fetch_object($rs)){
+		  if(strpos($row->lastpost,"	"))
+	           $array = explode("	",$row->lastpost);
+		   $content .= "<li>【<a href='".$discuz_url."forumdisplay.php?fid=".$row->fid."'>".$row->name."</a>】
+		   <a href='".$discuz_url."viewthread.php?tid=".$row->tid."'>".$array[1]."</a></li>";
+		
+	}
+	db_set_active('default');
+	return $content;
+}
+
+/*
+ *   论坛的最新资源
+ */
+
+function discuz_source($num =10){
+	global $discuz_url ;
+	db_set_active('ucenter');
+	$sql = "SELECT ut.subject, ua.filetype,ut.tid
+			FROM cdb_attachments ua
+			LEFT JOIN cdb_threads ut ON ua.tid = ut.tid
+			WHERE ut.fid >0
+			AND ut.fid
+			IN ( 23, 28, 35, 39, 43 ) 
+			GROUP BY ua.tid
+			ORDER BY ua.dateline DESC LIMIT %d";
+	
+	$rs = db_query($sql,$num);
+	while($row = db_fetch_object($rs)){
+        switch($row->filetype){
+		    case "application/msword":
+		         $img = "word.jpg";
+		         return $img;
+		    case "application/octet-stream":
+		    	 $img = "rar.jpg";
+		         return $img;
+		    
+        }      
+		$content .= "<li><a href='".$discuz_url."viewthread.php?tid=".$row->tid."'>".$row->subject."</a></li>";
+		
+		
+	}
+	
+	db_set_active('default');
+	return $content;
+	
+}
+
+
+?>

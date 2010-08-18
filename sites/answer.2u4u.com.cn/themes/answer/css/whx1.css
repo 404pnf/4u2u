@@ -1,0 +1,82 @@
+@charset "utf-8"; /* CSS Document */
+
+
+/* -----------------------------quiz 开始-------------------------- */
+/* quiz view的整体字体颜色 */
+.view-whx-quiz {
+color:#333333;
+}
+/* 首页图片与小题两栏 排列*/
+.view-whx-quiz .attachment-before .view-whx-quiz{
+clear:none;
+}
+.view-whx-quiz  .attachment-before .view-content{
+float:left;
+height:374px;
+overflow:hidden;
+padding:10px;
+position:relative;
+width:275px;
+clear:none;
+margin-bottom:40px;
+}
+.view-whx-quiz  .view-display-id-attachment_1 .view-content,.view-whx-quiz  .view-display-id-attachment_3 .view-content,.view-whx-quiz  .view-display-id-attachment_5 .view-content{
+background:none repeat scroll 0 0 #F4EDEE;
+margin-right:10px;
+}
+/* 标题与连接、摘要、点击率的颜色、大小 */
+.view-whx-quiz .view-header  a  ,
+.view-whx-quiz .view-header a:visited,
+.view-whx-quiz .views-field-title  a  ,
+.view-whx-quiz .views-field-title  a:visited{
+color:#911D2B;
+cursor:pointer;
+text-decoration:none;
+font-weight:700;
+}
+.view-whx-quiz .view-header h1{
+padding-bottom:0px;
+}
+h1 span {
+color:#666666;
+font-size:12px;
+font-weight:400;
+margin-left:10px;
+}
+.view-whx-quiz .views-row{
+margin-bottom:20px;
+clear:both;
+}
+.view-whx-quiz  .attachment-before .views-field-teaser {
+min-height:60px;
+overflow:hidden;
+}
+.view-whx-quiz .views-field-totalcount {
+color:#999999;
+float:right;
+margin-top:-22px;
+}
+/* 分类显示区块 */
+.section-quizwhx .attachment-before .view-content{
+background:none repeat scroll 0 0 #EDF4F1;
+float:none;
+clear:both;
+width:575px;
+height:275px;
+margin-bottom:20px;
+}
+/* 内容中的小图 */
+.section-quizwhx .view-whx-quiz .views-field-field-quiz-tuijian-pic-fid {
+float:right;
+margin:0 0 20px 10px;
+}
+/* 分类推荐图 */
+.section-quizwhx .attachment-before .views-field-field-quiz-tuijian-pic-fid{
+float:left;
+padding-right:10px;
+margin:0px;
+}
+.section-quizwhx .attachment-before .views-field-teaser{
+height:250px;
+}
+/* quiz 结束 */

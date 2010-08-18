@@ -1,0 +1,13 @@
+; $Id: nodehierarchy_views.info,v 1.1.4.2 2008/09/29 02:19:05 ronan Exp $
+name = Node Hierarchy Views Embed
+description = Allows a nodes children to be embedded on the node detail page with Views
+dependencies[] = nodehierarchy
+dependencies[] = views
+package = "Node Hierarchy"
+core = 6.x
+; Information added by drupal.org packaging script on 2009-11-03
+version = "6.x-1.3"
+core = "6.x"
+project = "nodehierarchy"
+datestamp = "1257264998"
+

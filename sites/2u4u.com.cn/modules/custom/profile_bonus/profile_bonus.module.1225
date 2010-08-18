@@ -1,0 +1,60 @@
+<?php
+
+
+function profile_bonus_user($op, &$edit, &$account, $category = NULL)
+{
+	global $user;
+	
+	switch($op){
+		case 'login':
+			if($user->uid==$account->uid & !profile_bonus_check_had_completed($user))
+			{
+				drupal_set_message(l('完善您的用户信息，赢取5个积分',"user/$user->uid/edit/学习兴趣"));
+			}
+		break;
+		case 'submit':
+			if($user->uid==$account->uid & !profile_bonus_check_had_completed($user) & profile_bonus_check_is_completed($edit))
+			{
+				//print_r($edit);
+				drupal_set_message(t('Thank you for completing the profile. 10 points bonus for you.'));
+				$num_of_points = 10;
+  				userpoints_userpointsapi($num_of_points);
+
+			}
+		
+
+
+
+	}
+
+
+
+}
+
+
+function profile_bonus_check_had_completed($user){
+	if(!isset($user->profile_xuexixingqu_1))
+		return false;
+	if(!isset($user->profile_xuexixingqu_2))
+                return false;
+	if(!isset($user->profile_xuexixingqu_3))
+                return false;
+	if(!isset($user->profile_xuexixingqu_4))
+                return false;
+	return true;
+
+
+}
+
+function profile_bonus_check_is_completed($edit){
+	if(!isset($edit['profile_xuexixingqu_1']))
+		return false;
+	if(!isset($edit['profile_xuexixingqu_2']))
+                return false;
+	if(!isset($edit['profile_xuexixingqu_3']))
+                return false;
+	if(!isset($edit['profile_xuexixingqu_4']))
+                return false;
+
+	return true;
+}

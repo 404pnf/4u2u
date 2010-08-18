@@ -1,0 +1,4 @@
+name = Video Permission
+description = Video Permission Control
+core = 6.x
+version = 6.01

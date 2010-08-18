@@ -1,0 +1,1382 @@
+<?php
+// $Id: taxonomy_csv.module,v 2.6.4.10 2009/12/10 13:05:57 danielkm Exp $
+
+/**
+ * taxonomy_csv module for Drupal
+ *
+ * Copyright (c) 2007-2008 Dennis Stevense, see LICENSE.txt for more information
+ * Copyright (c) 2009 Daniel Berthereau <daniel.drupal@berthereau.net>
+ *
+ * This program is free software; you can redistribute it and/or modify it under
+ * the terms of the GNU General Public License as published by the Free Software
+ * Foundation; either version 2 of the License, or (at your option) any later
+ * version.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+ * FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
+/**
+ * @file
+ * Quick export and import of taxonomies, structure or lists of terms to or from
+ * a csv local or distant file or a text area.
+ *
+ * Automatically exports or imports a list of terms, structure, children,
+ * related, synonyms, descriptions and/or weights from or into a vocabulary with
+ * a simple csv file.
+ *
+ * taxonomy_csv.module contains functions to manage import/export form pages.
+ * taxonomy_csv.api.inc is an api which can be use alone. It contains generic
+ * functions to import and export vocabularies or lines.
+ * More infos on usage and structure can be found in the beginning of this api.
+ */
+
+/**
+ * Implements hook_help().
+ */
+function taxonomy_csv_help($path, $arg) {
+  global $language;
+
+  switch ($path) {
+    case 'admin/content/taxonomy/csv_import':
+      $output = '<p>'. t('Use this form to import a taxonomy, a structure or a list of terms into a vocabulary from a simple <a href="!link" title="Wikipedia definition">CSV</a> file, a url or a copy-and-paste text.', array('!link' => url('http://en.wikipedia.org/wiki/Comma-separated_values'))) .'</p>';
+      $output .= '<p>'. t('For performance reasons, it is recommended to disable some other taxonomy related modules before import of big taxonomies and to reactivate them after process.') .'</p>';
+      $output .= '<p>'. t('<strong>Warning:</strong> If you want to update an existing vocabulary, make sure you have a backup before you proceed so you can roll back, if necessary.') . theme('more_help_link', url('admin/help/taxonomy_csv')) .'</p>';
+      return $output;
+
+    case 'admin/content/taxonomy/csv_export':
+      $output = '<p>'. t('Use this form to export a taxonomy, a structure or a list of terms to a simple <a href="!link" title="Wikipedia definition">CSV</a> file.', array('!link' => url('http://en.wikipedia.org/wiki/Comma-separated_values'))) . theme('more_help_link', url('admin/help/taxonomy_csv')) .'</p>';
+      return $output;
+
+    case 'admin/help#taxonomy_csv':
+      $output = file_get_contents(drupal_get_path('module', 'taxonomy_csv') . ((is_file(drupal_get_path('module', 'taxonomy_csv') ."/translations/taxonomy_csv.help.{$language->prefix}.html")) ? "/translations/taxonomy_csv.help.{$language->prefix}.html" : '/taxonomy_csv.help.html'));
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_perm().
+ */
+function taxonomy_csv_perm() {
+  return array(
+    'administer taxonomy by csv',
+    'export taxonomy by csv',
+  );
+}
+
+/**
+ * Implements hook_menu().
+ *
+ * @note See hook_menu for a description of return values.
+ */
+function taxonomy_csv_menu() {
+  $items = array();
+
+  $items['admin/content/taxonomy/csv_import'] = array(
+    'title'            => 'CSV import',
+    'page callback'    => 'taxonomy_csv_form_import_prepare',
+    'access arguments' => array('administer taxonomy by csv'),
+    'weight'           => 12,
+    'type'             => MENU_LOCAL_TASK,
+  );
+
+  $items['admin/content/taxonomy/csv_export'] = array(
+    'title'            => 'CSV export',
+    'page callback'    => 'taxonomy_csv_form_export_prepare',
+    'access arguments' => array('export taxonomy by csv'),
+    'weight'           => 13,
+    'type'             => MENU_LOCAL_TASK,
+  );
+
+  return $items;
+}
+
+/**
+ * Menu callback of the main import form.
+ */
+function taxonomy_csv_form_import_prepare() {
+  // Invoke taxonomy_csv api (defines and functions).
+  $taxonomy_csv_path = drupal_get_path('module', 'taxonomy_csv');
+  require_once("$taxonomy_csv_path/taxonomy_csv.api.inc");
+
+  // Javascript and css allow to show only available options depending choices.
+  drupal_add_js("$taxonomy_csv_path/taxonomy_csv.js");
+  drupal_add_css("$taxonomy_csv_path/taxonomy_csv.css");
+
+  return drupal_get_form('taxonomy_csv_form_import');
+}
+
+/**
+ * Generates the taxonomy CSV import form.
+ *
+ * Form contain five fieldsets:
+ * - 1. What to import ?
+ *     1. What is content of the source ?
+ * - 2. Where are items to import ?
+ *     1. Source choice
+ *       1. Source select
+ *       2. Source file or text area
+ *     2. Source options
+ *       1. Source delimiter
+ *       2. Source enclosure
+ * - 3. Which vocabulary to import into (destination) ?
+ *     1. Destination type
+ *     2. Vocabulary choice
+ * - 4. How to import ?
+ *     1. Previous or existing terms
+ *     2. Specific import options depending on source content
+ * - 5. Advanced options
+ *     1. Tweaks for big and specific vocabularies
+ *     2. How to be notified
+ *
+ * As what will become existing terms depends on what is imported, dynamic
+ * options are used: only possible parameters are shown. All options are
+ * displayed if javascript is not activated.
+ *
+ * @ingroup forms
+ * @see taxonomy_csv_form_import_validate()
+ * @see taxonomy_csv_form_import_submit()
+ */
+function taxonomy_csv_form_import($form_state) {
+  // Display main import form
+  $list_recommended_values = array(
+    'import_format'                 => TAXONOMY_CSV_FORMAT_ALONE_TERMS,
+    'source_choice'                 => 'text',
+    'import_delimiter'              => 'comma',
+    'import_delimiter_custom'       => '',
+    'import_enclosure'              => 'none',
+    'import_enclosure_custom'       => '',
+    'vocabulary_target'             => 'autocreate',
+    // Not used in order to avoid import mistake. Not to be translated.
+    'vocabulary_id'                 => 'choose_vocabulary',
+    'existing_items'                => TAXONOMY_CSV_EXISTING_UPDATE,
+    // Specific to relations import.
+    'relations_create_subrelations' => FALSE,
+    'relations_all_vocabularies'    => FALSE,
+    // General options.
+    'disable_internal_cache'        => FALSE,
+    'disable_hierarchy_check'       => FALSE,
+    'hierarchy_level'               => 2,
+    'disable_line_checks'           => FALSE,
+    'disable_utf8_check'            => FALSE,
+    'result_stats'                  => 'result_stats',
+    'result_terms'                  => 'result_terms',
+    'result_level'                  => 'notices',
+    'result_type'                   => 'by_message',
+  );
+
+  // Remember previous values to use specially when reloading form.
+  // If not reloading form, use saved values if exist, else recommended ones.
+  // Warning: specific values 'text', 'path' and 'url are not saved here.
+  $list_previous_values = array();
+  foreach ($list_recommended_values as $key => $value) {
+    $list_previous_values[$key] = isset($form_state['values'][$key]) ?
+        $form_state['values'][$key] :
+        variable_get("taxonomy_csv_{$key}", $value);
+  }
+
+  $list_import_format = _taxonomy_csv_info_lists('list_import_format');
+
+  $list_import_delimiter = array(
+    'comma'            => t('« , » (Comma)'),
+    'semicolon'        => t('« ; » (Semicolon)'),
+    'tabulation'       => t('«   » (Tabulation)'),
+    'space'            => t('«   » (Space)'),
+    'currency_sign'    => t('« ¤ » (Currency sign)'),
+    'custom_delimiter' => t('Custom delimiter'),
+  );
+
+  $list_import_enclosure = array(
+    'none'             => t('None'),
+    'quotation'        => t('« " » (Quotation mark)'),
+    'custom_enclosure' => t('Custom enclosure'),
+  );
+
+  $list_vocabulary_target = array(
+    'autocreate' => t('Autocreate a new vocabulary'),
+    'duplicate'  => t('Duplicate an existing vocabulary'),
+    'existing'   => t('Import in an existing vocabulary'),
+  );
+
+  $list_import_option = _taxonomy_csv_info_lists('list_import_option');
+
+  // Build form.
+
+  // Needed to upload file.
+  $form = array(
+    '#attributes' => array(
+      'enctype' => 'multipart/form-data',
+    )
+  );
+
+  // Used with recommended values button.
+  $form['list']['list_recommended_values'] = array(
+    '#type'  => 'value',
+    '#value' => $list_recommended_values,
+  );
+
+  // Warn when modules incompatible with taxonomy_csv are enabled.
+  // Problems can't be reproduced with a memory of 256 MB, even with big
+  // taxonomies. Only pathauto slows down import process.
+  // See http://drupal.org/node/495548 and http://drupal.org/node/447852
+  $issues_modules = array(
+    'taxonomynode',
+    'taxonomy_vtn',
+  );
+  foreach ($issues_modules as $value) {
+    if (module_exists($value)) {
+      drupal_set_message(t('<strong>Warning</strong>: An incompatible module is running.<br />
+      Memory or compatibility problems have been reported with these modules: !modules.<br />
+      It is advised to increase server and php memory temporary (no problem reported with 256 MB) or to disable these modules manually in !modules_section. Settings are not lost when you disable a module (and not uninstall it). After import process, you can decrease memory and reactivate modules.', array(
+        '!modules' => '"'. implode('", "', $issues_modules). '"',
+        '!modules_section' => l(t("modules section"), 'admin/build/modules'),
+      )), 'warning');
+      break;
+    }
+  }
+  // Specific warn for Pathauto.
+  // See http://drupal.org/node/540916
+  if (module_exists('pathauto')) {
+    drupal_set_message(t('<strong>Warning</strong>: Pathauto module is running.<br />
+    This module slows down taxonomy import process. It is advised to disable it manually in !modules_section. Settings are not lost when you disable it (and not uninstall it). After import process, you can reactivate Pathauto and eventually bulk generate aliases for newly imported terms.', array(
+      '!modules_section' => l(t("modules section"), 'admin/build/modules'),
+    )), 'warning');
+  }
+
+  $form['format'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('1. What do you want to import?'),
+    '#collapsible' => TRUE,
+    '#collapsed'   => FALSE,
+  );
+
+  $form['format']['import_format'] = array(
+    '#type'          => 'select',
+    '#title'         => '',
+    '#options'       => $list_import_format,
+    '#default_value' => $list_previous_values['import_format'],
+    '#required'      => TRUE,
+  );
+
+  if (isset($_COOKIE['has_js'])) {
+    $form['format']['description_alone_terms'] = array(
+      '#type'        => 'item',
+      '#description' => t('Only the term in the first column of each line is imported. Additional columns are ignored.'),
+      '#prefix'      => '<div id="description_alone_terms">',
+      '#suffix'      => '</div>',
+    );
+    $form['format']['description_fields_links'] = array(
+      '#type'        => 'item',
+      '#description' => t('Allow to import full term definitions and links.') .'<br />'.
+      t('Format: term name, term id, vocabulary id, term description, weight, number of synonyms, number of first level parents, number of first level children, number of related terms, list of synonyms, list of first level parents ids, list of first level children ids, list of related terms ids, list of vocabulary ids of related terms.') .'<br/>'.
+      t('Only term name should be defined. Other values can be empty. Ids are not internal term ids or vocabulary ids, but a unique identifiant. Ids can be a number or a name. In most case, you can use true name. In fact, term ids need to be specific only for duplicate term names in order to identify each item. So for duplicates, you can use term name with a serial number. Main term id is only needed when term is a duplicate one.') .'<br />'.
+      t("With this import format, destination is determined by source. If third column is empty, a new vocabulary will be created. If it's a name or a number, a vocabulary will be created if it doesn't exist. This process is used for related terms too. If vocabulary of a related term is not defined, vocabulary of main term is used. Warning: It's not recommended to change the vocabulary of a term with links."),
+      '#prefix'      => '<div id="description_fields_links">',
+      '#suffix'      => '</div>',
+    );
+    $form['format']['description_flat'] = array(
+      '#type'        => 'item',
+      '#description' => t('All items will be imported as terms.'),
+      '#prefix'      => '<div id="description_flat">',
+      '#suffix'      => '</div>',
+    );
+    $form['format']['description_tree_structure'] = array(
+      '#type'        => 'item',
+      '#description' => t('Allow to create a tree structure (geography, classification...).') .'<br />'.
+      t('Format: The first term is imported as a root level parent, the second as child of first term, the third as child of second term and so on. The lower child is the last term of a line. Others are hierarchical parents.'),
+      '#prefix'      => '<div id="description_tree_structure">',
+      '#suffix'      => '</div>',
+    );
+    $form['format']['description_polyhierarchy'] = array(
+      '#type'        => 'item',
+      '#description' => t('Allow to create a polyhierarchical structure (genealogy, complex nomenclatures...).') .'<br />'.
+      t('Format: The first term is imported as a root level parent, the second as child of first term, the third as child of second term and so on. The lower child is the last term of a line. Others are hierarchical parents.'),
+      '#prefix'      => '<div id="description_polyhierarchy">',
+      '#suffix'      => '</div>',
+    );
+    $form['format']['description_parents'] = array(
+      '#type'        => 'item',
+      '#description' => t('Allow to create a polyhierarchical taxonomy (genealogy...).') .'<br />'.
+      t('First item is imported as a term and next ones as parents of first term. Unlike structure import, all parents are first level parents.'),
+      '#prefix'      => '<div id="description_parents">',
+      '#suffix'      => '</div>',
+    );
+    $form['format']['description_children'] = array(
+      '#type'        => 'item',
+      '#description' => t('Allow to create a polyhierarchical taxonomy (genealogy...).') .'<br />'.
+      t('First item is imported as a term and next ones as children of first term. Unlike structure import, all children are first level children.'),
+      '#prefix'      => '<div id="description_children">',
+      '#suffix'      => '</div>',
+    );
+    $form['format']['description_relations'] = array(
+      '#type'        => 'item',
+      '#description' => t('Allow to create relations between the term in the first column and next terms of the line.'),
+      '#prefix'      => '<div id="description_relations">',
+      '#suffix'      => '</div>',
+    );
+    $form['format']['description_fields'] = array(
+      '#type'        => 'item',
+      '#description' => t('Import a full term definition') .'<br />'.
+      t('Format: term name, weight, description, list of synonyms.'),
+      '#prefix'      => '<div id="description_fields">',
+      '#suffix'      => '</div>',
+    );
+    $form['format']['description_descriptions'] = array(
+      '#type'        => 'item',
+      '#description' => t('Allow to import descriptions of terms. The term is in the first column and the matching description is in the second column.'),
+      '#prefix'      => '<div id="description_descriptions">',
+      '#suffix'      => '</div>',
+    );
+    $form['format']['description_weights'] = array(
+      '#type'        => 'item',
+      '#description' => t('Allow to import a weight of a term. The term is in the first column and the matching weight is in the second column.'),
+      '#prefix'      => '<div id="description_weights">',
+      '#suffix'      => '</div>',
+    );
+    $form['format']['description_synonyms'] = array(
+      '#type'        => 'item',
+      '#description' => t('Allow to import synonyms of terms. Each line contains a term in the first column and next items are matching synonyms.'),
+      '#prefix'      => '<div id="description_synonyms">',
+      '#suffix'      => '</div>',
+    );
+    $form['format']['description_taxonomy_manager'] = array(
+      '#type'        => 'item',
+      '#description' => t('Allow to import a vocabulary exported with Taxonomy manager.') .'<br />'.
+      t("Format: Each line contains: vocabulary id, term id, term name, term description and list of parents. In this format, order of all lines is important, because it's impossible to attach a parent to an item if this parent hasn't been imported in a previous line."),
+      '#prefix'      => '<div id="description_taxonomy_manager">',
+      '#suffix'      => '</div>',
+    );
+  }
+  $form['format']['info'] = array(
+    '#type'        => 'item',
+    '#description' => t('Notice: currently, vocabulary structure is recommended to be imported first when multiple files are imported (with fields and links, flat, tree structure, polyhierarchy, parents or children choice). See <a href="!more_help_link">advanced help</a> for informations about types.', array('!more_help_link' => url('admin/help/taxonomy_csv'))),
+  );
+
+  $form['import'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('2. Where are items to import?'),
+    '#collapsible' => TRUE,
+    '#collapsed'   => FALSE,
+    '#attributes'  => array('id' => 'edit-import'),
+  );
+
+  $form['import']['source_choice'] = array(
+    '#type'          => 'select',
+    '#title'         => '',
+    '#options'       => array(
+      'text' => t('In the below text area'),
+      'path' => t('In a local file'),
+      'url'  => t('In a distant file'),
+    ),
+    '#default_value' => $list_previous_values['source_choice'],
+  );
+
+  $form['import']['text'] = array(
+    '#type'          => 'textarea',
+    '#title'         => t('Terms to import'),
+    '#rows'          => 3,
+    '#cols'          => 80,
+    '#default_value' => isset($form_state['values']['text']) ? $form_state['values']['text'] : '',
+    '#description'   => t('Write your csv formated terms directly in this text area.'),
+  );
+
+  $form['import']['path'] = array(
+    '#type'          => 'file',
+    '#title'         => t('CSV file'),
+    '#description'   => t('Browse to the file') .'<br >'. (($max_size = parse_size(ini_get('upload_max_filesize'))) ? t('Due to server restrictions, the <strong>maximum upload file size is !max_size</strong>. Files that exceed this size will be disregarded.', array('!max_size' => format_size($max_size))) : ''),
+  );
+
+  $form['import']['url'] = array(
+    '#type'          => 'textfield',
+    '#title'         => t('CSV file'),
+    '#description'   => t('Enter the url (http, ftp, file, path...)') .'<br >'. (($max_size = parse_size(ini_get('upload_max_filesize'))) ? t('Due to server restrictions, the <strong>maximum upload file size is !max_size</strong>. Files that exceed this size will be disregarded.', array('!max_size' => format_size($max_size))) : ''),
+  );
+
+  $form['import']['csv_format'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('Advanced source settings (delimiter and enclosure)'),
+    '#description' => t('Notice: either you import terms by a file or by a text area, the csv format is the same. Default delimiter is a comma ("<strong><code> , </code></strong>"). Default enclosure is none, but quotation mark ("<strong><code> " </code></strong>") is automatically managed.'),
+    '#collapsible' => TRUE,
+    '#collapsed'   => (
+      ($list_previous_values['import_delimiter'] == $list_recommended_values['import_delimiter'])
+      && ($list_previous_values['import_enclosure'] == $list_recommended_values['import_enclosure'])),
+    '#attributes'  => array('id' => 'edit-csv-format'),
+  );
+
+  $form['import']['csv_format']['import_delimiter'] = array(
+    '#type'          => 'select',
+    '#title'         => t('CSV value delimiter'),
+    '#options'       => $list_import_delimiter,
+    '#default_value' => $list_previous_values['import_delimiter'],
+    '#description'   => t("Choose the delimiter used in the CSV file you want to import. Tabulation can't be used with text area import."),
+    '#attributes'    => array('id' => 'delimiter'),
+  );
+
+  $form['import']['csv_format']['import_delimiter_custom'] = array(
+    '#type'          => 'textfield',
+    '#title'         => '',
+    '#default_value' => $list_previous_values['import_delimiter_custom'],
+    '#size'          => 2,
+    '#maxlength'     => 1,
+  );
+
+  $form['import']['csv_format']['import_enclosure'] = array(
+    '#type'          => 'select',
+    '#title'         => t('CSV value enclosure'),
+    '#options'       => $list_import_enclosure,
+    '#default_value' => $list_previous_values['import_enclosure'],
+    '#description'   => t('Choose the enclosure used in the CSV file you want to import.'),
+    '#attributes'  => array('id' => 'enclosure'),
+  );
+
+  $form['import']['csv_format']['import_enclosure_custom'] = array(
+    '#type'          => 'textfield',
+    '#title'         => '',
+    '#default_value' => $list_previous_values['import_enclosure_custom'],
+    '#size'          => 2,
+    '#maxlength'     => 1,
+  );
+
+  $form['destination'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('3. Which vocabulary do you want to import into?'),
+    '#collapsible' => TRUE,
+    '#collapsed'   => FALSE,
+    '#description' => t('Terms can be imported into a new vocabulary or in an existing one. You can choose to duplicate an existing vocabulary too in order to check import. You might want to !add-new-vocab.', array(
+        '!add-new-vocab' => l(t('add a new vocabulary'), 'admin/content/taxonomy/add/vocabulary', array('query' => drupal_get_destination())),
+      )) .'<br />'.
+      t('With some import formats as "Fields and links", vocabulary destination is defined by source content and this option is not used.'),
+    '#attributes'  => array('id' => 'edit-destination'),
+  );
+
+  $list_vocabularies = taxonomy_get_vocabularies();
+
+  if (count($list_vocabularies) == 0) {
+    $form['destination']['#description'] .= '<br />'. t("As there isn't any vocabulary, terms will be imported in a new automatically created vocabulary.");
+
+    $form['destination']['vocabulary_target'] = array(
+      '#type'  => 'value',
+      '#value' => 'autocreate',
+    );
+
+    $form['destination']['vocabulary_id'] = array(
+      '#type'  => 'value',
+      '#value' => 0,
+    );
+  }
+  else {
+    $form['destination']['vocabulary_target'] = array(
+      '#type'          => 'select',
+      '#options'       => $list_vocabulary_target,
+      '#default_value' => $list_previous_values['vocabulary_target'],
+      '#description'   => t('When you want to import a new taxonomy into an existing one, it is recommended to process in three steps in order to allow a good import.
+        <ul>
+          <li>First, check the import file with the < <em>Autocreate a new vocabulary</em> > option. Repeat this step while there are warnings and notices.</li>
+          <li>Second, check new and existing terms merge with the < <em>Duplicate an existing vocabulary</em> > option. This choice creates a duplicate of your target existing vocabulary and import your new terms into. Original nodes attachments are not duplicated.</li>
+          <li>Finally, you can import your file in the true vocabulary with the < <em>Import in an existing vocabulary</em> > option. This allows you to keep old links between existing terms and nodes.</li>
+        </ul>
+        If you only want to create a new vocabulary, the first choice is sufficient, unless when you have multiple files for one vocabulary.'),
+    );
+
+    $form['destination']['vocabulary_id'] = array(
+      '#type'          => 'select',
+      '#title'         => t('Vocabulary choice'),
+      '#options'       => array(
+        'choose_vocabulary' => t('[Choose an existing vocabulary]'),
+      ),
+      '#default_value' => 'choose_vocabulary',
+      '#description'   => t('The vocabulary you want to import the file into.'),
+    );
+    foreach ($list_vocabularies as $vid => $vocabulary) {
+      $form['destination']['vocabulary_id']['#options'][$vid] = $vocabulary->name;
+    }
+  }
+
+  $form['import_options'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('4. How to import your terms?'),
+    '#required'    => TRUE,
+    '#collapsible' => TRUE,
+    '#collapsed'   => FALSE,
+  );
+
+  $form['import_options']['existing_items'] = array(
+    '#type'          => 'radios',
+    '#title'         => t('What will existing or previous imported terms become when a term with same name will be imported?'),
+    '#default_value' => $list_previous_values['existing_items'],
+    '#description'   => t('This option allows to set what previous imported terms will become if a new line contains the same terms. Usually, it indicates an error or a unoptimized source, unless you allow duplicates.<br />
+    This option is used too with existing terms in the target vocabulary. Recommended value is to update and merge. If you choose to ignore previous or existing terms, the vocabulary will have duplicate terms.<br />
+    Some choices may be currently disabled.'),
+  );
+  if (isset($_COOKIE['has_js'])) {
+    // Store full list of generic existing_items and set only the correct one in
+    // order to keep all options possible with javascript and css.
+    $form['import_options']['existing_items']['#options'] = $list_import_option;
+
+    // Descriptions and examples of the option existing_items option.
+    $form['import_options']['help_alone_terms'] = array(
+      '#type'        => 'item',
+      '#value'       => t('Additional help:') .' '. t('Alone terms'),
+      '#description' => t('This option indicates whether existing terms with the same name should be updated or ignored. If ignored, duplicates may be created.'),
+      '#prefix'      => '<div id="help_alone_terms">',
+      '#suffix'      => '</div>',
+    );
+    $form['import_options']['help_fields_links'] = array(
+      '#type'        => 'item',
+      '#value'       => t('Additional help:') .' '. t('Full term fields and links'),
+      '#description' => t('This option indicates whether and how existing terms with the same name should be updated or ignored.') .'<br />'.
+      t('By nature, only one option can be chosen with this format.') .'<br />'.
+      t('<ul>
+          <li><em>"Update and merge"</em>: update term or create it if not exists and merge eventual item with new one.</li>
+        </ul>'
+      ),
+      '#prefix'      => '<div id="help_fields_links">',
+      '#suffix'      => '</div>',
+    );
+    $form['import_options']['help_flat'] = array(
+      '#type'        => 'item',
+      '#value'       => t('Additional help:') .' '. t('Terms'),
+      '#description' => t('This option indicates whether existing terms with the same name should be updated or ignored. If ignored, duplicates may be created.'),
+      '#prefix'      => '<div id="help_flat">',
+      '#suffix'      => '</div>',
+    );
+    $form['import_options']['help_tree_structure'] = array(
+      '#type'        => 'item',
+      '#value'       => t('Additional help:') .' '. t('Tree structure'),
+      '#description' => t('This option indicates whether and how existing terms with the same name should be updated or ignored.<br />
+      This option is used with last term of the line.') .'<br />'.
+      t('<ul>
+          <li><em>"Update and replace"</em>: each parent replaces eventual older ones.</li>
+          <li><em>"Ignore and create"</em>: child is always created and eventually its parents if they don\'t exist.</li>
+          <li><em>"Ignore and create all"</em>: Child and its parents are always created, even if they already exist. Duplicates may be created.</li>
+        </ul>'
+      ),
+      '#prefix'      => '<div id="help_tree_structure">',
+      '#suffix'      => '</div>',
+    );
+    $form['import_options']['help_polyhierarchy'] = array(
+      '#type'        => 'item',
+      '#value'       => t('Additional help:') .' '. t('Polyhierarchy'),
+      '#description' => t('This option indicates whether and how existing terms with the same name should be updated or ignored.') .'<br />'.
+      t('By nature, only one option can be chosen with this format.') .'<br />'.
+      t('<ul>
+          <li><em>"Update and merge"</em>: each child and parents are merged with old ones, except if the child has the same name than parent, in which case a new term is created, because a child cannot be a parent of itself. Warning: on next lines, direct children of this term name will be attached to the first imported term.</li>
+        </ul>'
+      ),
+      '#prefix'      => '<div id="help_polyhierarchy">',
+      '#suffix'      => '</div>',
+    );
+    $form['import_options']['help_parents'] = array(
+      '#type'        => 'item',
+      '#value'       => t('Additional help:') .' '. t('First level parents of a list of terms'),
+      '#description' => t('This option indicates whether and how existing terms with the same name should be updated or ignored.') .'<br />'.
+      t('<ul>
+          <li><em>"Update and merge"</em>: each child and parents are merged with old ones. No duplicate are created.</li>
+          <li><em>"Update and replace"</em>: each parent replaces eventual older ones.</li>
+          <li><em>"Ignore and create"</em>: child is always created and eventually its parents if they don\'t exist.</li>
+          <li><em>"Ignore and create all"</em>: Child and its parents are always created, even if they already exist. Duplicates may be created.</li>
+        </ul>'
+      ),
+      '#prefix'      => '<div id="help_parents">',
+      '#suffix'      => '</div>',
+    );
+    $form['import_options']['help_children'] = array(
+      '#type'        => 'item',
+      '#value'       => t('Additional help:') .' '. t('First level children of a list of terms'),
+      '#description' => t('This option indicates whether and how existing terms with the same name should be updated or ignored.') .'<br />'.
+      t('<ul>
+          <li><em>"Update and merge"</em>: each child and parents are merged with old ones.</li>
+          <li><em>"Update and replace"</em>: each parent replaces eventual older ones.</li>
+          <li><em>"Ignore and create"</em>: child is always created and eventually its parents if they don\'t exist.</li>
+          <li><em>"Ignore and create all"</em>: Child and its parents are always created, even if they already exist. Duplicates may be created.</li>
+        </ul>'
+      ),
+      '#prefix'      => '<div id="help_children">',
+      '#suffix'      => '</div>',
+    );
+    $form['import_options']['help_relations'] = array(
+      '#type'        => 'item',
+      '#value'       => t('Additional help:') .' '. t('Related terms'),
+      '#description' => t('This option indicates whether existing terms with the same name should be updated or ignored.
+        <p>For example, if existing related terms of term < <code>Drupal</code> > are < <code>Free</code> > and < <code>Open source</code> > and an imported line in the csv file is < <code>"Drupal","Knowledge management","Free"</code> >, then:') .'<br >'.
+        t('<ul>
+          <li><em>"Update and merge"</em> choice makes related terms of < <code>Drupal</code> > are now < <code>Free</code> >, < <code>Open source</code> > and < <code>Knowledge management</code> >;</li>
+          <li><em>"Update and replace"</em> choice makes related terms of < <code>Drupal</code> > are now < <code>Knowledge management</code> > and < <code>Free</code> >;</li>
+          <li><em>"Ignore and create"</em> choice makes two < <code>Drupal</code> > terms, one with existing related and other items and another one with the imported related terms < <code>Knowledge management</code> > and < <code>Free</code> >, which one has not been duplicated;</li>
+          <li><em>"Ignore and create all"</em> choice makes two < <code>Drupal</code> > as previously, but create too related term < <code>Free</code> > even if it exist.</li>
+        </ul></p>'
+      ),
+      '#prefix'      => '<div id="help_relations">',
+      '#suffix'      => '</div>',
+    );
+    $form['import_options']['help_fields'] = array(
+      '#type'        => 'item',
+      '#value'       => t('Additional help:') .' '. t('Full term definition'),
+      '#description' => t('This option indicates whether existing terms with the same name should be updated or ignored. If ignored, duplicates may be created.') .'<br />'.
+      t('<ul>
+          <li><em>"Update and merge"</em>: update term or create it if not exists and merge eventual description with new one.</li>
+          <li><em>"Update and replace"</em>: update term or create it if not exists and replace eventual description with new one.</li>
+          <li><em>"Ignore and create"</em>: term is always created.</li>
+        </ul>'
+      ),
+      '#prefix'      => '<div id="help_fields">',
+      '#suffix'      => '</div>',
+    );
+    $form['import_options']['help_descriptions'] = array(
+      '#type'        => 'item',
+      '#value'       => t('Additional help:') .' '. t('Descriptions'),
+      '#description' => t('This option indicates whether and how existing terms with the same name should be updated or ignored.') .'<br />'.
+      t('<ul>
+          <li><em>"Update and merge"</em>: update term or create it if not exists and merge eventual description with new one.</li>
+          <li><em>"Update and replace"</em>: update term or create it if not exists and replace eventual description with new one.</li>
+          <li><em>"Ignore and create"</em>: term is always created.</li>
+        </ul>'
+      ),
+      '#prefix'      => '<div id="help_descriptions">',
+      '#suffix'      => '</div>',
+    );
+    $form['import_options']['help_weights'] = array(
+      '#type'        => 'item',
+      '#value'       => t('Additional help:') .' '. t('Weights'),
+      '#description' => t('This option indicates whether and how existing terms with the same name should be updated or ignored.'),
+      '#prefix'      => '<div id="help_weights">',
+      '#suffix'      => '</div>',
+    );
+    $form['import_options']['help_synonyms'] = array(
+      '#type'        => 'item',
+      '#value'       => t('Additional help:') .' '. t('Synonyms'),
+      '#description' => t('This option indicates whether and how existing terms with the same name should be updated or ignored.') .'<br />'.
+      t('<ul>
+          <li><em>"Update and merge"</em>: update term or create it if not exists and merge eventual synonyms with new ones. Always remove duplicate synonyms.</li>
+          <li><em>"Update and replace"</em>: update term or create it if not exists and replace eventual synonyms with new ones.</li>
+          <li><em>"Ignore and create"</em>: term is always created.</li>
+        </ul>'
+      ),
+      '#prefix'      => '<div id="help_synonyms">',
+      '#suffix'      => '</div>',
+    );
+    $form['import_options']['help_taxonomy_manager'] = array(
+      '#type'        => 'item',
+      '#value'       => t('Additional help:') .' '. t('Taxonomy manager'),
+      '#description' => t("When a vocabulary is imported in an existing one, only third option (ignore existing terms) can be used.") .'<br />'.
+      t('This option indicates whether and how existing terms with the same name should be updated or ignored.') .'<br />'.
+      t('<ul>
+          <li><em>"Update and merge"</em>: update term or create it if not exists and merge eventual parents with new ones.</li>
+          <li><em>"Update and replace"</em>: update term or create it if not exists and replace eventual parents with new ones.</li>
+          <li><em>"Ignore and create"</em>: term is always created.</li>
+        </ul>'
+      ),
+      '#prefix'      => '<div id="help_taxonomy_manager">',
+      '#suffix'      => '</div>',
+    );
+  }
+  else {
+    // Use this form only if no javascript or in a second step wizard.
+    $form['import_options']['#description'] = '<br />'. t("As you see this notice, javascript is not activated on your browser. Only options matching your source content and vocabulary destination needs to be set. Others won't be used. If you want specific examples and options, activate javascript or see <a href=\"!more_help_link\"> advanced help</a>.", array('!more_help_link' => url('admin/help/taxonomy_csv')));
+
+    $form['import_options']['existing_items']['#options'] = array_intersect_key($list_import_option, array_flip(array(
+      TAXONOMY_CSV_EXISTING_UPDATE,
+      TAXONOMY_CSV_EXISTING_UPDATE_MERGE,
+      TAXONOMY_CSV_EXISTING_UPDATE_REPLACE,
+      TAXONOMY_CSV_EXISTING_IGNORE,
+      TAXONOMY_CSV_EXISTING_IGNORE_CREATE,
+      TAXONOMY_CSV_EXISTING_IGNORE_ALL,
+    )));
+  }
+
+  // Specific options to import relations.
+  $form['import_options']['relations'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('Specific settings of:') .' '. t('Related terms'),
+    '#collapsible' => TRUE,
+    '#collapsed'   => FALSE,
+    '#description' => t('Set these options only if you import:') .' '. t('Related terms') .'.',
+    '#attributes'  => array('id' => 'edit-relations'),
+  );
+  $form['import_options']['relations']['relations_create_subrelations'] = array(
+    '#type'          => 'checkbox',
+    '#title'         => t('Import subrelations'),
+    '#default_value' => $list_previous_values['relations_create_subrelations'],
+    '#description'   => t('This checkbox allows to import subrelations of related terms and not only relations of first column term with others.
+    <p>For example, with the line < <code>"Paris","London","Bern","Roma"</code> >, default import is to make a link between < <code>Paris</code> > and each of three terms. There is no link between < <code>London</code> > and < <code>Bern</code> > neither < <code>Roma</code> >. Checking this option creates not only relations with first term, but all subrelations too: < <code>London</code> > and < <code>Bern</code> >, < <code>London</code> > and < <code>Roma</code> > and finally < <code>Bern</code> > and < <code>Roma</code> >.</p>'),
+  );
+  // Internal use only.
+  $form['import_options']['relations']['relations_all_vocabularies'] = array(
+    '#type'          => 'value',
+    '#title'         => t('Make relations with existing terms of all vocabularies'),
+    '#default_value' => $list_previous_values['relations_all_vocabularies'],
+    '#description'   => t("This checkbox allows to create relations with existing terms in other vocabularies if they don't exist in selected vocabulary."),
+    '#disabled'      => TRUE,
+  );
+
+  $form['advanced_options'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('5. Advanced options'),
+    '#collapsible' => TRUE,
+    '#collapsed'   => FALSE,
+    '#attributes'  => array('id' => 'advanced_options'),
+  );
+
+  $form['advanced_options']['tweaks'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('Tweaks for big or specific vocabularies'),
+    '#collapsible' => TRUE,
+    '#collapsed'   => (
+      ($list_previous_values['disable_internal_cache'] == $list_recommended_values['disable_internal_cache'])
+      && ($list_previous_values['disable_hierarchy_check'] == $list_recommended_values['disable_hierarchy_check'])
+      && ($list_previous_values['disable_line_checks'] == $list_recommended_values['disable_line_checks'])
+      && ($list_previous_values['disable_utf8_check'] == $list_recommended_values['disable_utf8_check'])
+    ),
+  );
+
+  $form['advanced_options']['tweaks']['disable_internal_cache'] = array(
+    '#type'          => 'checkbox',
+    '#title'         => t('Disable internal cache'),
+    '#default_value' => $list_previous_values['disable_internal_cache'],
+    '#description'   => t("To disable internal cache allows to import vocabularies of any size. Internal cache is used to speed up process, to reduce access to sql base an to be informed about process. When disabled, no information about results can be displayed except eventual first error or warning.<br />
+    It's recommended to disable cache if the imported vocabulary is too big (from 1000 or 10000 lines depending on the server), because it avoids memory congestion on server."),
+  );
+
+  $form['advanced_options']['tweaks']['disable_hierarchy_check'] = array(
+    '#type'          => 'checkbox',
+    '#title'         => t('Manually set vocabulary hierarchy'),
+    '#default_value' => $list_previous_values['disable_hierarchy_check'],
+  );
+  $form['advanced_options']['tweaks']['hierarchy_level'] = array(
+    '#type'          => 'radios',
+    '#title'         => '',
+    '#options'       => _taxonomy_csv_info_lists('hierarchy_text'),
+    '#default_value' => $list_previous_values['hierarchy_level'],
+    '#prefix'        => '<div id="hierarchy_level">',
+    '#suffix'        => '</div>',
+  );
+  $form['advanced_options']['tweaks']['vocabulary_hierarchy_info'] = array(
+    '#type'          => 'item',
+    '#value'         => '',
+    '#description'   => t('Because to calculate vocabulary hierarchy is memory intensive, this option allows to set hierarchy manually without verify it.'),
+  );
+
+  $form['advanced_options']['tweaks']['disable_line_checks'] = array(
+    '#type'          => 'checkbox',
+    '#title'         => t('Disable line checks'),
+    '#default_value' => $list_previous_values['disable_line_checks'],
+    '#description'   => t('If you are sure that vocabulary to import is well formated (utf8, order of items...), you can disable checks.'),
+  );
+
+  $form['advanced_options']['tweaks']['disable_utf8_check'] = array(
+    '#type'          => 'checkbox',
+    '#title'         => t('Disable file conversion to UTF-8'),
+    '#description'   => t('This checkbox allows to disable convert to UTF-8, what can resolve problems with some rare server configurations. Be sure your file is UTF-8 encoded when disabling this option. This option is not used with a textarea import.'),
+  );
+  if (function_exists('mb_detect_encoding')) {
+    $form['advanced_options']['tweaks']['disable_utf8_check']['#default_value'] = $list_previous_values['disable_utf8_check'];
+  }
+  else {
+    $form['advanced_options']['tweaks']['disable_utf8_check']['#default_value'] = TRUE;
+    $form['advanced_options']['tweaks']['disable_utf8_check']['#disabled'] = TRUE;
+    $form['advanced_options']['tweaks']['disable_utf8_check']['#description'] .= '<br />'. t('This checkbox is currently disabled, because iconv, GNU recode or mbstring for PHP are not installed on your server.');
+  }
+
+  $form['advanced_options']['result_display'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('Results informations to display'),
+    '#collapsible' => TRUE,
+    '#collapsed'   => (
+      ($list_previous_values['result_stats'] === $list_recommended_values['result_stats'])
+      && ($list_previous_values['result_terms'] === $list_recommended_values['result_terms'])
+      && ($list_previous_values['result_level'] == $list_recommended_values['result_level'])
+      && ($list_previous_values['result_type'] == $list_recommended_values['result_type'])
+    ),
+  );
+
+  $form['advanced_options']['result_display']['result_display_cache'] = array(
+    '#type'        => 'item',
+    '#description' => t('Except first warning, no information can be displayed when internal cache is disabled.'),
+    '#prefix'      => '<div id="result_display_cache">',
+    '#suffix'      => '</div>',
+  );
+
+  $form['advanced_options']['result_display']['result_choices'] = array(
+    '#type'          => 'checkboxes',
+    '#options'       => array(
+      'result_stats'    => t('Basic stats on imported terms'),
+      'result_terms'    => t('List of imported terms'),
+    ),
+    '#default_value' => array(
+      $list_previous_values['result_stats'],
+      $list_previous_values['result_terms'],
+    ),
+    '#prefix'        => '<div id="result_display_options">',
+  );
+
+  $form['advanced_options']['result_display']['result_level'] = array(
+    '#type'          => 'radios',
+    '#title'         => t('Log level'),
+    '#options'       => array(
+      'none'     => t('Only first warning'),
+      'warnings' => t('Warnings'),
+      'notices'  => t('Warnings and notices'),
+      'infos'    => t('Warnings, notices and informations'),
+//      'full'     => t('Errors, warnings, notices and infos for each term'),
+    ),
+    '#default_value' => $list_previous_values['result_level'],
+  );
+
+  $form['advanced_options']['result_display']['result_type'] = array(
+    '#type'          => 'radios',
+    '#title'         => t('Group warnings'),
+    '#options'       => array(
+      'by_message'  => t('By message (compact view)'),
+      'by_line'     => t('By line (list view)'),
+//       'by_collapse' => t('By line (collapsible view)'),
+    ),
+    '#default_value' => $list_previous_values['result_type'],
+    '#prefix'        => '<div id="result_type">',
+    '#suffix'        => '</div>',
+  );
+
+  $form['advanced_options']['result_display']['result_info'] = array(
+    '#type'        => 'item',
+    '#description' => t('Warning: display warnings, notices and informations, especially by line, can help you to detect issues when submitted list of terms is not clean, but it may be memory intensive.'),
+    '#suffix'      => '</div>',
+  );
+
+  $form['import_submit'] = array(
+    '#type'  => 'submit',
+    '#value' => t('Import'),
+  );
+
+  $form['recommended_values_submit'] = array(
+    '#type'     => 'submit',
+    '#value'    => t('Default values'),
+    '#validate' => array('_taxonomy_csv_form_recommended_values'),
+  );
+
+  return $form;
+}
+
+/**
+ * Handles CSV import form validation.
+ *
+ * @see taxonomy_csv_form_import()
+ */
+function taxonomy_csv_form_import_validate($form, &$form_state) {
+  $options = &$form_state['values'];
+
+  // First, simplify values to be compatible with Api.
+
+  // Load source local file. Check is made by Api.
+  // 'url' and 'text' are loaded and checked by Api.
+  if ($options['source_choice'] == 'path') {
+    $options['file'] = file_save_upload('path');
+  }
+  //  Clean textarea in order to decrease memory usage.
+  if ($options['source_choice'] != 'text') {
+    $options['text'] = '';
+  }
+
+  // Define true delimiter.
+  $delimiter = array(
+    'comma'            => ',',
+    'semicolon'        => ';',
+    'tabulation'       => "\t",
+    'space'            => ' ',
+    'currency_sign'    => '¤',
+    'custom_delimiter' => $options['import_delimiter_custom'],
+  );
+  $options['delimiter'] = $delimiter[$options['import_delimiter']];
+
+  // Define true enclosure.
+  $enclosure = array(
+    'none'             => '',
+    'quotation'        => '"',
+    'custom_enclosure' => $options['import_enclosure_custom'],
+  );
+  $options['enclosure'] = $enclosure[$options['import_enclosure']];
+
+  // Define result preferences.
+  foreach ($options['result_choices'] as $key => $value) {
+    $options[$key] = $value;
+  }
+
+  // Second, make API checks and eventually update options by reference.
+  $messages = _taxonomy_csv_vocabulary_import_check_options($options);
+
+  // Non API checks.
+  if (($options['import_delimiter'] == 'custom_delimiter')
+      && (empty($options['import_delimiter_custom']))) {
+    $messages['import_delimiter_custom'] = t('You choose to use a custom delimiter, but your delimiter is empty.');
+  }
+
+  if (($options['import_enclosure'] == 'custom_enclosure')
+      && (empty($options['import_enclosure_custom']))) {
+    $messages['import_enclosure_custom'] = t('You choose to use a custom enclosure, but your enclosure is empty.');
+  }
+
+  if (($options['import_delimiter'] == 'custom_delimiter')
+      && (drupal_strlen($options['import_delimiter_custom']) > 1)) {
+    $messages['import_delimiter_custom'] = t('Delimiter should have only one character.');
+  }
+  if (($options['import_enclosure'] == 'custom_enclosure')
+      && (drupal_strlen($options['import_enclosure_custom']) > 1)) {
+    $messages['import_enclosure_custom'] = t('Enclosure should have only zero or one character.');
+  }
+
+  // Validate form.
+  foreach ($messages as $item => $message) {
+    if (in_array($item, $options)) {
+      form_set_error($item, $message);
+    }
+    else {
+      drupal_set_message($message, 'error');
+    }
+  }
+}
+
+/**
+ * Handles CSV import form submission and launch batch set.
+ *
+ * @see taxonomy_csv_form_import()
+ */
+function taxonomy_csv_form_import_submit($form, &$form_state) {
+  // Remember last preferences and prepare only options to be sent to Api.
+  foreach (array(
+      'import_format',
+      'source_choice',
+      'import_delimiter',
+      'import_delimiter_custom',
+      'import_enclosure',
+      'import_enclosure_custom',
+      'vocabulary_target',
+      'vocabulary_id',
+      'existing_items',
+      // Specific to relations import.
+      'relations_create_subrelations',
+      'relations_all_vocabularies',
+      // General options.
+      'disable_internal_cache',
+      'disable_hierarchy_check',
+      'hierarchy_level',
+      'disable_line_checks',
+      'disable_utf8_check',
+      'result_stats',
+      'result_terms',
+      'result_level',
+      'result_type',
+    ) as $option) {
+    variable_set("taxonomy_csv_$option", $form_state['values'][$option]);
+    $options[$option] = $form_state['values'][$option];
+  }
+  // Finish to prepare $options. Unset useless options for api.
+  $options['internal_cache'] = !$options['disable_internal_cache'];
+  $options['hierarchy_check'] = !$options['disable_hierarchy_check'];
+  $options['line_checks'] = !$options['disable_line_checks'];
+  $options['utf8_check'] = !$options['disable_utf8_check'];
+  unset($options['disable_internal_cache']);
+  unset($options['disable_hierarchy_check']);
+  unset($options['disable_line_checks']);
+  unset($options['disable_utf8_check']);
+  $options['delimiter'] = $form_state['values']['delimiter'];
+  $options['enclosure'] = $form_state['values']['enclosure'];
+  unset($options['import_delimiter']);
+  unset($options['import_delimiter_custom']);
+  unset($options['import_enclosure']);
+  unset($options['import_enclosure_custom']);
+  $options['file'] = $form_state['values']['file'];
+  if ($options['source_choice'] == 'text') {
+    $options['text'] = &$form_state['values']['text'];
+    unset($form_state['values']['text']);
+  }
+  $options['path'] = $form_state['values']['path'];
+  $options['url']  = $form_state['values']['url'];
+
+  // Prepares process batch (will be automatically processed when returns).
+  taxonomy_csv_vocabulary_import($options);
+
+  // End of form process. Reinitialize choices.
+  unset($form_state['values']);
+  unset($form_state['storage']);
+  $form_state['rebuild'] = TRUE;
+}
+
+/**
+ * Menu callback of the main export form.
+ */
+function taxonomy_csv_form_export_prepare() {
+  // Invoke taxonomy_csv api (defines and functions).
+  $taxonomy_csv_path = drupal_get_path('module', 'taxonomy_csv');
+  require_once("$taxonomy_csv_path/taxonomy_csv.api.inc");
+
+  // Javascript and css allow to show only available options depending choices.
+  drupal_add_js("$taxonomy_csv_path/taxonomy_csv.js");
+  drupal_add_css("$taxonomy_csv_path/taxonomy_csv.css");
+
+  return drupal_get_form('taxonomy_csv_form_export');
+}
+
+/**
+ * Generates the taxonomy CSV export form.
+ *
+ * Form contain three fieldsets:
+ * - 1. How to export (format of csv file) ?
+ * - 2. Which vocabulary to export ?
+ * - 3. How to export ?
+ *       1. Csv delimiter
+ *       2. Csv enclosure
+ *       3. Csv end of line
+ *
+ * @ingroup forms
+ * @see taxonomy_csv_form_export_validate()
+ * @see taxonomy_csv_form_export_submit()
+ */
+function taxonomy_csv_form_export($form_state) {
+  // Display main export form
+  $list_recommended_values = array(
+    'export_format'                 => TAXONOMY_CSV_FORMAT_ALONE_TERMS,
+    'export_delimiter'              => 'comma',
+    'export_delimiter_custom'       => '',
+    'export_enclosure'              => 'none',
+    'export_enclosure_custom'       => '',
+    'export_line_ending'            => 'Unix',
+    'export_order'                  => 'name',
+    'fields_links_terms_ids'        => 'name_if_needed',
+    'fields_links_vocabularies_ids' => 'none',
+  );
+
+  // Remember previous values to use in particular when reloading form.
+  // If not reloading form, use saved values if exist, else recommended ones.
+  $list_previous_values = array();
+  foreach ($list_recommended_values as $key => $value) {
+    $list_previous_values[$key] = isset($form_state['values'][$key]) ?
+        $form_state['values'][$key] :
+        variable_get("taxonomy_csv_{$key}", $value);
+  }
+
+  $list_export_format = _taxonomy_csv_info_lists('list_export_format');
+
+  $list_export_delimiter = array(
+    'comma'            => t('« , » (Comma)'),
+    'semicolon'        => t('« ; » (Semicolon)'),
+    'tabulation'       => t('«   » (Tabulation)'),
+    'space'            => t('«   » (Space)'),
+    'currency_sign'    => t('« ¤ » (Currency sign)'),
+    'custom_delimiter' => t('Custom delimiter'),
+  );
+
+  $list_export_enclosure = array(
+    'none'             => t('None'),
+    'quotation'        => t('« " » (Quotation mark)'),
+    'custom_enclosure' => t('Custom enclosure'),
+  );
+
+  $list_export_line_ending = array(
+    'Unix'             => t('Linux / Unix'),
+    'Mac'              => t('Mac'),
+    'Microsoft DOS'    => t('Microsoft DOS'),
+  );
+
+  $list_export_order = array(
+    'name'             => t('Alphabetic order'),
+    'tid'              => t('Internal order'),
+    'weight'           => t('Weight'),
+  );
+
+  // Build form.
+  $form = array(
+    '#attributes' => array(
+      'enctype' => 'multipart/form-data',
+    )
+  );
+
+  $list_vocabularies = taxonomy_get_vocabularies();
+
+  if (count($list_vocabularies) == 0) {
+    $form['info'] = array(
+      '#type'  => 'item',
+      '#value' => t("As there isn't any vocabulary, nothing can be exported..."),
+    );
+
+    return $form;
+  }
+  // Else there are vocabularies.
+
+  // Used with recommended values button.
+  $form['list']['list_recommended_values'] = array(
+    '#type'  => 'value',
+    '#value' => $list_recommended_values,
+  );
+
+  $form['format'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('1. What do you want to export?'),
+    '#collapsible' => TRUE,
+    '#collapsed'   => FALSE,
+  );
+
+  $form['format']['export_format'] = array(
+    '#type'          => 'select',
+    '#title'         => '',
+    '#options'       => $list_export_format,
+    '#default_value' => $list_previous_values['export_format'],
+    '#required'      => TRUE,
+  );
+
+  $form['format']['info'] = array(
+    '#type'        => 'item',
+    '#description' => t('See <a href="!more_help_link">advanced help</a> for informations about formats.', array('!more_help_link' => url('admin/help/taxonomy_csv'))) .'<br />'.
+    t('Only "fields and links" format manages duplicate term names. In all case, you will be notified if a duplicate is found.'),
+  );
+
+  $form['vocabulary'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('2. Which vocabulary do you want to export?'),
+    '#collapsible' => TRUE,
+    '#collapsed'   => FALSE,
+    '#attributes'  => array('id' => 'edit-vocabulary'),
+  );
+
+  $form['vocabulary']['vocabulary_id'] = array(
+    '#type'          => 'select',
+    '#options'       => array(
+      0 => t('All vocabularies'),
+    ),
+    '#default_value' => 0,
+    '#description'   => t('The vocabulary you want to export.'),
+  );
+  foreach ($list_vocabularies as $vid => $vocabulary) {
+    $form['vocabulary']['vocabulary_id']['#options'][$vid] = $vocabulary->name;
+  }
+
+  $form['csv_format'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('3. How do you want to export your terms?'),
+    '#required'    => TRUE,
+    '#collapsible' => TRUE,
+    '#collapsed'   => FALSE,
+    '#attributes'  => array('id' => 'edit-csv-format'),
+  );
+
+  $form['csv_format']['export_delimiter'] = array(
+    '#type'          => 'select',
+    '#title'         => t('CSV value delimiter'),
+    '#options'       => $list_export_delimiter,
+    '#default_value' => $list_previous_values['export_delimiter'],
+    '#description'   => t('Choose the delimiter to use in the CSV file.'),
+    '#attributes'    => array('id' => 'delimiter'),
+  );
+
+  $form['csv_format']['export_delimiter_custom'] = array(
+    '#type'          => 'textfield',
+    '#title'         => '',
+    '#default_value' => $list_previous_values['export_delimiter_custom'],
+    '#size'          => 2,
+    '#maxlength'     => 1,
+  );
+
+  $form['csv_format']['export_enclosure'] = array(
+    '#type'          => 'select',
+    '#title'         => t('CSV value enclosure'),
+    '#options'       => $list_export_enclosure,
+    '#default_value' => $list_previous_values['export_enclosure'],
+    '#description'   => t('Choose the enclosure used in the CSV file you want to export. Warning: enclosure should not be used in term definitions, specially in descriptions. Furthermore, an enclosure is needed if a field contains a line ending character. Export process will stop in case of problem.'),
+    '#attributes'  => array('id' => 'enclosure'),
+  );
+
+  $form['csv_format']['export_enclosure_custom'] = array(
+    '#type'          => 'textfield',
+    '#title'         => '',
+    '#default_value' => $list_previous_values['export_enclosure_custom'],
+    '#size'          => 2,
+    '#maxlength'     => 1,
+  );
+
+  $form['csv_format']['export_line_ending'] = array(
+    '#type'          => 'radios',
+    '#title'         => t('Line ending'),
+    '#options'       => $list_export_line_ending,
+    '#default_value' => $list_previous_values['export_line_ending'],
+    '#description'   => t('Choose the end of line to use.'),
+  );
+
+  $form['csv_format']['export_order'] = array(
+    '#type'          => 'radios',
+    '#title'         => t('Terms order'),
+    '#options'       => $list_export_order,
+    '#default_value' => $list_previous_values['export_order'],
+    '#description'   => t('Choose order of exported terms.'),
+  );
+
+  // Specific options to export fields_links.
+  $form['csv_format']['fields_links'] = array(
+    '#type'        => 'fieldset',
+    '#title'       => t('Specific settings of:') .' '. t('Full term fields and links'),
+    '#collapsible' => TRUE,
+    '#collapsed'   => FALSE,
+    '#description' => t('Set these options only if you import:') .' '. t('Full term fields and links') .'.',
+    '#attributes'  => array('id' => 'edit-fields-links'),
+  );
+  $form['csv_format']['fields_links']['fields_links_terms_ids'] = array(
+    '#type'          => 'radios',
+    '#title'         => t('Which identifiant do you want to use for terms?'),
+    '#options'       => array(
+      'name_if_needed' => t('Term name only when useful'),
+      'name'           => t('Term name'),
+      'tid'            => t('Serial number (internal term id)'),
+    ),
+    '#default_value' => $list_previous_values['fields_links_terms_ids'],
+    '#description'   => t('Choose how terms will be exported. In first and second choices, duplicate terms are identified with name and a serial number. First choice is lighter, because main term tid is set only if it is a duplicate term. All options can manage duplicate term names. Third choice is more difficult to read.'),
+  );
+  $form['csv_format']['fields_links']['fields_links_vocabularies_ids'] = array(
+    '#type'          => 'radios',
+    '#title'         => t('Which identifiant do you want to use for vocabularies?'),
+    '#options'       => array(
+      'none' => t('Nothing (unique vocabulary export)'),
+      'name' => t('Vocabulary name'),
+      'vid'  => t('Serial number (internal vocabulary id)'),
+    ),
+    '#default_value' => $list_previous_values['fields_links_vocabularies_ids'],
+    '#description'   => t('Choose how vocabularies will be identified. First choice can be used only when a single vocabulary is exported and when there is no relation to terms of another vocabulary.'),
+  );
+
+  $form['export_submit'] = array(
+    '#type'  => 'submit',
+    '#value' => t('Export'),
+  );
+
+  $form['recommended_values_submit'] = array(
+    '#type'     => 'submit',
+    '#value'    => t('Default values'),
+    '#validate' => array('_taxonomy_csv_form_recommended_values'),
+  );
+
+  return $form;
+}
+
+/**
+ * Handles CSV export form validation.
+ *
+ * @see taxonomy_csv_form_export()
+ */
+function taxonomy_csv_form_export_validate($form, &$form_state) {
+  $options = &$form_state['values'];
+
+  // First, simplify values to be compatible with Api.
+
+  // Define true delimiter.
+  $delimiter = array(
+    'comma'            => ',',
+    'semicolon'        => ';',
+    'tabulation'       => "\t",
+    'space'            => ' ',
+    'currency_sign'    => '¤',
+    'custom_delimiter' => $options['export_delimiter_custom'],
+  );
+  $options['delimiter'] = $delimiter[$options['export_delimiter']];
+
+  // Define true enclosure.
+  $enclosure = array(
+    'none'             => '',
+    'quotation'        => '"',
+    'custom_enclosure' => $options['export_enclosure_custom'],
+  );
+  $options['enclosure'] = $enclosure[$options['export_enclosure']];
+
+  // Define true line ending and order.
+  $options['line_ending'] = $options['export_line_ending'];
+  $options['order']       = $options['export_order'];
+
+  // Second, make API checks and eventually update options by reference.
+  $messages = _taxonomy_csv_vocabulary_export_check_options($options);
+
+  // Non API checks.
+  if (($options['export_delimiter'] == 'custom_delimiter')
+      && (empty($options['export_delimiter_custom']))) {
+    $messages['export_delimiter_custom'] = t('You choose to use a custom delimiter, but your delimiter is empty.');
+  }
+
+  if (($options['export_enclosure'] == 'custom_enclosure')
+      && (empty($options['export_enclosure_custom']))) {
+    $messages['export_enclosure_custom'] = t('You choose to use a custom enclosure, but your enclosure is empty.');
+  }
+
+  if (($options['export_delimiter'] == 'custom_delimiter')
+      && (drupal_strlen($options['export_delimiter_custom']) > 1)) {
+    $messages['export_delimiter_custom'] = t('Delimiter should have only one character.');
+  }
+  if (($options['export_enclosure'] == 'custom_enclosure')
+      && (drupal_strlen($options['export_enclosure_custom']) > 1)) {
+    $messages['export_enclosure_custom'] = t('Enclosure should have only zero or one character.');
+  }
+
+  // Validate form.
+  foreach ($messages as $item => $message) {
+    if (in_array($item, $options)) {
+      form_set_error($item, $message);
+    }
+    else {
+      drupal_set_message($message, 'error');
+    }
+  }
+}
+
+/**
+ * Handles CSV export form submission and launch batch set.
+ *
+ * @see taxonomy_csv_form_export()
+ */
+function taxonomy_csv_form_export_submit($form, &$form_state) {
+  // Remember last preferences and prepare only options to be sent to Api.
+  foreach (array(
+      'export_format',
+      'export_delimiter',
+      'export_delimiter_custom',
+      'export_enclosure',
+      'export_enclosure_custom',
+      'export_line_ending',
+      'export_order',
+      'fields_links_terms_ids',
+      'fields_links_vocabularies_ids',
+    ) as $option) {
+    variable_set("taxonomy_csv_$option", $form_state['values'][$option]);
+    $options[$option] = $form_state['values'][$option];
+  }
+  // Finish to prepare $options. Unset useless options for api.
+  $options['delimiter']   = $form_state['values']['delimiter'];
+  $options['enclosure']   = $form_state['values']['enclosure'];
+  $options['line_ending'] = $form_state['values']['line_ending'];
+  $options['order']       = $form_state['values']['order'];
+  unset($options['export_delimiter']);
+  unset($options['export_delimiter_custom']);
+  unset($options['export_enclosure']);
+  unset($options['export_enclosure_custom']);
+  unset($options['export_line_ending']);
+  unset($options['export_order']);
+  $options['file']        = $form_state['values']['file'];
+  $options['vocabulary_id'] = $form_state['values']['vocabulary_id'];
+
+  // Prepares process batch (will be automatically processed when returns).
+  taxonomy_csv_vocabulary_export($options);
+
+  // End of form process. Reinitialize choices.
+  unset($form_state['values']);
+  unset($form_state['storage']);
+  $form_state['rebuild'] = TRUE;
+}
+
+/**
+ * Restore recommended default values in the import or export form.
+ */
+function _taxonomy_csv_form_recommended_values($form, &$form_state) {
+  foreach ($form_state['values']['list_recommended_values'] as $option => $value) {
+    variable_set("taxonomy_csv_$option", $value);
+  }
+  unset($form_state['values']);
+  unset($form_state['storage']);
+  $form_state['rebuild'] = TRUE;
+}

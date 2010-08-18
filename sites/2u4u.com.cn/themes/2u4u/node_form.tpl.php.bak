@@ -1,0 +1,103 @@
+<?php
+$form['custom_advanced'] = array(
+  '#type' => 'fieldset',
+  '#title' => t('Advanced Options'),
+  '#collapsible' => TRUE,
+  '#collapsed' => TRUE,
+  '#weight' => 1
+);
+
+if ($form['nodewords'] && $form['page_title']) {
+	$page_title = array('page_title' => $form['page_title']);
+	$form['nodewords'] = array_merge($page_title, $form['nodewords']);
+	//$form['nodewords']['page_title'] = $form['page_title'];
+	$form['nodewords']['page_title']['#weight'] = 1;
+	unset($form['page_title']);
+}
+/*
+if ($form['body_field']['format']) {
+	$form['custom_advanced']['format'] = $form['body_field']['format'];
+	unset($form['body_field']['format']);
+}
+*/
+if ($form['page_title']) {
+	$form['custom_advanced']['page_title'] = $form['page_title'];
+	unset($form['page_title']);
+}
+if ($form['nodewords']) {
+	$form['custom_advanced']['nodewords'] = $form['nodewords'];
+	unset($form['nodewords']);
+}
+if ($form['hierarchy']) {
+	$form['custom_advanced']['hierarchy'] = $form['hierarchy'];
+	unset($form['hierarchy']);
+}
+if ($form['node_images']) {
+	$form['custom_advanced']['node_images'] = $form['node_images'];
+	unset($form['node_images']);
+}
+if ($form['revision_information']) {
+	$form['custom_advanced']['revision_information'] = $form['revision_information'];
+	unset($form['revision_information']);
+}
+if ($form['comment_settings']) {
+	$form['custom_advanced']['comment_settings'] = $form['comment_settings'];
+	unset($form['comment_settings']);
+}
+if ($form['menu']) {
+	$form['custom_advanced']['menu'] = $form['menu'];
+	unset($form['menu']);
+}
+if ($form['path']) {
+	$form['custom_advanced']['path'] = $form['path'];
+	unset($form['path']);
+}
+if ($form['attachments']) {
+	$form['custom_advanced']['attachments'] = $form['attachments'];
+	unset($form['attachments']);
+}
+if ($form['xmlsitemap_node']) {
+	$form['custom_advanced']['xmlsitemap_node'] = $form['xmlsitemap_node'];
+	unset($form['xmlsitemap_node']);
+}
+if ($form['author']) {
+	$form['custom_advanced']['author'] = $form['author'];
+	unset($form['author']);
+}
+
+$output = "\n<div class=\"node-form\">\n";
+
+// Admin form fields and submit buttons must be rendered first, because
+// they need to go to the bottom of the form, and so should not be part of
+// the catch-all call to drupal_render().
+$admin = '';
+/*
+if (isset($form['author'])) {
+  $admin .= "    <div class=\"authored\">\n";
+  $admin .= drupal_render($form['author']);
+  $admin .= "    </div>\n";
+}
+*/
+if (isset($form['options'])) {
+  $admin .= "    <div class=\"options\">\n";
+  $admin .= drupal_render($form['options']);
+  $admin .= "    </div>\n";
+}
+$buttons = drupal_render($form['buttons']);
+
+// Everything else gets rendered here, and is displayed before the admin form
+// field and the submit buttons.
+$output .= "  <div class=\"standard\">\n";
+$output .= drupal_render($form);
+$output .= "  </div>\n";
+
+if (!empty($admin)) {
+  $output .= "  <div class=\"admin\">\n";
+  $output .= $admin;
+  $output .= "  </div>\n";
+}
+$output .= $buttons;
+$output .= "</div>\n";
+
+print $output;
+?>

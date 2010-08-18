@@ -1,0 +1,20 @@
+div,dl,dt,dd,ul,ol,li,img {	padding: 0;	margin: 0;}
+#block_hezuo{
+	background-color: #FFFFFF;
+	border: 1px solid #9F9D9D;
+	margin-top: 10px;
+}
+#block_hezuo a{font-size:12px;text-decoration: none;color: #666666;}
+#block_hezuo dt a {font-weight: bold;}
+#block_hezuo dt{text-align:center;height:50px;float:left;background:#F9F9F9;font-weight:bold;border-right:1px solid #EBEBEB;width:78px;line-height: 50px;}
+#block_hezuo dd{
+	float:left;
+	padding:0px;
+	margin-top: 5px;
+}
+#block_hezuo dd img{border:1px solid #EBEBEB;margin:0 0 0 7px; }
+#block_hezuo ul{clear:both;	border-top:1px solid #EBEBEB;overflow:hidden;zoom:1;}
+#block_hezuo ul li{float:left;display:inline;line-height: 25px;margin-top: 0px;margin-right: 0px;margin-bottom: 0px;margin-left: 10px;padding: 0px;}
+#block_hezuo .fltrpgroup{line-height: 30px;background-image: url(fp_images/db.jpg);	font-size: 12px;font-weight: bold;color: #560000;border-top-width: 1px;border-top-style: solid;border-top-color: #EFEBEF;height: 30px;}
+#block_hezuo .fltrpgroup a{	font-weight: normal;color: #560000;}
+#block_hezuo .fltrpgroup a:hover{font-weight: normal;color: #FFFF00;background-color: #666666;}

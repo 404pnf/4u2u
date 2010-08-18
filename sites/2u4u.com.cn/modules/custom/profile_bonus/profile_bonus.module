@@ -1,0 +1,83 @@
+<?php
+/**
+ * 本模块用于对用户注册时填写信息的奖励
+ *1. 奖励积分为10，由$num_of_points设定
+ *2. 只在用户注册时进行奖励，由$op进行判别
+ *3. 用户注册信息是否完整由函数 profile_bonus_check_is_completed进行判断
+ * by wzs 2010222
+
+ */
+
+function profile_bonus_user($op, &$edit, &$account, $category = NULL)
+{
+	global $user;
+	
+	switch($op){
+		case 'register':
+                      // drupal_set_message( "注册成功!");
+
+			if($user->uid==$account->uid & profile_bonus_check_is_completed($_POST))
+			{
+			      // drupal_set_message(t('感谢您完善自己的用户信息,奖励您10个积分。'));
+                               $num_of_points = 10;
+			     $params = array (
+			      'uid' => $account->uid,
+			      'points' => $num_of_points,
+		          'description' => '完善注册信息奖励积分',
+			    );
+			  userpoints_userpointsapi($params); 		
+
+	}
+		break;
+	}
+}
+
+
+function profile_bonus_check_had_completed($user){
+	if(!isset($user->profile_gender))
+                return false;
+	if(!isset($user->profile_birthday))
+                return false;
+	if(!isset($user->profile_zhiye))
+                return false;
+ 	if(!isset($user->profile_hangye))
+	          	 return false;
+	if(!isset($user->profile_waiyu))
+                return false;
+	if(!isset($user->profile_waiyutigao))
+                return false;
+	if(!isset($user->profile_zizhi_huode))
+                return false;   
+ 	if(!isset($user->profile_zizhi_xiwang))
+                return false;    
+ 	if(!isset($user->profile_zhuti))
+                return false;             
+	return true;
+
+
+}
+
+function profile_bonus_check_is_completed($edit){
+	if(empty($edit['profile_xieyi']))
+	          	return false;
+	if(empty($edit['profile_gender']))
+                return false;
+	if(empty($edit['profile_birthday']))
+                return false;
+	if(empty($edit['profile_zhiye']))
+                return false;
+ 	if(empty($edit['profile_hangye']))
+	          	 return false;
+	if(empty($edit['profile_waiyu']))
+                return false;
+	if(empty($edit['profile_waiyutigao']))
+                return false;
+	if(empty($edit['profile_zizhi_huode']))
+                return false;   
+ 	if(empty($edit['profile_zizhi_xiwang']))
+                return false;    
+ 	if(empty($edit['profile_zhuti']))
+                return false;             
+	return true;
+	
+}

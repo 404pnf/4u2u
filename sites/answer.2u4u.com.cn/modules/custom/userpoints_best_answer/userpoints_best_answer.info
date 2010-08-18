@@ -1,0 +1,15 @@
+; $Id: userpoints_best_answer.info,v 1.0 2009/03/08 19:52:18 jianheng Exp $
+name = User Points Best Answer
+description = Users can ask questsions and assign userpoints to the best answer.
+package = Userpoints
+core = 6.x
+dependencies[] = userpoints
+dependencies[] = content
+dependencies[] = number
+dependencies[] = nodecomment
+dependencies[] = auto_nodetitle
+; Information added by drupal.org packaging script on 2008-06-02
+version = "6.x-1.2"
+core = "6.x"
+project = "userpoints_best_answer"
+datestamp = "1212436846"

@@ -1,8 +1,0 @@
-<?php
-$app_dir="/games";
-
-$admin_id="administrator";
-$admin_password="changeit";
-
-include 'conn.php';
-?>

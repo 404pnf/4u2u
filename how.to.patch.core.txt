@@ -1,0 +1,33 @@
+
+apply patch to drupal core
+ref:  http://drupal.org/patch/apply
+
+Provided that the patch was made relative to the root directory of the
+concerned project, navigate to the that directory (using cd). For a patch on
+Drupal, that will be the Drupal directory; for a contrib module or theme, that
+is the root directory of the project. Once there, issue the command:
+
+
+	patch -p0 < path/file.patch
+
+If the patch was not made relative to the project's root directory, you can
+place the patch in the same directory as the file being patched and run the
+patch command without the -p option. To do so, cd to the directory and type:
+
+	patch < file.patch
+
+
+REVERSE A PATCH
+You can reverse a patch if you have finished testing it, or if you want to see
+whether a problem has been introduced by a particular patch. You should also
+reverse a patch prior to adding a newer, updated version of the same patch. To
+reverse the patch, use the patch command with the -R option:
+
+
+      	patch -p0 -R < path/file.patch
+
+
+
+
+patch core for aggregation of css/js files on private file system
+http://drupal.org/node/572516

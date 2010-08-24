@@ -15,8 +15,8 @@ define('API_RETURN_FAILED', '-1');
 define('API_RETURN_FORBIDDEN', '-2');
 
 //以上为uc.php内容
-include_once UCENTER_CLIENT_ROOT.'/FirePHPCore/fb.php';
-include_once UCENTER_CLIENT_ROOT.'/FirePHPCore/writelog.php';
+//include_once UCENTER_CLIENT_ROOT.'/FirePHPCore/fb.php';
+//include_once UCENTER_CLIENT_ROOT.'/FirePHPCore/writelog.php';
 include_once UCENTER_CLIENT_ROOT.'/config.inc.php';
 include_once UCENTER_CLIENT_ROOT.'/uc_client/client.php';
 
@@ -110,7 +110,7 @@ function ucenter_theme() {
  */
 function ucenter_user($op, &$edit, &$account, $category = null) {
 	//file_put_contents('ucenter.log','ucenter_user：操作'.$op,FILE_APPEND);
-	wlog('ucenter_user：操作'.$op);
+	//wlog('ucenter_user：操作'.$op);
 	switch ($op) {
 		case 'insert':
 			// send user register notification to ucenter.
@@ -143,7 +143,7 @@ function ucenter_user($op, &$edit, &$account, $category = null) {
 				if($uid > 0) {
 					$syninfo = uc_user_synlogin($uid);
 					//fb( 'uc用户：'.$username.' 的 uid为：'.$uid.'，返回的syninfo为：'.$syninfo,FirePHP::LOG);
-					wlog('uc用户：'.$username.' 的 uid为：'.$uid.'，返回的syninfo为：'.$syninfo);
+					//wlog('uc用户：'.$username.' 的 uid为：'.$uid.'，返回的syninfo为：'.$syninfo);
 					$action = t('登陆');
 					$content = t('尊敬的用户，欢迎回来') . ' ' . $edit['name'] . '<br />' . t('页面会在2秒钟后转到您登陆的页面，如果页面没有跳转，请点击下面链接') . '<br />' . l(t('回到首页'), $base_url) ;
 	
@@ -162,8 +162,8 @@ function ucenter_user($op, &$edit, &$account, $category = null) {
 		//	$url=isset($_GET['destination']) ? $_GET['destination'] : $_SERVER['HTTP_REFERER'];
 	              $url = $base_url;	
               	//watchdog(t('user'), t('send user logout info to ucenter, user name is @username', array('@username' => $edit['name'])));
-			fb( '用户：' . $user->name . '退出',FirePHP::LOG);
-			wlog('用户：' . $user->name . '退出');
+			//fb( '用户：' . $user->name . '退出',FirePHP::LOG);
+			//wlog('用户：' . $user->name . '退出');
 			$syninfo = uc_user_synlogout();
 			$action = t('退出');
 			$content = t('尊敬的用户，您已经退出') . ' ' . $edit['name'] . '<br />' . t('页面会在2秒钟后转到您登陆的页面，如果页面没有跳转，请点击下面链接') . '<br />' . l(t('回到首页'), $base_url) ;
@@ -270,11 +270,11 @@ function ucenter_login_validate($form, &$form_state) {
 	// try to login ucenter
 	global $user;
 	//watchdog(t('user'), t('ucenter_login_validate: cuser is @uname', array('@uname' => $user->name )));
-	fb( 'ucenter_login_validate：登录用户名'.$form_state['values']['name'].' 登录密:：'.$form_state['values']['pass'],FirePHP::LOG);
-	wlog('ucenter_login_validate：登录用户名'.$form_state['values']['name'].' 登录密码：'.$form_state['values']['pass'].'md5:'.md5(trim($form_state['values']['pass'])));
+	//fb( 'ucenter_login_validate：登录用户名'.$form_state['values']['name'].' 登录密:：'.$form_state['values']['pass'],FirePHP::LOG);
+	//wlog('ucenter_login_validate：登录用户名'.$form_state['values']['name'].' 登录密码：'.$form_state['values']['pass'].'md5:'.md5(trim($form_state['values']['pass'])));
 	list($uid, $username, $password, $email) = uc_user_login($form_state['values']['name'], $form_state['values']['pass']);
 	//echo $uid;
-	wlog('从uc获取用户登录信息：uc_user_login:$uid='.$uid.'/$email='.$email);
+	//wlog('从uc获取用户登录信息：uc_user_login:$uid='.$uid.'/$email='.$email);
 	if ($uid > 0) {
 		//$dbres = db_query("SELECT uid FROM users WHERE name='%s'", $form_state['values']['name']);
 		//$result = array();
@@ -305,16 +305,16 @@ function ucenter_login_validate($form, &$form_state) {
 		while ($term = db_fetch_object($dbres)) {
 		    $result[] = $term;
 		}
-		wlog('$uid==-1/$uid_drupal='.$result[0]->uid.'/$email='.$result[0]->mail);
-		wlog("SELECT uid,mail FROM users WHERE name='". $form_state['values']['name'] ."'");
+		//wlog('$uid==-1/$uid_drupal='.$result[0]->uid.'/$email='.$result[0]->mail);
+		//wlog("SELECT uid,mail FROM users WHERE name='". $form_state['values']['name'] ."'");
 		//watchdog(t('user'), t("SELECT uid，mail FROM users WHERE name='@s'", array('@s' => $form_state['values']['name'])));
 		//echo $uid_drupal,$email;
 		if(!$result[0]->uid){
 			//form_set_error('name', t("SELECT uid，mail FROM users WHERE name='@s'", array('@s' => $form_state['values']['name']))); 
-			wlog('!$result[0]->uid drupal中没有这个用户');
+			//wlog('!$result[0]->uid drupal中没有这个用户');
 			form_set_error('name', t('用户名或密码错误'));  		
 		}else{
-			wlog('$result[0]->uid 在uc中注册这个用户|'.$form_state['values']['name'].'|'.$form_state['values']['pass'].'|'.$email);
+			//wlog('$result[0]->uid 在uc中注册这个用户|'.$form_state['values']['name'].'|'.$form_state['values']['pass'].'|'.$email);
 			$uid = uc_user_register($form_state['values']['name'], $form_state['values']['pass'], $result[0]->mail);
 		}
 	}

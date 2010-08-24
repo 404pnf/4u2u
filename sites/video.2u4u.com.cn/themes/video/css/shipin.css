@@ -724,3 +724,8 @@ display:none;
 .shipin-comment{
 	float:left;
 }
+
+.item-list .pager li .pager-ellipsis{
+	color:#000000;
+	border:0px;
+}

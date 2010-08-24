@@ -307,9 +307,11 @@ function gift_points_erp_info($emno)
 function gift_points_get_em($emno){
    $ctype = 'content_type_'.variable_get('gpoints_type','');
    $emfield = variable_get('gpoints_emno','').'_value';
+   db_set_active('ebook');   
    $sql = "SELECT * FROM {".$ctype."} n WHERE ".$emfield." = '%s'";
    $result = db_query(db_rewrite_sql($sql),$emno);
    $data = db_fetch_object($result);
+   db_set_active('default');
    return $data;
 }
 
@@ -353,5 +355,3 @@ function gift_points_promote($point)
 	
 	return $output;
 }
-
-?>

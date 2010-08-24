@@ -69,8 +69,8 @@ function uc_api_post($module, $action, $arg = array()) {
 		$sep = '&';
 	}
 	$postdata = uc_api_requestdata($module, $action, $s);
-	 wlog(UC_API.'/index.php');
-	 wlog('postdata:'.$postdata);
+	 //wlog(UC_API.'/index.php');
+	 //wlog('postdata:'.$postdata);
 	return uc_fopen2(UC_API.'/index.php', 500000, $postdata, '', TRUE, UC_IP, 20);
 }
 

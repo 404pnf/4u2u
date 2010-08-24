@@ -3,6 +3,12 @@
 *~
 # ignore directory in drupal root directory
 cache/*
+misc/dynamic
+guanlisjk
+zhuanti
+js/*
+css/*
+languages/*
 progs/*
 cacti/*
 del/*

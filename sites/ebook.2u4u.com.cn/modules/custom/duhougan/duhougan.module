@@ -27,7 +27,7 @@ function duhougan_confirm_page($nid){
 
 	$output .= '<div id="confirm_message"><h3>您的读后感已经成功发表</h3>';
 
-global $user;
+	global $user;
 
 	$mycreat_id = db_fetch_object(db_query("SELECT MAX(nid) as max_id,COUNT(nid) as total_id FROM {node} WHERE type='%s' AND uid=%d ORDER by nid DESC",'readthink',$user->uid));
 
@@ -107,7 +107,7 @@ function duhougan_form_alter(&$form, &$form_state, $form_id) {
 
 					}else{
 
-							$change_link = "<a href=".base_path()."user/".$user->uid."/profile/profile?destination=node/add/readthink?destination=duhougan_confirm/".$_GET["edit"]["parent"]."&edit[parent]=".$_GET["edit"]["parent"].">参赛信息不正确? 修改我的信息</a>";
+							$change_link = "<a href=".base_path()."user/".$user->uid."/profile/profile?destination=node/add/readthink?edit[parent]=".$_GET["edit"]["parent"].">参赛信息不正确? 修改我的信息</a>";
 					}
 					  $form['myprofile']['change_profile'] = array(
 						  '#value' => "<p>".$change_link."</p>",
@@ -185,7 +185,9 @@ if($node->type == "ebook"  && user_is_logged_in() && $is_duhougan && (empty($div
 		$links["login_duhougan"] = array(
 			            'title' => t('You must add your profile to join DuHouGan'),
 						'href' => 'user/'.$user->uid.'/profile/profile',
-						'query' => 'destination=node/add/readthink/'.$node->nid,
+						//这里被老葛注释掉了,这个地方有问题,替换成了紧挨着的一行了
+						//'query' => 'destination=node/add/readthink/'.$node->nid,
+						'query' => 'destination=node/add/readthink?edit[parent]='.$node->nid,
 		);
 		
 	}
@@ -195,7 +197,9 @@ if($node->type == "ebook" && user_is_logged_in() && $is_duhougan && $compele_pro
 		$links["login_duhougan"] = array(
 			            'title' => '我要写读后感',
 						'href' => 'node/add/readthink',
-						'query' => 'destination=duhougan_confirm/'.$node->nid.'&edit[parent]='.$node->nid,
+						//这里被老葛注释掉了,去掉了destination=duhougan_confirm/'.$node->nid.'&
+						//'query' => 'destination=duhougan_confirm/'.$node->nid.'&edit[parent]='.$node->nid,
+						'query' => 'edit[parent]='.$node->nid,
 		);
 		
 	}
@@ -272,8 +276,11 @@ function duhougan_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
   switch ($op) {
     case 'insert':
 	 if($node->type == "readthink"){
-		 first_create_add_points($node);
+		 duhougan_first_create_add_points($node);
 	 }
+		if($node->type == 'readthink'){
+			drupal_goto('duhougan_confirm/'.$node->parent);
+		}
       break;
     case 'update':
 
@@ -298,7 +305,7 @@ function duhougan_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
 */
 
 
-function first_create_add_points($node){
+function duhougan_first_create_add_points($node){
 	
 	global $user;
 

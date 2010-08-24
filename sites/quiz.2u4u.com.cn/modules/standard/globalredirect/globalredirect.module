@@ -42,7 +42,7 @@ function globalredirect_init() {
    * the Ad Module which had its own script in its folder doing a bootstrap which invoked hook_init and caused some banners to get "cleaned up"
    * See issues: http://drupal.org/node/205810 and http://drupal.org/node/278615
    */
-  if ($_SERVER['SCRIPT_NAME'] != $GLOBALS['base_path'] .'index.php') return FALSE;
+  #if ($_SERVER['SCRIPT_NAME'] != $GLOBALS['base_path'] .'index.php') return FALSE; 
 
   /**
    * If the site is in offline mode there is little point doing any of this as you might end up redirecting to a 503.

@@ -6,7 +6,7 @@
 */
 
 header("Content-type: text/html; charset=utf-8");
-require 'connect.php';
+require 'connect-shop.php';
 
 
 $sql = "SELECT uid,count( uid ) AS num,delivery_first_name,delivery_company,delivery_phone,delivery_street1,delivery_city,delivery_postal_code,created FROM `uc_orders` WHERE

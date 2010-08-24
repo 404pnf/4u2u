@@ -1,0 +1,52 @@
+<?php
+require 'connect.php';
+
+$name = urlencode("大礼包兑换用户充值使用的图书统计");
+/*
+header("Content-type:application/vnd.ms-excel;charset:utf-8"); 
+header("Content-Disposition:filename=$name.xls"); 
+header("Pragma: no-cache");
+header("Expires: 0");
+*/
+
+echo "<TABLE height=45 cellSpacing=0 borderColorDark=#ffffff width='100%'  
+bgColor=#ffffff borderColorLight=#c0c0c0 border=1><TBODY><tr><td align='center'>图书名</td>
+	 <td align='center' >充值次数</td></tr>";
+
+$sql = "SELECT uo.uid 
+		FROM shop.`uc_orders` uo
+		WHERE uo.order_status='completed'
+		AND uo.order_total >500
+		AND uo.order_id >56
+		AND uo.uid >1
+		GROUP BY uo.uid";
+
+$rs = mysql_query($sql);
+
+while($row = mysql_fetch_object($rs)){
+	$uid_str .=$row->uid."," ;	
+}
+
+$uid_condition = substr($uid_str,0,-1);
+$sql = "SELECT tp.emno, count( tp.emno ) num
+		FROM 2u4u.`topup` tp
+		WHERE tp.uid in (".$uid_condition.")
+		GROUP BY tp.emno
+		ORDER BY num DESC";
+
+echo "<br>$sql<br>";
+exit;
+while($arr = mysql_fetch_object($rs)){
+	
+	$query = "SELECT name FROM `book_info` WHERE sku=".$arr->emno;
+	$erp = mysql_fetch_object(mysql_query($query));
+	if(strlen($erp->name)>2)
+	       $title = $erp->name;
+	else  
+	       $title = $row->emno;	              	
+
+echo "<tr><td>".$title."</td><td>".$row->num."</td></tr>";
+
+}
+echo " </TBODY> </TABLE>"; 
+?>

@@ -1,6 +1,6 @@
 <?php
 $DB_Server = "localhost";
-$DB_Username = "wzs";
+$DB_Username = "wuzs";
 $DB_Password = "wuzhangshu";
 $DB_DBName = "2u4u";
 $Connect = @mysql_connect($DB_Server, $DB_Username, $DB_Password)

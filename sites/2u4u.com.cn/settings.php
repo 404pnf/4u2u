@@ -7,6 +7,7 @@
 $db_url['default'] = 'mysql://woshiguanliyuan:ef5abfb553fab28a3d9@localhost/2u4u';
 $db_url['discuz'] = 'mysql://woshiguanliyuan:ef5abfb553fab28a3d9@localhost/discuz';
 $db_url['uchome'] = 'mysql://wzs:wuzhangshu@localhost/uchome';
+$db_url['ebook'] = 'mysql://woshiguanliyuan:ef5abfb553fab28a3d9@localhost/ebook';
 $db_prefix = '';
 
 /**

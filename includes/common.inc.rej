@@ -1,0 +1,140 @@
+***************
+*** 1846,1853 ****
+    $no_theme_preprocess = '';
+  
+    $preprocess_css = (variable_get('preprocess_css', FALSE) && (!defined('MAINTENANCE_MODE') || MAINTENANCE_MODE != 'update'));
+-   $directory = file_directory_path();
+-   $is_writable = is_dir($directory) && is_writable($directory) && (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PUBLIC);
+  
+    // A dummy query-string is added to filenames, to gain control over
+    // browser-caching. The string changes on every update or full cache
+--- 1846,1853 ----
+    $no_theme_preprocess = '';
+  
+    $preprocess_css = (variable_get('preprocess_css', FALSE) && (!defined('MAINTENANCE_MODE') || MAINTENANCE_MODE != 'update'));
++   $directory = file_directory_path(TRUE); // core patch #572516(case 1)
++   $is_writable = is_dir($directory) && is_writable($directory); // core patch #572516(case 1)
+  
+    // A dummy query-string is added to filenames, to gain control over
+    // browser-caching. The string changes on every update or full cache
+***************
+*** 1922,1928 ****
+    $data = '';
+  
+    // Create the css/ within the files folder.
+-   $csspath = file_create_path('css');
+    file_check_directory($csspath, FILE_CREATE_DIRECTORY);
+  
+    if (!file_exists($csspath .'/'. $filename)) {
+--- 1922,1928 ----
+    $data = '';
+  
+    // Create the css/ within the files folder.
++   $csspath = file_create_path('css', TRUE); // core patch #572516(case 1)
+    file_check_directory($csspath, FILE_CREATE_DIRECTORY);
+  
+    if (!file_exists($csspath .'/'. $filename)) {
+***************
+*** 1948,1954 ****
+      $data = implode('', $matches[0]) . $data;
+  
+      // Create the CSS file.
+-     file_save_data($data, $csspath .'/'. $filename, FILE_EXISTS_REPLACE);
+    }
+    return $csspath .'/'. $filename;
+  }
+--- 1948,1954 ----
+      $data = implode('', $matches[0]) . $data;
+  
+      // Create the CSS file.
++     file_save_data($data, $csspath .'/'. $filename, FILE_EXISTS_REPLACE, TRUE); // core patch #572516(case 1)
+    }
+    return $csspath .'/'. $filename;
+  }
+***************
+*** 2102,2108 ****
+   * Delete all cached CSS files.
+   */
+  function drupal_clear_css_cache() {
+-   file_scan_directory(file_create_path('css'), '.*', array('.', '..', 'CVS'), 'file_delete', TRUE);
+  }
+  
+  /**
+--- 2102,2108 ----
+   * Delete all cached CSS files.
+   */
+  function drupal_clear_css_cache() {
++   file_scan_directory(file_create_path('css', TRUE), '.*', array('.', '..', 'CVS'), 'file_delete', TRUE); // core patch #572516(case 1)
+  }
+  
+  /**
+***************
+*** 2253,2260 ****
+    $no_preprocess = array('core' => '', 'module' => '', 'theme' => '');
+    $files = array();
+    $preprocess_js = (variable_get('preprocess_js', FALSE) && (!defined('MAINTENANCE_MODE') || MAINTENANCE_MODE != 'update'));
+-   $directory = file_directory_path();
+-   $is_writable = is_dir($directory) && is_writable($directory) && (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PUBLIC);
+  
+    // A dummy query-string is added to filenames, to gain control over
+    // browser-caching. The string changes on every update or full cache
+--- 2253,2260 ----
+    $no_preprocess = array('core' => '', 'module' => '', 'theme' => '');
+    $files = array();
+    $preprocess_js = (variable_get('preprocess_js', FALSE) && (!defined('MAINTENANCE_MODE') || MAINTENANCE_MODE != 'update'));
++   $directory = file_directory_path(TRUE); // core patch #572516(case 1)
++   $is_writable = is_dir($directory) && is_writable($directory); // core patch #572516(case 1)
+  
+    // A dummy query-string is added to filenames, to gain control over
+    // browser-caching. The string changes on every update or full cache
+***************
+*** 2455,2461 ****
+    $contents = '';
+  
+    // Create the js/ within the files folder.
+-   $jspath = file_create_path('js');
+    file_check_directory($jspath, FILE_CREATE_DIRECTORY);
+  
+    if (!file_exists($jspath .'/'. $filename)) {
+--- 2455,2461 ----
+    $contents = '';
+  
+    // Create the js/ within the files folder.
++   $jspath = file_create_path('js', TRUE); // core patch #572516(case 1)
+    file_check_directory($jspath, FILE_CREATE_DIRECTORY);
+  
+    if (!file_exists($jspath .'/'. $filename)) {
+***************
+*** 2468,2474 ****
+      }
+  
+      // Create the JS file.
+-     file_save_data($contents, $jspath .'/'. $filename, FILE_EXISTS_REPLACE);
+    }
+  
+    return $jspath .'/'. $filename;
+--- 2468,2474 ----
+      }
+  
+      // Create the JS file.
++     file_save_data($contents, $jspath .'/'. $filename, FILE_EXISTS_REPLACE, TRUE); // core patch #572516(case 1)
+    }
+  
+    return $jspath .'/'. $filename;
+***************
+*** 2478,2484 ****
+   * Delete all cached JS files.
+   */
+  function drupal_clear_js_cache() {
+-   file_scan_directory(file_create_path('js'), '.*', array('.', '..', 'CVS'), 'file_delete', TRUE);
+    variable_set('javascript_parsed', array());
+  }
+  
+--- 2478,2484 ----
+   * Delete all cached JS files.
+   */
+  function drupal_clear_js_cache() {
++   file_scan_directory(file_create_path('js', TRUE), '.*', array('.', '..', 'CVS'), 'file_delete', TRUE); // core patch #572516(case 1)
+    variable_set('javascript_parsed', array());
+  }
+  

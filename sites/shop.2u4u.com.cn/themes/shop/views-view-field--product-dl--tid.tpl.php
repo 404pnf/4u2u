@@ -21,10 +21,7 @@
   */
 ?>
 
-<?php //print $output; ?>
-
-<?php  //print shop_print_zcxh(array_shift($field->items));
-//print_r (array_shift($field->items));
+<?php  
 $node = node_load($row->nid);
 print shop_print_zcxh_by_object($node->taxonomy);
 ?>

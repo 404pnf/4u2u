@@ -111,7 +111,7 @@
 					<?php if ($logged_in): ?>
 						<div class="shipin-comment"><a href="#pinglun">发表评论</a></div>
 					<?php else : ?> 
-						<div class="shipin-comment">登录后才能发表评论，请您先<a href="http://2u4u.com.cn/user">登录</a>或<a href="http://2u4u.com.cn/user/register">注册</a></div>
+						<div class="shipin-comment"><div class="shipin_links"><?php print $links; ?></div></div>
 					<?php endif; ?> 
 				<?php endif; ?> 
 					<div class="shipin-shareTo">
@@ -120,19 +120,11 @@
 						<script type="text/javascript" src="http://s.shareto.com.cn/js/shareto_button.js"></script>
 						<!-- ShareTo Button END -->
 					</div>
-					<div class="shipin_links"><?php print $links; ?></div>
+					
 
 			</div>
 	  </div>
 	</div>
-<!-- 		<div class="field field-type-text field-field-shipin-neirong">
-     <?php if(strlen($node->field_shipin_neirong[0]['view'])>2):?>		  
-         <h3 class="field-label">背景介绍</h3>
-        <?php endif ?>
-                <div class="field-items">
-		      <div class="field-item"><?php print $node->field_shipin_neirong[0]['view'] ?></div>
-		  </div>
-		</div> -->
   </div>
 
 
@@ -178,13 +170,27 @@
 		$output=substr($output,0,strlen($output)-1);
 		$output2=substr($output2,0,strlen($output2)-1);
 	?>
+	<?php 
+				//$relate_video ='';
+				$relate_ebook ='';
+				
+				$relate_video =views_embed_view('media_taxonomy_term','block_1',$node->nid,$output);
+				$relate_ebook =phptemplate_get_ebook('yuedu_taxonomy_term','block_1',$output2);
+				
+				if(strlen($relate_ebook)>146) {
+					$relate_ebook .='<div class="more-link"><a href="http://ebook.2u4u.com.cn/mrelate/'.$output2.'">更多>></a></div>'; 
+				}
+				else {
+					$relate_video =views_embed_view('media_taxonomy_term','block_2',$node->nid,$output);
+				}
+			?>
 	<div class="relatebox">
-		<? print views_embed_view('media_taxonomy_term','block_1',$node->nid,$output);?>
+		<? print $relate_video; ?>
 		<div class="ebook_relate">
-			<? print phptemplate_get_ebook('yuedu_taxonomy_term','block_1',$output2); ?>
-			<? print '<div class="more-link"><a href="http://ebook.2u4u.com.cn/mrelate/'.$output2.'">更多>></a></div>';  ?>
+			<? print $relate_ebook; ?>
 		</div>
 	</div>
+</div>
 </div>
 </div>
 </div> <!-- /node-inner, /node -->

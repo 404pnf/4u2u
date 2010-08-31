@@ -36,7 +36,7 @@ stylesheets[all][] = css/xpy1.css
 ;stylesheets[print][] = css/print.css
 
 ; Optionally add some jquery scripts to your theme.
-;scripts[] = js/jquery.tools.min.js 	
+scripts[] = js/jquery.tools.min.js 	
     
 settings[stable_zen_tabs]             = 1
 settings[stable_wireframe]            = 0

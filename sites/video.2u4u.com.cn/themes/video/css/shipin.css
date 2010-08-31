@@ -580,6 +580,12 @@ clear:both;
 	border-right:1px dashed #9F9D9D;
 	margin:10px 0 0 20px;_ margin:10px 0 0 10px;
 }
+.node-type-shipin .view-display-id-block_2{
+	border-right:0 none;
+	float:none;
+	margin:10px 0 0 20px;
+	width:930px;
+}
 .node-type-shipin .ebook_relate{
 	margin:10px 0 0 20px;
 	width:450px;
@@ -589,6 +595,12 @@ clear:both;
 	width:125px;
 	margin:-6px 15px 0 0;
 }
+.node-type-shipin .view-display-id-block_2 .views-row{
+	float:left;
+	width:125px;
+	margin:-6px 25px 0 0;
+}
+
 .node-type-shipin .view-media-taxonomy-term .views-row-last, .node-type-shipin .ebook_relate .view-yuedu-taxonomy-term .views-row-last{
 	float:left;
 	margin:-6px 0 0 0;
@@ -687,15 +699,12 @@ display:none;
 
 .node-type-shipin #comment-form #edit-submit{
 	background:url("shipin_images/save.jpg") no-repeat scroll left center transparent;
-	border:1px;
-	width:63px;
-	height:28px;
-	color:#9D7701;
-	font-weight:bold;
+	border:0px none;
 	width:80px;
 	height:31px;
-	font-size:1px;
-	cursor:pointer
+	font-size:0px;
+	cursor:pointer;
+	text-indent:-5000px;
 }
 #comments .box{
 	background-color:#F1F1F1;

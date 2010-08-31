@@ -158,6 +158,7 @@ div.block:hover .edit {
 }
 #sidebar-second-inner{
 margin-left:0px;
+
 }
 /** Columns inner
 ---------------------------------
@@ -360,4 +361,7 @@ border:0;
 }
 #sidebar-second .block-inner .view-content{
 padding:5px;
+}
+#answer-ask-search{
+width:100%;
 }

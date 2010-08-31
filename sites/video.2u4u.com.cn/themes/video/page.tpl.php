@@ -109,6 +109,8 @@
             <div id="sidebar-second-inner" class="inner">
               <?php print $right; ?>
             </div>
+	  </div>
+          <div>
           </div>
         <?php endif; ?> <!-- /sidebar-second -->
 

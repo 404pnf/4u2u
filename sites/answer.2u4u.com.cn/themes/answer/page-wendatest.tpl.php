@@ -52,41 +52,53 @@
     <!-- ______________________ MAIN _______________________ -->
 
     <div id="main" class="clearfix">
-       <div id="content">
-         <div id="content-inner" class="inner column center">
-	     <div> 
-		<div id="my-answer">
-                </div>  
-                <?php if ($content_top): ?>
-                <div id="content-top">
-                  <?php print $content_top; ?>
-                  </div> <!-- /#content-top -->
-  		  <?php endif; ?>
-		  <div id="my-ask"><a href="node/add/best-answer">我要提问</a> >>>><a href="http://answer.2u4u.com.cn/node/63611">问答规则</a>
-                </div>
-	     </div>
+         <?php if ($content_top): ?>
+         <div id="content-top"> 
+			<div id="my-answer">
+					<?php Global $user;?>
+			<?php if($user->uid):?>
+						<?php print '<a href="/mywenda/'.$user->uid.'"> 我的问答</a>'?>
+			<?php else:?>
+						<a href="/user"> 我的问答</a>
+			<?php endif;?>
+			</div>
+		
+		<?php print $content_top; ?>
+		
+			<div id="my-ask"><a href="node/add/best-answer">我要提问</a> >>>><a href="http://answer.2u4u.com.cn/node/63611">问答规则</a>
+			</div>       
+		</div> <!-- /#content-top -->
+		<?php endif; ?>	 
+
+		
+	<div id="content">
+        <div id="content-inner" class="inner column center">
+			<div id="fanswer">
+               <?php print views_embed_view('test_answer',$display_id = 'page_3'); ?>
+             </div>
+			 
              <?php if ($breadcrumb || $title || $mission || $messages || $help || $tabs): ?>
-             <div id="content-header">
+				<div id="content-header">
+				
+				  <?php if(!empty($node) && $node->type == 'readthink'): ?>
+					<?php print $breadcrumb; ?>
+				  <?php endif; ?>
+
+				  <?php if(!empty($title) && $node->nid != 55446 && $node->type != 'og_group'): ?>
+					<div class="title_bg"><h1 class="title"><?php print $title; ?></h1></div>
+				  <?php endif; ?>
+
+				  <?php print $messages; ?>
+
+				  <?php print $help; ?> 
+
+				  <?php if ($tabs): ?>
+					<div class="tabs"><?php print $tabs; ?></div>
+				  <?php endif; ?>
+
+				</div> <!-- /#content-header -->
+			<?php endif; ?>
 			
-			  <?php if(!empty($node) && $node->type == 'readthink'): ?>
-				<?php print $breadcrumb; ?>
-			  <?php endif; ?>
-
-              <?php if(!empty($title) && $node->nid != 55446 && $node->type != 'og_group'): ?>
-                <div class="title_bg"><h1 class="title"><?php print $title; ?></h1></div>
-              <?php endif; ?>
-
-              <?php print $messages; ?>
-
-              <?php print $help; ?> 
-
-              <?php if ($tabs): ?>
-                <div class="tabs"><?php print $tabs; ?></div>
-              <?php endif; ?>
-
-            </div> <!-- /#content-header -->
-          <?php endif; ?>
-          
           <div id="content-area">
             <?php print $content; ?>
           </div> <!-- /#content-area -->

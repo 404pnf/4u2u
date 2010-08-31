@@ -221,7 +221,7 @@ function ucenter_form_alter(&$form, $form_state, $form_id) {
 /**
  * validator for user register
  */
-function ucenter_register_validate($form, &$form_state) {
+function ucenter_register_validate($form, &$form_state) {	
 	// check the name with ucenter's function
 	$name_result = uc_user_checkname($form_state['values']['name']);
 	if ($name_result == -1) {
@@ -250,6 +250,10 @@ function ucenter_register_validate($form, &$form_state) {
  * validator for user edit
  */
 function ucenter_edit_validate($form, &$form_state) {
+	//当邮箱地址为空时,跳过验证,此时应该是编辑profile的form(由老葛添加)
+	if(empty($form_state['values']['mail'])){
+		return;
+	}
 	// check the email with ucenter's function	
 	$email_result = uc_user_checkemail($form_state['values']['mail']);
 	if ($email_result == -4) {

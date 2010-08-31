@@ -1,0 +1,13 @@
+; $Id: audio_getid3.info,v 1.2 2008/06/10 05:23:28 drewish Exp $
+name = Audio getID3
+description = Adds the ability to read artist info from and write to audio files. Requires that the getID3 library be installed.
+package = Audio
+core = 6.x
+dependencies[] = audio
+dependencies[] = getid3
+; Information added by drupal.org packaging script on 2009-11-25
+version = "6.x-1.0-unstable6"
+core = "6.x"
+project = "audio"
+datestamp = "1259178304"
+

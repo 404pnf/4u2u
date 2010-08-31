@@ -1,0 +1,22 @@
+<?php
+// $Id: flashvideo.install,v 1.15.2.8 2009/04/25 23:27:36 attheshow Exp $
+
+/**
+ * Implementation of hook_install().
+ */
+function dashplayer_emfield_install() {
+  // Give the flashvideo module a high weight so that it can override [video] and [thumbnail] tags.
+  db_query("UPDATE {system} SET weight=10 WHERE type='module' AND name='dashplayer_emfield'");
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function dashplayer_emfield_uninstall() {
+}
+
+function dashplayer_emfield_update_6001() {
+  $ret = array();
+  $ret[] = update_sql("UPDATE {system} SET weight=10 WHERE type='module' AND name='dashplayer_emfield'");
+  return $ret;
+}

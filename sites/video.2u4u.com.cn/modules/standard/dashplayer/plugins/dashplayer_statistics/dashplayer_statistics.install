@@ -1,0 +1,11 @@
+<?php
+// Dash Media Player:  Statistics Install file
+// Written by Travis Tidwell @ www.travistidwell.com
+
+/**
+ * Implementation of hook_install().
+ */
+function dashplayer_statistics_install() {
+   // Set the node stat counter to 1.
+   variable_set('statistics_count_content_views', 1);
+}

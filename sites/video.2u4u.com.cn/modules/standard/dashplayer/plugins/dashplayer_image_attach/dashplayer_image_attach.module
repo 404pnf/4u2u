@@ -1,0 +1,28 @@
+<?php
+// Dash Media Player:  Image Attach plugin
+// Written by Travis Tidwell @ www.travistidwell.com
+
+function dashplayer_image_attach_nodeapi( &$node, $op, $teaser ) {
+	if( $op == 'load' ) {
+		$additions = array();
+        $image_nodes = db_query("SELECT iid FROM {image_attach} WHERE nid=%d", $node->nid);
+        while($image_node = db_fetch_object($image_nodes)) {	             
+           $images = db_query("SELECT f.* FROM {files} f 
+                                      LEFT JOIN {image} img ON img.fid=f.fid 
+                                      WHERE img.nid=%d AND 
+                                      (f.filemime='jpg' OR 
+                                       f.filemime='jpeg' OR
+                                       f.filemime='png' OR
+                                       f.filemime='gif' OR
+                                       f.filemime='image/jpeg' OR
+                                       f.filemime='image/jpg' OR
+                                       f.filemime='image/png' OR
+                                       f.filemime='image/gif')", $image_node->iid);
+      
+           while( $image = db_fetch_object($images)) {
+              $additions["dashplayer_images"][] = $image;
+           }
+        }
+		return $additions;
+	}	
+}

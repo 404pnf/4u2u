@@ -1,0 +1,15 @@
+; $Id: audio_attach.info,v 1.6 2008/12/08 21:46:32 drewish Exp $
+name = Audio Attach
+description = Allows audio files to be attached to any node type.
+package = "Audio"
+core = 6.x
+dependencies[] = audio
+dependencies[] = content
+dependencies[] = nodereference
+
+; Information added by drupal.org packaging script on 2009-11-25
+version = "6.x-1.0-unstable6"
+core = "6.x"
+project = "audio"
+datestamp = "1259178304"
+

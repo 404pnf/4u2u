@@ -1,0 +1,27 @@
+<?php
+// Dash Media Player:  Embedded Media Field plugin
+// Written by Travis Tidwell @ www.travistidwell.com
+
+function dashplayer_emfield_nodeapi( &$node, $op, $teaser ) {
+	if( $op == 'load' ) {
+		$additions = array();
+		foreach( $node as $fieldname => $field ) {
+            // If this is a CCK field.
+			if( strpos( $fieldname, 'field_' ) === 0 ) {
+					
+			   // If the asset exists.
+			   if( ($field[0]["provider"] == "youtube") || ($field[0]["provider"] == "google") ) {
+			      $newfile["path"] = $field[0]["data"]["thumbnail"]["url"];
+			      $newfile["filename"] = $field[0]["data"]["thumbnail"]["url"];
+			      $additions["dashplayer_media"][] = $newfile;
+			      
+			      $newfile["path"] = $field[0]["data"]["flash"]["url"];
+			      $newfile["filename"] = $field[0]["data"]["flash"]["url"];
+			      $newfile["mediatype"] = "youtube";
+			      $additions["dashplayer_media"][] = $newfile;
+			   }
+			}			
+		}
+		return $additions;
+	}	
+}

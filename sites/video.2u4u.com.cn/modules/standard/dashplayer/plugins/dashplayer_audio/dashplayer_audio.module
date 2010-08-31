@@ -1,0 +1,23 @@
+<?php
+// Dash Media Player:  Embedded Media Field plugin
+// Written by Travis Tidwell @ www.travistidwell.com
+
+function dashplayer_audio_nodeapi( &$node, $op, $teaser ) {
+	if( $op == 'load' ) {
+		$additions = array();
+		if( $node->audio_tags ) {
+			if( $node->audio_tags["album"] && !$node->field_album ) {
+				$additions["field_album"][0]["value"] = $node->audio_tags["album"];
+			}
+			
+			if( $node->audio_tags["artist"] && !$node->field_artist ) {
+				$additions["field_artist"][0]["value"] = $node->audio_tags["artist"];
+			}
+			
+			if( $node->audio_tags["title"] && !$node->field_song ) {
+				$additions["field_song"][0]["value"] = $node->audio_tags["title"];
+			}			
+		}
+		return $additions;
+	}	
+}

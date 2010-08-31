@@ -1,0 +1,13 @@
+; $Id: audio_images.info,v 1.1 2008/05/26 17:26:13 drewish Exp $
+name = Audio Images
+description = Adds the ability to attach album art to audio nodes.
+package = Audio
+core = 6.x
+dependencies[] = audio
+
+; Information added by drupal.org packaging script on 2009-11-25
+version = "6.x-1.0-unstable6"
+core = "6.x"
+project = "audio"
+datestamp = "1259178304"
+

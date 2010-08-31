@@ -1,0 +1,15 @@
+; $Id: voting_service.info,v 1.6.2.1 2007/10/27 17:32:16 travist Exp $
+name = Dash Player: Audio
+description = Provides support for the Audio module
+package = "Dash Media Player"
+dependencies[] = dashplayer
+dependencies[] = audio
+version = VERSION
+core = 6.x
+
+; Information added by drupal.org packaging script on 2010-05-17
+version = "6.x-1.8"
+core = "6.x"
+project = "dashplayer"
+datestamp = "1274061305"
+

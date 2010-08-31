@@ -1,0 +1,12 @@
+<?php 
+
+function expert_form_alter(&$form,&$form_state,$form_id) {
+  //print_r($form_id);
+  if($form_id == 'best_answer_node_form' && arg(3) == 'expert' && arg(2) == 'best-answer' ){
+    //pay attention to this term 39 it's only work on ask for expert
+//print_r($form_id);
+    //$form['title']['#default_value']= 39;
+    $form['taxonomy']['8']['#default_value'] =  39; 
+    $form['taxonomy']['8']['#attributes'] = array('disabled'=>TRUE,); 
+  }
+}

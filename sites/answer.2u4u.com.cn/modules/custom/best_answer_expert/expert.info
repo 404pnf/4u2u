@@ -1,0 +1,5 @@
+; $Id: $
+
+name = "Best Answer Expert Model"
+description = "Use form_alter control the form which just select expert"
+core = 6.x

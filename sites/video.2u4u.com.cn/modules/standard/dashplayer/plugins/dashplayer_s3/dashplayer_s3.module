@@ -1,0 +1,19 @@
+<?php
+// Dash Media Player:  S3 plugin
+// Written by Travis Tidwell @ www.travistidwell.com
+
+function dashplayer_s3_nodeapi( &$node, $op, $teaser ) {
+	if( $op == 'load' ) {
+		$additions = array();
+		$video = flashvideo_get_video_object( $node );
+		if( $video["file"] != "" ) {
+			$additions["field_dashplayer_media"][0]["value"] = $video["file"];
+		}
+		
+		$image = flashvideo_get_thumbnail( $node, array(), TRUE );
+		if( $image != "" ) {
+			$additions["field_dashplayer_image"][0]["value"] = $image;
+		}
+		return $additions;
+	}	
+}

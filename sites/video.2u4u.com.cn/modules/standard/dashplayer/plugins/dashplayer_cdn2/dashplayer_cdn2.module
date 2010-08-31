@@ -1,0 +1,83 @@
+<?php
+// Dash Media Player:  CDN2 plugin
+// Written by Travis Tidwell @ www.travistidwell.com
+
+// Quick Function that returns the file extension given a file path.
+function _dashplayer_cdn2_get_file_ext($filepath) { return drupal_strtolower(drupal_substr($filepath, strrpos($filepath, '.') + 1)); }
+function _dashplayer_cdn2_is_image( $filepath )
+{
+	$ext = 	_dashplayer_cdn2_get_file_ext( $filepath );
+	if( ($ext == 'jpg') || ($ext == 'png') || ($ext == 'gif') ) {
+		return TRUE;	
+	}
+	return FALSE;
+}
+
+/**
+ * Filter the playlist depending on which asset they wish to show.
+ */
+function dashplayer_cdn2_dashview_alter( &$nodes, $args ) {
+	
+	// Determine which presets we would like to have.
+	$presets = array();
+	
+	foreach( $args as $arg ) {
+		if( strpos( $arg, 'preset_' ) === 0 ) {
+			$presets[] = substr( $arg, 7 );
+		}	
+	}
+	
+	$preset_count = count( $presets );
+	$dash_media = "field_dashplayer_media";
+	$dash_image = "field_dashplayer_image";
+	
+	if( $nodes["nodes"] ) {	
+					
+		// Iterate through all of the nodes.
+		foreach( $nodes["nodes"] as $index => $node ) {	
+			
+			$numassets = 0;
+			
+			// Iterate through all of the fields in the node.
+			foreach( $node as $fieldname => $field ) {
+		
+				// If this is a CCK field.
+				if( strpos( $fieldname, 'field_' ) === 0 ) {
+					
+					// Get the assets.
+					$assets = $field[0]["assets"];
+					
+					// If the asset exists.
+					if( $assets ) {
+													
+						// Iterate through all of the assets.
+						foreach( $assets as $aindex => $asset ) {
+							
+							$is_image = _dashplayer_cdn2_is_image($asset["asset_fetch_url"]);
+							
+							// If the asset is not an image and is not in the presets array.
+							if( $is_image || ($preset_count == 0) || in_array($asset["preset_name"], $presets) ) {
+								$numassets++;
+								
+								if( $is_image ) {
+									$nodes["nodes"][$index]->{$dash_image}[0]["value"] = $asset["asset_fetch_url"];
+								}
+								else {
+									$nodes["nodes"][$index]->{$dash_media}[0]["value"] = $asset["asset_fetch_url"];
+								}
+							}
+						}										
+					}
+				}
+			}
+
+			if( ($preset_count > 0)	&& ($numassets == 0) ) {
+				unset( $nodes["nodes"][$index] );
+				$nodes["total_rows"] = $nodes["total_rows"] - 1;
+			}
+		}
+		
+		// AMFPHP complains if the array values are not right.
+		$nodes["nodes"] = array_values( $nodes["nodes"] );
+	}
+}

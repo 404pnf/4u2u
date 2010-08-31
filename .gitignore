@@ -5,7 +5,7 @@
 cache/*
 cache
 cacti
-misc/dynamic
+misc/dynamic/*
 guanlisjk
 zhuanti
 js/*

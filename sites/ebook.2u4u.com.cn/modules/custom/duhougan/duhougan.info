@@ -1,6 +1,7 @@
 ; $Id: forum.info,v 1.6 2007/06/08 05:50:54 dries Exp $
 name = 读后感模块
 
+package = 2u4u
 version = "6.x-1.1"
 core = 6.x
 

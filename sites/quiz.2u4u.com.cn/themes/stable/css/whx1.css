@@ -108,69 +108,28 @@ height:250px;
 	margin-left:20px;
 	padding-left:13px;
 }
-
-.view-whx-quiz .view-header a, .view-whx-quiz .view-header a:visited, .view-whx-quiz .views-field-title a, .view-whx-quiz .views-field-title a:visited{
-	color:#961F1F;
+#block-block-53 .view-content .views-row{
+	padding:2px 0px;
+	height:25px;
 }
 
-.view-empty{
-	margin:15px 0 10px 35px;
-	color:#961F1F
-}
-
-.view-id-quiz_taxonomy{
-	height:30px;
-}
-
-.page-quizcenterwhx #sidebar-second .content .view-dom-id-8{
-	*height:80px;
-	width:180px;
-	* width:150px;
-	_ width:150px;
-}
-
-.page-quizcenterwhx #sidebar-second .content .view-dom-id-9{
-	*height:80px;
-	width:195px;
-	* width:170px;
-	_ width:170px;
-}
-
-.view-id-quiz_taxonomy .view-content .views-row{
+#block-block-53 .view-content .views-row-odd{
 	float:left;
 }
-
-
-.page-quizcenterwhx #sidebar-second .block-inner .view-content{
+#block-block-53 .view-content .views-row a{
+	padding:0px 8px;
+}
+#block-block-53 .block-inner .view-content{
 	padding:8px 8px 0 16px;
-	_ padding:0;
-	* padding:5px 0 0 0;
+	 width:200px; 
+	/**/
+	display:block;
 }
 
-.view-id-quiz_taxonomy .view-content .views-row .views-field-name{
-	margin-right:3px;
-	_ margin-right:0;
-	* margin-right:0;
-}
-
-
-.view-id-quiz_taxonomy .view-content .views-row a:link{
-	margin:10px;
-}
-
-#sidebar-second .view-header{
+#block-block-53 .view-id-quiz_taxonomy .view-header{
 	background-image:none;
+	height:20px;
 }
-
-
-.section-quizcenterwhx #sidebar-second .content .view-header{
-	height:15px;
-}
-
-.section-quizcenterwhx #sidebar-second .content{
-	height:360px;
-}
-
 
 
 /* quiz 答题选项的css */

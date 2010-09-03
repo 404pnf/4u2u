@@ -175,6 +175,7 @@ function dz2drupalpoints_callback_form_submit($form, &$form_state){
 		$params = array (
 			'uid' => arg(1),
 			'points' => $userpoints,
+			'description' => t('通过转换外语圈论坛金钱获取的积分'),
 		);
 		userpoints_userpointsapi($params);
 		drupal_set_message(t('转换成功:扣除外语圈论坛金钱%real_dzpoints ;添加悠游积分%userpoints',array('%real_dzpoints'=>$real_dzpoints,'%userpoints'=>$userpoints)));	

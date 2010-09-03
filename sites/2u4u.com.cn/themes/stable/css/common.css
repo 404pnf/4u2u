@@ -1,6 +1,7 @@
 /** ABOUT common STYLES
 ---------------------------------
 *  common.css is used to establish general rules
+主站以及所有子站点都使用的css，在子站中处于所有css的最顶层，可以在其他css中复写本文件中的任何样式。
 ---------------------------------
 */
 
@@ -455,4 +456,16 @@ color:#9E254A;
 .shareto_button {
 display:block;
 height:25px;
+}
+
+/* 为所有按钮加上鼠标的手型样式 */
+input[type="submit"],input[type="button"] {
+cursor:pointer;
+}
+
+
+/* 表格最后一行没有虚线 */
+tbody tr.views-row-last td{
+	border-bottom:0px;
+	margin-bottom:30px;
 }

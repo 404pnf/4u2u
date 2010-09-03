@@ -1,5 +1,6 @@
 name = Yuedu PDF browser
 description = Upload the pdf and enjoy
+package = 2u4u
 dependencies[] = userpoints
 dependencies[] = flag
 dependencies[] = number

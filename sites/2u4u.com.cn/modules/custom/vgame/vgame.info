@@ -1,3 +1,5 @@
 name = Vocabulary Games
 description = "Play vocabulary games"
 core = 6.x
+package = 2u4u
+

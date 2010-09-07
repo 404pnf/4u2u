@@ -1,0 +1,124 @@
+<?php
+// $Id$
+/**
+ * Install the initial schema.
+ */
+function invite_install() {
+  drupal_install_schema('invite');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function invite_uninstall() {
+  // Drop database schema.
+  drupal_uninstall_schema('invite');
+
+  // Delete variables
+  $sql = "DELETE from {variable} WHERE name LIKE '%%invite%%'";
+  db_query($sql);
+  //variable_del('invite_num_ranks');
+}
+
+function invite_schema() {
+  $schema['invite'] = array(
+    'description' => 'The base table for invites.',
+    'fields' => array(
+      'invite_id' => array(
+				'description' => 'Primary key: the invite ID.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'email' => array(
+        'description' => 'Stores the e-mail the invite has been addressed to.',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+			'email_name' => array(
+        'description' => 'Stores the e-mail name the invite has been addressed to.',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+			'referrer' => array(
+        'description' => 'Stores the referrer site the invite come from.',
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'uid' => array(
+        'description' => 'Stores the user id of the inviter.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'invitee' => array(
+        'description' => 'Stores the user id of the invitee upon registration.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'created' => array(
+        'description' => 'Stores the creation time of the invite.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+			'changed' => array(
+        'description' => 'Stores the update time of the invite.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'joined' => array(
+        'description' => 'Will be filled with the time the invite was accepted upon registration.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      
+      'data' => array(
+        'description' => 'Stores auxiliary data.',
+        'type' => 'text',
+        'not null' => TRUE,
+				'default' => '',
+      ),
+    ),
+    'unique keys' => array(
+      'invite_id' => array('invite_id'),
+    ),
+    'indexes' => array(
+      'email' => array('email'),
+      'uid'   => array('uid'),
+    ),
+  );
+
+  $schema['usercode'] = array(
+    'description' => 'Stores user code of inviters.',
+    'fields' => array(
+      'uid' => array(
+        'description' => 'Stores the user id to be notified (inviter).',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'ucode' => array(
+        'description' => 'Stores the code of the invitee.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'unique keys' => array(
+      'uid_invitee' => array('uid', 'ucode'),
+    )
+  );
+
+  return $schema;
+}
+

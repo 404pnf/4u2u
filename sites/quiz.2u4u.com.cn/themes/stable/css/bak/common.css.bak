@@ -1,0 +1,363 @@
+/** ABOUT common STYLES
+---------------------------------
+*  common.css is used to establish general rules
+---------------------------------
+*/
+
+* { margin: 0; padding: 0; }
+
+/** Clear Floats Without Structural Markup: 
+---------------------------------
+*  http://www.positioniseverything.net/easyclearing.html
+*/
+
+.clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+.clearfix { display: inline-block; }
+
+/* Hides from IE-mac \*/
+* html .clearfix { height: 1%; }
+.clearfix { display: block; }
+/* End hide from IE-mac */
+
+/* clear classes */
+
+.clearleft, .clearl, .cleft { clear: left; }
+.clearright, .clearr, .cright { clear: right; }
+.clear, .clearboth, .clearall{ clear: both; }
+
+/* Float classes */
+
+.floatleft, .fleft, .floatl { float: left; margin: 0 10px 5px 0; }
+.floatright, .fright, .floatr { float: right; margin: 0 0 5px 10px; }
+
+
+/* whx view,block 清除Clear Floats*/
+.view,.block{
+display:block;
+clear:both;
+}
+.block{
+margin-bottom:10px;
+}
+.block-inner .content{
+padding:5px;
+}
+/** "Skip to Main Content" link
+---------------------------------
+*  This link useful for both visually impaired people and those with mobility impairments
+*  who cannot use a mouse. http://www.webaim.org/techniques/css/invisiblecontent/
+*/
+
+#skip a, #skip a:hover, #skip a:visited {
+  position: absolute;
+  left:-10000px;
+  top:auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+#skip a:active, #skip a:focus {
+  position: static;
+  width: auto;
+  height: auto;
+}
+
+/* bug fix with views 2 edit links */
+
+div.view div.views-admin-links {
+	width:auto;
+}
+
+/** Rollover edit links for blocks */
+
+div.block {
+  position: relative;
+}
+div.block .edit {
+  display: none;
+  position: absolute;
+  right: -20px;
+  top: -5px;
+  z-index: 40;
+  padding: 3px 8px 0;
+  font-size: 10px;
+  line-height:16px;
+  background-color: #fff;
+  border:1px solid #ccc;
+  /*let's get fancy !*/
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-box-shadow: 0 1px 3px #888;
+  -webkit-box-shadow: -1px 1px 2px #666;
+}
+div.block .edit a {
+  display:block;
+  border:0;
+  padding:0;
+  margin:0;
+}
+div.block:hover .edit {
+  display: block;
+}
+
+/** Layout
+---------------------------------
+*  Using a negative margin technique, adapted from ZEN. The page is loaded by this order:
+*  
+*  1. Header
+*  2. Content
+*  3. Navigation menus
+*  4. Sidebar Left
+*  5. Sideabr Right
+*	
+*/
+/* 王海霞 whx修改page、head、main、Navigation，使导航部分符合现在的布局（即占满整个窗口） */
+
+#page {
+	/* width: 960px;  *//* edit to change the width of the page */
+	margin: 0 auto; /* remove 'auto' and the width to switch to a fluid width */
+}
+/** LAYOUT RULES
+---------------------------------
+*  do not change if you're not sure you know what you're doing
+*/
+
+#main,#header-middle,#navigation{ width: 960px; margin: 0 auto; }
+#content {   float: left;   width: 960px;   margin-right: -100%;   padding-top:0px; }
+#sidebar-second { float: right; }
+#footer {float: none;  clear: both; }
+
+/* Layout Helpers */
+#header, #footer, .mission, .breadcrumb, .node {  clear: both; }
+#header{height:115px; background-color: #ffffff; background-image:url("fp_images/bg-5.gif");line-height:20px;min-width:960px;}
+
+
+/** Sidebars width
+---------------------------------
+*  Changing the width of the sidebars is dead easy, just change the
+*  values below corresponding to the sidebar you want to modify.
+*  Make sure you keep negative values as negative values.
+*  For example, if I want to increase the width of the left sidebar
+*  to 300px, I would have to change each '190' to '300'.
+*/
+.sidebar-right .center {
+  margin-right: 220px;    
+  position:relative;/*whx 为翻译推荐页面的“我也来推荐”确定位置*/
+  z-index:1;
+} 
+/* bxy this is the right sidebar */
+#sidebar-second {
+  width: 220px;           /* RIGHT value */
+}
+#sidebar-second-inner{
+margin-left:0px;
+}
+/** Columns inner
+---------------------------------
+*  You can change the padding inside the columns without changing the
+*  width of them by just usinbg the INNER div of each column
+*/
+.inner { padding: 0px; }
+
+/* Navigation styles*/
+#navigation { height: 54px;  clear:both; }
+
+
+
+/** Font styles 
+---------------------------------
+* whx global 
+*/
+body {
+  margin: 0;
+  font: 12px/1.7em "Helvetica Neue", helvetica, Arial, sans-serif;
+  letter-spacing:0.03em;
+}
+
+/* Links */
+a { cursor:pointer; }
+a:link {color:#336699; text-decoration:none; }
+a:visited {color:#666699; text-decoration:none; }
+a:hover {text-decoration:underline; }
+a img { border-width:0; }
+
+/* whx Titles */
+h1, h2, h3, h4, h5, h6 {line-height:1.3em;}
+h1 { font-size: 2.0em; 	font-weight:700; padding: 0 0 0.5em; margin: 0;}
+h2 {font-size:1.4em;/* font-weight:300; */font-weight:700;margin-bottom:0.5em;}
+h3 {font-size:1.1em;margin-bottom:0.4em;}
+h4 {font-size:1.2em;margin-bottom:0.3em;}
+h5 {font-size:1.1em;font-weight:600;margin-bottom:0;}
+h6 {font-size:1em;font-weight:bold;}
+/* whx view title */
+.views-field-title{font-size:1.1em;}
+td.views-field-title{font-size:1.0em;}
+
+/* Paragraph Styles */
+p {  margin:0 0 1em 0;}
+.field-content p{  margin:0;}
+/* List Styles  */
+
+ul, ol {  margin-left: 0;   padding-left: 2em; }
+
+/* Table Styles  */
+table {	width: 99%;}
+/* whx tr 高度 颜色 border*/
+tr.even td, tr.odd td {
+	/* padding: 10px 5px; */
+	border-bottom:1px dashed #DDDDDD;
+	padding:3px 3px 3px 0;
+}
+tr.odd ,tr.even{
+	background-color: #fff;
+}
+
+/* Code */
+pre, code, tt {font:1em 'andale mono', 'lucida console', monospace;line-height:1.5;}
+
+pre {
+	background-color: #efefef;
+	display: block;
+	padding: 5px;
+	margin: 5px 0;
+	border: 1px solid #aaa;
+}
+
+/* List Styles */
+ul          { list-style-type: disc; }
+ul ul       { list-style-type: circle; }
+ul ul ul    { list-style-type: square; }
+ul ul ul ul { list-style-type: circle; }
+ol          { list-style-type: decimal; }
+ol ol       { list-style-type: lower-alpha; }
+ol ol ol    { list-style-type: decimal; }
+
+/* Abbreviation */
+abbr {
+  border-bottom: 1px dotted #666;
+  cursor: help;
+  white-space: nowrap;
+}
+
+/* UI improvments  */
+#edit-title{
+	font-size: 24px;
+}
+#system-themes-form img{
+	width:100px;
+}
+.form-item .description{
+	font-style:italic;
+	line-height:1.2em;
+	font-size:0.8em;
+	margin-top:5px;
+	color:#777;
+}
+#edit-delete{
+	color:#c00;
+}
+
+/**
+ * Console, style from Slate theme
+ */
+
+
+div.status {
+  color: #360;
+}
+div.error {
+  color: #dd0d0d;
+}
+div.messages{
+	color: #8F8F8F;
+}
+div.warning {
+  color: #961F1F;
+}
+
+
+
+/* 全站更改，让pager的数字之间距离减小
+   防止有些页面pager的 > 换行 */
+.item-list .pager li {
+background-image:none;
+display:inline;
+list-style-type:none;
+padding:0; /* system.css中默认是0.5em */
+}
+/* 覆盖system.css中关于 .item-list ul li ；ul.primary li a 的设置：调整user、libao、wenda 等页的tabs*/
+.item-list ol li {
+list-style-type:decimal;
+}
+ul.tabs li a {
+padding:0 0.3em;
+}
+ul.tabs{
+margin:5px 0 0;
+}
+
+/* term global */
+.taxonomy{
+float:right;
+}
+
+/* 全局的right sidebar标题样式，以及views生成的分类显示列表页的样式，以后如果全局样式定好后可作统一修改 ，现在包括电子图书馆、翻译大赛、读后感、读后感评审、视频、问答、*/
+/* 标题颜色、背景*/
+#sidebar-second h3.title,#sidebar-second .view-header ,.section-fanyi #main #content-header h1.title,.section-fanyituijian #main #content-header,.section-fenlei .view-header,.section-mtag #main #content-header h1.title,.section-yuedu #main #content-header h1.title,.section-wenda #main #content-header h1.title,.section-dhgps .view-header{
+background-image:url("images/video_titleall.jpg");
+border-left:1px solid #DEDEDE;
+border-right:1px solid #DEDEDE;
+clear:both;
+color:#4AB740;
+font-weight:bold;
+height:35px;
+line-height:35px;
+margin:0;
+padding:0 0 0 8px;
+}
+#sidebar-second h3.title,#sidebar-second .view-header
+{
+font-size:12px;
+}
+/* views“标题”生成的title需要去掉border，有argument等生成的不需要重新设此值 */
+.section-fenlei .view-header,.section-dhgps .view-header,#sidebar-second .view-header{
+border:0;
+}
+.section-fanyi #main #content-header h1.title,.section-mtag #main #content-header h1.title,.section-yuedu #main #content-header h1.title,.section-fenlei .view-header,.section-dhgps .view-header,.section-wenda #main #content-header h1.title {
+font-size:14px;
+}
+/* 加框 */
+#sidebar-second .block-inner .content,
+.section-fanyi  #main #content-area, 
+.section-fanyituijian #main #content-area,
+.section-mtag  #main #content-area, 
+.section-yuedu  #main #content-area, 
+.section-fenlei  #main #content-area,
+.section-dhgps  #main #content-area, 
+.section-wenda #main #content-area,
+.page-libao #main #content-area{
+border:1px solid #CECECE;
+border-top:0px;
+line-height:2em;
+/* padding:0px; */
+padding:0 10px;
+}
+.section-fanyi  #main #content-area{
+padding:0px;
+}
+#sidebar-second .block-inner .content{
+padding:0 5px;
+}
+#block-block-31 .block-inner .content{
+border:0;
+}
+#sidebar-second .block-inner .view-content{
+padding:5px;
+}

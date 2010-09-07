@@ -1,0 +1,24 @@
+<?php
+// $Id$
+
+/**
+ * 实现钩子hook_menu_alter().
+ */
+function uc_filedownload_menu_alter(&$items){
+	//把uc_file里面的用户下载页面菜单项替换为我们的
+	$items['user/%user/purchased-files']['page callback'] = 'uc_filedownload_user_downloads';
+	$items['user/%user/purchased-files']['file path'] = drupal_get_path('module', 'uc_filedownload');
+	$items['user/%user/purchased-files']['file'] = 'uc_filedownload.pages.inc';
+}
+
+/**
+ * 实现钩子hook_theme().
+ */
+function uc_filedownload_theme() {
+  return array(
+    'uc_filedownload_user_downloads' => array(
+      'arguments' => array('header' => NULL, 'files' => NULL),
+      'file' => 'uc_filedownload.pages.inc',
+    ),
+  );
+}

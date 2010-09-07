@@ -1,0 +1,260 @@
+diff -ru includes/common.inc includes/common.inc
+--- includes/common.inc	2010-06-03 04:52:32.000000000 +1000
++++ includes/common.inc	2010-07-22 15:32:18.000000000 +1000
+@@ -1850,8 +1850,8 @@
+   $no_theme_preprocess = '';
+ 
+   $preprocess_css = (variable_get('preprocess_css', FALSE) && (!defined('MAINTENANCE_MODE') || MAINTENANCE_MODE != 'update'));
+-  $directory = file_directory_path();
+-  $is_writable = is_dir($directory) && is_writable($directory) && (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PUBLIC);
++  $directory = file_directory_path(TRUE); // core patch #572516(case 1)
++  $is_writable = is_dir($directory) && is_writable($directory); // core patch #572516(case 1)
+ 
+   // A dummy query-string is added to filenames, to gain control over
+   // browser-caching. The string changes on every update or full cache
+@@ -1926,7 +1926,7 @@
+   $data = '';
+ 
+   // Create the css/ within the files folder.
+-  $csspath = file_create_path('css');
++  $csspath = file_create_path('css', TRUE); // core patch #572516(case 1)
+   file_check_directory($csspath, FILE_CREATE_DIRECTORY);
+ 
+   if (!file_exists($csspath .'/'. $filename)) {
+@@ -1952,7 +1952,7 @@
+     $data = implode('', $matches[0]) . $data;
+ 
+     // Create the CSS file.
+-    file_save_data($data, $csspath .'/'. $filename, FILE_EXISTS_REPLACE);
++    file_save_data($data, $csspath .'/'. $filename, FILE_EXISTS_REPLACE, TRUE); // core patch #572516(case 1)
+   }
+   return $csspath .'/'. $filename;
+ }
+@@ -2060,7 +2060,7 @@
+  * Delete all cached CSS files.
+  */
+ function drupal_clear_css_cache() {
+-  file_scan_directory(file_create_path('css'), '.*', array('.', '..', 'CVS'), 'file_delete', TRUE);
++  file_scan_directory(file_create_path('css', TRUE), '.*', array('.', '..', 'CVS'), 'file_delete', TRUE); // core patch #572516(case 1)
+ }
+ 
+ /**
+@@ -2211,8 +2211,8 @@
+   $no_preprocess = array('core' => '', 'module' => '', 'theme' => '');
+   $files = array();
+   $preprocess_js = (variable_get('preprocess_js', FALSE) && (!defined('MAINTENANCE_MODE') || MAINTENANCE_MODE != 'update'));
+-  $directory = file_directory_path();
+-  $is_writable = is_dir($directory) && is_writable($directory) && (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PUBLIC);
++  $directory = file_directory_path(TRUE); // core patch #572516(case 1)
++  $is_writable = is_dir($directory) && is_writable($directory); // core patch #572516(case 1)
+ 
+   // A dummy query-string is added to filenames, to gain control over
+   // browser-caching. The string changes on every update or full cache
+@@ -2413,7 +2413,7 @@
+   $contents = '';
+ 
+   // Create the js/ within the files folder.
+-  $jspath = file_create_path('js');
++  $jspath = file_create_path('js', TRUE); // core patch #572516(case 1)
+   file_check_directory($jspath, FILE_CREATE_DIRECTORY);
+ 
+   if (!file_exists($jspath .'/'. $filename)) {
+@@ -2426,7 +2426,7 @@
+     }
+ 
+     // Create the JS file.
+-    file_save_data($contents, $jspath .'/'. $filename, FILE_EXISTS_REPLACE);
++    file_save_data($contents, $jspath .'/'. $filename, FILE_EXISTS_REPLACE, TRUE); // core patch #572516(case 1)
+   }
+ 
+   return $jspath .'/'. $filename;
+@@ -2436,7 +2436,7 @@
+  * Delete all cached JS files.
+  */
+ function drupal_clear_js_cache() {
+-  file_scan_directory(file_create_path('js'), '.*', array('.', '..', 'CVS'), 'file_delete', TRUE);
++  file_scan_directory(file_create_path('js', TRUE), '.*', array('.', '..', 'CVS'), 'file_delete', TRUE); // core patch #572516(case 1)
+   variable_set('javascript_parsed', array());
+ }
+ 
+diff -ru includes/file.inc includes/file.inc
+--- includes/file.inc	2010-05-11 19:49:58.000000000 +1000
++++ includes/file.inc	2010-07-22 15:32:18.000000000 +1000
+@@ -61,8 +61,8 @@
+  *   appended if necessary, or FALSE if the path is invalid (i.e. outside the
+  *   configured 'files' or temp directories).
+  */
+-function file_create_path($dest = 0) {
+-  $file_path = file_directory_path();
++function file_create_path($dest = 0, $public_misc = FALSE) { // core patch #572516(base)
++  $file_path = file_directory_path($public_misc); // core patch #572516(base)
+   if (!$dest) {
+     return $file_path;
+   }
+@@ -221,8 +221,8 @@
+  * @return
+  *   TRUE for success, FALSE for failure.
+  */
+-function file_copy(&$source, $dest = 0, $replace = FILE_EXISTS_RENAME) {
+-  $dest = file_create_path($dest);
++function file_copy(&$source, $dest = 0, $replace = FILE_EXISTS_RENAME, $public_misc = FALSE) { // core patch #572516(base)
++  $dest = file_create_path($dest, $public_misc); // core patch #572516(base)
+ 
+   $directory = $dest;
+   $basename = file_check_path($directory);
+@@ -342,10 +342,10 @@
+  * @return
+  *   TRUE for success, FALSE for failure.
+  */
+-function file_move(&$source, $dest = 0, $replace = FILE_EXISTS_RENAME) {
++function file_move(&$source, $dest = 0, $replace = FILE_EXISTS_RENAME, $public_misc = FALSE) { // core patch #572516(base)
+   $path_original = is_object($source) ? $source->filepath : $source;
+ 
+-  if (file_copy($source, $dest, $replace)) {
++  if (file_copy($source, $dest, $replace, $public_misc)) { // core patch #572516(base)
+     $path_current = is_object($source) ? $source->filepath : $source;
+ 
+     if ($path_original == $path_current || file_delete($path_original)) {
+@@ -781,7 +781,7 @@
+  *
+  * @return A string containing the resulting filename or 0 on error
+  */
+-function file_save_data($data, $dest, $replace = FILE_EXISTS_RENAME) {
++function file_save_data($data, $dest, $replace = FILE_EXISTS_RENAME, $public_misc = FALSE) { // core patch #572516(base)
+   $temp = file_directory_temp();
+   // On Windows, tempnam() requires an absolute path, so we use realpath().
+   $file = tempnam(realpath($temp), 'file');
+@@ -792,7 +792,7 @@
+   fwrite($fp, $data);
+   fclose($fp);
+ 
+-  if (!file_move($file, $dest, $replace)) {
++  if (!file_move($file, $dest, $replace, $public_misc)) { // core patch #572516(base)
+     return 0;
+   }
+ 
+@@ -991,7 +991,8 @@
+  *
+  * @return A string containing the path to Drupal's 'files' directory.
+  */
+-function file_directory_path() {
++function file_directory_path($public_misc = FALSE) { // core patch #572516(base)
++  if ($public_misc) return variable_get('file_directory_path:public_misc', 'misc/dynamic'); // core patch #572516(base)
+   return variable_get('file_directory_path', conf_path() .'/files');
+ }
+ 
+diff -ru includes/locale.inc includes/locale.inc
+--- includes/locale.inc	2010-05-28 23:07:27.000000000 +1000
++++ includes/locale.inc	2010-07-22 15:32:18.000000000 +1000
+@@ -2207,7 +2207,7 @@
+ 
+   // Construct the filepath where JS translation files are stored.
+   // There is (on purpose) no front end to edit that variable.
+-  $dir = file_create_path(variable_get('locale_js_directory', 'languages'));
++  $dir = file_create_path(variable_get('locale_js_directory', 'languages'), TRUE); // core patch #572516(case 2)
+ 
+   // Delete old file, if we have no translations anymore, or a different file to be saved.
+   $changed_hash = $language->javascript != $data_hash;
+@@ -2225,7 +2225,7 @@
+     file_check_directory($dir, TRUE);
+ 
+     // Save the file.
+-    if (file_save_data($data, $dest)) {
++    if (file_save_data($data, $dest, FILE_EXISTS_REPLACE, TRUE)) { // core patch #572516(case 2)
+       $language->javascript = $data_hash;
+       // If we deleted a previous version of the file and we replace it with a
+       // new one we have an update.
+diff -ru modules/color/color.module modules/color/color.module
+--- modules/color/color.module	2009-05-17 02:09:21.000000000 +1000
++++ modules/color/color.module	2010-07-22 15:32:18.000000000 +1000
+@@ -32,22 +32,17 @@
+ function color_form_alter(&$form, $form_state, $form_id) {
+   // Insert the color changer into the theme settings page.
+   if ($form_id == 'system_theme_settings' && color_get_info(arg(4)) && function_exists('gd_info')) {
+-    if (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) != FILE_DOWNLOADS_PUBLIC) {
+-      // Disables the color changer when the private download method is used.
+-      // TODO: This should be solved in a different way. See issue #181003.
+-      drupal_set_message(t('The color picker only works if the <a href="@url">download method</a> is set to public.', array('@url' => url('admin/settings/file-system'))), 'warning');
+-    }
+-    else {
+-      $form['color'] = array(
+-        '#type' => 'fieldset',
+-        '#title' => t('Color scheme'),
+-        '#weight' => -1,
+-        '#attributes' => array('id' => 'color_scheme_form'),
+-        '#theme' => 'color_scheme_form',
+-      );
+-      $form['color'] += color_scheme_form($form_state, arg(4));
+-      $form['#submit'][] = 'color_scheme_form_submit';
+-    }
++    // core patch #572516(case 3)
++    // same old code, but without taking care of download method
++    $form['color'] = array(
++      '#type' => 'fieldset',
++      '#title' => t('Color scheme'),
++      '#weight' => -1,
++      '#attributes' => array('id' => 'color_scheme_form'),
++      '#theme' => 'color_scheme_form',
++    );
++    $form['color'] += color_scheme_form($form_state, arg(4));
++    $form['#submit'][] = 'color_scheme_form_submit';
+   }
+ 
+   // Use the generated screenshot in the theme list.
+@@ -294,7 +289,7 @@
+ 
+   // Prepare target locations for generated files.
+   $id = $theme .'-'. substr(md5(serialize($palette) . microtime()), 0, 8);
+-  $paths['color'] = file_directory_path() .'/color';
++  $paths['color'] = file_directory_path(TRUE) .'/color'; // core patch #572516(case 3)
+   $paths['target'] = $paths['color'] .'/'. $id;
+   foreach ($paths as $path) {
+     file_check_directory($path, FILE_CREATE_DIRECTORY);
+@@ -312,7 +307,7 @@
+   foreach ($info['copy'] as $file) {
+     $base = basename($file);
+     $source = $paths['source'] . $file;
+-    file_copy($source, $paths['target'] . $base);
++    file_copy($source, $paths['target'] . $base, FILE_EXISTS_REPLACE, TRUE); // core patch #572516(case 3)
+     $paths['map'][$file] = $base;
+     $paths['files'][] = $paths['target'] . $base;
+   }
+@@ -442,7 +437,7 @@
+ function _color_save_stylesheet($file, $style, &$paths) {
+ 
+   // Write new stylesheet.
+-  file_save_data($style, $file, FILE_EXISTS_REPLACE);
++  file_save_data($style, $file, FILE_EXISTS_REPLACE, TRUE); // core patch #572516(case 3)
+   $paths['files'][] = $file;
+ 
+   // Set standard file permissions for webserver-generated files.
+diff -ru modules/locale/locale.module modules/locale/locale.module
+--- modules/locale/locale.module	2010-03-04 11:15:28.000000000 +1100
++++ modules/locale/locale.module	2010-07-22 15:32:18.000000000 +1000
+@@ -497,7 +497,7 @@
+ function locale_update_js_files() {
+   global $language;
+ 
+-  $dir = file_create_path(variable_get('locale_js_directory', 'languages'));
++  $dir = file_create_path(variable_get('locale_js_directory', 'languages'), TRUE); // core patch #572516(case 2)
+   $parsed = variable_get('javascript_parsed', array());
+ 
+   // The first three parameters are NULL in order to get an array with all
+diff -ru modules/system/system.admin.inc modules/system/system.admin.inc
+--- modules/system/system.admin.inc	2010-03-01 21:20:28.000000000 +1100
++++ modules/system/system.admin.inc	2010-07-22 15:32:18.000000000 +1000
+@@ -1319,11 +1319,11 @@
+   $form['bandwidth_optimizations'] = array(
+     '#type' => 'fieldset',
+     '#title' => t('Bandwidth optimizations'),
+-    '#description' => t('<p>Drupal can automatically optimize external resources like CSS and JavaScript, which can reduce both the size and number of requests made to your website. CSS files can be aggregated and compressed into a single file, while JavaScript files are aggregated (but not compressed). These optional optimizations may reduce server load, bandwidth requirements, and page loading times.</p><p>These options are disabled if you have not set up your files directory, or if your download method is set to private.</p>')
++    '#description' => t('<p>Drupal can automatically optimize external resources like CSS and JavaScript, which can reduce both the size and number of requests made to your website. CSS files can be aggregated and compressed into a single file, while JavaScript files are aggregated (but not compressed). These optional optimizations may reduce server load, bandwidth requirements, and page loading times.</p><p>These options are disabled if you have not set up your files directory, or if your download method is set to private and directory %public_misc does not exists or isn\'t writable.</p>', array('%public_misc' => variable_get('file_directory_path:public_misc', 'misc/dynamic'))) // core patch #572516(case 1)
+   );
+ 
+-  $directory = file_directory_path();
+-  $is_writable = is_dir($directory) && is_writable($directory) && (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PUBLIC);
++  $directory = file_directory_path(0, TRUE); // core patch #572516(case 1)
++  $is_writable = is_dir($directory) && is_writable($directory); // core patch #572516(case 1)
+   $form['bandwidth_optimizations']['preprocess_css'] = array(
+     '#type' => 'radios',
+     '#title' => t('Optimize CSS files'),

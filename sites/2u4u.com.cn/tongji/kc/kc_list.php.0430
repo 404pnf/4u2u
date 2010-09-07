@@ -1,0 +1,63 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href='table.css' rel='stylesheet' type='text/css' >
+<title>图书库存查询</title>
+</head>
+<form action='' method='post'>
+请选择:
+<select name='num'>
+<option value='1' <?php if($_POST['num']=='1'|!isset($_POST['num'])) echo "selected"; ?>>20本以下</option>
+<option value='2' <?php if($_POST['num']=='2') echo "selected"; ?>>20-50本</option>
+<option value='3' <?php if($_POST['num']=='3') echo "selected"; ?>>50-100本</option>
+<option value='4' <?php if($_POST['num']=='4') echo "selected"; ?>>100本以上</option>
+</select>
+<input type='submit' name='btn' value='提交'>
+</form>
+<?php
+require 'connect.php';
+
+   $num = empty($_POST['num'])?1:$_POST['num'];           
+   switch($num){
+  	case 1:
+  		 $limit = " bk.`now_kc`<20 ";
+         break;
+    case 2:
+  		 $limit = " bk.`now_kc` between 20 and 50 ";
+         break;
+    case 3:
+  		 $limit = " bk.`now_kc` between 50 and 100";
+         break;
+     case 4:
+  		 $limit = " bk.`now_kc`>100 ";
+         break;     
+       
+   }
+   
+   $sql = "SELECT bk.*,ce.field_erp_shuming_value name,ce.field_erp_dingjia_value price FROM `book_kc` bk LEFT JOIN `content_type_erp` ce ON ce.field_erp_wuliaohao_value = bk.sku ";
+   if($limit!='')
+          $sql .=" WHERE ".$limit." ORDER BY bk.`now_kc` DESC";
+    $rs = mysql_query($sql);
+    while($row = mysql_fetch_object($rs)){
+    	
+    	$table.= "<tr><td class='row'>".$row->name."</td>";
+	    $table.="<td class='row'>".$row->price."</td>";
+    	$table.="<td class='row'>".$row->sku."</td>";
+    	$table.="<td class='row'>".$row->now_kc."</td>";
+    	$table.= "</tr>";
+    }
+        
+ 	
+?>
+<h2><p align='center'>大礼包图书库存</p></h2>
+<div align="center">
+<table id="mytable" cellspacing="0" >
+<th scope="col">书名</th>
+<th scope="col">价格</th>
+<th scope="col">物料号</th>
+<th scope="col">库存</th>
+</tr>
+<?php echo  $table;?>
+</table>
+</div>
+</html>

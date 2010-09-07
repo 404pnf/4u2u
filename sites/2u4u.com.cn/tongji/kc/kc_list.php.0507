@@ -1,0 +1,63 @@
+<?php
+/*
+	header("expires:mon,26jul199705:00:00gmt"); //用于清楚缓存
+	header("cache-control:no-cache,must-revalidate"); //用于清楚缓存
+	header("pragma:no-cache");
+*/	
+ require 'connect.php';
+ echo "<link href='table.css' rel='stylesheet' type='text/css' >";
+ if(isset($_POST['num'])&&empty($_POST['sku'])){
+   $num = empty($_POST['num'])?1:$_POST['num'];           
+   switch($num){
+  	case 1:
+  		 $limit = " bk.`now_kc`<20 ";
+         break;
+    case 2:
+  		 $limit = " bk.`now_kc` between 20 and 50 ";
+         break;
+    case 3:
+  		 $limit = " bk.`now_kc` between 50 and 100";
+         break;
+     case 4:
+  		 $limit = " bk.`now_kc`>100 ";
+         break;     
+       
+   }
+   
+   $sql = "SELECT bk.*,bi.name name,bi.price price FROM `book_kc` bk LEFT JOIN `book_info` bi ON bi.sku = bk.sku ";
+   if($limit!='')
+          $sql .=" WHERE ".$limit." ORDER BY bk.`now_kc` DESC";
+  }    
+   if(!empty($_POST['sku'])){
+   	   $sku = (int)$_POST['sku'];
+       $sql = "SELECT bk.*,bi.name name,bi.price price FROM `book_kc` bk LEFT JOIN `book_info` bi ON bi.sku = bk.sku ";
+   	   $sql .= " WHERE bk.sku = ".$sku;
+    }
+   	   
+       $rs = mysql_query($sql);
+       $num = mysql_num_rows($rs);
+       if($num>0){
+       	   $table  ="<h2><p align='center'>大礼包图书库存</p></h2>
+					<div align='center'>
+					<table id='mytable' cellspacing='0' >
+					<th scope='col'>书名</th>
+					<th scope='col'>价格</th>
+					<th scope='col'>物料号</th>
+					<th scope='col'>库存</th>
+					<th scope='col'>更新时间</th>
+					</tr>";
+         while($row = mysql_fetch_object($rs)){    	
+	    	$table.= "<tr><td class='row'>".$row->name."</td>";
+		    $table.="<td class='row'>".$row->price."</td>";
+	    	$table.="<td class='row'>".$row->sku."</td>";
+	    	$table.="<td class='row'>".$row->now_kc."</td>";
+	    	$table.="<td class='row'>".date("Y-m-d",$row->changed)."</td>";
+	    	$table.= "</tr>";
+           }            
+          $table.= "</table>";
+          echo  $table;
+       }else{
+       	   echo "暂时还不能查询本书的库存";
+       }
+ 	
+?>

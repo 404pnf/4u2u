@@ -1,0 +1,6 @@
+; $Id$
+name = UserReg
+description =用户注册特别通道.
+package = 2u4u
+core = 6.x
+php = 5.0

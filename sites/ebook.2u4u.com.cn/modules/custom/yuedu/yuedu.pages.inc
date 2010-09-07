@@ -122,3 +122,4 @@ function yuedu_buy_access($nid){
 	}
 	return drupal_goto("node/$nid");
 }
+

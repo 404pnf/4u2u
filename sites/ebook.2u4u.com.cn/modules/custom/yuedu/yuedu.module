@@ -143,3 +143,6 @@ function yuedu_check_access($nid){
 		return true;
 	}
 }
+
+
+

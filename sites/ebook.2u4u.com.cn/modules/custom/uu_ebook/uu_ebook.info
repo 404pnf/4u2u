@@ -7,6 +7,11 @@ dependencies[] = link
 dependencies[] = userpoints
 ;dependencies[] = rules
 dependencies[] = text
+; 阅读的flash播放器需要amfphp来和service通讯
+dependencies[] = amfphp
+; 阅读模块需要下面的service配合flash播放器
+dependencies[] = System Service
+dependencies[] = User Service
 ; 通过点击flag和用户加分
 dependencies[] = duhougan
 dependencies[] = yuedu
@@ -16,7 +21,6 @@ dependencies[] = ahah_helper
 ; 不知道用在哪里了？
 dependencies[] = taxonomyblocks
 dependencies[] = content_profile
-dependencies[] = userpoints
 ; 为主站首页输出views
 dependencies[] = views_service
 ; 阅读频道的flash播放器需要swftools支持

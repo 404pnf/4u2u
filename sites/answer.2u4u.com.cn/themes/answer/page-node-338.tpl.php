@@ -19,26 +19,26 @@
     <!-- ______________________ HEADER _______________________ -->
 	
     <div id="header">
-	<div id="header-middle">
-      <div id="logo-title">
-	
-        <?php if (!empty($logo)): ?>
-		  <a href="http://2u4u.com.cn"  title="悠游网" rel="home" id="logo">
-            <img src="<?php print $logo; ?>" alt="<?php print $site_name; ?>"/>
-          </a>
-        <?php endif; ?>
+		<div id="header-middle">
+		  <div id="logo-title">
+		
+			<?php if (!empty($logo)): ?>
+			  <a href="http://2u4u.com.cn"  title="悠游网" rel="home" id="logo">
+				<img src="<?php print $logo; ?>" alt="<?php print $site_name; ?>"/>
+			  </a>
+			<?php endif; ?>
 
-      </div> <!-- /logo-title -->
-	  
+		  </div> <!-- /logo-title -->
+		  
 
-      <?php if ($header): ?>
-        <div id="header-region">
-          <?php print $header; ?>
-        </div>
-      <?php endif; ?>
+		  <?php if ($header): ?>
+			<div id="header-region">
+			  <?php print $header; ?>
+			</div>
+		  <?php endif; ?>
 
-      <?php print $search_box; ?>
-	</div>
+		  <?php print $search_box; ?>
+		</div>
 	
 	
 	    <?php if (!empty($primary_links) or !empty($secondary_links)): ?>
@@ -52,62 +52,57 @@
     <!-- ______________________ MAIN _______________________ -->
 
     <div id="main" class="clearfix">
-       
-		<?php print $breadcrumb; ?>
-		
-         <?php if ($content_top): ?>
-         <div id="content-top"> 
+	
+          <?php if ($content_top): ?>
+            <div id="content-top" class="clearfix">
+                         <div id="my-answer">
+                                         <?php Global $user;?>
+                         <?php if($user->uid):?>
+                                         <?php print '<a href="/mywenda/'.$user->uid.'"> 我的问答</a>'?>
+                         <?php else:?>
+                                         <a href="/user"> 我的问答</a>
+                         <?php endif;?>
+                         </div>
+ 
+                 <?php print $content_top; ?>
+                         <div>
+                               <div id="my-ask" class="myask">
+                                 <a href="/node/add/best-answer" target="_blank"><img src="/sites/answer.2u4u.com.cn/themes/answer/css/images/wytw.gif"></a>
+                               </div>
+                               <div id="rule" class="rules">
+                                  >>><a href="/node/63611">问答帮助</a>
+                               </div>
+                         </div>
+            </div> <!-- /#content-top -->
+          <?php endif; ?>
 
-			<div id="my-answer">
-					<?php Global $user;?>
-			<?php if($user->uid):?>
-					<?php print '<a href="/mywenda/'.$user->uid.'"> 我的问答</a>'?>
-			<?php else:?>
-					<a href="/user"> 我的问答</a>
-			<?php endif;?>
-			</div>
-		
-		<?php print $content_top; ?>	
-			<div> 
-			      <div id="my-ask" class="myask">
-				<a href="node/add/best-answer" target="_blank"><img src="/sites/answer.2u4u.com.cn/themes/answer/css/images/wytw.gif"></a>
-                              </div>
-			      <div id="rule" class="rules"> 
-				 >>><a href="http://answer.2u4u.com.cn/node/63611">问答规则</a>
-                              </div>
-			</div>       
-		</div> <!-- /#content-top -->
-		<?php endif; ?>	 
 
-		
-	<div id="content" class="content">
+	
+      <div id="content">
         <div id="content-inner" class="inner column center">
-			<div id="fanswer">
-               <?php print views_embed_view('test_answer',$display_id = 'page_3'); ?>
-             </div>
-			 
-             <?php if ($breadcrumb || $title || $mission || $messages || $help || $tabs): ?>
-				<div id="content-header">
-				
-				  <?php if(!empty($node)): ?>
-					<?php print $breadcrumb; ?>
-				  <?php endif; ?>
 
-				  <?php if(!empty($title) && $node->nid != 55446 && $node->type != 'og_group'): ?>
-					<div class="title_bg"><h1 class="title"><?php print $title; ?></h1></div>
-				  <?php endif; ?>
-
-				  <?php print $messages; ?>
-
-				  <?php print $help; ?> 
-
-				  <?php if ($tabs): ?>
-					<div class="tabs"><?php print $tabs; ?></div>
-				  <?php endif; ?>
-
-				</div> <!-- /#content-header -->
-			<?php endif; ?>
+          <?php if ($breadcrumb || $title || $mission || $messages || $help || $tabs): ?>
+            <div id="content-header">
 			
+			  <?php if(!empty($node)): ?>
+				<?php print $breadcrumb; ?>
+			  <?php endif; ?>
+
+              <?php if(!empty($title) && $node->nid != 55446 && $node->type != 'og_group'): ?>
+                <div class="title_bg"><h1 class="title"><?php print $title; ?></h1></div>
+              <?php endif; ?>
+
+              <?php print $messages; ?>
+
+              <?php print $help; ?> 
+
+              <?php if ($tabs): ?>
+                <div class="tabs"><?php print $tabs; ?></div>
+              <?php endif; ?>
+
+            </div> <!-- /#content-header -->
+          <?php endif; ?>
+
           <div id="content-area">
             <?php print $content; ?>
           </div> <!-- /#content-area -->
@@ -120,17 +115,18 @@
             </div><!-- /#content-bottom -->
           <?php endif; ?>
 
-          </div>
-        </div> <!-- /content-inner /content -->
+        </div>
+      </div> <!-- /content-inner /content -->
 
-     
+        <?php if ($right): ?>
           <div id="sidebar-second" class="column sidebar second">
             <div id="sidebar-second-inner" class="inner">
               <?php print $right; ?>
             </div>
           </div>
-       
-      </div> <!-- /main -->
+        <?php endif; ?> <!-- /sidebar-second -->
+
+    </div> <!-- /main -->
 
       <!-- ______________________ FOOTER _______________________ -->
 

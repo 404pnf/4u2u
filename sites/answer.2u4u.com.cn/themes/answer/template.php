@@ -496,7 +496,7 @@ return $price_num ;
  * * @param $hook
  * *   The name of the theme function being called (not used in this case.)
  * */
-//function answer_preprocess_search_theme_form(&$vars, $hook) {
+function answer_preprocess_search_theme_form(&$vars, $hook) {
      // Remove the "Search this site" label from the form.
 //    $vars['form']['search_theme_form']['#title'] = t('');
 
@@ -517,8 +517,8 @@ return $price_num ;
 //    $vars['form']['submit']['#src'] = path_to_theme() . '/images/search.jpg';
                                                                                                                        
     // Rebuild the rendered version (submit button, rest remains unchanged)
-//    unset($vars['form']['submit']['#printed']);
-//    $vars['search']['submit'] = drupal_render($vars['form']['submit']);
+    //unset($vars['form']['submit']['#printed']);
+    //$vars['search']['submit'] = drupal_render($vars['form']['submit']);
     // Collect all form elements to make it easier to print the whole form.
-//    $vars['search_form'] = implode($vars['search']);
-//}
+    $vars['search_form'] = implode($vars['search']);
+}

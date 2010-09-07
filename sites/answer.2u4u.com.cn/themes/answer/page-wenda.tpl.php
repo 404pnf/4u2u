@@ -52,12 +52,8 @@
     <!-- ______________________ MAIN _______________________ -->
 
     <div id="main" class="clearfix">
-       
-		<?php print $breadcrumb; ?>
-		
          <?php if ($content_top): ?>
-         <div id="content-top"> 
-
+         <div id="content-top" class="clearfix"> 
 			<div id="my-answer">
 					<?php Global $user;?>
 			<?php if($user->uid):?>
@@ -67,13 +63,13 @@
 			<?php endif;?>
 			</div>
 		
-		<?php print $content_top; ?>	
+			<?php print $content_top; ?>	
 			<div> 
 			      <div id="my-ask" class="myask">
-				<a href="node/add/best-answer" target="_blank"><img src="/sites/answer.2u4u.com.cn/themes/answer/css/images/wytw.gif"></a>
+				<a href="/node/add/best-answer" target="_blank"><img src="/sites/answer.2u4u.com.cn/themes/answer/css/images/wytw.gif"></a>
                               </div>
 			      <div id="rule" class="rules"> 
-				 >>><a href="http://answer.2u4u.com.cn/node/63611">问答规则</a>
+				 >>><a href="/node/63611">问答帮助</a>
                               </div>
 			</div>       
 		</div> <!-- /#content-top -->
@@ -89,7 +85,7 @@
              <?php if ($breadcrumb || $title || $mission || $messages || $help || $tabs): ?>
 				<div id="content-header">
 				
-				  <?php if(!empty($node)): ?>
+				  <?php if(!empty($node) && $node->type == 'readthink'): ?>
 					<?php print $breadcrumb; ?>
 				  <?php endif; ?>
 

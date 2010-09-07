@@ -1,0 +1,11 @@
+name = video: site module placeholder
+description = placheholder for module dependencies
+core = 6.x
+package = 2u4u 
+version = 6.01
+dependencies[] = importvideo
+dependencies[] = video_perm
+dependencies[] = views
+dependencies[] = service
+dependencies[] = PHPMailer
+dependencies[] = userpoints

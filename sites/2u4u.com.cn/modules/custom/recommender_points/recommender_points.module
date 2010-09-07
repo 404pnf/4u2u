@@ -1,0 +1,21 @@
+<?php
+
+function recommender_points_menu(){
+
+	$items['chongzhi/recommender'] = array (
+		//'title' => '积分充值',
+		'page callback' => 'recommender_points_topup_page',
+		'access callback' => true,      
+		'type' => MENU_CALLBACK,
+		'file' => 'recommender_points.pages.inc',
+   );
+	$items['admin/settings/recommender_points'] = array(
+		'title'=>'Recommender Points Settings',
+		'page callback' => 'drupal_get_form', 
+		'page arguments' => array('recommender_points_setting_form'),
+		'access arguments' => array('administer users'),
+		'file' => 'recommender_points.admin.inc',
+   );
+   
+  return $items;
+} 

@@ -1,6 +1,7 @@
 # ignore anywhere in the tree
 *.gz
 *~
+*.swp
 # ignore directory in drupal root directory
 cache/*
 cache

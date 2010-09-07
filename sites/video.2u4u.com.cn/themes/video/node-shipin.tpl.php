@@ -120,7 +120,9 @@
 						<script type="text/javascript" src="http://s.shareto.com.cn/js/shareto_button.js"></script>
 						<!-- ShareTo Button END -->
 					</div>
-					
+			<?php if ($logged_in): ?>		
+				<div class="shipin_links"><?php print $links; ?></div>
+			<?php endif; ?> 
 
 			</div>
 	  </div>

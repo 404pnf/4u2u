@@ -73,8 +73,8 @@ function video_perm_buy_access($nid){
 				$sql = "insert into {shipin_transaction} (nid, uid, time,points) values(%d,%d,%d,%d)";
 				db_query($sql,$nid,$user->uid,time(),$price);
 				drupal_set_message("成功购买，扣除积分 $price");
-				//$flag = flag_get_flag('shipin_buy') or die('no "bookmarks" flag defined');
-				//$flag->flag('flag', $nid); 
+				$flag = flag_get_flag('shipin_buy') or die('no "bookmarks" flag defined');
+				$flag->flag('flag', $nid); 
 			}
 		}
 	}

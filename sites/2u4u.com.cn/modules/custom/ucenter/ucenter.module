@@ -123,6 +123,7 @@ function ucenter_user($op, &$edit, &$account, $category = null) {
 
 		case 'login':
 			global $base_url;
+			
 			global $user;
              		
 			if(!empty($_GET['destination'])){
@@ -136,7 +137,8 @@ function ucenter_user($op, &$edit, &$account, $category = null) {
 	              }
 
 
-                if(strpos($_SERVER['HTTP_USER_AGENT'],"XML-RPC")===FALSE){			
+                if(strpos($_SERVER['HTTP_USER_AGENT'],"XML-RPC")===FALSE){		
+								
 				// send user login notification to ucenter.
 				//watchdog(t('user'), t('ucenter_user:send user login info to ucenter, user name is @username,the current user is @cuname,uid is @cuid', array('@username' => $edit['name'],'@cuname' => $user->name,'@cuid' => $user->uid)));
 				list($uid, $username, $password, $email) = uc_user_login($edit['name'], $edit['pass']);

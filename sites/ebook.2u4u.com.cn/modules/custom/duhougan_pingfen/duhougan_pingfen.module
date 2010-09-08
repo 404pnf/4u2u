@@ -27,12 +27,10 @@ function duhougan_pingfen_nodeapi(&$node, $op, $teaser, $page) {
   switch($op) {
 
 	  case "load":
-
-		if($node->type == "readthink"){
-			$node->duhougan_score = db_result(db_query("SELECT score FROM {duhougan_pingfen} WHERE vid=%d",$node->vid));
-		}
-
-	break;
+			if($node->type == "readthink"){
+				$node->duhougan_score = db_result(db_query("SELECT score FROM {duhougan_pingfen} WHERE vid=%d",$node->vid));
+			}
+			break;
 
     case 'view':
       if($node->type == "readthink" && user_access('duhougan pingfen')){
@@ -42,7 +40,6 @@ function duhougan_pingfen_nodeapi(&$node, $op, $teaser, $page) {
           );
       }
       break;
-
 
     case 'delete':
       db_query('DELETE FROM {duhougan_pingfen} WHERE vid = %d', $node->vid);
@@ -59,92 +56,32 @@ function duhougan_pingfen_theme() {
   return array(
     'duhougan_pingfen' => array(
       'arguments' => array('node' => NULL),
+			'file' => 'duhougan_pingfen.page.inc',
     ),
   );
 }
 
-function theme_duhougan_pingfen($node) {
-  return drupal_get_form('duhougan_pingfen_rate_form', $node);
-}
-
-function duhougan_pingfen_rate_form($form_state, $node) {
-
-  global $user;
-  $score = array();
-  $r = 0;
-  $score[] = t('Select');
-
-	for($j=100; $j>=50; $j--) {
-    $score[$j] = $j;
+/**
+ * Implementation of hook_forms().
+ *
+ * Register an "aduhougan_pingfen_rate_form" form for each node to prevent id collisions.
+ */
+function duhougan_pingfen_forms($form_id, $args) {
+  $forms = array();
+  if (is_object($args[0]) && isset($args[0]->type)) {
+    $node = $args[0];
+   // if (in_array($product->type, array_keys(uc_product_node_info()))) {
+      $forms['duhougan_pingfen_rate_form_'. $node->nid] = array('callback' => 'duhougan_pingfen_rate_form');
+    //  $forms['uc_catalog_buy_it_now_form_'. $product->nid] = array('callback' => 'uc_catalog_buy_it_now_form');
+    //}
   }
-	
-	if(db_result(db_query("SELECT vid FROM {duhougan_pingfen} WHERE vid=%d",$node->vid))){
-		$score_id = "have_score";
-	}else{
-		$score_id = "no_score";
-	}
-
-  $set='rate';
-  $form[$set] = array(
-    '#type'   => 'fieldset',
-    '#title'  => t('对此读后感评分'),
-    '#value'  => t('<br>分数从50到100分'),
-    '#prefix' => '<div id="duhougan_pingfen">',
-    '#suffix' => '</div>',
-   );
-
-  $form[$set]['score'] = array(
-    '#type' => 'select',
-    '#title' => t('分数'),
-    '#default_value' => $node->duhougan_score,
-	'#prefix' => "<div id='".$score_id."'>",
-	 '#suffix' => "</div>",
-    '#options' => $score,
-	 '#required'=> TRUE,
-  );
-    $form[$set]['vid'] = array(
-    '#type' => 'hidden',
-	'#value' => $node->vid,
-  );
-
-  $form[$set]['button'] = array(
-    '#type'  => 'submit',
-    '#value' => t('提交'),
-  );
-
-  $form['#attributes'] = array('class' => 'duhougan_pingfen-form');
-
-  return $form;
-}
-
-function duhougan_pingfen_rate_form_validate($form, &$form_state){
-
-	if(!$form_state["values"]["score"]){
-		form_set_error("vote","你必须选择一个分数");
-	}
-	
-}
-
-function duhougan_pingfen_rate_form_submit($form, &$form_state){
-	global $user;
-	if($form_state["values"]["score"]){
-
-		if(db_result(db_query("SELECT vid FROM {duhougan_pingfen} WHERE vid=%d",$form_state["values"]["vid"]))){
-
-			db_query("UPDATE {duhougan_pingfen} SET score=%d, timestamp=%d WHERE vid=%d",$form_state["values"]["score"],time(),$form_state["values"]["vid"]); // 判断这个节点是滞已经评分，如果有，更新
-		}else{
-			db_query("INSERT INTO {duhougan_pingfen} (uid,vid,score,timestamp) VALUES(%d,%d,%d,%d)",$user->uid,$form_state["values"]["vid"],$form_state["values"]["score"],time()); // 插入最新的评分结果
-		}
-	}
-
+  return $forms;
 }
 
 
 /**
  * Implementation of hook_views_api().
  *
- * This tells drupal that there is Views integration file named 
- * module-name.views.inc 
  */
 function duhougan_pingfen_views_api() {
   // Note that you can include 'path' in this array so that your views.inc 

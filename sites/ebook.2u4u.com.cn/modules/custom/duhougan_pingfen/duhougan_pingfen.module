@@ -74,7 +74,7 @@ function duhougan_pingfen_rate_form($form_state, $node) {
   $r = 0;
   $score[] = t('Select');
 
-	for($j=100; $j>=1; $j--) {
+	for($j=100; $j>=50; $j--) {
     $score[$j] = $j;
   }
 	
@@ -88,7 +88,7 @@ function duhougan_pingfen_rate_form($form_state, $node) {
   $form[$set] = array(
     '#type'   => 'fieldset',
     '#title'  => t('对此读后感评分'),
-    '#value'  => t('<br>分数从1到100分'),
+    '#value'  => t('<br>分数从50到100分'),
     '#prefix' => '<div id="duhougan_pingfen">',
     '#suffix' => '</div>',
    );

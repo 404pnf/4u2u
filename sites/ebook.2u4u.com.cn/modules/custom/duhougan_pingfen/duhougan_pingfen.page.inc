@@ -3,11 +3,9 @@
 /**
 *读后感评分模块管理员设置页面，主要设置谁可以进行评分
 */
-
+/*
 function duhougan_pingfen_admin_settings() {
-  $form = "";
-	
-	
+  
 	$duhougan_pingfen_selectable_roles = user_roles(TRUE);
   // remove authenticated user
   unset($duhougan_pingfen_selectable_roles[DRUPAL_AUTHENTICATED_RID]);
@@ -31,3 +29,4 @@ function duhougan_pingfen_admin_settings() {
 function up_roles_select_form_validate($form, &$form_state){
 	$form_state['values']['duhougan_pingfen_selectable_roles'] = array_filter($form_state['values']['duhougan_pingfen_selectable_roles']);
 }
+*/

@@ -1,9 +1,14 @@
 <?php
+
+function duhougan_pingfen_perm(){
+	return array('duhougan pingfen');
+}
 /**
 * hook_menu
 */
 function duhougan_pingfen_menu() {
   $items = array();
+	/*
   $items['admin/settings/duhougan_pingfen'] = array(
     'title' => t('读后感评分功能设置'),
     'description' => t('设置谁可以评分，以及谁可以查看分'),
@@ -14,7 +19,7 @@ function duhougan_pingfen_menu() {
 		'file' => "duhougan_pingfen.page.inc",
     'type' => MENU_NORMAL_ITEM, // optional
   );
-
+	*/
    return $items;
 }
 
@@ -42,7 +47,7 @@ function duhougan_pingfen_nodeapi(&$node, $op, $teaser, $page) {
 	break;
 
     case 'view':
-      if($node->type == "readthink" && duhougan_pingfen_check_user_access()){
+      if($node->type == "readthink" && user_access('duhougan pingfen')){
           $node->content['duhougan_pingfen_display'] = array(
             '#value' => theme('duhougan_pingfen', $node),
             '#weight' => 10,
@@ -146,6 +151,7 @@ function duhougan_pingfen_rate_form_submit($form, &$form_state){
 
 }
 
+/*
 function duhougan_pingfen_check_user_access(){
 	global $user;
 	//用户具为超级管理员时
@@ -166,7 +172,7 @@ function duhougan_pingfen_check_user_access(){
 	
 	
 }
-
+*/
 /**
  * Implementation of hook_views_api().
  *

@@ -99,11 +99,15 @@
                           <div class="main dl-panes clear">
 							<div id="pane_ltab1" class="pane">
                               <!--未登录-->
-				<?php $block = module_invoke('user', 'block', 'view', 0); ?>	
-				<?php print $block['content']; ?>
+                              <!--不能使用module_invoke_all来调登录框，会出现ucenter module无法hook到登录的情况-->
+				<?php //$block = module_invoke('user', 'block', 'view', 0); ?>	
+				<?php //print $block['content']; ?>
+			      <!--使用drupal_get_form就不会有上面提到的问题-->
+				<?php if(user_is_anonymous()){print drupal_get_form('user_login_block');} ?>
+				
 
 				
-				<!--已登录-->
+				<!--已登录 在西面的区块中判断了用户是否登录。没登录输出空，登录输出php内容-->
 				<?php $block = module_invoke('block', 'block', 'view', 44); ?>
 				<?php print $block['content']; ?>
 				

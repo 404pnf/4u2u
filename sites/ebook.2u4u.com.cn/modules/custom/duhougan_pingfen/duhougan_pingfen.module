@@ -1,0 +1,172 @@
+<?php
+/**
+* hook_menu
+*/
+function duhougan_pingfen_menu() {
+  $items = array();
+  $items['admin/settings/duhougan_pingfen'] = array(
+    'title' => t('读后感评分功能设置'),
+    'description' => t('设置谁可以评分，以及谁可以查看分'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('duhougan_pingfen_admin_settings'),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer site configuration'),
+	'file' => "duhougan_pingfen.page.inc",
+    'type' => MENU_NORMAL_ITEM, // optional
+  );
+
+   return $items;
+}
+
+function duhougan_pingfen_user($op) {
+  global $user;
+
+  switch($op) {
+    case 'delete':
+      db_query('DELETE FROM {duhougan_pingfen} WHERE uid = %d', $user->uid);
+      break;
+  }
+}
+
+function duhougan_pingfen_nodeapi(&$node, $op, $teaser, $page) {
+
+  global $user;
+  switch($op) {
+
+	  case "load":
+
+		if($node->type == "readthink"){
+			$node->duhougan_score = db_result(db_query("SELECT score FROM {duhougan_pingfen} WHERE vid=%d",$node->vid));
+		}
+
+	break;
+
+    case 'view':
+      if($node->type == "readthink" && check_current_user_pingfen()){
+          $node->content['duhougan_pingfen_display'] = array(
+            '#value' => theme('duhougan_pingfen', $node),
+            '#weight' => 10,
+          );
+      }
+      break;
+
+
+    case 'delete':
+      db_query('DELETE FROM {duhougan_pingfen} WHERE vid = %d', $node->vid);
+      break;
+  }
+}
+
+
+
+/**
+ * Implementation of hook_theme().
+ */
+function duhougan_pingfen_theme() {
+  return array(
+    'duhougan_pingfen' => array(
+      'arguments' => array('node' => NULL),
+    ),
+  );
+}
+
+function theme_duhougan_pingfen($node) {
+  return drupal_get_form('duhougan_pingfen_rate_form', $node);
+}
+
+function duhougan_pingfen_rate_form($form_state, $node) {
+
+  global $user;
+  $score = array();
+  $r = 0;
+  $score[] = t('Select');
+
+  for($j=1; $j<=100; $j++) {
+    $score[$j] = $j;
+  }
+	
+	if(db_result(db_query("SELECT vid FROM {duhougan_pingfen} WHERE vid=%d",$node->vid))){
+		$score_id = "have_score";
+	}else{
+		$score_id = "no_score";
+	}
+
+  $set='rate';
+  $form[$set] = array(
+    '#type'   => 'fieldset',
+    '#title'  => t('对此读后感评分'),
+    '#value'  => t('<br>分数从1到100分'),
+    '#prefix' => '<div id="duhougan_pingfen">',
+    '#suffix' => '</div>',
+   );
+
+  $form[$set]['score'] = array(
+    '#type' => 'select',
+    '#title' => t('分数'),
+    '#default_value' => $node->duhougan_score,
+	'#prefix' => "<div id='".$score_id."'>",
+	 '#suffix' => "</div>",
+    '#options' => $score,
+	 '#required'=> TRUE,
+  );
+    $form[$set]['vid'] = array(
+    '#type' => 'hidden',
+	'#value' => $node->vid,
+  );
+
+  $form[$set]['button'] = array(
+    '#type'  => 'submit',
+    '#value' => t('提交'),
+  );
+
+  $form['#attributes'] = array('class' => 'duhougan_pingfen-form');
+
+  return $form;
+}
+
+function duhougan_pingfen_rate_form_validate($form, &$form_state){
+
+	if(!$form_state["values"]["score"]){
+		form_set_error("vote","你必须选择一个分数");
+	}
+	
+}
+
+function duhougan_pingfen_rate_form_submit($form, &$form_state){
+	global $user;
+	if($form_state["values"]["score"]){
+
+		if(db_result(db_query("SELECT vid FROM {duhougan_pingfen} WHERE vid=%d",$form_state["values"]["vid"]))){
+
+			db_query("UPDATE {duhougan_pingfen} SET score=%d, timestamp=%d WHERE vid=%d",$form_state["values"]["score"],time(),$form_state["values"]["vid"]); // 判断这个节点是滞已经评分，如果有，更新
+		}else{
+			db_query("INSERT INTO {duhougan_pingfen} (uid,vid,score,timestamp) VALUES(%d,%d,%d,%d)",$user->uid,$form_state["values"]["vid"],$form_state["values"]["score"],time()); // 插入最新的评分结果
+		}
+	}
+
+}
+function check_current_user_pingfen(){
+	global $user;
+
+	if(in_array(variable_get("who_can_pingfen", "读后感比赛评审教研员"),$user->roles)){
+		return TRUE;
+	}else{
+		return FALSE;
+	}
+
+}
+
+/**
+ * Implementation of hook_views_api().
+ *
+ * This tells drupal that there is Views integration file named 
+ * module-name.views.inc 
+ */
+function duhougan_pingfen_views_api() {
+  // Note that you can include 'path' in this array so that your views.inc 
+  // file can be stored in a different location.
+  return array(
+    'api' => 2.0,
+	'path' => drupal_get_path('module', 'duhougan_pingfen') . '/includes/views',
+  );
+}

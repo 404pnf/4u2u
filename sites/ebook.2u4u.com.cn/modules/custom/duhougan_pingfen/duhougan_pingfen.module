@@ -11,7 +11,7 @@ function duhougan_pingfen_menu() {
     'page arguments' => array('duhougan_pingfen_admin_settings'),
     'access callback' => 'user_access',
     'access arguments' => array('administer site configuration'),
-	'file' => "duhougan_pingfen.page.inc",
+		'file' => "duhougan_pingfen.page.inc",
     'type' => MENU_NORMAL_ITEM, // optional
   );
 
@@ -42,7 +42,7 @@ function duhougan_pingfen_nodeapi(&$node, $op, $teaser, $page) {
 	break;
 
     case 'view':
-      if($node->type == "readthink" && check_current_user_pingfen()){
+      if($node->type == "readthink" && duhougan_pingfen_check_user_access()){
           $node->content['duhougan_pingfen_display'] = array(
             '#value' => theme('duhougan_pingfen', $node),
             '#weight' => 10,
@@ -145,15 +145,26 @@ function duhougan_pingfen_rate_form_submit($form, &$form_state){
 	}
 
 }
-function check_current_user_pingfen(){
+
+function duhougan_pingfen_check_user_access(){
 	global $user;
-
-	if(in_array(variable_get("who_can_pingfen", "读后感比赛评审教研员"),$user->roles)){
+	//用户具为超级管理员时
+	if($user->uid ==1){
 		return TRUE;
-	}else{
-		return FALSE;
 	}
-
+	//用户具有相应的角色时
+  $duhougan_pingfen_selectable_roles = variable_get('duhougan_pingfen_selectable_roles', array());
+	if(!empty($duhougan_pingfen_selectable_roles)){
+		foreach($user->roles as $key => $value){
+			if(in_array($key,$duhougan_pingfen_selectable_roles)){
+				return TRUE;
+			}
+		}
+	}
+	
+	return FALSE;
+	
+	
 }
 
 /**

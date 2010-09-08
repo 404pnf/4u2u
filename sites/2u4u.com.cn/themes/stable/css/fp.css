@@ -39,6 +39,14 @@ body {
 	border: 1px solid #9F9D9D;
 	width: 218px;
 }
+.login .item-list {
+float:left;
+line-height:32px;
+margin:5px 0;
+}
+.login #edit-name,.login #edit-pass{
+	width:114px;
+}
 .jifen {
 	height: 170px;
 	background-color: #D5D5D5;
@@ -1230,13 +1238,6 @@ width:180px;
 .node-type-flashnode .form-item label{
 	float:left;
 	font-weight:normal;
-}
-
-.marker, .form-required{
-	float:left;
-	margin-right:2px;
-	* margin-right:6px;
-	_ margin-right:6px;
 }
 
 .node-type-flashnode #user-login-form .item-list ul li{

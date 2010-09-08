@@ -486,25 +486,7 @@ $str = preg_match('/\d+/',$str,$matches);
 $price_num = $matches[0];
 return $price_num ;
 }
-function answer_preprocess_search_block_form(&$variables) {
-  $variables['search'] = array();
-  $hidden = array();
-  //$variables['form']['search_theme_form']['#title'] = t('');
-  // Provide variables named after form keys so themers can print each element independently.
-  foreach (element_children($variables['form']) as $key) {
-    $type = $variables['form'][$key]['#type'];
-    if ($type == 'hidden' || $type == 'token') {
-      $hidden[] = drupal_render($variables['form'][$key]);
-    }
-    else {
-      $variables['search'][$key] = drupal_render($variables['form'][$key]);
-    }
-  }
-  // Hidden form elements have no value to themers. No need for separation.
-  $variables['search']['hidden'] = implode($hidden);
-  // Collect all form elements to make it easier to print the whole form.
-  $variables['search_form'] = implode($variables['search']);
-}
+
 
 
 /**
@@ -515,9 +497,9 @@ function answer_preprocess_search_block_form(&$variables) {
  * * @param $hook
  * *   The name of the theme function being called (not used in this case.)
  * */
-function answer_preprocess_search_theme_form(&$vars, $hook) {
+//function answer_preprocess_search_theme_form(&$vars, $hook) {
      // Remove the "Search this site" label from the form.
-    $vars['form']['search_theme_form']['#title'] = t('');
+    //$vars['form']['search_theme_form']['#title'] = t('');
 
      // Set a default value for text inside the search box field.
 //    $vars['form']['search_theme_form']['#value'] = t('Search this Site');
@@ -539,5 +521,24 @@ function answer_preprocess_search_theme_form(&$vars, $hook) {
     //unset($vars['form']['submit']['#printed']);
     //$vars['search']['submit'] = drupal_render($vars['form']['submit']);
     // Collect all form elements to make it easier to print the whole form.
-    $vars['search_form'] = implode($vars['search']);
-}
+    //$vars['search_form'] = implode($vars['search']);
+//}
+/* function answer_preprocess_search_block_form(&$variables) {
+  $variables['search'] = array();
+  $hidden = array();
+  $variables['search']['form']['search_theme_form']['#title'] = t('');
+  // Provide variables named after form keys so themers can print each element independently.
+  foreach (element_children($variables['form']) as $key) {
+    $type = $variables['form'][$key]['#type'];
+    if ($type == 'hidden' || $type == 'token') {
+      $hidden[] = drupal_render($variables['form'][$key]);
+    }
+    else {
+      $variables['search'][$key] = drupal_render($variables['form'][$key]);
+    }
+  }
+  // Hidden form elements have no value to themers. No need for separation.
+  $variables['search']['hidden'] = implode($hidden);
+  // Collect all form elements to make it easier to print the whole form.
+  $variables['search_form'] = implode($variables['search']);
+} */

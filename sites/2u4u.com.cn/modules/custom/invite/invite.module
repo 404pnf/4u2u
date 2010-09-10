@@ -102,7 +102,7 @@ function invite_menu() {
  * 访问控制回调函数 
  */ 
 function invite_user_access($account){
-  return ($account->uid == $GLOBALS['user']->uid);
+  return ($account->uid == $GLOBALS['user']->uid || $GLOBALS['user']->uid ==1);
 }
 
 /**

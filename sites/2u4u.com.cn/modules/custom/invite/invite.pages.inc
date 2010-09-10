@@ -214,8 +214,9 @@ function invite_user_accepted_page($account){
 	$ta = array('id' => 'invite-table', 'align' => 'center');
 	$trows = array();
 	while($data = db_fetch_object($result)){
+		$invitee = user_load($data->invitee);
 		$trows[] = array(
-			array('data'=>$data->invitee,'valign'=>'top'),
+			array('data'=>l($invitee->name,'user/'.$invitee->uid),'valign'=>'top'),
 			array('data'=>format_date($data->joined,'custom','Y-m-d - H:i'),'valign'=>'top'),
 			
 			//array('data'=>l('删除','invite/delete/'.$data->invite_id),'valign'=>'top'),

@@ -1,0 +1,66 @@
+<?php
+/**
+ * Implementation of hook_install().
+ */
+function nodevote_install() {
+  drupal_install_schema('nodevote');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function nodevote_schema() {
+  $schema = array();
+  $schema['nodevote'] = array(
+    'description' => t('Stores the users\' votes about a node'),
+    'fields' => array(
+      'uid' => array(
+        'description' => t('User ID'),
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'nid' => array(
+        'description' => t('Node ID'),
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'vote' => array(
+        'description' => t('Amount'),
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'timestamp' => array(
+        'description' => t('Timestamp'),
+        'type' => 'int',
+        'length' => 2,
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('uid', 'nid'),
+    'indexes' => array('node_nid' => array('nid'), 'user_id' => array('uid')),
+  );
+  return $schema;
+}
+
+function nodevote_update_1() {
+  return _system_update_utf8(array('nodevote'));
+}
+
+function nodevote_update_2() {
+  $ret = array();
+  $ret[] = update_sql("ALTER TABLE {nodevote} ADD COLUMN timestamp int(11) NOT NULL default '0'");
+
+  return $ret;
+}
+
+/**
+* Implementation of hook_uninstall().
+*/
+function nodevote_uninstall() {
+  drupal_uninstall_schema('nodevote');
+}
+

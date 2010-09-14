@@ -1,0 +1,6 @@
+﻿; $Id: $
+
+name = answer_views Export Module
+description = Exports some views of answer_views
+dependencies[] = views
+core = 6.x

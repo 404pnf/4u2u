@@ -1,0 +1,268 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * 集成支付宝的支付服务.
+ * zhupou.cn制作
+ */
+
+
+/**
+ * 实现钩子hook_menu().
+ */
+function uc_alipay_menu() {
+  $items['alipay/notify'] = array(
+    'title' => 'Order complete',
+    'page callback' => 'uc_alipay_notify',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'uc_alipay.pages.inc',
+  );
+  $items['alipay/return'] = array(
+    'title' => 'Order complete',
+    'page callback' => 'uc_alipay_return',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'uc_alipay.pages.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * 实现钩子 hook_form_alter().
+ */
+function uc_alipay_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'uc_cart_checkout_review_form' && ($order_id = intval($_SESSION['cart_order'])) > 0) {
+    $order = uc_order_load($order_id);
+
+    if ($order->payment_method == 'alipay') {
+      unset($form['submit']);
+      $form['#prefix'] = '<table style="display: inline; padding-top: 1em;"><tr><td>';
+      $form['#suffix'] = '</td><td>'. drupal_get_form('uc_alipay_form', $order) .'</td></tr></table>';
+    }
+  }
+}
+
+function uc_alipay_form($form_state, $order) {
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => variable_get('uc_alipay_checkout_button', t('Submit Order')),
+  );
+
+  return $form;
+}
+
+/**
+ * Implementation of hook_payment_method().
+ */
+function uc_alipay_payment_method() {
+  $path = base_path() . drupal_get_path('module', 'uc_alipay');
+  $title = variable_get('uc_alipay_method_title', t('支付宝公司支付方法:'));
+  $title .= '<br /><img src="'. $path .'/alipay_2.gif" style="position: relative; left: 2.5em;">';
+
+  $methods[] = array(
+    'id' => 'alipay',
+    'name' => t('支付宝'),
+    'title' => $title,
+    //'review' => variable_get('uc_alipay_check', FALSE) ? t('实物担保结算') : t('即时结算'),
+    'review' => t('支付宝'),
+    'desc' => t('将页面重定向到支付宝网站的收银台，使用支付宝提供的支付服务付款.'),
+    'callback' => 'uc_payment_method_alipay',
+    'weight' => 3,
+    'checkout' => TRUE,
+    'no_gateway' => TRUE,
+  );
+
+  return $methods;
+}
+
+
+// Adds 2Checkout settings to the payment method settings form.
+function uc_payment_method_alipay($op, &$arg1) {
+  switch ($op) {
+    case 'cart-details':
+      return $details;
+
+    case 'cart-process':
+      $_SESSION['pay_method'] = $_POST['pay_method'];
+      return;
+
+    case 'settings':
+      $form['uc_alipay_partner'] = array(
+        '#type' => 'textfield',
+        '#title' => t('合作者身份'),
+        '#description' => t('你的支付宝商家服务中的合作者身份.'),
+        '#default_value' => variable_get('uc_alipay_partner', ''),
+        '#size' => 16,
+      );
+      $form['uc_alipay_security_code'] = array(
+        '#type' => 'textfield',
+        '#title' => t('交易安全校验码'),
+        '#description' => t('你的支付宝商家服务中的交易安全校验码.'),
+        '#default_value' => variable_get('uc_alipay_security_code', ''),
+        '#size' => 16,
+      );
+      $form['uc_alipay_seller_email'] = array(
+        '#type' => 'textfield',
+        '#title' => t('支付宝帐户.'),
+        '#default_value' => variable_get('uc_alipay_seller_email', ''),
+      );
+    
+      $form['uc_alipay_method_title'] = array(
+        '#type' => 'textfield',
+        '#title' => t('支付方法标题'),
+        '#default_value' => variable_get('uc_alipay_method_title', t('使用支付宝提供的支付服务付款:')),
+      );
+     
+      $form['uc_alipay_checkout_button'] = array(
+        '#type' => 'textfield',
+        '#title' => t('订单检查页面提交按钮文本'),
+        '#description' => t('为订单检查页面的提交按钮提供特定于支付宝的文本.'),
+        '#default_value' => variable_get('uc_alipay_checkout_button', t('提交订单')),
+      );
+     
+      return $form;
+  }
+}
+
+
+function uc_alipay_form_submit($form_state, $order) {
+   if (($order_id = intval($_SESSION['cart_order'])) > 0) {
+    	$order = uc_order_load($order_id);
+    	$base_path = 'http://'.$_SERVER['HTTP_HOST'].base_path();
+    	$parameter = array(
+    	"service"         => "create_direct_pay_by_user",  //交易类型
+			"partner"         => variable_get('uc_alipay_partner', ''),         //合作商户号
+			"return_url"      => $base_path.'alipay/return',      //同步返回
+			
+			"notify_url"      => $base_path.'alipay/notify',      //异步返回
+			"_input_charset"  =>  'UTF-8',  //字符集，默认为GBK
+			"subject"         => variable_get('site_name', "zhupou.cn"),       //商品名称，必填
+			"body"            => variable_get('site_name', "zhupou.cn"),        //商品描述，必填,这里用网站名字代替
+			"out_trade_no"    => date(Ymd).'_'.$order_id,     //商品外部交易号，必填（保证唯一性）
+			"total_fee"       => $order->order_total,           //商品单价，必填（价格不能为0）
+			"payment_type"    => "1",               //默认为1,不需要修改
+			
+			"show_url"        => $base_path,        //商品相关网站
+			"seller_email"    => variable_get('uc_alipay_seller_email', ''),     //卖家邮箱，必填
+    	);
+
+    	module_load_include('inc', 'uc_alipay', 'uc_alipay_service');
+    	$security_code = variable_get('uc_alipay_security_code', '');
+    	$sign_type = "MD5";
+    	$alipay = new alipay_service($parameter,$security_code,$sign_type);
+      $link=$alipay->create_url();
+   }
+   drupal_goto($link);
+}
+/**
+ * Implementation of hook_cart_pane().
+ */
+function uc_alipay_cart_pane($items) {
+	global $user;
+	$first_node =  node_load($items[0]->nid);
+	$shippable = uc_cart_is_shippable();
+	$first_node =  node_load($items[0]->nid);
+	if($first_node->moneyable == 1 && !$shippable && $user->uid){
+		$body ='<div align="right">'. drupal_get_form('uc_alipay_ec_form') .'</div>' ;	
+	}else{
+		$body = "";
+	}
+  $panes[] = array(
+    'id' => 'uc_alipay_ec',
+    'title' => t('Alipay Express Checkout'),
+    'enabled' => FALSE,
+    'weight' => 1,
+    'body' => $body,
+  );
+
+  return $panes;
+}
+function uc_alipay_ec_form(){
+	
+	drupal_add_css(drupal_get_path('module', 'uc_alipay') .'/uc_alipay.css');
+ 
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => '支付宝快速结算',
+  );
+  
+  return $form;
+}
+function uc_alipay_ec_form_submit($form, &$form_state){
+	global $user;
+  $items = uc_cart_get_contents();
+
+  if (!is_array($items) || count($items) == 0) {
+    drupal_set_message(t('You do not have any items in your shopping cart.'));
+    return;
+  }
+
+  list($desc, $subtotal) = _uc_alipay_product_details($items);
+
+  $order = uc_order_new($user->uid);
+
+  $context = array(
+    'revision' => 'formatted-original',
+    'type' => 'amount',
+  );
+  $options = array(
+    'sign' => FALSE,
+    'thou' => FALSE,
+    'dec' => '.',
+  );
+  $order->products = $items;
+  uc_order_save($order);
+  //$order_id = intval($_SESSION['cart_order']);
+  //$_SESSION['cart_order'] = $order->order_id;
+  $order = uc_order_load($order->order_id);
+  
+ // if (($order_id = intval($_SESSION['cart_order'])) > 0) {
+   // 	$order = uc_order_load($order_id);
+  	$base_path = 'http://'.$_SERVER['HTTP_HOST'].base_path();
+  	$parameter = array(
+  	"service"         => "create_direct_pay_by_user",  //交易类型
+		"partner"         => variable_get('uc_alipay_partner', ''),         //合作商户号
+		"return_url"      => $base_path.'alipay/return',      //同步返回
+		
+		"notify_url"      => $base_path.'alipay/notify',      //异步返回
+		"_input_charset"  =>  'UTF-8',  //字符集，默认为GBK
+		"subject"         => variable_get('site_name', "zhupou.cn"),       //商品名称，必填
+		"body"            => variable_get('site_name', "zhupou.cn"),         //商品描述，必填,这里使用站点名称代替
+		"out_trade_no"    => date(Ymd).'_'.$order->order_id,     //商品外部交易号，必填（保证唯一性）
+		"total_fee"       => $order->order_total,           //商品单价，必填（价格不能为0）
+		"payment_type"    => "1",               //默认为1,不需要修改
+		
+		"show_url"        => $base_path,        //商品相关网站
+		"seller_email"    => variable_get('uc_alipay_seller_email', ''),     //卖家邮箱，必填
+  	);
+
+  	module_load_include('inc', 'uc_alipay', 'uc_alipay_service');
+  	$security_code = variable_get('uc_alipay_security_code', '');
+  	$sign_type = "MD5";
+  	$alipay = new alipay_service($parameter,$security_code,$sign_type);
+    $link=$alipay->create_url();
+  // }
+   drupal_goto($link);
+}
+
+// Returns the description and subtotal of the products on an order.
+function _uc_alipay_product_details($items) {
+  $desc = '';
+  $subtotal = 0;
+
+  if (!empty($items)) {
+    foreach ($items as $item) {
+      if (!empty($desc)) {
+        $desc .= ' / ';
+      }
+      $desc .= $item->qty .'&times; '. $item->title;
+      $subtotal += $item->qty * $item->price;
+    }
+  }
+
+  return array($desc, $subtotal);
+}
+

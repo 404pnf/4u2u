@@ -1,0 +1,7 @@
+; $Id$
+name = 路径重定向
+description = 快速添加路径重定向
+core = 6.x
+package = 2u4u
+
+dependencies[] = path_redirect

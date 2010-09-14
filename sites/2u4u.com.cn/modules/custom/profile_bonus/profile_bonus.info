@@ -1,0 +1,4 @@
+name = Profile Bonus
+description = "Encourage users to complete their prifle fields"
+core = 6.x
+package = 2u4u

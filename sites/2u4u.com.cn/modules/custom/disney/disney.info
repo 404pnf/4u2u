@@ -1,0 +1,5 @@
+; $Id$
+name = 迪斯尼英语 
+description = 提供相关图书的音频/图片地址给迪士尼
+core = 6.x
+package = 2u4u

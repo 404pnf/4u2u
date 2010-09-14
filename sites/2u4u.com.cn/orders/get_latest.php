@@ -1,0 +1,96 @@
+<?php
+
+/*
+**  打印出最近一段时间的网站订单。 by wzs 090913
+**  时间格式有两种：一是到本周一网站所有的订单（已排除前期的订单）；另一种是上一周的网站订单（周一至周日）
+*/
+
+header("Content-type: text/html; charset=utf-8");
+$DB_Server = "localhost";
+$DB_Username = "root";
+$DB_Password = "123465";
+
+$DB_DBName = "2u4u";
+$Connect = @mysql_connect($DB_Server, $DB_Username, $DB_Password)
+or die("Couldn't connect.");
+$Db = @mysql_select_db($DB_DBName, $Connect)
+or die("Couldn't select database.");
+ mysql_query("SET NAMES UTF8");
+
+if(date('w')==1){
+   $start = strtotime("this monday-1 week");
+   $end = strtotime("this monday"); 
+}else{
+   $start = strtotime("last monday-1 week");
+   $end = strtotime("last monday"); 
+} 
+
+ if($_GET['op']=="latest"){
+ 	$time = " order_id>177 ";
+ 	$filename = date("Ymd",$start)."-".date("Ymd",$end).urlencode("订单");
+ }
+
+ 
+$sql = "SELECT order_id,order_total,delivery_first_name,delivery_phone,delivery_street1,delivery_city,delivery_postal_code,created FROM `uc_orders` WHERE $time AND order_status='payment_received'";
+
+$re = mysql_query($sql);
+
+$num = mysql_num_rows($re);
+
+if($num>0){
+		
+
+	header("Content-type:application/vnd.ms-excel;charset:utf-8"); 
+	header("Content-Disposition:filename=$filename.xls"); 
+	header("Pragma: no-cache");
+	header("Expires: 0");
+	
+	echo ' <TABLE height=60 cellSpacing=0 borderColorDark=#ffffff width="100%"  
+	bgColor=#ffffff borderColorLight=#c0c0c0 border=1> 
+	   <tbody>
+	      <strong>2u4u网站用户订单（'.date("md",$start).'-'.date("md",$end).'）</strong>	
+		<tr>
+		 <td align="center" >订单号</td>
+		 <td align="center" >姓名</td>
+		 <td align="center" >订单时间</td>	
+		 <td align="center" >名称</td>	
+		 <td align="center" >数量</td>	
+		 <td align="center" >兑换积分</td>	
+		 <td align="center" >内容</td>
+		 <td align="center" >邮寄地址</td>
+		 <td align="center" >邮编</td>	
+		 <td align="center" >联系电话</td>
+	</tr>'; 
+	
+	while($row=mysql_fetch_array($re)){
+			 if($_GET['info']=='update'){  
+	   	$sql2 = "UPDATE `uc_orders` SET order_status='completed' WHERE order_id='$row[order_id]' LIMIT 1";
+	   	mysql_query($sql2);
+	 }
+		
+		$query1 = "SELECT nid,title,qty,price FROM `uc_order_products` WHERE order_id=$row[order_id]";
+		$ress = mysql_query($query1);
+		
+		  while($arr = mysql_fetch_array($ress)){   //要考虑到一个订单中有多个商品
+		
+	   	$query = "SELECT field_product_neirongtiyao_value as content FROM `content_type_product` WHERE nid=$arr[nid]"; 
+	   	$result =  mysql_fetch_array(mysql_query($query));
+	   	
+
+	 
+	   	echo "<tr><td align='center'>".$row[order_id]."</td>";
+	    echo "<td align='center'>".$row[delivery_first_name]."</td>";
+	    echo "<td align='center'>".date("Ymd",$row[created])."</td>";
+	    echo "<td align='center'>".$arr[title]."</td>";
+	    echo "<td align='center'>".intval($arr[qty])."</td>";              //要考虑到订单中的商品数量
+	    echo "<td align='center'>".intval($arr[price])*intval($arr[qty])."</td>";
+	  	echo "<td align='center'>".$result[content]."</td>";
+	    echo "<td align='center'>".$row[delivery_city].$row[delivery_street1]."</td>";
+	   	echo "<td align='center'>".$row[delivery_postal_code]."</td>";
+	   	echo "<td align='center'>".$row[delivery_phone]."</td>";
+	   	echo "</tr>";
+	   }	
+	}
+}else 
+    echo "上周没有订单或订单已经发出!";
+    

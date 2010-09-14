@@ -1,0 +1,8 @@
+; $Id $
+name = 图书库存
+description = 查询大礼包图书的当前库存
+package = 2u4u
+core = 6.x
+
+
+ 

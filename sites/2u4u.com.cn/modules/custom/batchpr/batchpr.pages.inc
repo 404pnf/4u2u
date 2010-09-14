@@ -1,0 +1,210 @@
+<?php
+// $Id$
+
+function batchpr_form(){
+	/*
+	$options =array(
+		'story' => t('Story'),
+		'page' => t('Page'),
+	);
+	*/
+	$options = node_get_types('names');
+	$form['type'] = array(
+		'#title' => t('要更新的节点类型'),
+		'#type' =>'select',
+		'#description' =>t('请选择更新哪个节点类型的路径重定向。'),
+		'#options' => $options,
+	);
+	$form['source'] = array(
+		'#title' => t('源前缀'),
+		'#type' =>'textfield',
+		'#description' =>t('The source path prefix to redirect from。'),
+		//'#options' => $options,
+	);
+	$form['redirect'] = array(
+		'#title' => t('重定向前缀'),
+		'#type' =>'textfield',
+		'#description' =>t('The destination path prefix to redirect to.'),
+		//'#options' => $options,
+	);
+	$form['submit'] = array(
+		'#type' =>'submit',
+		'#value' => t('Submit'),
+	);
+	return $form;
+}
+function batchpr_form_submit($form,&$form_state){
+	$type =  $form_state['values']['type'];
+	$source_prefix = $form_state['values']['source'];
+	$redirect_prefix = $form_state['values']['redirect'];
+	$batch =array(
+		'operations' => array(
+		  array('batchpr_process', array($type,$source_prefix,$redirect_prefix)),
+		  ),
+		'finished' => 'batchpr_finished',
+		'title' => t('批量生成节点重定向'),
+		'init_message' => t('开始批量删除.'),
+		//'progress_message' => t('Reindexed @current out of @total.'),
+		'error_message' => t('批量删除遇到错误.'),
+	);
+	batch_set($batch);
+}
+function batchpr_process($type,$source_prefix,$redirect_prefix,&$context){
+	$size =100;
+	//$types_str ='story,page';
+	//$types_str = "'".implode("','", $types)."'";
+	//$start_nid = 0;
+	if(!isset($context['sandbox']['progress'])){
+		$context['sandbox']['progress'] = 0;
+		$context['sandbox']['start_nid'] = 0;
+		$context['sandbox']['max'] =db_result(db_query("SELECT COUNT(nid) FROM {node} WHERE type = '%s'",$type));
+	}
+	$sql = "SELECT nid FROM {node} WHERE type = '%s' AND nid > %d ORDER BY nid asc";
+	$result = db_query_range($sql,$type,$context['sandbox']['start_nid'],0,$size);
+	while($node = db_fetch_array($result)){
+		//node_delete($node['nid']);
+		_batchpr_process($node['nid'],$source_prefix,$redirect_prefix);
+		$context['sandbox']['progress']++;
+		$context['sandbox']['start_nid']=$node['nid'];
+		$context['message'] = t('生成节点重定向： %nid',array('%nid' => $node['nid']));
+	}
+	if($context['sandbox']['progress'] ==$context['sandbox']['max']){
+		$context['finished'] = 1;
+	}else{
+		$context['finished'] = $context['sandbox']['progress']/$context['sandbox']['max'];
+	}
+
+}
+function _batchpr_process($nid,$source_prefix,$redirect_prefix){
+	$sql1='SELECT COUNT(*)FROM {pr_nid} WHERE nid = %d';
+	$result = db_result(db_query($sql1,$nid));
+	$source = $source_prefix.$nid;
+	$redirect = $redirect_prefix.$nid;
+	if($result>0){
+		$sql2='SELECT rid FROM {pr_nid} WHERE nid = %d';
+		$result_rid = db_result(db_query($sql2,$nid));
+		$redirect = array(
+			'rid' => $result_rid,
+			'source' => $source,
+			'redirect' => $redirect,
+			'query' => '',
+			'fragment' => '',
+			'language' => '',
+			'type' => 301,
+			'last_used' => time(),
+		);
+		drupal_write_record('path_redirect', $redirect,array('rid'));
+	}else{
+		$redirect = array(
+			'rid' => NULL,
+			'source' => $source,
+			'redirect' => $redirect,
+			'query' => '',
+			'fragment' => '',
+			'language' => '',
+			'type' => 301,
+			'last_used' => time(),
+		);
+		//$redirect = (object)$redirect;
+		drupal_write_record('path_redirect', $redirect);
+		db_query('INSERT INTO {pr_nid} (rid,nid) VALUES(%d,%d)',$redirect['rid'],$nid);
+		
+	}
+	
+}
+
+function batchpr_finished($success, $results, $operations){
+	if ($success) {
+		// Here we do something meaningful with the results.
+		$message = t('批量生成节点重定向完成');
+		
+	}
+	else {
+		// An error occurred.
+		// $operations contains the operations that remained unprocessed.
+		$error_operation = reset($operations);
+		$message = '在批量生成节点重定向时出现一个错误'. $error_operation[0] .' 其参数为 :'. print_r($error_operation[0], TRUE);
+	}
+	drupal_set_message($message);
+}
+
+
+function batchpr_taxonomy_form(){
+	$options=array();
+	$vocabs = taxonomy_get_vocabularies();
+	foreach($vocabs as $vocab){
+		$options[$vocab->vid] = $vocab->name; 
+	}
+	
+	$form['vid'] = array(
+		'#title' => t('要更新的词汇表'),
+		'#type' =>'select',
+		'#description' =>t('请选择更新哪个词汇表的路径重定向。'),
+		'#options' => $options,
+	);
+	$form['source'] = array(
+		'#title' => t('源前缀'),
+		'#type' =>'textfield',
+		'#description' =>t('The source path prefix to redirect from。'),
+		//'#options' => $options,
+	);
+	$form['redirect'] = array(
+		'#title' => t('重定向前缀'),
+		'#type' =>'textfield',
+		'#description' =>t('The destination path prefix to redirect to.'),
+		//'#options' => $options,
+	);
+	$form['submit'] = array(
+		'#type' =>'submit',
+		'#value' => t('Submit'),
+	);
+	return $form;
+}
+function batchpr_taxonomy_form_submit($form,&$form_state){
+	//$vids = array_filter($form_state['values']['vids']);
+	//foreach($vids as $vid){
+	//	taxonomy_del_vocabulary($vid);
+	//}
+	$vid =  $form_state['values']['vid'];
+	$source_prefix = $form_state['values']['source'];
+	$redirect_prefix = $form_state['values']['redirect'];
+	$sql = "SELECT tid FROM {term_data} WHERE vid = %d";
+	$result = db_query($sql,$vid);
+	while($term = db_fetch_object($result)){
+		$sql1='SELECT COUNT(*)FROM {pr_tid} WHERE tid = %d';
+		$result1 = db_result(db_query($sql1,$term->tid));
+		$source = $source_prefix.$term->tid;
+		$redirect = $redirect_prefix.$term->tid;
+		if($result1>0){
+			$sql2='SELECT rid FROM {pr_tid} WHERE tid = %d';
+			$result_rid = db_result(db_query($sql2,$term->tid));
+			$redirect = array(
+				'rid' => $result_rid,
+				'source' => $source,
+				'redirect' => $redirect,
+				'query' => '',
+				'fragment' => '',
+				'language' => '',
+				'type' => 301,
+				'last_used' => time(),
+			);
+			drupal_write_record('path_redirect', $redirect,array('rid'));
+		}else{
+			$redirect = array(
+				'rid' => NULL,
+				'source' => $source,
+				'redirect' => $redirect,
+				'query' => '',
+				'fragment' => '',
+				'language' => '',
+				'type' => 301,
+				'last_used' => time(),
+			);
+			//$redirect = (object)$redirect;
+			drupal_write_record('path_redirect', $redirect);
+			db_query('INSERT INTO {pr_tid} (rid,tid) VALUES(%d,%d)',$redirect['rid'],$term->tid);
+			
+		}
+	}
+	
+}

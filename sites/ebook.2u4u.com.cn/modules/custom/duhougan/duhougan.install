@@ -1,0 +1,29 @@
+<?php
+/**
+ * $Id: taxonomy_defaults.install,v 1.2.4.2 2008/12/20 18:11:52 sleepcamel Exp $
+ *
+ *
+ *
+ * Drupal version:
+ *
+ * @author: Heine Deelstra
+ */
+
+/**
+ * Hook sets taxonomy_defaults 'weight' to -1. This ensures that its hook_form_alter runs before taxonomy
+ *
+ */
+function duhougan_install() {
+  $ret = array();
+  $ret[] = db_query("UPDATE {system} SET weight = 3 WHERE name = 'duhougan'");
+  return $ret;
+}
+
+/**
+ * Implemenation of hook_uninstall()
+ *
+ */
+function duhougan_uninstall() {
+  //db_query("DELETE FROM {variable} WHERE name LIKE 'taxdef_%'");
+}
+

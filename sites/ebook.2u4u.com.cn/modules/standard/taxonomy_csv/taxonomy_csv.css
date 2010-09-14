@@ -1,0 +1,139 @@
+/* $Id: taxonomy_csv.css,v 1.1.2.9 2009/10/20 19:45:56 danielkm Exp $ */
+
+/**
+ * Allows to hide unchosen sub-options and to show chosen sub-options.
+ */
+/* Hide */
+#edit-import.filtered #edit-text-wrapper,
+#edit-import.filtered #edit-path-wrapper,
+#edit-import.filtered #edit-url-wrapper,
+
+#edit-csv-format.filtered #edit-import-delimiter-custom-wrapper,
+#edit-csv-format.filtered #edit-import-enclosure-custom-wrapper,
+#edit-csv-format.filtered #edit-export-delimiter-custom-wrapper,
+#edit-csv-format.filtered #edit-export-enclosure-custom-wrapper,
+
+#edit-destination.filtered #edit-vocabulary-id-wrapper,
+
+#edit-existing-items-update-wrapper.filtered,
+#edit-existing-items-update-merge-wrapper.filtered,
+#edit-existing-items-update-replace-wrapper.filtered,
+#edit-existing-items-ignore-wrapper.filtered,
+#edit-existing-items-ignore-create-wrapper.filtered,
+#edit-existing-items-ignore-all-wrapper.filtered,
+
+#description_alone_terms.filtered,
+#description_fields_links.filtered,
+#description_flat.filtered,
+#description_tree_structure.filtered,
+#description_polyhierarchy.filtered,
+#description_parents.filtered,
+#description_children.filtered,
+#description_relations.filtered,
+#description_fields.filtered,
+#description_descriptions.filtered,
+#description_weights.filtered,
+#description_synonyms.filtered,
+#description_taxonomy_manager.filtered,
+
+#help_alone_terms.filtered,
+#help_fields_links.filtered,
+#help_flat.filtered,
+#help_tree_structure.filtered,
+#help_polyhierarchy.filtered,
+#help_parents.filtered,
+#help_children.filtered,
+#help_relations.filtered,
+#help_fields.filtered,
+#help_descriptions.filtered,
+#help_weights.filtered,
+#help_synonyms.filtered,
+#help_taxonomy_manager.filtered,
+
+#edit-fields-links.filtered,
+#edit-relations.filtered,
+
+#result_display_cache.filtered,
+#hierarchy_level.filtered,
+#result_display_options.filtered,
+#result_type.filtered{
+  display:none;
+}
+
+/* Show */
+#edit-import.text #edit-text-wrapper,
+#edit-import.path #edit-path-wrapper,
+#edit-import.url #edit-url-wrapper,
+
+#edit-csv-format.custom_delimiter #edit-import-delimiter-custom-wrapper,
+#edit-csv-format.custom_enclosure #edit-import-enclosure-custom-wrapper,
+#edit-csv-format.custom_delimiter #edit-export-delimiter-custom-wrapper,
+#edit-csv-format.custom_enclosure #edit-export-enclosure-custom-wrapper,
+
+#edit-destination.duplicate #edit-vocabulary-id-wrapper,
+#edit-destination.existing #edit-vocabulary-id-wrapper,
+
+#edit-existing-items-update-wrapper.alone_terms,
+#edit-existing-items-ignore-wrapper.alone_terms,
+#edit-existing-items-update-merge-wrapper.fields_links,
+#edit-existing-items-update-wrapper.flat,
+#edit-existing-items-ignore-wrapper.flat,
+#edit-existing-items-update-replace-wrapper.tree_structure,
+#edit-existing-items-ignore-create-wrapper.tree_structure,
+#edit-existing-items-update-merge-wrapper.polyhierarchy,
+#edit-existing-items-update-merge-wrapper.parents,
+#edit-existing-items-update-replace-wrapper.parents,
+#edit-existing-items-ignore-create-wrapper.parents,
+#edit-existing-items-update-merge-wrapper.children,
+#edit-existing-items-update-replace-wrapper.children,
+#edit-existing-items-ignore-create-wrapper.children,
+#edit-existing-items-update-merge-wrapper.relations,
+#edit-existing-items-update-replace-wrapper.relations,
+#edit-existing-items-ignore-create-wrapper.relations,
+#edit-existing-items-update-merge-wrapper.fields,
+#edit-existing-items-update-replace-wrapper.fields,
+#edit-existing-items-ignore-create-wrapper.fields,
+#edit-existing-items-update-merge-wrapper.descriptions,
+#edit-existing-items-update-replace-wrapper.descriptions,
+#edit-existing-items-ignore-create-wrapper.descriptions,
+#edit-existing-items-update-merge-wrapper.weights,
+#edit-existing-items-ignore-create-wrapper.weights,
+#edit-existing-items-update-merge-wrapper.synonyms,
+#edit-existing-items-update-replace-wrapper.synonyms,
+#edit-existing-items-ignore-create-wrapper.synonyms,
+#edit-existing-items-update-merge-wrapper.taxonomy_manager,
+#edit-existing-items-update-replace-wrapper.taxonomy_manager,
+#edit-existing-items-ignore-create-wrapper.taxonomy_manager,
+
+#description_alone_terms.alone_terms,
+#description_fields_links.fields_links,
+#description_flat.flat,
+#description_tree_structure.tree_structure,
+#description_polyhierarchy.polyhierarchy,
+#description_parents.parents,
+#description_children.children,
+#description_relations.relations,
+#description_fields.fields,
+#description_descriptions.descriptions,
+#description_weights.weights,
+#description_synonyms.synonyms,
+#description_taxonomy_manager.taxonomy_manager,
+
+#help_alone_terms.alone_terms,
+#help_fields_links.fields_links,
+#help_flat.flat,
+#help_tree_structure.tree_structure,
+#help_polyhierarchy.polyhierarchy,
+#help_parents.parents,
+#help_children.children,
+#help_relations.relations,
+#help_fields.fields,
+#help_descriptions.descriptions,
+#help_weights.weights,
+#help_synonyms.synonyms,
+#help_taxonomy_manager.taxonomy_manager,
+
+#edit-fields-links.fields_links,
+#edit-relations.relations{
+  display:block;
+}

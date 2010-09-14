@@ -1,0 +1,77 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ *  把Discuz积分转化为Drupal积分.
+ */
+ 
+/**
+ * 实现了hook_menu()钩子函数 
+ */ 
+function dz2drupalpoints_menu(){
+
+  $items['user/%user/discuz'] = array(
+    'title' => '外语圈金钱换悠游积分',
+    'description' => '把外语圈金钱转换为悠游主站积分',
+    'page callback' => 'dz2drupalpoints_callback_page',
+		'access callback' => 'dz2drupalpoints_accesss_convert_points',
+    'type' => MENU_LOCAL_TASK,
+		'weight' => 10,
+    'file' => 'dz2drupalpoints.pages.inc',
+  );  
+  return $items;
+}
+
+/**
+ * 访问控制回调函数 
+ */ 
+function dz2drupalpoints_accesss_convert_points(){
+	global $user;
+  //if ($user->uid === 1 || user_access('USERPOINTS_PERM_ADMIN')) {
+  //  return TRUE;
+  //}
+	//只有登录用户与当前用户相同时，才允许查看。
+	$current_user_id = arg(1);
+  return ( $user->uid == $current_user_id && $user->uid >0);
+}
+
+function dz2drupalpoints_theme(){
+	return array(
+    'dz2drupalpoints_page_content' => array(
+      'variables' => array('discuz_points' => NULL,'current_points' => NULL,'bilv' => '10/1','form_content'=> NULL,),
+			'file' => 'dz2drupalpoints.pages.inc',
+    ),
+		'dz2drupalpoints_page_empty' => array(
+      'variables' => array(),
+			'file' => 'dz2drupalpoints.pages.inc',
+    ),
+    
+  );
+}
+
+/**
+ * 积分设置 
+ */
+function dz2drupalpoints_userpoints($op, $points = 0, $uid = 0, $event = '') {
+  switch($op) {
+    case 'setting':
+      
+			$form['discuz'] = array(
+        '#type'          => 'fieldset',
+        '#title'         => t("外语圈金钱转悠游积分比率"),
+				'#collapsible' => TRUE,
+        '#collapsed' => TRUE,
+      );
+
+      $form['discuz']['dz2drupalpoints_bilv'] = array(
+        '#type'          => 'textfield',
+        '#title'         => t("多少个外语圈金钱转化为一个悠游积分"),
+        '#default_value' => variable_get('dz2drupalpoints_bilv', '10'),
+        '#size'          => 5,
+        '#maxlength'     => 5,
+      );
+			return $form;
+			break;
+  }
+}

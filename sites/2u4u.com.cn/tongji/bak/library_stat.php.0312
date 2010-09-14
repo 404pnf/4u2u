@@ -1,0 +1,94 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>电子图书馆积分统计</title>
+</head>
+<link href='table.css' rel='stylesheet' type='text/css' >
+<form action='' method='post'>
+请选择时间段:
+<select name='time'>
+<option value='week' <?php if($_POST['time']=='week') echo "selected"; ?>>本周</option>
+<option value='last_week' <?php if($_POST['time']=='last_week') echo "selected"; ?>>上周</option>
+<option value='month' <?php if($_POST['time']=='month') echo "selected"; ?>>本月</option>
+<option value='last_month' <?php if($_POST['time']=='last_month') echo "selected"; ?>>上个月</option>
+<option value='all' <?php if($_POST['time']=='all'|$_POST['time']=='') echo "selected"; ?>>所有</option>
+</select>
+<input type='submit' name='btn' value='提交'>
+</form>
+
+<?php
+/**
+ *   统计电子图书馆的积分购买数据（消费总积分、图书名称、物料号、价格、次数）
+ *   by @wzs 100310
+ */
+
+
+require 'connect.php';
+$end=strtotime("today"); 
+if(isset($_POST['btn'])){
+      $time = $_POST['time'];
+
+      if($time=='week'){    //本周
+      	    $time_limit = "yt.time>$end-86400*7 AND yt.time<$end AND "; 
+            $string = "从".date("Y-m-d",$end-86400*7)." 至 ".date("Y-m-d",$end);     
+      }
+      if($time=='last_week'){    //上周
+          $time_limit = "yt.time>$end-86400*14 AND yt.time<$end-86400*7 AND "; 
+          $string = "从".date("Y-m-d",$end-86400*14)." 至 ".date("Y-m-d",$end-86400*7);         
+      }    
+      if($time=='month'){       //本月
+      	  $start = mktime(0, 0 , 0,date("m"),1,date("Y"));
+          $time_limit = "yt.time>$start AND yt.time<$end AND ";   
+          $string = "从".date("Y-m-d",$start)." 至 ".date("Y-m-d",$end);      
+      }
+      if($time=='last_month'){  //上月
+      	  $start = mktime(0, 0 , 0,date("m")-1,1,date("Y"));
+      	  $this_month = mktime(0, 0 , 0,date("m"),1,date("Y"));
+          $time_limit = "yt.time>$start AND yt.time<$this_month AND ";  
+          $string = "从".date("Y-m-d",$start)." 至 ".date("Y-m-d",$this_month);        
+      }
+      if($time=='all'){  //所有
+          $time_limit = "yt.time<$end AND ";     
+          $string .="截至".date("Y-m-d",$end);  
+      }
+ }else{
+ 	     $time_limit = "yt.time>$end-86400*7 AND yt.time<$end AND "; 
+         $string = "从".date("Y-m-d",$end-86400*7)." 至 ".date("Y-m-d",$end);   
+ }
+
+$sql = "SELECT nd.title, ce.field_yuedu_pricebypoints_value points,yt.nid,yt.sku, count( yt.nid ) num
+FROM `node` nd
+LEFT JOIN `yuedu_transaction` yt ON nd.nid = yt.nid
+LEFT JOIN `content_type_ebook` ce ON yt.nid = ce.nid
+WHERE $time_limit yt.sku >0
+AND ce.field_yuedu_pricebypoints_value >0 
+GROUP BY yt.sku
+ORDER BY num DESC ";
+//echo $sql;
+$rs = mysql_query($sql);
+$i = 0;
+$j = 0;
+
+while($row = mysql_fetch_object($rs)){
+	$total += $row->points*$row->num;
+	$table.= "<tr><td class='row'>".$row->title."</td>";
+	$table.="<td class='row'>".$row->nid."</td>";
+	$table.="<td class='row'>".$row->sku."</td>";
+	$table.= "<td class='row'>".$row->num."</td>";
+	$table.= "<td class='row'>".$row->points."</td>";
+	$table.= "</tr>";
+	$j +=$row->num;
+	$i++;
+}
+echo $string." 用户在电子图书馆消费的积分为<font size=12 color=red>".$total."</font>分，购买了<font size=12 color=red>".$j."</font>次涉及的图书共<font size=12 color=red>".$i."</font>种。<br>";
+?>
+<div align="center">
+<table id="mytable" cellspacing="0" >
+<th scope="col">书名</th>
+<th scope="col">文章id</th>
+<th scope="col">物料号</th>
+<th scope="col">购买次数</th>
+<th scope="col">价格</th></tr>
+<?php echo  $table;?>
+</table>
+</div>

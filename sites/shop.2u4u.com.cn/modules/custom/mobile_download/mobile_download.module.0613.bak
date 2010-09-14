@@ -1,0 +1,215 @@
+<?php
+function mobile_download_menu(){
+	
+   $items['mobile/download'] = array (
+      'title' => t('手机软件下载'),
+      'page callback' => 'download_page',  
+      'access callback'=>true, 
+      'type' => MENU_CALLBACK,
+   );
+   
+   
+      return $items;
+}
+
+
+function mobile_download_block($op = 'list', $delta = 0, $edit = array()){
+  if ($op == 'list') {
+    $blocks[0]['info'] = t('资源下载种类选择');
+    $blocks[0]['cache'] = BLOCK_CACHE_GLOBAL;
+    return $blocks;
+  }
+	
+  if($op == 'view'){
+  	$block = array();
+    switch ($delta) {
+      case 0:
+	      	$block['subject'] = t('资源下载');
+		  	$block['content'] = download_page();
+		  	return $block;
+    }
+  }   
+}
+
+
+function download_page(){
+	
+   if(!empty($_POST['choose_taxonomy']['depth2']))
+	     $tid = $_POST['choose_taxonomy']['depth2'];
+   elseif(!empty($_POST['choose_taxonomy']['depth1']))
+	      $tid = $_POST['choose_taxonomy']['depth1'];
+   elseif(!empty($_POST['choose_taxonomy']['depth0']))
+	      $tid = $_POST['choose_taxonomy']['depth0'];
+	        
+	if($tid){
+		$views_name = 'product_dl';
+		$result = views_embed_view($views_name,'page_1',$tid);				
+	}
+        $content = drupal_get_form('download_form');
+	$content .= $result;
+	return $content;
+	
+}
+
+
+
+
+
+
+function download_form($form_state){
+
+   $form = array('#action' => '/mobile/download');
+  
+	ahah_helper_register($form, $form_state);
+   $form['choose_taxonomy'] = array(
+      '#type' => 'fieldset',
+      '#prefix' => '<div id="root-wrapper">', // This is our wrapper div
+      '#suffix' => '</div>',
+      '#tree' => TRUE, // don't forget to set #tree!
+      );
+
+   
+    $root_taxonomy[0] = '请选择下载终端';
+    $root_taxonomy += get_taxonomy_info(0);
+
+    
+    $choice0 = $form_state['values']['choose_taxonomy']['depth0'];
+    
+	$form['choose_taxonomy']['depth0'] = array(
+	  '#title' => '',
+	  '#type' => 'select',
+	  '#options' => $root_taxonomy,
+	  '#default_value' => $choice0,
+      '#ahah' => array(
+        'event' => 'change',
+        'path' => ahah_helper_path(array('choose_taxonomy')),
+        'wrapper' => 'root-wrapper',
+        'method' => 'replace',
+        ),
+     );
+
+ 
+   if($choice0){    
+   	   
+   
+   	
+   	if(get_taxonomy_info($choice0)){
+   		$taxonomy1[0] = '选择品牌';
+   	    $taxonomy1 += get_taxonomy_info($choice0);   	   
+   	}
+   	
+   	if($taxonomy1){
+    $choice1 = $form_state['values']['choose_taxonomy']['depth1'];
+    
+	$form['choose_taxonomy'] ['depth1'] = array(
+	  '#title' => '',
+	  '#type' => 'select',
+	  '#options' => $taxonomy1,
+	  '#default_value' => $choice1,
+	  '#ahah' => array(
+        'event' => 'change',
+        'path' => ahah_helper_path(array('choose_taxonomy')),
+        'wrapper' => 'root-wrapper',
+        'method' => 'replace',
+        ),
+
+     );
+   }
+  } 
+
+ 
+  if($choice1){
+  	
+    if(get_taxonomy_info($choice1)){
+   		$taxonomy2[0] = '选择型号';
+   	    $taxonomy2 += get_taxonomy_info($choice1);   	   
+   	}
+	if($taxonomy2){
+    $choice1 = $form_state['values']['choose_taxonomy']['depth2'];
+    
+	$form['choose_taxonomy'] ['depth2'] = array(
+	  '#title' => '',
+	  '#type' => 'select',
+	  '#options' => $taxonomy2,
+	  '#default_value' => $choice1,
+    );
+   }
+ } 
+ 
+ 
+	 $form['choose_taxonomy']['submit']	= array(
+      '#type' => 'submit',
+      '#value' => t('搜索'),
+	   
+     );
+  
+	  return $form;
+}
+
+
+function get_taxonomy_info($tid){
+	
+/*		
+	$sql = "SELECT th.tid,name 
+	FROM `term_hierarchy` th 
+	LEFT JOIN `term_data` td ON td.tid=th.tid WHERE `parent`=".$tid;
+*/
+
+	$sql = "SELECT td.tid, vid, name
+			FROM `term_data` td
+			LEFT JOIN `term_hierarchy` th ON th.tid = td.tid
+			WHERE td.vid =27
+			AND th.parent =".$tid;
+	
+	$rs = db_query($sql);
+
+	while($row = db_fetch_object($rs)){		
+		$options[$row->tid] = $row->name;		
+	}
+	
+	return $options;
+	
+}
+
+
+function download_form_validate($form,&$form_state){
+
+	if($form_state['values']['choose_taxonomy']['depth0']<1){
+	   form_set_error('word',t('请选择下载终端'));	
+	}
+	
+}
+
+
+
+
+
+/*
+function download_form_submit($form,&$form_state){
+	  ahah_helper_generic_submit($form,$form_state);   
+	   if(!empty($form_state['values']['choose_taxonomy']['depth2']))
+	        $tid = $form_state['values']['choose_taxonomy']['depth2'];
+	   elseif(!empty($form_state['values']['choose_taxonomy']['depth1']))
+	        $tid = $form_state['values']['choose_taxonomy']['depth1'];
+	   elseif(!empty($form_state['values']['choose_taxonomy']['depth0']))
+	        $tid = $form_state['values']['choose_taxonomy']['depth0'];
+	        
+   //if($tid){
+	//	$views_name = 'download_Resources';
+	//	$result = views_embed_view($views_name,'page_1',$tid);				
+	//}
+	
+
+	//$content = drupal_get_form('download_form');
+
+	//$content .= $result;
+	echo 'aaaaa';
+	   $form_state['redirect'] = "mobile_download/".$tid;
+
+//$form['redirect'] = "http://yuedu.2u4u.com.cn/xiaozu";
+	//  drupal_goto("mobile/".$tid);
+     //return $content;
+	    
+  }
+*/
+?>

@@ -1,0 +1,21 @@
+<?php 
+function kc_info_menu(){
+    $items['get_kc']=array(
+     'title' => '图书的库存',
+     'page callback' => 'get_book_kc',
+     'type' => MENU_CALLBACK,
+     'access callback' => true,
+     'file' => 'kc_info.page.inc'
+   );  
+   
+   $items['erp_kc']=array(
+     'title' => '单本图书的库存',
+     'page callback' => 'get_erp_kc',
+     'type' => MENU_CALLBACK,
+     'access callback' => true,
+     'file' => 'kc_info.page.inc'
+   );  
+   return $items;
+}
+
+

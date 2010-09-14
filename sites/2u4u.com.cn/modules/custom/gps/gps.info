@@ -1,0 +1,4 @@
+name = GPS connector
+description = "Provide Web service for GPS"
+core = 6.x
+

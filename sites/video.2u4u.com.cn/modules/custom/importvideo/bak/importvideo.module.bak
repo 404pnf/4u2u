@@ -1,0 +1,157 @@
+<?php
+function importvideo_menu(){
+	$items = array();	
+	$items['import_video'] = array(
+	  'title' => 'IMPORT VIDEO',
+	  'type'  => MENU_NORMAL_ITEM,
+	  'access callback' => true,
+	  'page callback' => 'flv_import',	
+	);
+		
+	return $items;
+	
+}
+
+
+function flv_import(){
+	
+  $mime = 'flv-application/octet-stream'; //flv的自定义类型
+ // $mime = 'audio/mpeg'; // I was importing mp3 files
+  $dir = "/var/www/html/drupal/sites/2u4u.com.cn/files/flv/";
+
+   //$dir = drupal_get_path('module','importvideo')."/disney/"; 
+  
+  //var_dump($dir);
+  
+  $files =  read_dir($dir);
+var_dump($files);
+
+   $files = urldecode($files);
+   $files = iconv("GB2312","UTF-8",$files); //Ŀ¼�����ĵ��ļ�����Ҫת��
+   $i = 0;
+  if(strpos($files,";")){
+	  $new_files = explode(";",$files);
+	  foreach($new_files as $value){
+	  if(strlen($value)>0&&$value!=''){
+	  	
+	  	  $value = trim($value);
+	  	 
+		  $file_drupal_path = $dir.$value.".flv";
+		
+		
+		  $file = new stdClass();
+		  $file->filename = $value;  
+		  $file->filepath = $file_drupal_path;
+		 // var_dump($file->filepath);
+		  
+		
+		  $file->check = db_result(db_query("SELECT fid FROM {files} WHERE filepath = '%s'", $file->filepath));
+
+		 if($file->check>0){
+		  	continue;
+		 }else{
+		 
+		  $file->filemime = $mime;
+		  $file->filesize = filesize($file_drupal_path);
+		
+		  $file->uid = 1;
+		  $file->status = FILE_STATUS_PERMANENT;
+		  $file->timestamp = time();
+		  drupal_write_record('files', $file);
+		  $file->fid = db_result(db_query("SELECT fid FROM {files} WHERE filepath = '%s'", $file->filepath));
+		
+		if($file->fid>0){
+			
+		  $node = new StdClass();
+		  $node->type = 'shipin';
+		  $node->body = '';
+		  $node->title =  $value;
+
+		  $node->field_pronounciation = array(
+		    array(
+		      'fid' => $file->fid,
+		      'title' => basename($file->filename),
+		      'filename' => $file->filename,
+		      'filepath' => $file->filepath,
+		      'filesize' => $file->filesize,
+		      'mimetype' => $mime,
+		      'description' => basename($file->filename),
+		      'list' => 1,
+		    ),
+		  );
+		  $node->uid = 1;
+		  $node->status = 1;
+		  $node->active = 1;
+		  $node->promote = 1;
+		  node_save($node);
+		  
+		  //д��content_type_shipin
+		  
+		//  $video = new StdClass();
+		  $video = new stdClass();
+		   $video->nid = db_result(db_query("SELECT nid FROM {node} WHERE title = '%s' ORDER BY nid DESC LIMIT 1", basename($file->filename))); 
+		   $video->vid = db_result(db_query("SELECT vid FROM {node_revisions} WHERE nid = '%d' ORDER BY vid DESC LIMIT 1 ", $video->nid)); 
+		  /*
+		   $video->field_shipin_upload_fid = $file->fid;
+		  $video->field_shipin_upload_list = 1;
+		  $video->field_shipin_upload_data = 'a';
+		  $video->field_shipin_neirong_value = 'a';
+		  $video->field_shipin_neirong_format = 3;
+		  $video->field_shipin_jiaoben_value = 'a';
+		  $video->field_shipin_danci_value = 'a';
+		  $video->field_shipin_yuyanjiexi_value = 'a';
+		
+		*/
+		
+
+		   //$sql = "INSERT INTO {content_type_shipin}(vid,nid,field_shipin_upload_fid,field_shipin_upload_list,field_shipin_neirong_format) VALUES (%d,%d,%d,%d,%d)";
+           $sql = "INSERT INTO {content_type_shipin}(vid,nid,field_shipin_upload_fid) VALUES (%d, %d, %d)";
+           
+		   $arr = array($video->vid,$video->nid,$file->fid);
+		   $rs = db_query($sql,$arr);
+		   echo $sql."<br>";
+		   if($rs){
+		   	  $i++;		   	
+		   }
+		  
+		  // var_dump($video);
+		  // $rs = node_save($video);
+		  //$rs =  drupal_write_record('test',$video,array('nid','vid'));
+	
+	    }
+		  }
+	  	}
+	   }  
+    }
+    echo "共成功导入".$i."个视频";
+}
+
+  /**
+   *   �s�Ŀ¼�������ļ�����;��l
+   */
+
+
+function read_dir($dir){
+	
+	
+$path = $dir;	
+echo $path;
+if (is_dir($path)) { 
+echo "hhhh";
+	if ($dh = opendir($path)) { 
+		while (($file = readdir($dh)) !== false) { 
+		if ($file!="." && $file!="..") { 
+		  if(strpos($file,".flv")){	
+			$data .= urlencode(trim(substr($file,0,-4)));
+			$data .= ";";
+		  }
+		}
+	  }
+	 return $data;
+    }
+  }	
+	
+	
+}
+
+?>

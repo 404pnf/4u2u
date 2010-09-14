@@ -1,0 +1,2640 @@
+@charset "utf-8";
+/* $Id: zen.css,v 1.14.2.1 2009/02/13 07:46:04 johnalbin Exp $ */
+
+/*
+* ZEN STYLES
+*
+* This is an example stylesheet. Sub-themes should NOT include the zen/zen.css
+* file, but instead copy this CSS to their own stylesheets.
+*
+* In this stylesheet, we have included all of the classes and IDs from this
+* theme's tpl.php files. We have also included many of the useful Drupal core
+* styles to make it easier for theme developers to see them.
+*
+* Many of these styles are over-riding Drupal's core stylesheets, so if you
+* remove a declaration from here, the styles may still not be what you want
+* since Drupal's core stylesheets are still styling the element. See the
+* drupal6-reference.css file for a list of all Drupal 5.x core styles.
+*
+* In addition to the style declarations in this file, other Drupal styles that
+* you might want to override or augment are those for:
+*
+*   Book Navigation  See line 74  of Zen's drupal6-reference.css file
+*   Forum            See line 197 of Zen's drupal6-reference.css file
+*   Menus            See line 667 of Zen's drupal6-reference.css file
+*   News Aggregator  See line 20  of Zen's drupal6-reference.css file
+*   Polls            See line 287 of Zen's drupal6-reference.css file
+*   Search           See line 320 of Zen's drupal6-reference.css file
+*   User Profiles    See line 945 of Zen's drupal6-reference.css file
+*/
+
+
+/** body **/
+body, div, span, p, blockquote, pre, code, ul, ol, li, h1, h2, h3, h4, h5, h6, form, fieldset, legend, label, input, textarea {
+margin: 0;
+padding: 0;
+}
+h1 {
+font-size: 2.5em;
+font-weight: normal;
+}
+h2 {
+font-size: 1.75em;
+font-weight: normal;
+}
+h3 {
+font-size: 1.25em;
+font-weight: bold;
+}
+h4 {
+font-size: 1.1em;
+font-weight: bold;
+}
+h5 {
+font-size: 1em;
+font-weight: bold;
+}
+h6 {
+font-size: 0.8em;
+font-weight: bold;
+}
+img {
+border: 0;
+}
+a {
+color: #27638C;
+margin: 0;
+padding: 0;
+text-decoration: none;
+}
+a:link, a:visited {
+color: #27638C;
+}
+a:hover, a:active {
+text-decoration: underline;
+}
+body {
+background: #FFF;
+font-family: 宋体, 黑体;    /* web safe fonts */
+font-size: 75%;    /* 12px */
+font-weight: normal;
+line-height: 160%;    /* 19.2px */
+}
+#page {
+width:975px;
+margin-left:auto;
+margin-right:auto;
+font-size:12px;
+}
+#page-inner {
+}
+/** header **/
+#header {
+}
+#header-inner {
+}
+#logo-title /* Wrapper for logo, website name, and slogan */ {
+}
+#logo /* Wrapper for logo */ {
+margin: 0;
+padding: 0;
+}
+#logo-image /* The actual logo image */ {
+}
+h1#site-name, div#site-name /* The name of the website */ {
+margin: 0;
+font-size: 2em;
+line-height: 1.3em;
+}
+#site-name a:link, #site-name a:visited {
+color: #000;
+text-decoration: none;
+}
+#site-name a:hover {
+text-decoration: underline;
+}
+#site-slogan /* The slogan (or tagline) of a website */ {
+}
+#header-blocks /* Wrapper for any blocks placed in the header region */ {
+}
+/** main (container for everything else) **/
+#main {
+width:975px;
+margin-left:auto;
+margin-right:auto;
+}
+#main-inner {
+width:975px;
+}
+/** content **/
+{
+}
+#content-inner {
+
+}
+.node-type-ebook #main #main-inner #content  #content-inner #content-header .title{height:35px;background-image: url(images/video_titleall.jpg);}
+.node-type-ebook #main #main-inner #content  #content-inner #content-header .title{ text-align:center; color:#32A442; font-size:14px; font-weight:700; line-height:35px;}
+.section-yuedu  #main #main-inner #content  #content-inner #content-header{height:35px;background-image: url(images/video_titleall.jpg);}
+.section-yuedu  #main #main-inner #content  #content-inner #content-header .title{
+background-image:url(images/remph_titilebg.jpg);
+background-repeat:no-repeat;
+height:35px;
+line-height:35px;
+text-indent:26px;
+clear:both;
+font-size:14px;
+color:#ffffff;
+font-weight:700;}
+#mission /* The mission statement of the site (displayed on homepage) */ {
+}
+#content-top /* Wrapper for any blocks placed in the "content top" region */ {
+}
+#content-header /* Wrapper for breadcrumb, title, messages, tabs, and help */ {
+}
+.breadcrumb /* The path to the current page in the form of a list of links */ {
+padding-bottom: 0; /* Undo system.css */
+}
+h1.title, /* The title of the page */ h2.title, /* Block title or the title of a piece of content when it is given in a list of content */ h3.title /* Comment title */ {
+margin: 0;
+}
+div.messages /* Important messages (status, warning, and error) for the user */ {
+}
+div.status /* Normal priority messages */ {
+}
+div.warning, tr.warning /* Medium priority messages */ {
+/* border: 1px solid #f0c020; */ /* Drupal core uses: 1px solid #f0c020 */
+}
+div.error, tr.error /* High priority messages. See also the .error declaration below. */ {
+}
+div.tabs /* See also the tabs.css file. */ {
+}
+.help /* Help text on a page */ {
+margin: 1em 0;
+}
+.more-help-link /* Link to more help */ {
+font-size: 0.85em;
+text-align: right;
+}
+#content-area /* Wrapper for the actual page content */ {
+}
+.pager /* A list of page numbers when more than 1 page of content is available */ {
+clear: both;
+margin: 1em 0;
+text-align: center;
+}
+.pager a, .pager strong.pager-current {
+padding: 0.5em;
+}
+.feed-icons /* The links to the RSS or Atom feeds for the current list of content */ {
+margin: 1em 0;
+}
+#content-bottom #block-views-tag_yuedu-block_2{border-left:#D1D1D1 1px solid;border-right:#D1D1D1 1px solid;border-bottom:#D1D1D1 1px solid; margin-bottom:10px;margin-top:10px;}
+#content-bottom #block-views-tag_yuedu-block_2 .content .view-content .views-field-tid .field-content a{ color:#000000;}
+#content-bottom #block-views-tag_yuedu-block_2 .h2Container .title{height:35px;background-image: url(images/video_titleall.jpg); font-size:12px; 
+color:#32A442; text-indent:26px; font-weight:700; line-height:35px;}
+.content .field-label{height:35px;background-image: url(images/video_titleall.jpg); font-size:12px; 
+color:#32A442; text-indent:26px; font-weight:700; line-height:35px;border-left:#D1D1D1 1px solid;border-right:#D1D1D1 1px solid; margin-top:10px;}
+#content-bottom /* Wrapper for any blocks placed in the "content bottom" region */ {border-right:#D1D1D1 1px solid;border-left:#D1D1D1 1px solid;border-bottom:#D1D1D1 1px solid;border-top:none;
+}
+/*xiugai-------------------------------------------------------------------------------------------------------------------------*/
+#content-bottom #block-views-yuedu-block_1{ width:610px;border-right:#D1D1D1 1px solid;border-left:#D1D1D1 1px solid;border-bottom:#D1D1D1 1px solid;;border-top:none;}
+#content-bottom #block-views-yuedu-block_1 .block-inner .h2Container{height:35px;background-image: url(images/video_titleall.jpg);}
+*html #content-bottom #block-views-yuedu-block_1 .block-inner .h2Container{height:35px;background-image: url(images/video_titleall.jpg); z-index:1;}
+#content-bottom #block-views-yuedu-block_1 .block-inner .h2Container .title{
+background-image:url(images/remph_titilebg.jpg);
+background-repeat:no-repeat;
+height:35px;
+line-height:35px;
+text-indent:26px;
+clear:both;
+font-size:14px;
+color:#ffffff;
+font-weight:700;
+z-index:2;
+}
+#content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul{  list-style:none; clear:both;}
+#content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li{
+width:285px;
+float:left;
+line-height:180%;
+overflow:hidden;
+display:block;
+margin:10px;
+color:#666666;
+}
+*html #content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li {
+border-bottom:1px dashed #CCCCCC;
+color:#666666;
+display:block;
+float:left;
+line-height:180%;
+margin:10px 0px 10px 5px;
+width:290px;
+overflow:hidden;
+}
+*+html #content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li{
+width:290px;
+float:left;
+line-height:180%;
+overflow:hidden;
+display:block;
+margin:10px 5px 10px 5px;
+color:#666666;
+}
+#content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li .views-field-field-yuedu-cover-fid{
+float:left;
+margin-right:10px;
+text-align:center;
+width:100px;}
+*html #content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li .views-field-field-yuedu-cover-fid{
+float:left;
+margin-right:0px;
+text-align:center;
+width:110px;
+margin-left:5px;
+}
+#content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li .views-field-title{float:right;font-weight:700; width:170px; white-space:nowrap;overflow:hidden;}
+#content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li .views-field-field-yuedu-author-value{float:left; width:170px;overflow:hidden; white-space:nowrap;}
+#content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li .views-field-field-yuedu-author-value .field-content{ color:#000000; }
+#content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li .views-field-field-yuedu-isbn-valu{float:left; width:170px;}
+#content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li .views-field-field-yuedu-isbn-valu .field-content{ color:#000000;}
+
+#content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li .views-field-field-yuedu-summary-value{float:left; width:170px; text-indent:26px;height:95px;}
+*html #content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li .views-field-field-yuedu-summary-value{float:left; width:170px;height:100px; line-height:22px;word-wrap:break-word; overflow:hidden; display:inline;}
+*+html #content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li .views-field-field-yuedu-summary-value{float:left; width:170px;height:95px; line-height:22px;word-wrap:break-word; overflow:hidden;}
+
+
+#content-bottom .block-inner .content .view-content .views-field-tid .field-content a{float:left; margin-left:10px; height:25px; line-height:25px;}
+#content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li .views-field-view-node{ float:right; padding-right:26px;}
+#content-bottom #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li .views-field-view-node .field-content a{ color:#FF0000;}
+#content-bottom #block-views-yuedu-block_1 .block-inner .content .more-link {
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+height:35px;
+line-height:34px;
+margin-left:500px;
+margin-top:-379px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:right;
+} 
+*html #content-bottom #block-views-yuedu-block_1 .block-inner .content .more-link {
+position:absolute;
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+height:35px;
+line-height:34px;
+margin-left:490px;
+margin-top:-430px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:left;
+z-index:3;
+display:block;
+} 
+*+html #content-bottom #block-views-yuedu-block_1 .block-inner .content .more-link {
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+height:35px;
+line-height:34px;
+margin-left:500px;
+margin-top:-368px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:right;
+} 
+#content-bottom #block-views-yuedu-block_2 .block-inner .content .more-link {
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+height:35px;
+line-height:34px;
+margin-left:500px;
+margin-top:-184px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:right;
+} 
+* html #content-bottom #block-views-yuedu-block_2 .block-inner .content .more-link {
+background-image:url(images/class_more.jpg);
+position:absolute;
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+height:35px;
+line-height:34px;
+margin-left:500px;
+margin-top:-184px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:right;
+} 
+#content-bottom #block-views-yuedu-block_3 .block-inner .content .more-link {
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+height:35px;
+line-height:34px;
+margin-left:500px;
+margin-top:-184px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:right;
+} 
+*html #content-bottom #block-views-yuedu-block_3 .block-inner .content .more-link {
+position:absolute;
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+height:35px;
+line-height:34px;
+margin-left:500px;
+margin-top:-184px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:right;
+} 
+#content-bottom #block-views-yuedu-block_2 .block-inner .content .view-content .item-list ul li .views-field-field-yuedu-cover-fid{ margin-top:10px;}
+#content-bottom #block-views-yuedu-block_2 .block-inner .content .view-content .item-list ul{list-style:none;}
+#content-bottom #block-views-yuedu-block_2 .block-inner .content .view-content .item-list ul li{
+width:115px;
+float:left;
+text-align:center;
+line-height:180%;
+height:150px;
+overflow:hidden;
+display:block;
+margin-left:5px;
+}
+
+#content-bottom #block-views-yuedu-block_3 .block-inner .content .view-content .item-list ul{list-style:none;}
+#content-bottom #block-views-yuedu-block_3 .block-inner .content .view-content .item-list ul li{
+width:115px;
+float:left;
+text-align:center;
+line-height:180%;
+height:150px;
+overflow:hidden;
+display:block;
+margin-left:5px;
+}
+#content-bottom #block-views-yuedu-block_3 .block-inner .content .view-content .item-list ul li .views-field-field-yuedu-cover-fid{margin-top:10px; height:110px;} 
+#content-bottom #block-views-yuedu-block_3 .block-inner .content .view-content .item-list ul li .views-field-field-yuedu-cover-fid .field-content{height:112px;}
+*html #content-bottom #block-views-yuedu-block_3 .block-inner .content .view-content .item-list ul li .views-field-field-yuedu-cover-fid .field-content{height:112px;}
+*+html #content-bottom #block-views-yuedu-block_3 .block-inner .content .view-content .item-list ul li .views-field-field-yuedu-cover-fid .field-content{height:112px;}
+#content-bottom #block-views-yuedu-block_2{width:610px;border-right:#D1D1D1 1px solid;border-left:#D1D1D1 1px solid;border-bottom:#D1D1D1 1px solid;border-top:none;}
+#content-bottom #block-views-yuedu-block_2 .block-inner .h2Container .title{
+height: 35px;
+line-height:35px;
+text-indent:10px;
+clear:both;
+background-image: url(images/video_titleall.jpg);
+font-size:14px;
+color:#32A442;
+font-weight:700;
+}
+
+
+
+#content-bottom #block-views-yuedu-block_3{width:610px;border-right:#D1D1D1 1px solid;border-left:#D1D1D1 1px solid;border-bottom:#D1D1D1 1px solid;border-top:none;}
+#content-bottom #block-views-yuedu-block_3 .block-inner .h2Container .title{
+height: 35px;
+line-height:35px;
+text-indent:10px;
+clear:both;
+background-image: url(images/video_titleall.jpg);
+font-size:14px;
+color:#32A442;
+font-weight:700;
+}
+#block-block-45{width:610px;border-right:#D1D1D1 1px solid;border-left:#D1D1D1 1px solid;border-bottom:#D1D1D1 1px solid;border-top:none;}
+#block-block-45 .h2Container .title{
+height: 35px;
+line-height:35px;
+text-indent:10px;
+clear:both;
+background-image: url(images/video_titleall.jpg);
+font-size:14px;
+color:#32A442;
+font-weight:700;
+}
+#block-block-45 .content .newlibrary{ width:610px; height:170px;}
+#block-block-45 .content .newlibrary .newcont .Scrnewcont #newlist1 .view-content .item-list ul{ width:600px;overflow:hidden;}
+#block-block-45 .content .newlibrary .newcont{
+	width:500px;
+	overflow:hidden;
+	padding-top:10px;
+	float: left;
+}
+.section-yuedu #content #content-inne #content-area .view-dom-id-1 .view-content .item-list ul li .views-field-field-yuedu-summary-value .field-content{float:left; height:100px; line-height:30px;word-wrap:break-word; overflow:hidden; margin-left:5px; margin-right:5px; text-indent:26px;}
+.section-yuedu  #content #content-inne #content-area .view-dom-id-1 .view-content .item-list ul li .views-field-title .field-content a{ width:350px;}
+
+.section-quiz #content-area .view-content .item-list ul li .views-field-name{}
+.section-quiz #content-area .view-content .item-list ul li .views-field-title{}
+
+
+*html #block-views-yuedu-block_1 .block-inner .content .view-content .item-list ul li .views-field-field-yuedu-summary-value .field-content {float:left; width:170px;height:100px; line-height:30px;word-wrap:break-word; overflow:hidden;}
+#sidebar-right #sidebar-right-inner #block-views-quiz-block_6 .content .view-content .item-list .views-summary{color:#000000;clear:both;}
+#sidebar-right #sidebar-right-inner #block-views-quiz-block_6 .content .view-content .item-list .views-summary li{ float:left; color:#000000; margin-left:5px;width:105px;overflow:hidden;
+}
+#sidebar-right #block-views-yuedu-block_8 .content .view-content{ margin-right:5px; margin-left:5px;}
+#sidebar-right #block-views-yuedu-block_8 .content .view-content span{ margin-left:2px;}
+#sidebar-right #block-views-yuedu-block_8 .content .view-content span a{ color:#000000;}
+
+.field-field-yuedu-yuanzhushangxi .field-items{border-right:#D1D1D1 1px solid;border-left:#D1D1D1 1px solid;border-bottom:#D1D1D1 1px solid;}
+.field-field-yuedu-yuanzhushangxi .field-items .odd p a{color:#000000;
+margin:0 10px;
+white-space:nowrap;
+}
+.field-field-yuedu-yuanzhushangxi .field-items .odd p {
+text-indent:0px;
+}
+.field-field-yuedu-summary .field-items .odd p{ width:960px; margin:0 auto;}
+.field-field-yuedu-summary{border-right:#D1D1D1 1px solid;border-left:#D1D1D1 1px solid;border-bottom:#D1D1D1 1px solid;} 
+.field-field-yuedu-summary .field-items .odd{ margin-left:10px; margin-right:10px;}
+/*xiugai------------------------------------------------------------------------------------------------------------------------------------*/
+/** navbar **/
+#navbar {
+}
+#navbar-inner {
+}
+#search-box /* Wrapper for the search form */ {
+width:975px;
+clear:both;
+background-image: url(images/search_bg.jpg);
+height: 31px;
+text-indent:15px;
+font-size:12px;
+font-weight:normal;
+}
+#edit-search-theme-form-1-wrapper label /* Label that says "Search this site:" */ {
+display: none;
+}
+#primary /* Primary links */ {
+}
+#secondary /* Secondary links */ {
+}
+/** sidebar-left **/
+#sidebar-left {
+}
+#sidebar-left-inner {
+}
+/** sidebar-right **/
+#sidebar-right{
+float:left;
+margin-left:615px;
+margin-right:-975px;
+padding:0;
+width:360px;
+}
+
+#sidebar-right #block-tagadelic-18 .content a {}
+#sidebar-right-inner {
+}
+/** footer **/
+#footer {
+clear:both;
+width:975px;
+margin-left:auto;
+margin-right:auto;
+}
+#footer-inner {
+}
+#footer-message /* Wrapper for the footer message from Drupal's "Site information"
+and for any blocks placed in the footer region */ {
+}
+/** closure **/
+#closure-blocks /* Wrapper for any blocks placed in the closure region */ {
+}
+/** Drupal nodes **/
+.node /* Node wrapper */ {
+}
+.node-inner /* Additional wrapper for node */ {
+}
+.sticky /* A sticky node (displayed before others in a list) */ {
+}
+.node-unpublished /* Unpublished nodes */ {
+/* background-color: #fff4f4; */ /* Drupal core uses a #fff4f4 background */
+}
+.node-unpublished div.unpublished, /* The word "Unpublished" displayed beneath the content. */ .comment-unpublished div.unpublished {
+height: 0;
+overflow: visible;
+color: #d8d8d8;
+font-size: 75px;
+line-height: 1;
+font-family: Impact, "Arial Narrow", Helvetica, sans-serif;
+font-weight: bold;
+text-transform: uppercase;
+text-align: center;
+word-wrap: break-word; /* A very nice CSS3 property */
+}
+.node-mine /* A node created by the current user */ {
+}
+.node-teaser /* A node displayed as teaser */ {
+}
+/* All nodes are given a node-type-FOO class that describes the type of
+* content that it is. If you create a new content type called
+* "my-custom-type", it will receive a "node-type-my-custom-type" class.
+*/
+.node-type-page /* Page content node */ {
+}
+.node-type-story /* Story content node */ {
+}
+.node h2.title /* Node title */ {
+}
+.marker /* "New" or "Updated" marker for content that is new or updated for the current user */ {
+color: #c00;
+}
+.node .picture /* The picture of the node author */ {
+}
+.node.node-unpublished .picture, .comment.comment-unpublished .picture {
+position: relative; /* Otherwise floated pictures will appear below the "Unpublished" text. */
+}
+.node .meta /* Wrapper for submitted and terms data */ {
+}
+.node .submitted /* The "posted by" information */ {
+}
+.node .terms /* Node terms (taxonomy) */ {
+}
+.node .content /* Node's content wrapper */ {
+}
+.node div.links /* Wrapper for node links */ {
+margin: 1em 0;
+}
+ul.links /* Taxonomy links, node links, comment links */ {
+margin: 0;
+padding: 0;
+}
+ul.links.inline {
+clear:both;
+display:block;
+}
+.content .inline {}
+ul.links li {
+display: inline;
+list-style-type: none;
+padding: 0 0.5em;
+height:30px; line-height:30px;
+}
+.preview .node /* Preview of the content before submitting new or updated content */ {
+/* background-color: #ffffea; */ /* Drupal core uses a #ffffea background */
+}
+/** Drupal comments **/
+#comments /* Wrapper for the list of comments and its title */ {
+margin: 1em 0;
+}
+#comments-title /* Heading for the list of comments */ {
+}
+.comment /* Wrapper for a single comment */ {
+}
+.comment-inner /* Additional wrapper for a single comment */ {
+}
+.comment-preview /* Preview of the comment before submitting new or updated comment */ {
+}
+.comment.new /* A new comment since the user last viewed the page. */ {
+}
+.comment.odd /* An odd-numbered comment in the list of comments */ {
+}
+.comment.even /* An even-numbered comment in the list of comments */ {
+}
+.comment.first /* The first comment in the list of comments */ {
+}
+.comment.last /* The last comment in the list of comments */ {
+}
+.comment-unpublished /* Unpublished comments */ {
+/* background-color: #fff4f4; */ /* Drupal core uses a #fff4f4 background */
+}
+.comment-unpublished div.unpublished /* The word "Unpublished" displayed beneath the content. See also the div.unpublished declaration in the node section above. */ {
+}
+.comment-published /* Published comments */ {
+}
+.comment-by-anon /* A comment created by an anonymous user */ {
+}
+.comment-by-author /* A comment created by the node's author */ {
+}
+.comment-mine /* A comment created by the current user */ {
+}
+.comment h3.title /* Comment title */ {
+}
+.new /* "New" marker for comments that are new for the current user */ {
+color: #c00;
+}
+.comment .picture /* The picture of the comment author */ {
+}
+.comment .submitted /* The "posted by" information */ {
+}
+.comment .content /* Comment's content wrapper */ {
+}
+.comment .user-signature /* The user's signature */ {
+}
+.comment div.links /* Wrapper for comment links. See also the ul.links declaration in the node section above. */ {
+margin: 1em 0;
+}
+.indented /* Nested comments are indented */ {
+/* margin-left: 25px; */ /* Drupal core uses a 25px left margin */
+}
+.preview .comment /* Preview of the comment before submitting new or updated comment */ {
+/* background-color: #ffffea; */ /* Drupal core uses a #ffffea background */
+}
+/** Drupal blocks **/
+.front #f_main-top {
+clear:both;
+}
+.front #f_main-middle {
+clear:both
+}
+.block /* Block wrapper */ {
+margin-bottom: 6px;
+}
+.block.region-odd /* Zebra striping for each block in the region */ {
+}
+.block.region-even /* Zebra striping for each block in the region */ {
+}
+.block.odd /* Zebra striping independent of each region */ {
+}
+.block.even /* Zebra striping independent of each region */ {
+}
+.region-count-1 /* Incremental count for each block in the region */ {
+}
+.count-1 /* Incremental count independent of each region */ {
+}
+.block-inner /* Additional wrapper for block */ {
+}
+.block h2.title /* Block title */ {
+}
+.block .content /* Block's content wrapper */ {
+}
+#block-aggregator-category-1 /* Block for the latest news items in the first category */ {
+}
+#block-aggregator-feed-1 /* Block for the latest news items in the first feed */ {
+}
+#block-block-1 /* First administrator-defined block */ {
+}
+/*  #block-block-43 {
+line-height:180%;
+clear:both;
+}*/
+#block-block-27 {
+line-height:180%;
+}
+/* user login */
+#block-block-44 {
+width:225px;
+float:left;
+}
+#block-block-44 h2.title {
+font-size:14px;
+line-height:26px;
+background-image: url(images/userlogintitle.jpg);
+background-repeat: repeat-x;
+height: 26px;
+border-top-width: 4px;
+border-top-style: solid;
+border-top-color: #299738;
+border-right-width: 1px;
+border-bottom-width: 1px;
+border-left-width: 1px;
+border-right-style: solid;
+border-bottom-style: solid;
+border-left-style: solid;
+border-right-color: #D1D1D1;
+border-bottom-color: #D1D1D1;
+border-left-color: #D1D1D1;
+color: #299C3D;
+font-weight: bold;
+line-height: 26px;
+text-align: left;
+text-indent: 8px;
+}
+#block-block-44 div.content {
+font-size:14px;
+background-image: url(images/userlogincontentbg.jpg);
+background-repeat: repeat-x;
+border-right-width: 1px;
+border-bottom-width: 1px;
+border-left-width: 1px;
+border-top-style: none;
+border-right-style: solid;
+border-bottom-style: solid;
+border-left-style: solid;
+border-right-color: #D1D1D1;
+border-bottom-color: #D1D1D1;
+border-left-color: #D1D1D1;
+height: 243px;
+line-height:200%;
+text-align:center;
+padding-top:15px;
+}
+#block-block-44 div.user_block_content {
+padding-top:10px;
+line-height:200%;
+}
+#block-block-44 .user_welcome {
+font-weight:bold;
+}
+/* user login over */
+#block-block-26 /* First administrator-defined block */ {
+float:left;
+width:520px;
+text-align: center;
+height: 290px;
+overflow:hidden;
+}
+/* swf over
+userpay */
+#block-block-34 /* First administrator-defined block */ {
+float:left;
+width:230px;
+}
+#block-block-34 h2.title {
+font-size:14px;
+line-height:26px;
+background-image: url(images/userlogintitle.jpg);
+background-repeat: repeat-x;
+height: 26px;
+border-top-width: 4px;
+border-top-style: solid;
+border-top-color: #299738;
+border-right-width: 1px;
+border-bottom-width: 1px;
+border-left-width: 1px;
+border-right-style: solid;
+border-bottom-style: solid;
+border-left-style: solid;
+border-right-color: #D1D1D1;
+border-bottom-color: #D1D1D1;
+border-left-color: #D1D1D1;
+color: #299C3D;
+font-weight: bold;
+line-height: 26px;
+text-align: left;
+text-indent: 8px;
+}
+#block-block-34 div.content {
+padding:4px;
+font-size:12px;
+background-image: url(images/userlogincontentbg.jpg);
+background-repeat: repeat-x;
+border-right-width: 1px;
+border-bottom-width: 1px;
+border-left-width: 1px;
+border-top-style: none;
+border-right-style: solid;
+border-bottom-style: solid;
+border-left-style: solid;
+border-right-color: #D1D1D1;
+border-bottom-color: #D1D1D1;
+border-left-color: #D1D1D1;
+height: 248px;
+}
+#block-block-34 div.content h5 {
+margin-top:3px;
+color:#33A641;
+border-top:1px dashed #C6C6C6;
+clear:both;
+font-size:14px;
+padding:3px;
+}
+#block-block-34 div.content p {
+padding:3px;
+clear:both;
+line-height:170%;
+}
+#block-block-34 label {
+font-size:12px;
+font-weight:normal;
+line-height:180%;
+}
+#block-block-34 #edit-gcode {
+width:160px;
+clear:both;
+height:22px;
+border:1px solid #C4C4C4;
+line-height:20px;
+}
+#block-block-34 #edit-submit {
+font-size:12px;
+color:#FFFFFF;
+background-image: url(images/userpay_bg.jpg);
+background-repeat: repeat-x;
+height:22px;
+line-height:20px;
+border:0px;
+width:64px;
+text-align:center;
+float:left;
+margin-left:28px;
+cursor:pointer;
+}
+#block-block-34 #edit-submit-1{
+font-size:12px;
+color:#FFFFFF;
+background-image: url(images/userpay_bg.jpg);
+background-repeat: repeat-x;
+height:22px;
+line-height:20px;
+border:0px;
+width:64px;
+text-align:center;
+float:left;
+margin-left:28px;
+cursor:pointer;
+}
+#block-block-34 .form-item a {
+}
+/*#block-block-34 #thmr_16{ height:25px; line-height:25px;}
+#block-block-34 #thmr_17 {height:25px;line-height:25px;}
+#block-block-34 #thmr_17 #edit-submit{font-size:12px; color:#FFFFFF;background-image: url(images/userpay_bg.jpg);background-repeat: repeat-x; height:22px; line-height:20px; border:0px; width:64px; text-align:center;float:left; margin-left:28px;}
+#block-block-34 #thmr_18{
+float:right;
+width:50%;
+text-align:left;
+height:30px;
+line-height:30px;
+margin-top:-15px;
+margin-left:-15px;}*/
+#block-block-34 div.userpay_height {
+height:3px;
+clear:both;
+}
+/*#block-block-34 #thrm_18.form-item{
+margin:0px;}
+#block-block-34 #thmr_24{
+clear:both;
+padding:0px;
+margin:0px;
+padding-bottom:3px;
+}
+#block-block-34 #thmr_12{text-align:center;clear:both;}
+#block-block-34 #thmr_14{text-align:center;clear:both;}*/
+#block-block-34 .form-item {
+text-align:center;
+}
+#block-block-34 #edit-gcode-wrapper {
+text-align:center;
+}
+/* 
+userpay over
+center ad*/
+#block-block-35 {
+clear:both;
+width:975px;
+height:90px;
+margin-bottom:8px;
+}
+/* ad over
+library */
+
+#block-block-36 {
+float:left;
+width:480px;
+}
+#block-block-36 div.h2Container {
+height: 35px;
+line-height:35px;
+clear:both;
+background-image: url(images/video_titleall.jpg);
+border-right-width: 1px;
+border-left-width: 1px;
+border-top-style: none;
+border-right-style: solid;
+border-bottom-style: none;
+border-left-style: solid;
+border-right-color: #DBDBDB;
+border-left-color: #DBDBDB;
+font-size:14px;
+color:#2A2A2A;
+}
+#block-block-36 h2 {
+font-size:14px;
+font-weight:bold;
+text-align:center;
+width:117px;
+background-image:url(images/class_titlebg.jpg);
+float:left;
+height: 34px;
+line-height: 34px;
+color: #FFFFFF;
+margin-top: 1px;
+margin-left: 1px;
+}
+#block-block-36 div.content {
+border:1px solid #CECECE;
+border-top:0px;
+clear:both;
+height:210px;
+text-align: center;
+overflow:hidden;
+display:block;
+}
+#block-block-36 li {
+list-style-type:none;
+}
+#library_frame_left {
+float:left;
+padding-top: 33px;
+padding-bottom: 25px;
+width: 50px;
+text-align: center;
+}
+#library_frame_right {
+float:right;
+width: 50px;
+padding-top: 33px;
+padding-bottom: 25px;
+text-align: center;
+}
+#librarycontent {
+float: left;
+padding: 5px;
+width: 300%;
+height:200px;
+overflow:hidden;
+}
+#librarycontent ul {
+float:left;
+list-style:none;
+}
+#librarycontent ul li {
+width: 125px;
+float: left;
+text-align:center;
+line-height:180%;
+height:185px;
+overflow:hidden;
+display:block;
+}
+#librarycontent ul li span {
+font-weight:bold;
+height:24px;
+line-height:24px;
+}
+#librarycontent #library_l_cont #llist1.views-row,#librarycontent #library_l_cont #llist1.views-row-1,#librarycontent #library_l_cont #llist1.views-row-odd,#librarycontent #library_l_cont #llist1.views-row-first
+{ border:0px;}
+#librarycontent #library_l_cont #llist1 .views-field-name{ height:23px; line-height:23px; overflow:hidden;}
+#block-block-36 div.more_link {
+background-image:url(images/class_more.jpg);
+clear:both;
+float:left;
+height:35px;
+line-height:34px;
+margin-left:400px;
+margin-top:-230px;
+padding-top:2px;
+text-align:center;
+width:75px;
+display:none;
+}
+/*library new style*/
+.newlibrary{
+	width:476px;
+	overflow:hidden;
+	margin:0;
+}
+.newlibrary .newcont{
+	width:378px;
+	overflow:hidden;
+	padding-top:10px;
+	float: left;
+}
+.newlibrary .newcont .ul{ padding:0px; margin:0px;}
+.newlibrary .Scrnewcont{width:10000000px;}
+
+.newlibrary .newcont ul li {
+width:130px;
+float:left;
+text-align:center;
+}
+.newlibraryleft{
+	float:left;
+	width:48px;
+	text-align:center;
+	padding-top: 10px;
+	cursor:pointer;
+}
+.newlibraryright{
+	float:right;
+	width:48px;
+	text-align:center;
+	padding-top: 10px;
+	cursor:pointer;
+}
+
+.newlibrary .newcont ul li  img{padding:4px;background:#fff;border:1px solid #ccc;display:block;margin:0 auto;}
+.newlibrary .newcont ul li  p{line-height:26px;color:#505050;}
+.newlibrary .newcont a:link,.newlibrary .newcont a:visited{color:#626466;text-decoration:none;}
+.newlibrary .newcont a:hover{color:#f00;text-decoration:underline;}
+.newlibrary #newlist1,.newlibrary #newlist2{float:left;}
+#content-area #node-50224 .node-inner .meta{ float:right;}
+#content-area #node-50224 .node-inner .meta ul {text-align:right;}
+#newlist1 ul{padding:0px; margin:0px}
+/* library new over */
+/* library over
+
+test start */
+#block-block-37 {
+float:right;
+width: 480px;
+display:block;
+overflow:hidden;
+}
+#block-block-37 div.h2Container {
+height: 35px;
+line-height:35px;
+clear:both;
+background-image: url(images/video_titleall.jpg);
+border-right-width: 1px;
+border-left-width: 1px;
+border-top-style: none;
+border-right-style: solid;
+border-bottom-style: none;
+border-left-style: solid;
+border-right-color: #DBDBDB;
+border-left-color: #DBDBDB;
+font-size:14px;
+color:#2A2A2A;
+}
+#block-block-37 h2 {
+font-size:14px;
+font-weight:bold;
+text-align:center;
+width:117px;
+background-image:url(images/class_titlebg.jpg);
+float:left;
+height: 34px;
+line-height: 34px;
+color: #FFFFFF;
+margin-top: 1px;
+margin-left: 1px;
+}
+#block-block-37 div.content {
+border:1px solid #CECECE;
+border-top:0px;
+clear:both;
+height:200px;
+text-align: center;
+padding: 5px;
+width:468px;
+display:block;
+}
+#block-block-37 div.content ul {
+float:left;
+list-style:none;
+height:180px;
+}
+#block-block-37 div.content ul li {
+float:left;
+width:105px;
+padding-right: 5px;
+padding-left: 5px;
+line-height:160%;
+}
+#block-block-37 div.content ul li h1 {
+font-size:12px;
+font-weight:bold;
+}
+#block-block-37 div.content ul li span {
+text-align:left;
+font-weight:normal;
+float:left;
+padding-left:18px;
+}
+#block-block-37 div.more_link {
+background-image:url(images/class_more.jpg);
+clear:both;
+float:left;
+height:35px;
+line-height:34px;
+margin-left:390px;
+margin-top:-39px;
+padding-top:2px;
+position:absolute;
+text-align:center;
+width:75px;
+display:none;
+}
+
+/* test over*/
+#block-block-38 {
+width:975px;
+float:left;
+}
+#block-block-38 div.content {
+clear:both;
+width:973px;
+border:1px solid #CECECE;
+border-top:0px;
+height:155px;
+overflow:hidden;
+}
+#block-block-38 div.h2Container {
+height: 35px;
+line-height:35px;
+clear:both;
+background-image: url(images/video_titleall.jpg);
+border-right-width: 1px;
+border-left-width: 1px;
+border-top-style: none;
+border-right-style: solid;
+border-bottom-style: none;
+border-left-style: solid;
+border-right-color: #DBDBDB;
+border-left-color: #DBDBDB;
+font-size:14px;
+color:#2A2A2A;
+}
+#block-block-38 h2 {
+font-size:14px;
+font-weight:bold;
+text-align:center;
+width:117px;
+background-image:url(images/class_titlebg.jpg);
+float:left;
+height: 34px;
+line-height: 34px;
+color: #FFFFFF;
+margin-top: 1px;
+margin-left: 1px;
+}
+#block-block-38 div.content ul {
+list-style-type:none;
+}
+#block-block-38 div.content ul li {
+float:left;
+padding:5px;
+width: 124px;
+margin: 5px;
+text-align:center;
+}
+#block-block-38 div.content ul li img {
+border:1px solid #CCCCCC;
+padding:2px;
+}
+#block-block-38 .more_link {
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+float:left;
+height:35px;
+line-height:34px;
+margin-left:889px;
+margin-top:-34px;
+padding-top:2px;
+position:absolute;
+text-align:center;
+width:75px;
+}
+#video_frame_left {
+float:left;
+padding-top: 25px;
+padding-bottom: 25px;
+width: 50px;
+text-align: center;
+}
+#video_frame_right {
+float:right;
+width: 50px;
+padding-top: 25px;
+padding-bottom: 25px;
+text-align: center;
+}
+#videocontent_list {
+float:left;
+text-align: center;
+padding-top: 5px;
+padding-bottom: 5px;
+height: 160px;
+width: 200%;
+}
+#videocontent_list ul {
+list-style-type:none;
+}
+#videocontent_list ul li {
+float:left;
+padding:5px;
+width: 124px;
+margin: 5px;
+}
+#videocontent_list ul li img {
+/*border:1px solid #CCCCCC;*/
+padding:2px;
+height:105px;
+}
+.library_swf {
+width:480px;
+overflow:hidden;
+padding-top: 4px;
+padding-right: 0;
+padding-bottom: 0px;
+height:195px;
+}
+.library_swf .l_leftbotton {
+height:90px;
+width:32px;
+overflow:hidden;
+float:left;
+display:inline;
+cursor:pointer;
+margin-top: 30px;
+margin-right: 0;
+margin-bottom: 0;
+margin-left: 0;
+padding-right: 10px;
+padding-left: 10px;
+background-image: url(images/frame_left.jpg);
+background-repeat: no-repeat;
+background-position: 22px;
+}
+.library_swf .l_rightbotton {
+height:90px;
+width:32px;
+overflow:hidden;
+float:left;
+display:inline;
+cursor:pointer;
+margin-top: 30px;
+margin-right: 0;
+margin-bottom: 0;
+margin-left: 0;
+padding-right: 10px;
+padding-left: 10px;
+background-image: url(images/frame_right.jpg);
+background-repeat: no-repeat;
+background-position: 10px;
+}
+.library_swf .l_cont {
+width:375px;
+overflow:hidden;
+float:left;
+}
+.Scrl_cont {
+width:70000px;
+}
+.library_swf #llist1, .library_swf #llist2 {
+float:left;
+}
+.library_swf #llist1.ul {
+float:left;
+list-style:none;
+}
+.library_swf #llist1 ul li {
+float:left;
+width:125px;
+line-height:180%;
+text-align:center;
+overflow:hidden;
+height:190px;
+}
+.library_swf #llist1 ul li.views-row-odd{
+border:0px;
+}
+.library_swf #llist1 ul li.views-row-even {
+border:0px;
+}
+/*library swf*/
+.rollBox {
+width:975px;
+overflow:hidden;
+padding-top: 3px;
+padding-right: 0;
+padding-bottom: 3px;
+}
+.rollBox .LeftBotton {
+height:90px;
+width:32px;
+overflow:hidden;
+float:left;
+display:inline;
+cursor:pointer;
+margin-top: 25px;
+margin-right: 0;
+margin-bottom: 0;
+margin-left: 0;
+padding-right: 10px;
+padding-left: 10px;
+background-image: url(images/frame_left.jpg);
+background-repeat: no-repeat;
+background-position: 22px;
+}
+.rollBox .RightBotton {
+height:90px;
+width:32px;
+overflow:hidden;
+float:left;
+display:inline;
+cursor:pointer;
+margin-top: 25px;
+margin-right: 0;
+margin-bottom: 0;
+margin-left: 0;
+padding-right: 10px;
+padding-left: 10px;
+background-image: url(images/frame_right.jpg);
+background-repeat: no-repeat;
+background-position: 10px;
+}
+.rollBox .Cont {
+width:870px;
+overflow:hidden;
+float:left;
+padding-top:8px;
+}
+.rollBox .ScrCont {
+width:10000000px;
+}
+.rollBox .Cont .ul {
+float:left;
+list-style:none;
+padding:0px; margin:0px;
+}
+.rollBox .Cont .ul li {
+width:145px;
+float:left;
+text-align:center;
+}
+.rollBox .Cont .ul li  img {
+padding:4px;background:#fff;border:1px solid #ccc;display:block;margin:0 auto;
+}
+
+.rollBox .Cont a:link, .rollBox .Cont a:visited {
+color:#626466;
+text-decoration:none;
+}
+.rollBox .Cont a:hover {
+color:#f00;
+text-decoration:underline;
+}
+.rollBox #List1, .rollBox #List2 {
+float:left;
+}
+#block-block-39 {
+width:250px;
+float:left;
+height: 75px;
+}
+#block-block-40 {
+width:470px;
+float:left;
+text-align: center;
+height: 75px;
+}
+#block-block-41 {
+float:right;
+line-height:180%;
+width:240px;
+text-align:right;
+height: 55px;
+padding-top: 20px;
+}
+/* friend link start */
+#block-block-42 {
+width:975px;
+float:left;
+background-image: url(images/friendlink_bg.jpg);
+background-repeat: repeat-x;
+height: 30px;
+border: 1px solid #E3E3E3;
+line-height: 30px;
+margin-top: 3px;
+margin-bottom: 3px;
+text-align: left;
+text-indent: 5px;
+font-size:12px;
+}
+#block-block-42 a {
+margin:0.5em;
+color:#000000;
+}
+#block-block-42 p img{}
+*html #block-block-42 p img{ position:absolute; margin-left:-8px; margin-right:10px;}
+*+html #block-block-42 p img{ position:absolute; margin-left:-8px; margin-right:10px;}
+
+#block-block-42 h2.title {
+height:30px;
+line-height:30px;
+float:left;
+width:63px;
+padding:0px;
+margin:0px;
+color:#2A2A2A;
+font-size:14px;
+}
+#block-block-42 div.content {
+float:right;
+width:910px;
+text-align:left;
+line-height:30px;
+height:30px;
+}
+*html #block-block-42 div.content {
+float:right;
+width:910px;
+text-align:left;
+line-height:30px;
+padding-top:3px;
+height:30px;
+vertical-align:middle;
+}
+#block-block-42 div.content p {
+line-height:30px;
+height:30px;
+}
+/*friend link over*/
+#block-block-43 {
+line-height:180%;
+font-size:12px;
+text-align:left;
+}
+#block-blog-0 /* "Recent blog posts" block */ {
+}
+#block-book-0 /* "Book navigation" block for the current book's table of contents */ {
+}
+#block-comments-0 /* "Recent comments" block */ {
+}
+#block-forum-0 /* "Active forum topics" block */ {
+}
+#block-forum-1 /* "New forum topics" block */ {
+}
+#block-menu-2 /* "Primary links" block */ {
+}
+#block-node-0 /* "Syndicate" block for primary RSS feed */ {
+}
+#block-poll-0 /* "Most recent poll" block */ {
+}
+#block-profile-0 /* "Author information" block for the profile of the page's author */ {
+}
+#block-search-0 /* "Search form" block */ {
+width:975px;
+clear:both;
+background-image: url(images/search_bg.jpg);
+height: 31px;
+line-height:30px;
+text-indent:10px;
+}
+#block-search-0 #edit-search-block-form-1 label {
+font-size:12px;
+font-weight:normal;
+line-height:28px;
+}
+#block-search-0 #edit-search-block-form-1-wrapper label {
+font-size:12px;
+font-weight:normal;
+line-height:26px;
+}
+#block-search-0 .form-text {
+height:20px;
+line-height:18px;
+border:1px solid #CCCCCC;
+}
+#block-search-0 #edit-submit-2 {
+font-size:12px;
+color:red;
+background-image: url(images/user_search_bg.jpg);
+background-repeat: repeat-x;
+height:17px;
+line-height:15px;
+border:0px;
+width:39px;
+text-align:center;
+padding:0px;
+margin:0px;
+}
+#block-search .form-submit {
+font-size:12px;
+color:red;
+background-image: url(images/user_search_bg.jpg);
+background-repeat: repeat-x;
+height:17px;
+line-height:15px;
+border:0px;
+width:39px;
+text-align:center;
+padding:0px;
+margin:0px;
+cursor:pointer;
+}
+#block-statistics-0 /* "Popular content" block */ {
+}
+#block-user-0 /* "User login form" block */ {
+width:225px;
+float:left;
+}
+#block-user-0 h2 {
+font-size:14px;
+line-height:26px;
+background-image: url(images/userlogintitle.jpg);
+background-repeat: repeat-x;
+height: 26px;
+border-top-width: 4px;
+border-top-style: solid;
+border-top-color: #299738;
+border-right-width: 1px;
+border-bottom-width: 1px;
+border-left-width: 1px;
+border-right-style: solid;
+border-bottom-style: solid;
+border-left-style: solid;
+border-right-color: #D1D1D1;
+border-bottom-color: #D1D1D1;
+border-left-color: #D1D1D1;
+color: #299C3D;
+font-weight: bold;
+line-height: 26px;
+text-align: left;
+text-indent: 8px;
+}
+#block-user-0 div.content {
+padding:10px;
+font-size:14px;
+background-image: url(images/userlogincontentbg.jpg);
+background-repeat: repeat-x;
+border-right-width: 1px;
+border-bottom-width: 1px;
+border-left-width: 1px;
+border-top-style: none;
+border-right-style: solid;
+border-bottom-style: solid;
+border-left-style: solid;
+border-right-color: #D1D1D1;
+border-bottom-color: #D1D1D1;
+border-left-color: #D1D1D1;
+height: 245px;
+text-align:center;
+line-height:260%;
+padding-top:10px;
+}
+#block-user-0 ul {
+float:left;
+text-align:center list-style:none;
+}
+#block-user-0 ul li {
+float:left;
+text-align:center;
+padding:5px;
+width:70px;
+margin:5px;
+font-size:14px;
+}
+#block-user-0 label {
+float:left;
+width:80px;
+font-size:14px;
+font-weight:normal;
+text-align:right;
+padding-right:3px;
+}
+#block-user-0 #edit-submit {
+font-size:12px;
+color:#FFFFFF;
+background-image: url(images/userlogin_bg.jpg);
+background-repeat: repeat-x;
+height:22px;
+line-height:20px;
+border:0px;
+width:41px;
+text-align:center;
+padding:0px;
+margin:0px;
+}
+#block-user-0 #edit-pass, #edit-name {
+border:1px solid #C4C4C4;
+height:22px;
+line-height:20px;
+}
+#block-user-0 li.first {
+text-align:right;
+}
+#block-user-0 li.last {
+text-align:left;
+}
+#block-user-1 /* "Navigation" block for Drupal navigation menu */ {
+}
+#block-user-2 /* "Who's new" block for a list of the newest users */ {
+}
+#block-user-3 /* "Who's online" block for a list of the online users */ {
+}
+#block-menu-menu-new-primary-links ul /* "Primary links" block */ {
+width:975px;
+float:left;
+clear:both;
+height:33px;
+line-height:33px;
+background-image: url(images/menu_bg.jpg);
+height:32px;
+line-height:32px;
+list-style:none;
+padding:0px;
+margin:0px;
+list-style-type:none;
+list-style-image:none;
+background-repeat: repeat-x;
+}
+#block-menu-menu-new-primary-links ul li {
+float:left;
+width:96px;
+text-align:center;
+list-style:none;
+border-right:1px solid #22837A;
+}
+#block-menu-menu-new-primary-links ul li a:link {
+color:#ffffff;
+font-size:12px;
+font-weight:bold;
+display:block;
+}
+#block-menu-menu-new-primary-links ul li a:visited {
+color:#ffffff;
+font-size:12px;
+font-weight:bold;
+display:block;
+}
+#block-menu-menu-new-primary-links ul li a:hover {
+color:#ffffff;
+font-size:12px;
+font-weight:bold;
+background-image:;
+background-image: url(images/hover_bg.jpg);
+background-repeat: repeat-x;
+display:block;
+}
+#block-menu-menu-new-primary-links ul li a:active {
+color:#ffffff;
+font-size:12px;
+font-weight:bold;
+background-image:
+background-image: url(images/hover_bg.jpg);
+background-repeat: repeat-x;
+display:block;
+}
+/*jifen duihuan*/
+#block-menu-menu-dushu-tab {
+-moz-background-clip:border;
+-moz-background-inline-policy:continuous;
+-moz-background-origin:padding;
+background:transparent url(/sites/2u4u.com.cn/themes/uuonline/images/tab-bar.png) repeat-x scroll left bottom;
+float:left;
+line-height:normal;
+width:100%;
+}
+#block-menu-menu-dushu-tab {
+line-height:normal;
+}
+.block ul {
+}
+#block-menu-menu-dushu-tab ul.menu {
+list-style-image:none;
+list-style-position:outside;
+list-style-type:none;
+margin:0;
+padding:0;
+}
+#block-menu-menu-dushu-tab li.leaf {
+float:left;
+list-style:none;
+padding:8px;
+margin:3px;
+font-size:14px;
+}
+#block-menu-menu-dushu-tab div.h2Container {
+display:none;
+}
+.view-jifenduihuan .views-row-odd {
+float:left;
+line-height:20px;
+width:50%;
+}
+.view-jifenduihuan .views-row-odd {
+float:left;
+line-height:20px;
+width:50%;
+}
+.view-jifenduihuan .views-row-even {
+float:right;
+line-height:20px;
+width:50%;
+}
+.view-jifenduihuan .views-field-buyitnowbutton {
+padding:10px 0;
+}
+.views-field-buyitnowbutton .field-content input{ display:none; overflow:hidden;}
+.view, .block {
+float:left;
+width:100%;
+}
+.view-jifenduihuan .views-row-odd {
+float:left;
+line-height:20px;
+width:48%;
+}
+/*.views-row-odd, .views-row-even {
+border-bottom:1px solid #DDDDDD;
+float:left;
+padding:5px 0;
+width:100%;
+}*/
+.uc-price {
+white-space:nowrap;
+}
+.page-dushu #content-area .view-erp{
+line-height:150%;}
+.page-dushu #content-area .node-inner
+{
+clear:both;}
+.page-dushu #content-area .node-inner h2.title{
+font-size:14px;
+clear:both;
+height:24px;
+line-height:24px;
+}
+
+.page-gushi #content-area .views-row {
+line-height:160%;
+}
+.page-dushu #content-area .views-row {
+line-height:160%;
+}
+.page-dushu #content-area .node_links {
+clear:both
+}
+.page-dushu #content-area .content {
+float:left;
+margin-left:0;
+margin-right:-975px;
+padding:0;
+width:975px;
+}
+.page-dushu #content-area .view-erp .views-row{
+float:left;
+width:49%;
+display:block;
+border-bottom:1px dotted #CCCCCC;}
+#block-views-jifenduihuan-block_1 img.imagecache-product-fengmiang {
+width:200px;
+height:150px;
+display:block;
+}
+#sidebar-right .h2Container{
+height: 35px;
+line-height:35px;
+clear:both;
+background-image: url(images/video_titleall.jpg);
+border-right-width: 1px;
+border-left-width: 1px;
+border-top-style: none;
+border-right-style: solid;
+border-bottom-style: none;
+border-left-style: solid;
+border-right-color: #DBDBDB;
+border-left-color: #DBDBDB;
+font-size:14px;
+color:#2A2A2A;
+}
+#sidebar-right .h2Container .title {
+font-size:12px;
+font-weight:bold;
+color:#4AB740;
+float:left;
+height: 33px;
+line-height: 33px;
+padding-left: 8px;
+}
+#sidebar-right .block-tagadelic div.content {
+border:1px solid #CECECE;
+border-top:0px;
+clear:both;
+height:auto;
+line-height:2em;
+padding:1em;
+}
+
+#sidebar-right .block-tagadelic div.content a {
+padding:10px;
+}
+
+#sidebar-right div.view-sidebar-rem4men2xiao3zu4, 
+#sidebar-right div.view-yuedu, 
+#sidebar-right div.view-quiz,#sidebar-right div.view-tag-yuedu
+{
+border:1px solid #CECECE;
+border-top:0px;
+clear:both;
+height:auto;
+width:99.5%;
+line-height:2em;
+
+}
+#sidebar-right #sidebar-right-inner #block-views-tag_yuedu-block_1 .content .view-content .views-field-tid{float:left;margin-left:10px;}
+*html #sidebar-right #sidebar-right-inner #block-views-tag_yuedu-block_1 .content .view-content .views-field-tid{float:left; width:auto; margin-left:5px;}
+*+html #sidebar-right #sidebar-right-inner #block-views-tag_yuedu-block_1 .content .view-content .views-field-tid{float:left; width:auto; margin-left:10px;display:inline;}
+#block-views-yuedu-block_6 .content .view-content 
+{ clear:both;}
+#block-views-yuedu-block_6 .content .view-content .more-link
+{ clear:both; margin-right:10px;}
+#block-views-yuedu-block_6 .content .view-content .item-list ul li{
+width:300px; word-break:keep-all; clear:both;overflow:hidden;}
+#block-views-yuedu-block_6 .content .view-content .item-list ul li .views-field-counter{ float:left;}
+#block-views-yuedu-block_6 .content .view-content .item-list ul li .views-field-title{ float:left;}
+
+
+
+#block-views-yuedu-block_7 .content .view-content 
+{ clear:both;}
+#block-views-yuedu-block_7  .content .view-content .more-link
+{ clear:both; margin-right:10px;}
+#block-views-yuedu-block_7  .content .view-content .item-list ul li{
+width:300px; word-break:keep-all; clear:both;overflow:hidden;}
+#block-views-yuedu-block_7 .content .view-content .item-list ul li .views-field-counter{ float:left;}
+#block-views-yuedu-block_7  .content .view-content .item-list ul li .views-field-title{ float:left;}
+
+#block-views-quiz-block_5 .content .view-content 
+{ clear:both;}
+#block-views-quiz-block_5 .content .view-content .more-link
+{ clear:both; margin-right:10px;}
+#block-views-quiz-block_5 .content .view-content .item-list ul li{
+width:300px; word-break:keep-all; clear:both;}
+#block-views-quiz-block_5 .content .view-content .item-list ul li .views-field-counter{ float:left;}
+#block-views-quiz-block_5 .content .view-content .item-list ul li .views-field-title{ float:left;}
+
+#content .field-items .field-label{line-height:35px; font-weight:700;height:35px;background:url(images/video_titleall.jpg); margin-top:10px;}
+#content .field-items .field-item { line-height:22px; text-indent:26px;}
+.node-type-ebook  #content .field-items .field-item {line-height:22px;}
+#content .field-items .swftools{ margin:10px 0 10px 0;}
+.mate ul li{line-height:25px; height:25px; margin-top:10px; margin-bottom:10px;}
+.node-type-ebook fieldset {
+border:0 none;
+}
+.node-type-ebook fieldset .field-items{float:left; border:0px; border:none; color:#000000;}
+.node-type-ebook fieldset a img{width:30px; height:30px; display:block; float:left; margin:0 auto; position:absolute; margin-top:-30px; margin-left:120px;}
+*html .node-type-ebook fieldset a img{width:30px; height:30px; display:block; float:left; margin:0 auto; position:absolute; margin-top:-5px;}
+*+html .node-type-ebook fieldset a img{width:30px; height:30px; display:block; float:left; margin:0 auto; position:absolute; margin-top:-10px;margin-left:0px;}
+#quiz_quwei_content .view-content .item-list ul li .views-field-name{ float:left;}
+#quiz_quwei_content .view-content .item-list ul li .views-field-title{ float:left;}
+/* group */
+#thmr_2.views-table {
+background-color:#ffffff;
+}
+#thmr_154 #thmr_265 h2.title {
+font-size:14px;
+font-weight:normal;
+padding-top:8px;
+}
+#thmr_154 #thmr_257.views-view-grid {
+text-align:center;
+}
+#thmr_161.views-field-title {
+height:23px;
+line-height:23px;
+overflow:hidden;
+}
+#thmr_161 #thmr_2.views-table {
+padding-top:8px;
+}
+#thmr_257.views-field-title {
+height:23px;
+line-height:23px;
+overflow:hidden;
+}
+/* group over */
+/** Drupal boxes **/
+/* Wrapper for Comment form, Comment viewing options, Menu admin, and
+* Search results.
+*/
+.box /* Wrapper for box */ {
+}
+.box-inner /* Additional wrapper for box */ {
+}
+.box h2.title /* Box title */ {
+}
+.box .content /* Box's content wrapper */ {
+}
+/** Miscellaneous Drupal styles **/
+.error /* Errors that are separate from div.messages status messages (see above.) */ {
+/* color: #e55; */ /* Drupal core uses a #e55 background */
+}
+.warning /* Warnings that are separate from div.messages status messages (see above.) */ {
+/* color: #e09010; */ /* Drupal core uses a #e09010 background */
+}
+.more-link /* Aggregator, blog, and forum more link */ {
+text-align: right;
+}
+#user-login-form /* Drupal's default login form */ {
+text-align: left;
+}
+tr.even /* Some tables have rows marked even or odd. */ {
+/* background-color: #eee; */ /* Drupal core uses a #eee background */
+}
+tr.odd {
+/* background-color: #eee; */ /* Drupal core uses a #eee background */
+}
+li a.active /* The active item in a Drupal menu */ {
+color: #000;
+}
+/** Drupal forms **/
+.form-item /* Wrapper for a form element (or group of form elements) and its label */ {
+}
+.form-checkboxes, .form-radios {
+margin: 1em 0;
+}
+.form-item input.error, /* Highlight the form elements that caused a form submission error */ .form-item textarea.error, .form-item select.error {
+border: 2px solid #c00;
+}
+.form-item label /* The label for a form element */ {
+}
+.form-item label.option /* The label for a radio button or checkbox */ {
+}
+.form-required /* The part of the label that indicates a required field */ {
+color: #c00;
+font-weight:normal;
+}
+.form-item .description /* The descriptive help text (separate from the label) */ {
+font-size: 0.85em;
+font-weight:normal;
+}
+.form-checkboxes .form-item, /* Pack groups of checkboxes and radio buttons closer together */ .form-radios .form-item {
+}
+.form-submit /* The submit button */ {
+}
+.container-inline div, .container-inline label /* Inline labels and form divs */ {
+display: inline;
+}
+.tips /* Tips for Drupal's input formats */ {
+margin: 0;
+padding: 0;
+}
+/** OpenID **/
+/* The default styling for the OpenID login link seems to assume Garland's
+* styling of list items.
+*/
+#gift-points-chongzhi-form {
+text-align:center;
+}
+#user-login-form ul /* OpenID creates a new ul above the login form's links. */ {
+margin-bottom: 0; /* Position OpenID's ul next to the rest of the links. */
+}
+#user-login-form {
+text-align:center;
+}
+#user-login-form li.openid-link, /* The "Log in using OpenID" links. */ #user-login li.openid-link {
+margin-top: 1em;
+margin-left: -20px; /* Un-do some of the padding on the ul list. */
+padding-left: 20px;
+background-position: left center;
+}
+#user-login-form li.user-link, /* The "Cancel OpenID login" links. */ #user-login li.user-link {
+/* margin-top: 1em;
+list-style-type: disc;
+list-style-position: outside;*/
+}
+#user-login li.openid-link, /* The OpenID links on the /user form. */ #user-login li.user-link {
+/* margin-left: -2em;*/ /* Un-do all of the padding on the ul list. */
+}
+/** Drupal admin tables **/
+/* We overrode these styles in html-elements.css, but restore them for the
+* forms on the site.
+*/
+form tbody {
+border-top: 1px solid #ccc;
+}
+form th {
+text-align: left;
+padding-right: 1em;
+border-bottom: 3px solid #ccc;
+}
+form tbody th {
+border-bottom: 1px solid #ccc;
+}
+form thead th {
+text-align: left;
+padding-right: 1em;
+border-bottom: 3px solid #ccc;
+}
+.block ul {
+list-style:none;
+margin:0px;
+padding:0px;
+list-style-type:none;
+list-style-image:none;
+}
+/*chong zhi */
+.page-chongzhi #content-header h1.title {
+font-size:1.5em;
+padding-top:8px;
+}
+.page-chongzhi #content-inner div.form-item {
+line-height:200%;
+}
+.page-chongzhi #content-inner.form-text {
+width:200px;
+border:1px solid #CCCCCC;
+line-height:21px;
+height:20px;
+}
+.page-chongzhi #content-inner #edit-caution {
+padding:5px;
+line-height:160%;
+color:#000000;
+border:1px solid #CCCCCC;
+background-color:#FFFFFF;
+font-size:12px;
+}
+.page-chongzhi #block-block-27 .content {
+line-height:170%;
+}
+.page-chongzhi #block-block-27 .content p {
+margin-bottom:3px;
+}
+.page-chongzhi #content-area input.form-text{
+width:200px; border:1px solid #CCCCCC;  height:20px; line-height:22px;}
+/*whx shipin*/
+.page-shipin-bbc #content-header, 
+.page-shipin-followme #content-header, 
+.page-shipin-itn #content-header, 
+.page-shipin-bianlunsai #content-header, 
+.page-shipin-yanjiangsai #content-header .title {
+display:none;
+}
+/*
+** HTML elements
+*/
+body.drag {
+cursor: move;
+}
+table {
+background-color:#FFFFFF;
+margin-top:5px;
+}
+th.active img {
+display: inline;
+}
+
+
+
+
+std.active {
+background-color: #ddd;
+}
+td.checkbox, th.checkbox {
+text-align: center;
+}
+tbody {
+border-top: 1px solid #ccc;
+}
+tbody th {
+border-bottom: 1px solid #ccc;
+}
+thead th {
+text-align: left; /* LTR */
+padding-right: 1em; /* LTR */
+border-bottom: 3px solid #ccc;
+}
+.node-type-quiz #content-inner {
+min-height:395px;
+}
+.node-type-quiz #quiz_progress {
+font-size:100%;
+font-style:italic;
+}
+#multichoice-render-question-form {
+font-size:1.2em;
+}
+
+/* whx quiz */
+.view-quiz .more-link {
+font-family:"";
+font-size:1.1em;
+font-weight:bold;
+margin-right:1em;
+}
+.view-quiz .views-field-title {
+margin-bottom:3px;
+}
+#block-views-quiz-block_2 .view-quiz li{
+border-bottom:1px dashed #CCCCCC;
+line-height:1.5em;
+margin:2em;
+}
+
+.views-field-title .field-content a{color:#000000;}
+.page-xiaozu #main-inner{ margin-top:5px;}
+.page-xiaozu #content-area table.views-table{ width:95%;}
+.page-xiaozu #content #content-header h1{ font-size:14px; font-weight:bold;}
+.library_swf.item-list ul{ float:left; list-style:none;}
+.library_swf.item-list ul li { float:left;}
+.library_swf.views-row{ float:left;}
+.library_swf.views-row-odd,.library_swf .views-row-last{ float:left;}
+.library_swf.views-field-title{ width:125px; overflow:hidden;}
+.library_swf.field-content{ height:23px; line-height:23px; overflow:hidden}
+#ask_question a {
+background-image:url(images/ask_question.png);
+background-position:left top;
+background-repeat:no-repeat;
+height:47px;
+text-indent:-9999px;
+width:121px;
+}
+tr.even, tr.odd {
+background-color:#EEEEEE;
+border-bottom:1px dashed  #CCCCCC;
+padding:0.1em 0.6em;
+}
+
+.view-sidebar-rem4men2xiao3zu4 table {
+background-color:#FFFFFF;
+margin-top:5px;
+text-align:center;
+width:100%;
+}
+
+.page-xiaozu td {
+background-color: #ffffff;
+padding:6px 2px;
+line-height:2em;
+border-bottom-width: 1px;
+border-bottom-style: dashed;
+border-bottom-color: #CCCCCC;
+}
+
+.page-xiaozu h1.title {
+font-size:1.5em;
+font-weight:bold;
+color:#666666;
+margin:0 1em;
+}
+.view-xiaozu-frontpage .view-content {
+margin-bottom:3em;
+}
+
+
+.item-list .pager {
+clear:both;
+line-height:3em;
+text-align:center;
+}
+
+
+.section-yuedu .view{
+border:1px solid #E4EAE0;}
+.section-yuedu #content .view-content .item-list{ width:100%; clear:both;}
+.section-yuedu #content .view-content .item-list ul li {
+color:#666666;
+border-bottom:1px dashed #DDDDDD;
+float:left;
+line-height:180%;
+padding:20px 0px 20px 20px;
+width:97%;
+clear:both;
+overflow:hidden;
+}
+*html .section-yuedu #content .view-content .item-list ul li {
+color:#666666;
+border-bottom:1px dashed #DDDDDD;
+float:left;
+line-height:180%;
+padding:20px 0px 20px 20px;
+width:97%;
+clear:both;
+}
+.section-yuedu #content .view-content .item-list ul li .views-field-title .field-content a:hover{color:#666666;}
+.section-yuedu #sidebar-right  .view-yuedu .item-list ul li{
+clear:both;
+float:left;
+white-space:nowrap;
+color:#666666;
+}
+.section-yuedu #sidebar-right  .view-yuedu .view-content{clear:both;}
+.section-yuedu #sidebar-right  .view-yuedu .more-link{clear:both;}
+.section-yuedu #sidebar-right  .view-yuedu .more-link a{color:#32A441;}
+*html .section-yuedu #sidebar-right .view-yuedu .more-link a{color:#32A441;}
+.section-yuedu #content .view-content .views-field-field-yuedu-cover-fid{
+float:left;
+margin-right:25px;
+text-align:center;
+width:100px;
+}
+.section-yuedu #sidebar-right .view-yuedu .view-content{
+padding-left:4px;}
+.node-type-blog #content-inner{
+margin:1em;
+}
+
+.node-type-blog #content .picture {
+float:left;
+text-align:center;
+margin-right:1.5em;
+}
+
+.node-type-blog #content-header h1{ color:#494949;
+display:block;
+font-size:22px;
+font-weight:700;
+line-height:1.1em;
+padding:5px 0 15px;
+}
+.node-type-blog #content .meta{color:#666666;
+float:left;
+font-size:14px;
+line-height:160%;}
+.node-type-blog #content .meta .submitted{
+clear:both;
+float:left;}
+.node-type-blog #content .meta  .terms{
+float:left;
+clear:both;}
+.node-type-blog #content .content {
+clear:both;
+font-size:12px;
+line-height:180%;
+padding:1em 0;
+}
+.node-type-blog #content .content p{
+margin-bottom:8px;}
+.node-type-blog #content .groups{ font-size:12px; line-height:150%;}
+.node-type-blog #comments .content {
+padding:5px 0;
+}
+#comments {
+border-top:1px dashed #CCCCCC;
+margin:1em 0;
+padding:1em 0;
+}
+.section-node-add #content-area .links{ line-height:150%;}
+.section-node-add #content-area{ line-height:150%;}
+.section-node-add #content-area .node-form{ line-height:150%;}
+.section-node-add #content #content-header h1{
+line-height:150%; font-size:14px; font-weight:bold;}
+.section-node-add #content h2{
+line-height:150%; font-size:14px;}
+.section-node-add #content .meta{
+line-height:150%; font-size:14px;}
+.section-node-add #content .content{
+line-height:150%; font-size:14px;}
+
+.node-type-blog .comment-meta{ background-color:#EEFFEE; padding:3px; clear:both; text-align:left;color:#666666;line-height:1.5em;}
+.page-jifenduihuan #content .views-row{
+margin-bottom:10px;}
+.page-jifenduihuan #content .views-field-sell-price{
+color:#CC3300;}
+.node-type-book-100-classics .node-type-book-100-classics .node-inner .content .field-type-filefield .field-item{
+float:left; width:100px;}
+.node-type-book-100-classics .node-type-book-100-classics .node-inner ul{ clear:both;}
+.node-type-book-100-classics .content {
+line-height:150%;}
+
+
+#content-area .view-content .item-list ul li .views-field-title .field-content a{ color:#000000; font-weight:700; text-indent:26px;}
+#content-area .view-content .item-list ul li .views-label-field-yuedu-author-value{ color:#666666;} 
+#content-area .view-content .item-list ul li .views-field-field-yuedu-summary-value .field-content{color:#666666;}
+#content-area .view-content .item-list ul li .views-field-field-yuedu-author-value .field-content{color:#000000; word-break:keep-all;}
+#content-area .view-content .item-list ul li .views-label-field-yuedu-isbn-value{ color:#666666;} 
+#content-area .view-content .item-list ul li .field-content{ color:#000000;} 
+#content-area .view-content .item-list ul li .views-field-view-node .field-content a{color:#FF0000; float:right; padding-right:30px;}
+#block-menu-menu-new-primary-links ul li.last {border-right:0px;}
+
+#block-views-yuedu-block_6 .content .view-content .item-list
+{ clear:both; width:100%;}
+#block-views-yuedu-block_6 .content .view-content .item-list ul li
+{ clear:both; width:100%; word-break:keep-all; overflow:hidden;}
+#block-views-yuedu-block_6 .content .view-content .item-list .views-field-counter
+{ width:20px; float:left; margin-left:10px;}
+#block-views-yuedu-block_6 .content .view-content .item-list .views-field-title
+{ width:300px; float:right;}
+#block-views-yuedu-block_6 .content .view-content .more-link
+{ clear:both; width:380px; float:left;}
+*#block-views-yuedu-block_6 .content .view-content .item-list
+{ clear:both; width:100%;}
+*html #block-views-yuedu-block_6 .content .view-content .item-list ul li
+{ clear:both; width:100%; word-break:keep-all; overflow:hidden;}
+*html #block-views-yuedu-block_6 .content .view-content .item-list .views-field-counter
+{ width:15px; float:left; margin-left:5px;}
+*html #block-views-yuedu-block_6 .content .view-content .item-list .views-field-title
+{ width:300px; float:right;}
+
+
+#block-views-yuedu-block_7 .content .view-content .item-list
+{ clear:both; width:100%;}
+#block-views-yuedu-block_7 .content .view-content .item-list ul li
+{ clear:both; width:100%; word-break:keep-all; overflow:hidden;}
+#block-views-yuedu-block_7 .content .view-content .item-list .views-field-counter
+{ width:20px; float:left; margin-left:10px;}
+#block-views-yuedu-block_7 .content .view-content .item-list .views-field-title
+{ width:300px; float:right;}
+#block-views-yuedu-block_7 .content .view-content .more-link
+{ clear:both; width:380px; float:left;}
+*#block-views-yuedu-block_7 .content .view-content .item-list
+{ clear:both; width:100%;}
+*html #block-views-yuedu-block_7 .content .view-content .item-list ul li
+{ clear:both; width:100%; word-break:keep-all; overflow:hidden;}
+*html #block-views-yuedu-block_7 .content .view-content .item-list .views-field-counter
+{ width:15px; float:left; margin-left:5px;}
+*html #block-views-yuedu-block_7 .content .view-content .item-list .views-field-title
+{ width:300px; float:right;}
+
+#block-views-quiz-block_5 .content .view-content .item-list
+{ clear:both; width:100%;}
+#block-views-quiz-block_5 .content .view-content .item-list ul li
+{ clear:both; width:100%; word-break:keep-all; overflow:hidden;}
+#block-views-quiz-block_5 .content .view-content .item-list .views-field-counter
+{ width:20px; float:left; margin-left:10px;}
+#block-views-quiz-block_5 .content .view-content .item-list .views-field-title
+{ width:300px; float:right;}
+#block-views-quiz-block_5 .content .view-content .more-link
+{ clear:both; width:380px; float:left;}
+*html #block-views-quiz-block_5 .content .view-content .item-list
+{ clear:both; width:100%;}
+*html #block-views-quiz-block_5 .content .view-content .item-list ul li
+{ clear:both; width:100%; word-break:keep-all; overflow:hidden;}
+*html #block-views-quiz-block_5 .content .view-content .item-list .views-field-counter
+{ width:15px; float:left; margin-left:5px;}
+*html #block-views-quiz-block_5 .content .view-content .item-list .views-field-title
+{ width:300px; float:right;}
+
+
+*html #block-views-yuedu-block_6 .content .view-content .more-link
+{ clear:both; width:380px; float:left;}
+
+/*quiz 一级页面CSS布局*/
+.page-quizcenter #content #content-header h1{ font-size:14px; font-weight:bold;}
+.page-quizcenter #content #content-area .view-quiz{
+line-height:170%;}
+.page-quizcenter #content #content-area .item-list ul li{
+border-bottom:1px dotted #CCCCCC;
+clear:both;
+width:100%;}
+.page-quizcenter #content #content-area .item-list ul li div.views-field-title{ width:100%;white-space:nowrap;}
+.page-quizcenter #content #content-area .item-list ul li span{ width:100%;}
+.page-quizcenter #content #content-area .item-list ul li span a:{white-space:nowrap;
+font-size:14px;}
+
+#content-bottom #block-block-46{width:610px;border-right:#D1D1D1 1px solid;border-left:#D1D1D1 1px solid;border-bottom:#D1D1D1 1px solid;border-top:none;}
+#content-bottom #block-block-46 .block-inner .h2Container .title{
+height: 35px;
+line-height:35px;
+text-indent:10px;
+clear:both;
+background-image: url(images/video_titleall.jpg);
+font-size:14px;
+color:#32A442;
+font-weight:700;
+}
+
+#content-bottom #block-block-46 .content #quiz_jingzhun #quiz_jingzhun_image{ float:left; width:90px; margin-left:10px; margin-right:10px; }
+#content-bottom #block-block-46 .content #quiz_jingzhun #quiz_zhuanxiang_content{ float:left; width:460px; margin-right:10px; line-height:25px;}
+#content-bottom #block-block-46 .content #quiz_jingzhun #quiz_zhuanxiang_content { font-size:12px;}
+#content-bottom #block-block-46 .content #quiz_jingzhun #quiz_zhuanxiang_content p a{ color:#32A442;font-weight:700;}
+#content-bottom #block-block-46 .content #quiz_jingzhun #quiz_zhuanxiang_content ul{ list-style:disc; list-style-position:inside; color:#666666;}
+
+#content-bottom #block-block-47{width:610px;border-right:#D1D1D1 1px solid;border-left:#D1D1D1 1px solid;border-bottom:#D1D1D1 1px solid;border-top:none;}
+#content-bottom #block-block-47 .block-inner .h2Container .title{
+height: 35px;
+line-height:35px;
+text-indent:10px;
+clear:both;
+background-image: url(images/video_titleall.jpg);
+font-size:14px;
+color:#32A442;
+font-weight:700;
+}
+#content-bottom #block-block-47 .block-inner .content #quiz_zhuanxiang #quiz_zhuanxiang_image{float:left; width:90px; margin-left:5px; margin-right:5px;}
+#content-bottom #block-block-47 .block-inner .content #quiz_zhuanxiang #quiz_zhuanxiang_content{float:left; width:470px; margin-right:10px; line-height:25px;} 
+#content-bottom #block-block-47 .block-inner .content #quiz_zhuanxiang #quiz_zhuanxiang_content .view-content .item-list ul li{ width:235px; float:left;}
+#content-bottom #block-block-47 .block-inner .content #quiz_zhuanxiang #quiz_zhuanxiang_content .view-content .item-list ul li .views-field-name{float:left;}
+#content-bottom #block-block-47 .block-inner .content #quiz_zhuanxiang #quiz_zhuanxiang_content .view-content .item-list ul li .views-field-title{float:left; width:125px; overflow:hidden;}
+
+
+
+#content-bottom #block-block-48{width:610px;border-right:#D1D1D1 1px solid;border-left:#D1D1D1 1px solid;border-bottom:#D1D1D1 1px solid;border-top:none;}
+#content-bottom #block-block-48 .block-inner .h2Container .title{
+height: 35px;
+line-height:35px;
+text-indent:10px;
+clear:both;
+background-image: url(images/video_titleall.jpg);
+font-size:14px;
+color:#32A442;
+font-weight:700;
+}
+#content .field-items .field-item  .swftools{
+text-indent:0px;
+}
+.page-quizcenter #quiz_kaoshi_image{float:left; width:90px; margin:25px;}
+
+#content-bottom #block-block-48 .block-inner .content #quiz_kaoshi #quiz_kaoshi_content{float:right; width:460px; margin-right:5px; line-height:25px;} 
+#content-bottom #block-block-48 .block-inner .content #quiz_kaoshi #quiz_kaoshi_content .view-content .item-list ul li{width:230px; float:left;}
+#content-bottom #block-block-48 .block-inner .content #quiz_kaoshi #quiz_kaoshi_content .view-content .item-list ul li .views-field-name{float:left;}
+#content-bottom #block-block-48 .block-inner .content #quiz_kaoshi #quiz_kaoshi_content .view-content .item-list ul li .views-field-title{float:left; overflow:hidden;width:125px;}
+
+ 
+#content-bottom #block-block-49 .block-inner .content #quiz_quwei #quiz_quwei_content{float:left; width:460px; margin-right:10px; line-height:25px;} 
+#content-bottom #block-block-49 .block-inner .content #quiz_quwei #quiz_quwei_content .view-content .item-list ul li{ width:230px; float:left;}
+#content-bottom #block-block-49 .block-inner .content #quiz_quwei #quiz_quwei_content .view-content .item-list ul li .views-field-name{float:left;}
+#content-bottom #block-block-49 .block-inner .content #quiz_quwei #quiz_quwei_content .view-content .item-list ul li .views-field-title{float:left;}
+
+#content-bottom #block-block-49{width:610px;border-right:#D1D1D1 1px solid;border-left:#D1D1D1 1px solid;border-bottom:#D1D1D1 1px solid;border-top:none;}
+#content-bottom #block-block-49 .block-inner .h2Container .title{
+height: 35px;
+line-height:35px;
+text-indent:10px;
+clear:both;
+background-image: url(images/video_titleall.jpg);
+font-size:14px;
+color:#32A442;
+font-weight:700;
+}
+
+#content-bottom #block-block-48 .content  #quiz_kaoshi #quiz_kaoshi_content .more-link{
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+height:35px;
+line-height:34px;
+margin-left:600px;
+margin-top:-174px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:right;
+} 
+*html #content-bottom #block-block-48 .content  #quiz_kaoshi #quiz_kaoshi_content .more-link{
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+font-size:12px;
+height:35px;
+line-height:34px;
+margin-left:360px;
+margin-top:-159px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:right;
+position:absolute;
+} 
+*+html #content-bottom #block-block-48 .content  #quiz_kaoshi #quiz_kaoshi_content .more-link{
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+height:35px;
+line-height:34px;
+margin-left:350px;
+margin-top:-159px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:right;
+} 
+
+
+#content-bottom #block-block-47 .content #quiz_zhuanxiang #quiz_zhuanxiang _content .more-link{
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+height:35px;
+line-height:34px;
+margin-left:600px;
+margin-top:-174px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:right;
+} 
+*html #content-bottom #block-block-47 .content #quiz_zhuanxiang #quiz_zhuanxiang _content .more-link{
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+font-size:12px;
+height:35px;
+line-height:34px;
+margin-left:360px;
+margin-top:-159px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:right;
+position:absolute;
+} 
+*+html #content-bottom #block-block-47 .content #quiz_zhuanxiang #quiz_zhuanxiang _content .more-link{
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+height:35px;
+line-height:34px;
+margin-left:400px;
+margin-top:-159px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:right;
+} 
+
+
+#content-bottom #block-block-49 .content #quiz_quwei #quiz_quwei_content .more-link{
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+height:35px;
+line-height:34px;
+margin-left:600px;
+margin-top:-174px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:right;
+} 
+*html #content-bottom #block-block-49 .content #quiz_quwei #quiz_quwei_content .more-link{
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+font-size:12px;
+height:35px;
+line-height:34px;
+margin-left:390px;
+margin-top:-159px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:right;
+position:absolute;
+} 
+*+html #content-bottom #block-block-49 .content #quiz_quwei #quiz_quwei_content .more-link{
+background-image:url(images/class_more.jpg);
+background-position:center top;
+background-repeat:no-repeat;
+clear:both;
+height:35px;
+line-height:34px;
+margin-left:400px;
+margin-top:-159px;
+padding-top:2px;
+text-align:center;
+width:75px;
+float:right;
+} 
+
+
+
+/*quiz 二级页面CSS布局*/
+.section-quiz #content-header h1.title {
+background-image:url(images/video_titleall.jpg);
+color:#4AB740;
+font-size:14px;
+font-weight:bold;
+height:35px;
+line-height:35px;
+margin:0;
+padding-left:20px;
+}
+.section-quiz #page #main #content {
+border-bottom:1px solid #D1D1D1;
+border-left:1px solid #D1D1D1;
+border-right:1px solid #D1D1D1;
+margin-left:0;
+margin-right:-975px;
+width:615px;
+}
+.quiz-taxomory-image {
+text-align:center;
+}
+.section-quiz #quiz-taxomory-content .view-quiz ul {
+width:600px;
+}
+.section-quiz #quiz-taxomory-content .view-quiz .views-field-name, .views-field-title {
+float:left;
+}
+.section-quiz #quiz-taxomory-content .view-quiz .view-content li {
+float:left;
+line-height:26px;
+margin:15px 0 0 40px;
+width:250px;
+}
+.section-quiz #quiz-taxomory-content .view-quiz .views-field-teaser {
+clear:left;
+text-indent:26px;
+line-height:23px;
+}
+
+

@@ -1,0 +1,7 @@
+; $Id$
+name = Word Profile
+description = 用来修改单次大赛信息表单的状态.
+core = 6.x
+package = 2u4u
+
+php = 5.0

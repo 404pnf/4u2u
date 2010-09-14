@@ -1,0 +1,93 @@
+<?php
+
+function duhougan_pingfen_perm(){
+	return array('duhougan pingfen');
+}
+/**
+* hook_menu
+*/
+function duhougan_pingfen_menu() {
+  $items = array();
+  return $items;
+}
+
+function duhougan_pingfen_user($op) {
+  global $user;
+
+  switch($op) {
+    case 'delete':
+      db_query('DELETE FROM {duhougan_pingfen} WHERE uid = %d', $user->uid);
+      break;
+  }
+}
+
+function duhougan_pingfen_nodeapi(&$node, $op, $teaser, $page) {
+
+  global $user;
+  switch($op) {
+
+	  case "load":
+			if($node->type == "readthink"){
+				$node->duhougan_score = db_result(db_query("SELECT score FROM {duhougan_pingfen} WHERE vid=%d",$node->vid));
+			}
+			break;
+
+    case 'view':
+      if($node->type == "readthink" && user_access('duhougan pingfen')){
+          $node->content['duhougan_pingfen_display'] = array(
+            '#value' => theme('duhougan_pingfen', $node),
+            '#weight' => 10,
+          );
+      }
+      break;
+
+    case 'delete':
+      db_query('DELETE FROM {duhougan_pingfen} WHERE vid = %d', $node->vid);
+      break;
+  }
+}
+
+
+
+/**
+ * Implementation of hook_theme().
+ */
+function duhougan_pingfen_theme() {
+  return array(
+    'duhougan_pingfen' => array(
+      'arguments' => array('node' => NULL),
+			'file' => 'duhougan_pingfen.page.inc',
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_forms().
+ *
+ * Register an "aduhougan_pingfen_rate_form" form for each node to prevent id collisions.
+ */
+function duhougan_pingfen_forms($form_id, $args) {
+  $forms = array();
+  if (is_object($args[0]) && isset($args[0]->type)) {
+    $node = $args[0];
+    if ($node->type =='readthink') {
+      $forms['duhougan_pingfen_rate_form_'. $node->nid] = array('callback' => 'duhougan_pingfen_rate_form');
+    //  $forms['uc_catalog_buy_it_now_form_'. $product->nid] = array('callback' => 'uc_catalog_buy_it_now_form');
+    }
+  }
+  return $forms;
+}
+
+
+/**
+ * Implementation of hook_views_api().
+ *
+ */
+function duhougan_pingfen_views_api() {
+  // Note that you can include 'path' in this array so that your views.inc 
+  // file can be stored in a different location.
+  return array(
+    'api' => 2.0,
+	'path' => drupal_get_path('module', 'duhougan_pingfen') . '/includes/views',
+  );
+}

@@ -1,0 +1,328 @@
+<?php
+// define ucenter client root path
+define('UCENTER_CLIENT_ROOT', realpath(dirname(__FILE__)));
+
+//以下为uc.php内容
+
+define('DRUPAL_ROOT_PATH', '/home/apache/data/html/2u4u');
+define('IN_DISCUZ', FALSE);
+define('UC_CLIENT_VERSION', '1.5.0');	//note UCenter 版本标识
+define('UC_CLIENT_RELEASE', '20081031');
+define('API_SYNLOGIN', 1);		//note 同步登录 API 接口开
+define('API_SYNLOGOUT', 1);		//note 同步登出 API 接口开
+define('API_RETURN_SUCCEED', '1');
+define('API_RETURN_FAILED', '-1');
+define('API_RETURN_FORBIDDEN', '-2');
+
+//以上为uc.php内容
+//include_once UCENTER_CLIENT_ROOT.'/FirePHPCore/fb.php';
+//include_once UCENTER_CLIENT_ROOT.'/FirePHPCore/writelog.php';
+include_once UCENTER_CLIENT_ROOT.'/config.inc.php';
+include_once UCENTER_CLIENT_ROOT.'/uc_client/client.php';
+
+
+
+function ucenter_menu() {
+	$items = array ();
+	$items ['modules/ucenter/api/user'] = array (
+	                        'title' => 'ucenter登录', 
+	                        'page callback' => 'ucenter_out',
+	                        'type' => MENU_NORMAL_ITEM,
+	                        'access callback' => true );
+	return $items;
+}
+
+function ucenter_out(){
+	global $user;
+	$action = $get['action'];
+	//watchdog(t('user'), t('远程登录，当前用户：@cuser ；用户名： @username', array('@cuser' => $user->name,'@username' => $get['username'])));
+
+
+	//out_start();
+
+	/*global $user;
+	 $name = $_REQUEST['source'];
+	 $url = $_REQUEST['url'];
+	 $key = $_REQUEST['dis'];
+	 $pass = $_REQUEST['pass'];
+	 $check = db_fetch_object(db_query("SELECT s.* FROM {users} s  WHERE s.name = '%s'", $name));
+	 if($check->uid>0){
+	 $user = user_load (array("name"=>$name));
+	 if($user->uid==$check->uid){
+	 //echo "登陆成功:".$user->name.'/'.$user->uid.'/'.$url;
+	 /*if($user->uid==11|($user->roles[2]!=''&&count($user->roles)<2&&$user->uid>0)){
+	 sess_regenerate();
+	 echo "登陆成功";
+		//   		drupal_goto('');
+		} else{
+		echo "登录成功";
+		//drupal_goto('logout');
+		}	*/
+	// send user login notification to ucenter.
+
+	//watchdog(t('user'), t('ucenter_user:send user login info to ucenter, user name is @username,the current user is @cuname,uid is @cuid', array('@username' => $edit['name'],'@cuname' => $user->name,'@cuid' => $user->uid)));
+	//var_dump(uc_user_login($user->name, $pass));
+	/* list($uid, $username, $password, $email) = uc_user_login($user->name, $pass);
+	 //echo '-------------'.$pass.'/'.$user->name.'<br>';
+	 //echo '-------------'.$uid.'/'.$user->uid.'/'.$username.'/'.$user->name;
+	 if($uid > 0) {
+	 $syninfo = uc_user_synlogin($uid);
+
+	 $action = t('登陆');
+	 $content = t('欢迎回来') . ' ' . $username . '<br />' . t('页面会在5秒钟后转到首页，如果页面没有跳转，请点击下面链接') . '<br />' . l(t('回到首页'), $url) ;
+
+	 print '<meta http-equiv="refresh" content="5;'.$url.'">';
+	 print $syninfo;
+	 print theme('welcome_page', $action, $content);
+
+	 }
+	 //header("location:$url");
+	 //drupal_goto($url);
+	 }	else{
+	 echo "请重新登录";
+	 drupal_goto('logout');
+	 }
+	 }else
+	 echo "请重新登录";*/
+}
+
+function test(){
+
+}
+/**
+ * Implementation of hook_theme()
+ */
+function ucenter_theme() {
+
+	return array(
+    'welcome_page' => array(
+      'arguments' => array(
+        'action' => null, 
+        'content' => null
+	),
+      'template' => 'welcome-page',
+	),
+	);
+}
+
+/**
+ * Implementation of hook_user().
+ */
+function ucenter_user($op, &$edit, &$account, $category = null) {
+	//file_put_contents('ucenter.log','ucenter_user：操作'.$op,FILE_APPEND);
+	//wlog('ucenter_user：操作'.$op);
+	switch ($op) {
+		case 'insert':
+			// send user register notification to ucenter.
+
+			//watchdog(t('user'), t('send user register info to ucenter, user name is @username', array('@username' => $edit['name'])));
+
+			$uid = uc_user_register($edit['name'], $edit['pass'], $account->mail);
+
+			break;
+
+		case 'login':
+			global $base_url;
+			global $user;
+             		
+			if(!empty($_GET['destination'])){
+				$url = $_GET['destination'];				
+			}else{
+				$url = $_SERVER['HTTP_REFERER'];				
+			}
+			
+		    if(strpos($url,"user/register")!==false|$url==''){
+		           $url  = $base_url;				
+	              }
+
+
+                if(strpos($_SERVER['HTTP_USER_AGENT'],"XML-RPC")===FALSE){			
+				// send user login notification to ucenter.
+				//watchdog(t('user'), t('ucenter_user:send user login info to ucenter, user name is @username,the current user is @cuname,uid is @cuid', array('@username' => $edit['name'],'@cuname' => $user->name,'@cuid' => $user->uid)));
+				list($uid, $username, $password, $email) = uc_user_login($edit['name'], $edit['pass']);
+				if($uid > 0) {
+					$syninfo = uc_user_synlogin($uid);
+					//fb( 'uc用户：'.$username.' 的 uid为：'.$uid.'，返回的syninfo为：'.$syninfo,FirePHP::LOG);
+					//wlog('uc用户：'.$username.' 的 uid为：'.$uid.'，返回的syninfo为：'.$syninfo);
+					$action = t('登陆');
+					$content = t('尊敬的用户，欢迎回来') . ' ' . $edit['name'] . '<br />' . t('页面会在2秒钟后转到您登陆的页面，如果页面没有跳转，请点击下面链接') . '<br />' . l(t('回到首页'), $base_url) ;
+	
+					//print '<meta http-equiv="refresh" content="5; '.$base_url.'">';
+					print $syninfo;
+					print '<meta http-equiv="refresh" content="1.5; url='.$url.'">';
+					//var_dump($_SERVER);
+					print theme('welcome_page', $action, $content);
+				 }				
+			}
+			break;
+		case 'logout':
+			global $base_url;			
+			global $user;			
+			// send user logout notification to ucenter.
+		//	$url=isset($_GET['destination']) ? $_GET['destination'] : $_SERVER['HTTP_REFERER'];
+	              $url = $base_url;	
+              	//watchdog(t('user'), t('send user logout info to ucenter, user name is @username', array('@username' => $edit['name'])));
+			//fb( '用户：' . $user->name . '退出',FirePHP::LOG);
+			//wlog('用户：' . $user->name . '退出');
+			$syninfo = uc_user_synlogout();
+			$action = t('退出');
+			$content = t('尊敬的用户，您已经退出') . ' ' . $edit['name'] . '<br />' . t('页面会在2秒钟后转到您登陆的页面，如果页面没有跳转，请点击下面链接') . '<br />' . l(t('回到首页'), $base_url) ;
+
+			//print '<meta http-equiv="refresh" content="1; '.$base_url.'http://u.2n4n.com.cn">';
+			print $syninfo;
+			print '<meta http-equiv="refresh" content="1.5; url='.$url.'">';			
+			print theme('welcome_page', $action, $content);
+			break;
+
+		case 'delete':
+
+			//watchdog(t('user'), t('send user login info to ucenter, user name is @username', array('@username' => $edit['name'])));
+
+			uc_user_delete($account->name);
+
+			break;
+
+		case 'submit':
+			// send user update notification to ucenter
+			$edit_result = uc_user_edit($account->name, '', $edit['pass'], $edit['mail'], 1);
+			if ($edit_result == -8) {
+				form_set_error('name', t('该用户受保护无权限更改'));
+			}
+	}
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function ucenter_form_alter(&$form, $form_state, $form_id) {
+
+	switch ($form_id) {
+
+		case 'user_register':
+			// add a validator for user register.
+			$form['#validate'][] = 'ucenter_register_validate';
+
+			break;
+
+		case 'user_profile_form':
+			// add a validator for user register.
+			$form['#validate'][] = 'ucenter_edit_validate';
+
+			break;
+
+		case 'user_login':
+		case 'user_login_block':
+			array_unshift($form['#validate'], 'ucenter_login_validate');
+
+			break;
+	}
+}
+
+/**
+ * validator for user register
+ */
+function ucenter_register_validate($form, &$form_state) {	
+	// check the name with ucenter's function
+	$name_result = uc_user_checkname($form_state['values']['name']);
+	if ($name_result == -1) {
+		form_set_error('name', t('用户名不合法'));
+	}
+	else if ($name_result == -2) {
+		form_set_error('name', t('包含要允许注册的词语'));
+	}
+	else if ($name_result == -3) {
+		form_set_error('name', t('用户名已经存在'));
+	}
+	// check the email with ucenter's function
+	$email_result = uc_user_checkemail($form_state['values']['mail']);
+	if ($email_result == -4) {
+		form_set_error('mail', t('Email 格式有误'));
+	}
+	else if ($email_result == -5) {
+		form_set_error('mail', t('Email 不允许注册'));
+	}
+	else if ($email_result == -6) {
+		form_set_error('mail', t('该 Email 已经被注册'));
+	}
+}
+
+/**
+ * validator for user edit
+ */
+function ucenter_edit_validate($form, &$form_state) {
+	//当邮箱地址为空时,跳过验证,此时应该是编辑profile的form(由老葛添加)
+	if(empty($form_state['values']['mail'])){
+		return;
+	}
+	// check the email with ucenter's function	
+	$email_result = uc_user_checkemail($form_state['values']['mail']);
+	if ($email_result == -4) {
+		form_set_error('mail', t('Email 格式有误'));
+	}
+	else if ($email_result == -5) {
+		form_set_error('mail', t('Email 不允许注册'));
+	}
+	else if ($email_result == -6) {
+		form_set_error('mail', t('该 Email 已经被注册'));
+	}
+}
+/**
+ * validator for user login
+ */
+function ucenter_login_validate($form, &$form_state) {
+	
+	// try to login ucenter
+	global $user;
+	//watchdog(t('user'), t('ucenter_login_validate: cuser is @uname', array('@uname' => $user->name )));
+	//fb( 'ucenter_login_validate：登录用户名'.$form_state['values']['name'].' 登录密:：'.$form_state['values']['pass'],FirePHP::LOG);
+	//wlog('ucenter_login_validate：登录用户名'.$form_state['values']['name'].' 登录密码：'.$form_state['values']['pass'].'md5:'.md5(trim($form_state['values']['pass'])));
+	list($uid, $username, $password, $email) = uc_user_login($form_state['values']['name'], $form_state['values']['pass']);
+	//echo $uid;
+	//wlog('从uc获取用户登录信息：uc_user_login:$uid='.$uid.'/$email='.$email);
+	if ($uid > 0) {
+		//$dbres = db_query("SELECT uid FROM users WHERE name='%s'", $form_state['values']['name']);
+		//$result = array();
+		//while ($term = db_fetch_object($db_result)) {
+		//    $result[] = $term;
+		//}
+		$uid_drupal = db_result(db_query("SELECT uid FROM users WHERE name='%s'", $form_state['values']['name']));
+		if (!$uid_drupal) {
+			$userinfo = array(
+        'name' => $form_state['values']['name'],
+        'pass' => user_password(),
+        'init' => $form_state['values']['name'],
+        'status' => 1,
+        "authname_ucenter" => $form_state['values']['name'],
+        'access' => time()
+			);
+			//watchdog(t('user'), t('ucenter_login_validate: add new user from ucenter, user name is @username', array('@username' => $form_state['values']['name'])));
+			$account = user_save('', $userinfo);
+		}
+		//watchdog(t('user'), t('ucenter_login_validate:update user password, user name is @username', array('@username' => $form_state['values']['name'])));
+
+		db_query(" UPDATE {users} SET `pass`=md5('%s') WHERE name='%s' ", $form_state['values']['pass'], $form_state['values']['name']);
+	}
+	else if ($uid == -1) {
+		//list($uid_drupal,$email) = db_result(db_query("SELECT uid,mail FROM users WHERE name='%s'", $form_state['values']['name']));
+		$dbres = db_query("SELECT uid,mail FROM users WHERE name='%s' and `pass`=md5('%s')", $form_state['values']['name'],$form_state['values']['pass']);
+		$result = array();
+		while ($term = db_fetch_object($dbres)) {
+		    $result[] = $term;
+		}
+		//wlog('$uid==-1/$uid_drupal='.$result[0]->uid.'/$email='.$result[0]->mail);
+		//wlog("SELECT uid,mail FROM users WHERE name='". $form_state['values']['name'] ."'");
+		//watchdog(t('user'), t("SELECT uid，mail FROM users WHERE name='@s'", array('@s' => $form_state['values']['name'])));
+		//echo $uid_drupal,$email;
+		if(!$result[0]->uid){
+			//form_set_error('name', t("SELECT uid，mail FROM users WHERE name='@s'", array('@s' => $form_state['values']['name']))); 
+			//wlog('!$result[0]->uid drupal中没有这个用户');
+			form_set_error('name', t('用户名或密码错误'));  		
+		}else{
+			//wlog('$result[0]->uid 在uc中注册这个用户|'.$form_state['values']['name'].'|'.$form_state['values']['pass'].'|'.$email);
+			$uid = uc_user_register($form_state['values']['name'], $form_state['values']['pass'], $result[0]->mail);
+		}
+	}
+	else if ($uid == -2) {
+		form_set_error('pass', t('密码错误'));
+	}
+}

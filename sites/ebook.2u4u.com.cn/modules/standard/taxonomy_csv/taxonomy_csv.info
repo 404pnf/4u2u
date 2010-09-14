@@ -1,0 +1,16 @@
+; $Id: taxonomy_csv.info,v 2.3.4.6 2009/10/20 19:45:56 danielkm Exp $
+name = "Taxonomy CSV import/export"
+description = "Export and import complete taxonomies, hierarchical structure or simple lists of terms and properties to or from a CSV file, url or text."
+core = 6.x
+dependencies[] = taxonomy
+package = 'Taxonomy'
+files[] = taxonomy_csv.install
+files[] = taxonomy_csv.module
+files[] = taxonomy_csv.api.inc
+
+; Information added by drupal.org packaging script on 2010-01-13
+version = "6.x-4.9"
+core = "6.x"
+project = "taxonomy_csv"
+datestamp = "1263405306"
+

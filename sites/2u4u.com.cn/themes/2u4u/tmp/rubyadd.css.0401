@@ -1,0 +1,579 @@
+@charset "utf-8"; /* CSS Document */
+
+/* addtional */
+/*( .title-content{
+	background-repeat:repeat-x;
+	height:35px;
+	line-height:35px;
+	display:block; 
+	float:left;
+	}
+*/
+/* #content-area{
+ 不能全局设定最低高度，否则类似  http://2u4u.com.cn/jifenduihuan 会有大片空白
+因为那些页面是用block放在content bottom中
+min-height:500px;
+height:auto !important;
+height:500px;
+}
+*/
+
+
+#content  ul  li.login_duhougan a{
+-moz-border-radius:5px 5px 5px 5px;
+-moz-box-shadow:0 1px 3px rgba(0, 0, 0, 0.5);
+background:none repeat scroll 0 0 #FF5C00;
+border-color:-moz-use-text-color -moz-use-text-color rgba(0, 0, 0, 0.25);
+border-style:none none solid;
+border-width:medium medium 1px;
+color:#FFFFFF;
+cursor:pointer;
+
+font-size:12px;
+line-height:1;
+padding:6px 14px 5px;
+position:relative;
+text-decoration:none;
+text-shadow:0 -1px 1px rgba(0, 0, 0, 0.25);
+
+}
+#content  ul li.login_duhougan a:hover{
+background:#ffb515;
+}
+
+
+.terms .links .login_duhougan a{
+display: none;
+}
+/* .flag-duhougan-tuijian a:link, a:visited{
+font-size:14px;
+color:#FF0000; !important;
+}
+*/
+
+#confirm_message .confirm-links li{
+	margin:10px 0;
+	list-style:none;
+	
+}
+#confirm_message .confirm-links li a{
+-moz-border-radius:5px 5px 5px 5px;
+-moz-box-shadow:0 1px 3px rgba(0, 0, 0, 0.5);
+background:none repeat scroll 0 0 #58C16D;
+border-color:-moz-use-text-color -moz-use-text-color rgba(0, 0, 0, 0.25);
+border-style:none none solid;
+border-width:medium medium 1px;
+color:#FFFFFF;
+cursor:pointer;
+display:inline-block;
+font-size:14px;
+font-weight:bold;
+line-height:1;
+padding:8px 14px 9px;
+position:relative;
+text-decoration:none;
+text-shadow:0 -1px 1px rgba(0, 0, 0, 0.25);
+}
+#confirm_message .confirm-links li a:hover{
+	background:#67C124;
+}
+
+/* 增加正文显示宽度 bxy whx */
+.node-type-readthink .field-field-dhg-zhengwen{
+	width:560px;
+}
+.node-type-readthink .content,
+.node-type-readthink .field-field-dhg-fubiaoti{
+	margin-top:10px;
+}
+/*view-duhougan-fenlie  应该为fenlei*/
+
+.page-fenlei .view-duhougan-fenlie{
+	padding:0 10px; 
+}
+.page-fenlei .view-duhougan-fenlie li{
+	overflow:hidden;
+	height:170px;
+    padding:10px;
+	position:relative;
+	width:560px;
+	border-bottom:1px dashed #CCC;
+}
+.page-fenlei .view-duhougan-fenlie .views-field-field-yuedu-cover-fid{
+	float:left;
+	width:120px;
+	display:inline;
+}
+/* whx 修改，增加text-indent，使读后感分类显示页面简介部分段落首行缩进2字符 */
+.page-fenlei .view-duhougan-fenlie .views-field-field-yuedu-summary-value{
+	line-height:1.8;
+	text-indent:26px;
+}
+.page-fenlei .view-duhougan-fenlie li .views-field-view-node{
+	position:absolute;
+	bottom:10px;
+	right:10px;
+}
+/*结束  view-duhougan-fenlie */
+/* 
+.section-node-add #page #page-inner #main #main-inner #content #content-inner #content-area form div .node-form .standard #edit-title-wrapper label  {
+float:none;
+font-weight:bold;
+text-align:left;
+}
+.section-node-add #page #page-inner #main #main-inner #content #content-inner #content-area form div .node-form .standard #edit-title-wrapper .form-text,
+.section-node-add #page #page-inner #main #main-inner #content #content-inner #content-area form div .node-form .standard #edit-field-dhg-fubiaoti-0-value-wrapper .form-text
+{
+height:20px;
+width:433px;
+}
+.section-taxonomy #main #main-inner #content,
+.page-all-duhougan #main #main-inner #content {
+width:710px;
+}
+*/
+.view-duhougan-all-children .view-content .views-table,
+.view-taxonomy-term .view-content .views-table {
+width:98%;
+margin-left:8px;
+}
+.view-all-duhougan .view-content .views-table tr, .view-users-duhougan .view-content .views-table tr, .view-duhougan-all-children .view-content .views-table tr,.view-taxonomy-term .view-content .views-table tr {
+background-color:#FFFFFF;
+border-bottom:2px solid #E5EBE1;
+}
+.view-all-duhougan .view-content .views-table tr th, .view-users-duhougan .view-content .views-table tr th, .view-duhougan-all-children .view-content .views-table tr th,.view-taxonomy-term .view-content .views-table tr th{
+background-color:#FFFFFF;
+/* bxy 暂时改为12否则影响全局其它字体 font-size:14px; */
+font-size:12px;
+height:33px;
+line-height:33px;
+}
+/* .view-taxonomy-term .view-content .views-table tbody td.views-field-title {
+height:33px;
+line-height:33px;
+overflow:hidden;
+white-space:nowrap;
+width:230px;
+font-size:12px;
+}
+*/
+/* whx 修改dhgps页面副标题及内容错位的CSS */
+.page-dhgps #content .field-items .field-item {
+line-height:22px;
+text-indent:0;
+clear:both;
+}
+/* .section-node-add #page #page-inner #main #main-inner #content #content-inner #content-area form div .node-form .standard #edit-title-wrapper label  {
+float:none;
+font-weight:bold;
+text-align:left;
+}
+.section-node-add #page #page-inner #main #main-inner #content #content-inner #content-area form div .node-form .standard #edit-title-wrapper .form-text,
+.section-node-add #page #page-inner #main #main-inner #content #content-inner #content-area form div .node-form .standard #edit-field-dhg-fubiaoti-0-value-wrapper .form-text
+{
+height:20px;
+width:433px;
+}
+*/
+.page-all-duhougan #main #main-inner #content {
+width:710px;
+}
+.view-duhougan-all-children .view-content .views-table {
+width:98%;
+}
+/* whx修改读后感评审标题，去掉content-header的高度，添加view-header；即去掉区块标题，添加views的标题*/
+.page-dhgps #main #main-inner #content  #content-inner #content-header
+{display:none;height:0px;}
+.page-dhgps #main #main-inner #content
+{border:#D1D1D1 1px solid;width:610px; border-top:none; padding:0 10px;}
+#content .views-exposed-form .views-exposed-widget .form-submit {
+margin-top:1.05em;
+}
+.page-dhgps #main #main-inner #content #content-inner #content-area .view-header {
+background-image:url(images/video_titleall.jpg);
+color:#4AB740;
+border:medium none;
+clear:both;
+font-size:12px;
+font-weight:bold;
+height:35px;
+line-height:35px;
+margin-left:-10px;
+width:630px;
+text-indent:10px;
+}
+.view-duhougan .view-content li.views-row{
+	border-bottom:1px dashed #CCC;
+
+}
+
+/* whx bxy */
+/* 给duhougan confirm等页面加一个最低高度 */
+.page-duhougan-confirm #content {
+min-height:350px;
+}
+/* 让confrim links横着排列并增加之间间距 */
+.page-duhougan-confirm #confirm_message .confirm-links ul li {
+display:block;
+float:left;
+margin:10px 20px;
+}
+
+/* 让h3标题和下面的 confirm message 左对齐 */
+.page-duhougan-confirm #confirm_message h3{
+margin:30px 0px 20px 56px;
+}
+/* 让读后感的terms和作者信息左对齐 */
+.node-type-readthink .meta {
+float:left;
+display:block;
+clear:both;
+}
+
+
+/* 让读后感的副标题也左对齐，也就是所有duhougan fields左对齐 */
+.node-type-readthink #content .field-items .field-item {
+clear:both;
+display:block;
+text-indent:0;
+}
+
+
+/* whx starts from here */
+/* readthink 及 dhgps 页单独让读后感正文字段缩进 */
+.node-type-readthink #content .field-field-dhg-zhengwen .field-items .field-item,.page-dhgps #content .field-field-dhg-zhengwen .field-items .field-item {
+text-indent:26px;
+}
+/* 修改发表读后感页面的标题位置 */
+.page-node-add-readthink #page #page-inner #main #main-inner #content #content-inner #content-area form div .node-form .standard #edit-title-wrapper label  {
+float:none;
+font-weight:bold;
+text-align:left;
+}
+/* 查看读后感页面控制标题的位置 */
+.node-type-readthink #page #page-inner #main #main-inner #content #content-inner #content-header h1.title {
+font-size: 1.8em;
+text-align:left;
+}
+/* 评论书籍名称与评论正文的距离修改 */
+.node-type-readthink  .field-field-dhg-pinglun-shuming{
+padding:15px 0 0 0px;
+}
+/* 读后感推荐flag，点击前与点击后进行区分的CSS */
+.flag-duhougan-tuijian .flag-action  {
+color:#33A641;
+font-size:1.2em;
+}
+.flag-duhougan-tuijian .unflag-action  {
+color:#8B9191;
+font-size:1em;
+}
+/* 提交第一篇读后感，加10分的提示位置布局 */
+.page-duhougan-confirm #confirm_message h4 {
+clear:both;
+margin:30px 0 20px 56px;
+}
+
+
+
+
+
+
+/* 翻译node页整体布局 */
+/* 外框 */
+.node-type-fanyi-chapter #main #main-inner #content{
+border:1px solid #D1D1D1;
+border-top:0px;
+padding:0 10px;
+width:653px;
+}
+/* 标题 加背景、颜色、左侧padding*/
+.node-type-fanyi-chapter #page #page-inner #main #main-inner #content #content-inner #content-header h1.title {
+background-image:url("images/video_titleall.jpg");
+border:medium none;
+clear:both;
+font-size:14px;
+font-weight:700;
+height:35px;
+line-height:35px;
+margin-left:-10px;
+width:673px;
+text-align:left;
+}
+.node-type-fanyi-chapter #page #page-inner #main #main-inner #content #content-inner #content-header h1.title span.title-content  {
+padding-left:10px;
+}
+
+/* 章节与标题在同一行 */
+.node-type-fanyi-chapter .field-field-fanyi-zhangjie {
+float:left;
+padding-left:550px;
+margin-top:-25px;
+font-size:1.1em;
+font-weight:bold;
+}
+
+/* 翻译人横排 */
+ .node-type-fanyi-chapter .field-field-fanyi-translators  {
+float:left;
+width:500px;
+line-height:150%;
+}
+.node-type-fanyi-chapter .field-field-fanyi-translators .field-label {
+float:left;
+} 
+.node-type-fanyi-chapter .field-field-fanyi-translators .field-items .field-item {
+float:left;
+}
+
+.node-type-fanyi-chapter .field-field-fanyi-translators  a:link,.node-type-fanyi-chapter .field-field-fanyi-translators  a:visited{
+color:#996600;
+}
+/* 翻译状态 */
+.node-type-fanyi-chapter .field-field-fanyi-zhuangtai{
+line-height:150%;
+}
+/* 上一章、下一章链接右对齐 */
+.node-type-fanyi-chapter  #prev-next{
+float:left;
+padding-left:550px;
+line-height:150%;
+} 
+
+/* 去掉章节表格的宽度2u4u中 ,并设置章节内容布局 */
+.node-type-fanyi-chapter  .node-inner .content table.sticky-enabled {
+background-color:#FFFFFF;
+width:290px;
+border:medium none;
+margin:0 auto;
+}
+.node-type-fanyi-chapter   .node-inner .content table.sticky-enabled tr td{
+background-color:#FFFFFF;
+border-bottom:1px solid #E5EBE1;
+height:28px;
+padding:0 5px;
+}
+.node-type-fanyi-chapter  .node-inner .content table.sticky-enabled tr td.active{
+background-color:#FFFFFF;
+border-bottom:1px solid #E5EBE1;
+height:28px;
+padding:0 5px;
+width:75px;
+} 
+/* 章节列表右对齐 */
+.node-type-fanyi-chapter div#all-chapter-list {
+float:right;
+position:absolute;
+top:40px;
+left:680px;
+width:290px;
+}
+
+
+/* 投票打分横排 */
+.node-type-fanyi-chapter #nodevote-vote fieldset div,.node-type-fanyi-chapter #nodevote-vote fieldset label,.node-type-fanyi-chapter #nodevote-vote fieldset  select,.node-type-fanyi-chapter #nodevote-vote fieldset  input {
+float:left;
+margin:0 10px;
+}
+
+/* add翻译页面整体字体的设置 */
+.section-node-add #content .content {
+font-size:12px;
+line-height:100%;
+}
+.section-node-add #content .node-type-fanyi-chapter  h2.title {
+font-size:1.3em;
+line-height:100%;
+font-weight:bold;
+padding:5px 10px 20px 0;
+}
+.section-node-add #content .node-type-fanyi-chapter h2.title a:link, .section-node-add #content .node-type-fanyi-chapter h2.title a:visited {
+color:#996600;
+}
+
+
+
+
+
+
+
+
+/* 积分换礼页面布局开始 */
+/* 页面整体外框 */
+.section-dalibao #content {
+border:1px solid #D1D1D1;
+padding:10px 20px;
+width:576px;
+}
+
+/* 首页两栏布局 */
+.view-duihuan .view-content .item-list ul li{
+float:left;
+height:150px;
+line-height:20px;
+margin:8px;
+width:270px;
+}
+/* 翻页 */
+.section-dalibao .view-duihuan .item-list ul li a{
+color:#380102;
+}
+.section-dalibao .view-duihuan .item-list ul li.pager-current {
+font-weight:bold;
+color:#6F0000;
+}
+/* 标题 */
+.section-dalibao #page #page-inner #main #main-inner #content #content-inner #content-header h1.title ,
+.section-dalibao #content-area .view-duihuan .view-content .item-list ul li .views-field-title .field-content a{
+font-size:1.1em;
+font-weight:bold;
+color:#6F0000;
+}
+.section-dalibao #content-area.view-duihuan .view-content .item-list ul li .views-field-title .field-content a:hover{
+color:#FF0000
+}
+
+/* 礼包node页中的分类terms */
+.section-dalibao .node-type-product .meta {
+height:10px;
+text-align:right;
+width:580px;
+}
+.section-dalibao .node-type-product .meta a {
+color:#667777;
+}
+/* 详情 */
+/* 包裹中的整册书名 */
+.section-dalibao #page #page-inner #main #main-inner #content #content-inner #content-area .node-type-product .node-inner .content .field-field-product-neirongtiyao .field-items .field-item p, 
+.section-dalibao .view-duihuan .views-field-field-product-tuijian-value .field-content p {
+color:#380102;
+font-size:1em;
+font-weight:normal;
+line-height:20px;
+margin-left:0px;
+text-indent:0px;
+}
+/* 首页具体书的list */
+.section-dalibao .view-duihuan .views-field-field-product-tuijian-value{
+min-height:75px;
+}
+.section-dalibao .view-duihuan .views-field-field-product-tuijian-value .field-content ol {
+overflow:hidden;
+padding:0 20px;
+width:230px;
+}
+.section-dalibao .view-duihuan .views-field-field-product-tuijian-value .field-content ol li {
+color:#380102;
+float:none;
+font-size:1em;
+font-weight:normal;
+height:25px;
+line-height:25px;
+margin:0;
+white-space:nowrap;
+}
+/* 礼包node页书的list */
+.section-dalibao #page #page-inner #main #main-inner #content #content-inner #content-area .node-type-product .node-inner .content .field-field-product-neirongtiyao .field-items .field-item ol li{
+float:none;
+list-style:inherit;
+color:#380102;
+font-size:1em;
+font-weight:normal;
+height:25px;
+line-height:25px;
+margin:0px;
+text-indent:0px;
+padding:0px;
+width:270px;
+}
+/* 链接到本书node的“还有更多呦” */
+.section-dalibao #content-area .view-duihuan .item-list ul li .views-field-view-node .field-content a {
+color:#6F0000;
+float:none;
+padding-left:20px;
+}
+/* 积分及按钮 */
+.section-dalibao #content-area  .view-duihuan .view-content .item-list ul li .views-field-sell-price .field-content {
+color:#ee0000;
+}
+.section-dalibao #page #page-inner #main #main-inner #content #content-inner #content-area .node-type-product .node-inner .content .sell_price, 
+.section-dalibao #page #page-inner #main #main-inner #content #content-inner #content-area .node-type-product .node-inner .content .add-to-cart, 
+.section-dalibao .view-duihuan .views-field-sell-price, 
+.section-dalibao .view-duihuan .views-field-addtocartlink-1 .add-to-cart {
+color:#EE0000;
+float:left;
+height:30px;
+line-height:30px;
+padding:0 0 0 3px;
+text-align:left;
+width:130px;
+}
+/* node页积分宽度 */
+.section-dalibao #page #page-inner #main #main-inner #content #content-inner #content-area .node-type-product .node-inner .content .sell_price{
+width:80px;
+padding-left:20px;
+}
+/* 按钮 */
+.section-dalibao #page #page-inner #main #main-inner #content #content-inner #content-area .node-type-product .node-inner .content .add-to-cart form div .node-add-to-cart, 
+.section-dalibao .view-duihuan .views-field-addtocartlink-1 .add-to-cart form div .node-add-to-cart {
+background-color:Transparent;
+background-image:url("images/jifenhuanlitianjia.jpg");
+background-repeat:no-repeat;
+border:medium none;
+color:#990000;
+font-size:1.1em;
+font-weight:normal;
+height:24px;
+width:96px;
+}
+
+/* rightbar 礼品分类 */
+#sidebar-right #block-block-59 {
+border-bottom:1px solid #DBDBDB;
+border-left:1px solid #DBDBDB;
+border-right:1px solid #DBDBDB;
+border-style:none solid solid;
+width:99.5%;
+}
+#sidebar-right #sidebar-right-inner #block-block-59 .block-inner .content .view-header {
+height:25px;
+}
+#sidebar-right #sidebar-right-inner #block-block-59 .block-inner .content .view-header p a {
+color:#000000;
+font-weight:700;
+line-height:25px;
+margin-left:5px;
+}
+#sidebar-right #sidebar-right-inner #block-block-59 .block-inner .content .view-content .views-field-name .field-content a {
+color:#000000;
+margin-left:5px;
+margin-right:5px;
+}
+#block-block-59 .content {
+line-height:23px;
+margin:0 10px;
+}
+#block-block-59 .content .view-content .views-row .views-field-name .field-content {
+float:left;
+margin-left:5px;
+}
+#block-block-59 .content .view-content .views-row a {
+clear:both;
+white-space:nowrap;
+}
+
+/* 排行 */
+#sidebar-right div.view-duihuan {
+border-color:-moz-use-text-color #CECECE #CECECE;
+border-right:1px solid #CECECE;
+border-style:none solid solid;
+border-width:0 1px 1px;
+clear:both;
+height:auto;
+width:99.5%;
+margin:-13px 0;
+}
+#block-views-duihuan-block_2 .content .view-content .item-list ol li{
+width:100%;
+line-height:2em;
+}

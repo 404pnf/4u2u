@@ -1,0 +1,60 @@
+/* $(document).ready(function(){
+$('body.page-yueduwhx .item-list').hover(function(){
+$(this).addClass('hover');
+},function(){
+$(this).removeClass('hover');
+});
+}); */
+/* jQuery 的调用 */
+/*  function element_add_hover(elementname){
+$(elementname).hover(function(){
+$(this).addClass('hover');
+},function(){
+$(this).removeClass('hover');
+});
+}
+$(document).ready(element_add_hover('.view-whx-yuedu  .view-display-id-attachment_4 .item-list'));
+$(document).ready(element_add_hover('.view-whx-yuedu .view-display-id-attachment_1 .item-list'));
+  */
+/* jQuery与packed_jquery0库都使用$标识符，因此之间会产生冲突，jQuery提供了为避免多个库对$的使用权争夺的函数jQuery.noConflict();把$使用权交换给packed_jquery0，之后使用jQuery方法时不可以使用$了，而用jQuery代替,$()相当于jQuery()。*/
+
+/* jQuery.noConflict();
+
+var e_addhover1='.view-display-id-attachment_4 .item-list';
+var e_hovered1='.view-whx-yuedu  .view-display-id-attachment_4 div.hover ul';
+var e_detail_tip1='.view-whx-yuedu  .view-display-id-attachment_4 div.hover .views-row';
+var e_addhover2='.view-display-id-attachment_1 .item-list';
+var e_hovered2='.view-whx-yuedu  .view-display-id-attachment_1 div.hover ul';
+var e_detail_tip2='.view-whx-yuedu  .view-display-id-attachment_1 div.hover .views-row';
+
+$(function () {
+    $(e_addhover1).hover(
+        function () {
+
+            window.setTimeout(function () {
+                $(e_hovered1).append('<div class="detail-tip shadow-right"></div>');
+                $('.detail-tip').html($(e_detail_tip1).html());
+                $('.detail-tip').append('<span class="arrow-left"></span>');
+            },0);
+        },
+        function () {
+            $('.detail-tip').remove();
+        }
+    );
+});
+$(function () {
+    $(e_addhover2).hover(
+        function () {
+
+            window.setTimeout(function () {
+                $(e_hovered2).append('<div class="detail-tip shadow-right"></div>');
+                $('.detail-tip').html($(e_detail_tip2).html());
+                $('.detail-tip').append('<span class="arrow-left"></span>');
+            },0);
+        },
+        function () {
+            $('.detail-tip').remove();
+        }
+    );
+});
+ */

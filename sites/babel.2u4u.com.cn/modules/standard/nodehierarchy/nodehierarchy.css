@@ -1,0 +1,89 @@
+/* nodehierarchy stylesheet */
+
+a.nodehierarchy_action, a.nodehierarchy_action:hover {
+  text-decoration: none;
+}
+.nodehierarchy_action .nodehierarchy_icon img {
+  vertical-align: middle;
+}
+
+.nodehierarchy_action .label {
+  display: none;
+}
+.nodehierarchy_action .disabled img,
+.first .nodehierarchy_action_up img,
+.last .nodehierarchy_action_down img
+{
+  opacity: 0.25;
+  filter:alpha(opacity=25);
+}
+
+ul.nodehierarchy_outline {
+  margin: 0;  padding: 0;
+}
+ul.nodehierarchy_outline li {
+  background: none;
+  list-style-type: none;
+  list-style-image: none;  margin: 0;  padding: 0;
+  clear: right;}
+ul.nodehierarchy_outline li.nodehierarchy_child {
+  background: none;
+  padding: 0;
+}
+.nodehierarchy_outline .item, 
+.nodehierarchy_outline .newchild {
+  padding: .2em 0;
+}
+
+table.nodehierarchy_outline {
+  margin: 0;
+}
+.nodehierarchy_outline td {
+  padding: 0;
+  vertical-align: top;
+}
+.nodehierarchy_actions {
+  float: right;
+  clear: right;
+  padding: 0;
+}
+.nodehierarchy_expand {
+  width: 16px;
+}
+td.nodehierarchy_children {
+  padding-left: 16px;
+}
+
+ul.nodehierarchy_outline {
+  border-top: 2px solid #eee;
+}
+.nodehierarchy_outline li {
+  border-bottom: 2px solid #eee;
+}
+.nodehierarchy_outline .nodehierarchy_child a {
+  display: inline;
+}
+.nodehierarchy_outline .children {
+  clear: both;
+  padding-left: 15px;
+}
+
+a.expand_widget, a.non_expandable {
+  background-position: left center;  background-repeat:no-repeat;
+  padding-left: 20px;
+}
+.nodehierarchy_outline .expanded a.expand_widget {
+  background-image: url(images/expanded.gif);
+}
+.nodehierarchy_outline .collapsed a.expand_widget {
+  background-image: url(images/collapsed.gif);
+}
+
+.nodehierarchy_outline li.loading a.expand_widget {
+  background-image: url(images/loading.gif);}
+
+.nodehierarchy_outline .item:hover {
+  background-color: #eee;
+}
+
+

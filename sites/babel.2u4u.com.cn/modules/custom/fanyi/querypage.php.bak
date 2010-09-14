@@ -1,0 +1,88 @@
+<?php
+require "txxanadusinglepage.php";
+
+$pageObject = new TXXanaduSinglePageComm();
+
+$chapterIDV;
+if (isset($_POST['chapterID']))
+{
+	$chapterIDV = $_POST['chapterID'];
+}
+else
+{
+	if (isset($_GET['chapterID']))
+	{
+		$chapterIDV = $_GET['chapterID'];
+	}
+	else
+	{
+		$chapterIDV="未分配";
+		$pageObject->setError("没有章节标识");
+		print json_encode($pageObject);
+		exit(0);
+	}
+}
+//print $chapterIDV;
+
+$babeldb;
+
+$babeldb = new mysqli("localhost", "root", "", "tryout");
+
+if(mysqli_connect_errno())
+{
+
+	$pageObject->setError("数据库连接失败：" . mysqli_connect_error());
+
+}
+else
+{
+	$sql="SET NAMES utf8";
+	$babeldb->query($sql);
+
+	$sql = "SELECT "."`PAGE_TEXT_ORIGINAL`, "
+	."`PAGE_TEXT_TRANSLATION`, `BOOK_ID`, `BOOK_NAME_ORIGINAL`,"
+	." `BOOK_NAME_TRANSLATION`, `PAGE_ID`, `CHAPTER_NAME_ORIGINAL`,"
+	." `CHAPTER_NAME_TRANSLATION`, `REMARK` FROM `bilingual_pages`"
+	." where CHAPTER_ID=?";
+	$stmt = $babeldb->prepare($sql);
+	$stmt->bind_param('i', $chapterIDV);
+	if ($stmt->execute())
+	{
+		$stmt->bind_result($originalTextV, $translationTextV,
+		$bookIDV, $bookNameOriginalV, $bookNameTranslationV, 
+		$pageIDV, $chapterNameOriginalV, $chapterNameTranslationV, $remarkV);
+		if (!$stmt->fetch())
+		{
+			$pageObject->setError('数据库查询失败，没有查询到记录：' . $stmt->error);    
+		}
+		else
+		{
+			$pageObject->setOriginal($originalTextV);
+			$pageObject->setTranslation($translationTextV);
+			$pageObject->bookID = $bookIDV;
+			$pageObject->bookNameOriginal = $bookNameOriginalV;
+			$pageObject->bookNameTranslation = $bookNameTranslationV;
+			$pageObject->pageID = $pageIDV;
+			$pageObject->chapterNameOriginal = $chapterNameOriginalV;
+			$pageObject->chapterNameTranslation = $chapterNameTranslationV;
+			$pageObject->remark = $remarkV;
+			$pageObject->chapterID = $chapterIDV;
+			$pageObject->comments = Array();
+		}
+	}
+	else
+	{
+		$pageObject->setError('数据库查询失败：' . $stmt->error);    
+	}
+
+	$stmt->close();
+
+	$babeldb->close();
+
+	$temp = json_encode($pageObject);
+	print $temp . "\n";
+	$aa = json_decode($temp);
+	print $aa->error;
+}
+
+?>

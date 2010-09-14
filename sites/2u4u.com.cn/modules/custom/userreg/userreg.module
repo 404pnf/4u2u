@@ -1,0 +1,23 @@
+<?php
+// $Id$
+/**
+ * Implementation of hook_menu().
+ */
+function userreg_menu() {
+  $items['userreg'] = array(
+    'title' => '用户注册',
+    'page callback' => 'userreg_callback_page',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'userreg.pages.inc',
+  );
+	$items['userreg/test'] = array(
+    'title' => '用户注册',
+    'page callback' => 'userreg_test_page',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'userreg.pages.inc',
+  );
+  
+  return $items;
+}

@@ -1,0 +1,260 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * 集成Payease 首信易的支付服务.
+ * zhupou.cn为外研社2u4u.com.cn制作，
+ */
+
+
+/**
+ * 实现钩子hook_menu().
+ */
+function uc_payease_menu() {
+	//从首信易到商户的通知地址
+  $items['payease/notify'] = array(
+    'title' => 'Order complete',
+    'page callback' => 'uc_payease_notify',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'uc_payease.pages.inc',
+  );
+  
+  //从首信易到商户的返回地址
+  $items['payease/return'] = array(
+    'title' => 'Order complete',
+    'page callback' => 'uc_payease_return',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'uc_payease.pages.inc',
+  );
+  
+  return $items;
+}
+
+/**
+ * 实现钩子 hook_form_alter().
+ */
+function uc_payease_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'uc_cart_checkout_review_form' && ($order_id = intval($_SESSION['cart_order'])) > 0) {
+    $order = uc_order_load($order_id);
+    if ($order->payment_method == 'payease') {
+      unset($form['submit']);
+      $form['#prefix'] = '<table style="display: inline; padding-top: 1em;"><tr><td>';
+      $form['#suffix'] = '</td><td>'. drupal_get_form('uc_payease_form', $order) .'</td></tr></table>';
+    }
+  }
+}
+
+/**
+ * 从Drupal到首信易的提交表单，这里实现了首信易支付（v4.3）接口说明文档中的
+ * 第一部分：“商户提交待付款订单接口（商户＝＝>>首信易支付）”
+ */
+function uc_payease_form($form_state, $order) {
+	// MD5私钥，test为测试私钥
+	$md5key = variable_get('uc_payease_md5key', 'test'); 
+	
+  // 商户编号，888为测试帐号
+  $v_mid = variable_get('uc_payease_seller', '888');    
+  $form['v_mid'] = array(
+    '#type' => 'hidden',
+    '#value' => $v_mid,
+	);
+	
+	// 订单产生日期
+  $v_ymd =date("Ymd");									
+  $form['v_ymd'] = array(
+    '#type' => 'hidden',
+    '#value' => $v_ymd,
+	);
+	
+  // 订单编号
+  $order_id = $order->order_id;
+	$v_oid = $v_ymd . '-' . $v_mid . '-' . $order_id;	  
+	$form['v_oid'] = array(
+    '#type' => 'hidden',
+    '#value' => $v_oid,
+	);
+	
+	// 商户配货状态，0为未配齐，1为已配齐
+	$v_orderstatus = '1';		
+	$form['v_orderstatus'] = array(
+    '#type' => 'hidden',
+    '#value' => $v_orderstatus,
+	);
+	
+	// 支付币种，0为人民币，1为美元
+  $v_moneytype = '0';						
+  $form['v_moneytype'] = array(
+    '#type' => 'hidden',
+    '#value' => $v_moneytype,
+	);
+	
+	//订单金额
+  $v_amount = $order->order_total;	
+	$form['v_amount'] = array(
+    '#type' => 'hidden',
+    '#value' => $v_amount,
+	);
+	
+	//从首信易到商户的返回地址
+	$base_path = 'http://'.$_SERVER['HTTP_HOST'].base_path();
+  $v_url = $base_path.'payease/return'; 			
+	$form['v_url'] = array(
+    '#type' => 'hidden',
+    '#value' => $v_url,
+	);
+	
+	// 收货人姓名，统一用商户编号的值代替
+  $v_rcvname	 =	$v_mid;			
+  $form['v_rcvname'] = array(
+    '#type' => 'hidden',
+    '#value' => $v_rcvname,
+	);
+	
+	// 订货人姓名，如果为空，这里使用商户编号的值代替
+	$v_ordername =	empty($order->delivery_first_name)?$v_mid:$order->delivery_first_name;		
+	$form['v_ordername'] = array(
+    '#type' => 'hidden',
+    '#value' => $v_ordername,
+	);
+	
+	// 收货人地址，如果为空，这里使用商户编号的值代替
+	$delivery_street =$order->delivery_street1.$order->delivery_street2;
+	$v_rcvaddr = empty($delivery_street)?$v_mid:$delivery_street;	 
+	$form['v_rcvaddr'] = array(
+    '#type' => 'hidden',
+    '#value' => $v_rcvaddr,
+	);
+	
+	// 收货人电话，如果为空，这里使用68475566代替，此值来源于首信易开发文档
+	$v_rcvtel	 =	empty($order->delivery_phone)?'68475566':$order->delivery_phone;			
+	$form['v_rcvtel'] = array(
+    '#type' => 'hidden',
+    '#value' => $v_rcvtel,
+	);
+	
+	// 收货人邮政编码，如果为空，这里使用100036代替，此值来源于首信易开发文档
+	$v_rcvpost = empty($order->delivery_postal_code)?'100036':$order->delivery_postal_code;										
+	$form['v_rcvpost'] = array(
+    '#type' => 'hidden',
+    '#value' => $v_rcvpost,
+	);
+	
+	//获取带有完整路径的MD5加密执行程序
+	$currentpath= dirname(__FILE__);
+  if(eregi('WIN',PHP_OS)){
+  	$default_md5program = str_replace("\\","\\\\",$currentpath)."\\\\MD5Win32";
+  }else{
+  	$default_md5program = $currentpath.'/MD5Linux';
+  }
+	$uc_payease_md5program =variable_get('uc_payease_md5program', $default_md5program);
+	// 校验源字符串
+  $md5src = $v_moneytype.$v_ymd.$v_amount.$v_rcvname.$v_oid.$v_mid.$v_url;	
+  //执行外部MD5加密程序
+	exec("$uc_payease_md5program $md5src $md5key",$v_md5info,$res);
+	//md5加密信息，来源于上面代码中的$v_md5info变量，注意这个变量是一个数组，我们取其第1个元素
+	$form['v_md5info'] = array(
+    '#type' => 'hidden',
+    '#value' => $v_md5info[0],
+	); 
+	
+	//提交到首信易提供的标准接口http://pay.beijing.com.cn/prs/user_payment.checkit
+	$form['#action'] = 'http://pay.beijing.com.cn/prs/user_payment.checkit';   
+	    
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' =>  variable_get('uc_payease_checkout_button', t('提交订单')),
+    
+  );
+
+  return $form;
+}
+
+/**
+ * Implementation of hook_payment_method().
+ */
+function uc_payease_payment_method() {
+	//uc_payease模块所在的路径
+  $path = base_path() . drupal_get_path('module', 'uc_payease');
+  //支付方法标题文本
+  $title = variable_get('uc_payease_method_title', t('首信易支付:'));
+  //首信易支付图标
+  $title .= '<br /><img src="'. $path .'/payease.gif" style="position: relative; left: 2.5em;">';
+  $methods[] = array(
+    'id' => 'payease',
+    'name' => t('首信易支付'),
+    'title' => $title,
+    'review' => t('首信易支付'),
+    'desc' => t('将页面重定向到首信易网站的收银台，使用首信易提供的支付服务付款.'),
+    'callback' => 'uc_payment_method_payease',
+    'weight' => 3,
+    'checkout' => TRUE,
+    'no_gateway' => TRUE,
+  );
+
+  return $methods;
+}
+
+
+// Adds Paysease settings to the payment method settings form.
+function uc_payment_method_payease($op, &$arg1) {
+  switch ($op) {
+    case 'cart-details':
+      return $details;
+
+    case 'cart-process':
+      $_SESSION['pay_method'] = $_POST['pay_method'];
+      return;
+
+    case 'settings':
+    	//首信易商家的商户编号设置
+      $form['uc_payease_seller'] = array(
+        '#type' => 'textfield',
+        '#title' => t('商户编号'),
+        '#description' => t('你的首信易商家服务中的商户编号.'),
+        '#default_value' => variable_get('uc_payease_seller', '8888'),
+        '#size' => 16,
+      );
+      //MD5加密密钥设置
+      $form['uc_payease_md5key'] = array(
+        '#type' => 'textfield',
+        '#title' => t('加密密钥'),
+        '#description' => t('商户和首信易之间约定的密钥.'),
+        '#default_value' => variable_get('uc_payease_md5key', 'test'),
+        '#size' => 16,
+      );
+      //获取当前模块的文件目录路径
+     	$currentpath= dirname(__FILE__);
+	    if(eregi('WIN',PHP_OS)){
+	    	//带有路径的MD5执行程序，WINDOWS下面，需要将\替换为\\
+	    	$default_md5program = str_replace("\\","\\\\",$currentpath)."\\\\MD5Win32";
+	    }else{
+	    	//Linux下带有路径的MD5执行程序
+	    	$default_md5program = $currentpath.'/MD5Linux';
+	    }
+      //带有路径的MD5执行程序设置
+      $form['uc_payease_md5program'] = array(
+        '#type' => 'textfield',
+        '#title' => t('MD5加密程序'),
+        '#description' => t('带有完整路径的MD5加密程序,Windows下通常为F:\\xampp\\MD5Win32,linux下面通常为/data/htdoc/MD5Linux,请确保该程序存在，并且可被执行.'),
+        '#default_value' => variable_get('uc_payease_md5program', $default_md5program),
+       // '#size' => 64,
+      );
+      //支付方法标题文本设置
+      $form['uc_payease_method_title'] = array(
+        '#type' => 'textfield',
+        '#title' => t('支付方法标题'),
+        '#default_value' => variable_get('uc_payease_method_title', t('使用首信易提供的支付服务付款:')),
+      );
+     	//Payease结算按钮文本设置
+      $form['uc_payease_checkout_button'] = array(
+        '#type' => 'textfield',
+        '#title' => t('订单检查页面提交按钮文本'),
+        '#description' => t('为订单检查页面的提交按钮,提供特定于首信易的文本.'),
+        '#default_value' => variable_get('uc_payease_checkout_button', t('提交订单')),
+      );
+      return $form;
+  }
+}

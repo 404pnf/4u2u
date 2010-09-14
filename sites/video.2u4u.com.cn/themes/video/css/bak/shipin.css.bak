@@ -1,0 +1,343 @@
+@charset "utf-8"; /* CSS Document */
+ 
+
+/* 阴影 ie不支持*/
+.shadow-right {
+-moz-border-radius:3px 3px 3px 3px;
+-moz-box-shadow:2px 2px 2px #999999;
+}
+/* 边框及颜色 */
+.detail-tip {
+background:none repeat scroll 0 0 #FFFFFF;
+border:1px solid #DDDDDD;
+padding:13px 13px 10px;
+position:absolute;
+width:300px;
+top:0px;
+left:110px;
+z-index:9999; 
+}
+/* 小三角 */
+.arrow-left {
+background:url("images/arrow_gray.gif") no-repeat scroll 0 0 transparent;
+height:9px;
+left:0;
+margin-left:-6px;
+position:absolute;
+top:30px;
+width:6px;
+z-index:9999; 
+}
+
+
+/* -------------------------------------视频开始啦 -------------------------------------*/
+/* + front page */
+/* 在css中隐藏，实现js中的.hide() ，防止在页面不加载js时出现页面混乱的问题*/
+/* .view-whx-shipin .views-field-field-shipin-neirong-value,
+.front .view-display-id-attachment_6 .views-field-field-shipin-neirong-value,
+.view-whx-shipin .attachment-after .view-display-id-attachment_4 .view-content,
+.view-whx-shipin .attachment-after .view-display-id-attachment_5 .view-content,
+.view-whx-shipin .attachment-after .view-display-id-attachment_6 .view-content
+{
+display:none;
+} */
+/* attachment-before */
+/* 整体外框 加边、两个附件的位置控制、即第二个附件（热门推荐）的两列排版、hover后的小tip边框及颜色*/
+.view-whx-shipin .attachment-before{
+border:1px dashed #DDDDDD;
+height:430px;
+}
+.view-whx-shipin .view-display-id-attachment_1  {
+float:left;
+display:inline; 
+width:320px;
+clear:none;
+margin:0 17px;
+}
+.view-whx-shipin .view-display-id-attachment_2 {
+float:left;
+display:inline; 
+width:240px;
+clear:none;
+}
+.view-whx-shipin .view-display-id-attachment_1  .views-field-title,.view-whx-shipin .view-display-id-attachment_2 .view-header p{
+margin:10px 0;
+font-weight:bold;
+font-size:1.2em;
+}
+
+/* 两行排列 */
+.view-whx-shipin .view-display-id-attachment_2 .views-row{
+vertical-align:top;
+width:200px;
+min-height:100px;
+padding:0 17px 10px 0px;
+line-height:16px;
+left:0;
+position:relative;
+top:0;
+float:right;
+z-index:10;
+}
+/* 首页3列排版 */
+.front .view-display-id-attachment_6 .views-row{
+padding:0 4px 15px 15px;
+* padding:0 2px 15px 3px;
+_ padding:0 2px 15px 3px;
+width:115px;
+* width:120px;
+_ width:120px;
+}
+/*小边框及颜色 */
+.view-whx-shipin .attachment-before .detail-tip{
+background:none repeat scroll 0 0 #FFFFFF;
+border:1px solid #D1D1D1;
+padding:3px 4px;
+width:120px;
+position:absolute;
+top:-1px;
+left:110px;
+z-index:99999; 
+}
+.front .view-display-id-attachment_6 .detail-tip{
+left:115px;
+}
+.view-whx-shipin .attachment-before .shadow-right{
+-moz-border-radius:0px 0px 0px 0px;
+-moz-box-shadow:0px 0px 0px #999999;
+}
+/* 保持附件的相对位置，clear:both让after不飘到before的位置 */
+.view-whx-shipin .attachment-after,.view-whx-shipin .attachment-before{
+position:relative; 
+display:block;
+clear:both;
+}
+
+/* attachment-after */
+/* 可点击的按钮 */
+/* 前面的标题：在真正的view首页内容中输出，以保证其位置在before的后面，after的前面*/
+.page-shipinwhx .view-whx-shipin .view-content .views-field-nothing h2{
+margin-top:30px;
+}
+/* 实现可按字宽度变化的小圆角按钮，对标签a和a span分别定义背景图，一个position为left top，另一个为right top */
+.view-whx-shipin .attachment-after .view-header a{
+position:absolute;
+top:-38px;
+left:100px;
+line-height:12px;
+margin:0 5px;
+line-height:26px;
+}
+.view-header a.on, .view-header a.on span{
+background:url("images/green_tab.gif") no-repeat scroll 0 0 transparent;
+color:#FFFFFF;
+display:block;
+background-position:left center;
+padding:0 0 0 8px;
+}
+.view-header a.on span{
+background-position:right center;
+padding:2px 8px 2px 0;
+}
+#attachment3 {
+left:100px;
+}
+#attachment4 {
+left:180px;
+}
+#attachment5 {
+left:260px;
+}
+#attachment6 {
+left:340px;
+}
+/* 内容的位置 绝对位置*/
+.view-whx-shipin .attachment-after .view-content{
+position:absolute;
+display:block;
+clear:both;
+margin-top:0px;
+z-index:1;
+width:600px;
+}
+/* 视频图片的大小占位 */
+.view-whx-shipin .attachment-after .views-field-field-shipin-cover-fid{
+float:left;
+margin-right:10px;
+display:inline;
+height:80px;
+width:100px;
+}
+/* 两列排版 */
+.view-whx-shipin .attachment-after .views-row{
+vertical-align:top;
+width:280px;
+height:110px;
+padding:5px 15px 5px 5px;
+position:relative;
+float:right; 
+display:inline;
+z-index:10;
+}
+/*hover css  边框及颜色 */
+.view-whx-shipin .attachment-after .detail-tip {
+background:none repeat scroll 0 0 #FFFFFF;
+border:1px solid #DDDDDD;
+padding:10px 13px;
+position:absolute;
+height:90px;
+top:0px;
+left:110px;
+z-index:9999; 
+width:460px;
+}
+
+/* 分类显示 mtag*/
+
+.page-taxonomy #content-area .views-row{
+clear:both;
+border-bottom:1px dashed #d1d1d1;
+padding:10px 0;
+height:100px;
+} 
+.page-taxonomy #content-area .views-field-field-shipin-cover-fid{
+padding:15px 30px 15px 0;
+display:inline;
+float:left;
+}
+.page-taxonomy #content-area .views-field-field-shipin-neirong-value{
+margin-left:130px;
+}
+/* 视频node页 */
+.node-type-shipin #content-area{
+font-size:13px;
+}
+.node-type-shipin  #shipin-tab_area {
+border:3px solid #32A442;
+clear:both;
+width:954px;
+}
+.node-type-shipin #shipin-tab_area #shipin_area {
+float:left;
+padding:20px 30px 0 30px;
+width:350px;
+}
+.node-type-shipin #shipin-tab_area #tab_area {
+float:left;
+padding:20px 20px 0 0;
+width:510px;
+}
+.node-type-shipin  #shipin-tab_area .shipin-panes {
+border:1px solid #cccccc;
+height:530px;
+padding:10px;
+overflow-y:scroll;
+}
+.node-type-shipin  .field-field-shipin-neirong .field-items {
+height:250px;
+padding:0 10px;
+overflow-y:scroll;
+}
+UL.shipin-tabs li{
+display:inline;
+background-image:url("images/shipinkt_tabbg.jpg");
+background-repeat:no-repeat; 
+font-size:14px; 
+width:97px; 
+height:27px; 
+line-height:27px; 
+padding:3px 30px 15px 20px; 
+}
+UL.shipin-tabs li a{ 
+color:#FFFFFF;
+}
+UL.shipin-tabs li.current{
+ background-image:url("images/shipinkt_tabbgcurrent.jpg"); 
+ }
+UL.shipin-tabs li.current a{
+  color:#000000;
+}
+/* end */
+
+
+/* --------------------------------导航 -----------------------*/
+ul#primary {
+ position: relative;
+ float: left;
+}
+ul#primary li{
+ display:block;
+ float:left;
+ height:53px;
+ line-height:40px;
+ font-size:14px;
+ font-weight:bold;
+ padding:0 12px;
+ z-index: 4; 
+}
+ul#primary li a{
+ display:block;
+ float:left;
+ height:53px;
+ line-height:40px;
+ 
+ color:#961F1F; 
+ position: relative;
+ z-index: 5;
+}
+ul#primary li a.active {
+ color:#FF9D4C;
+} 
+ul#primary li.blob{
+ position: absolute;
+ top: 0;
+ z-index: 1; 
+ background: url("fp_images/bg-6.gif") no-repeat scroll 0 -1px; 
+
+ padding:0 0 0 12px; 
+}
+ul#primary li.blob a{
+position: absolute;
+top: 0;
+z-index: 1; 
+background: url("fp_images/bg-6.gif") no-repeat scroll right -1px;
+display: block;
+cursor:default;
+} 
+ul#primary li a:hover {
+color:#ffffff;
+text-decoration:none;
+}
+
+
+/* ----------------header -----------------*/
+/* logo 左飘*/
+#logo-title {
+	height: 50px;
+	width: 160px;
+	float: left;
+	margin-top: 5px;
+}
+/* logo右侧的区域 */
+#header-region{
+float:right;
+width:800px;
+padding-top: 20px;
+}
+/* 具体内容 */
+#block-block-73{
+	float: right;
+/* 	height: 20px; */
+}
+/* 联系方式 */
+.head-tel {
+background:url("fp_images/tel.gif") no-repeat scroll left center transparent;
+color:#E9742E;
+font-weight:bold;
+margin-left:20px;
+padding-left:20px;
+}
+/* 用户登录以及用户名和积分的颜色设置 */
+.user_log,.user_log a,.user_log a:link,.user_log a:visited,.user_log a:hover {
+color:#9E254A;
+}

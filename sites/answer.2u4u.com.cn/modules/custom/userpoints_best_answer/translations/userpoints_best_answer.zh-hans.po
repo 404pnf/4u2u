@@ -1,0 +1,138 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  userpoints_best_answer.module: n/a
+#  userpoints_best_answer.info,v 1.0 2009/03/08 19:52:18 jianheng
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2009-03-10 22:54+0800\n"
+"PO-Revision-Date: 2009-03-10 23:09+0800\n"
+"Last-Translator: Jianheng Qiu <kinhunt@gmail.com>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+"X-Poedit-Language: Chinese\n"
+"X-Poedit-Country: CHINA\n"
+
+#: userpoints_best_answer.module:8
+msgid "User Point Best Answer Settings"
+msgstr "User Points 最佳答案模块设置"
+
+#: userpoints_best_answer.module:12
+msgid "Administer best answer settings."
+msgstr "管理最佳答案设置"
+
+#: userpoints_best_answer.module:15;118
+msgid "Best Answer"
+msgstr "最佳答案"
+
+#: userpoints_best_answer.module:35
+msgid "Question Node Type"
+msgstr "问题内容类型"
+
+#: userpoints_best_answer.module:39
+msgid "Enter the machine name of the question node type created with CCK."
+msgstr "输入问题内容类型的 CCK Machine Name"
+
+#: userpoints_best_answer.module:42
+msgid "Award Field Name"
+msgstr "奖励分数的 Field Name"
+
+#: userpoints_best_answer.module:46
+msgid "Enter the machine name of the userpoints within the Question Node Type."
+msgstr "输入问题内容类型的 Machine Name"
+
+#: userpoints_best_answer.module:49
+msgid "Answer Node Nid Field Name"
+msgstr "最佳答案Nid Field Name"
+
+#: userpoints_best_answer.module:53
+msgid "Enter the machine name of the field which holds the nid of the answer."
+msgstr "输入 field name"
+
+#: userpoints_best_answer.module:56
+msgid "Taxonomy ID of the userpoint category."
+msgstr "此模块使用的分类ID"
+
+#: userpoints_best_answer.module:60
+msgid "Enter the tid of the category that you want this module to use."
+msgstr "请输入userpoint的分类(tid)"
+
+#: userpoints_best_answer.module:62
+msgid "Save"
+msgstr "保存"
+
+#: userpoints_best_answer.module:85
+msgid "Incorrect node type."
+msgstr "内容类型错误"
+
+#: userpoints_best_answer.module:100
+msgid "Settings have been saved"
+msgstr "设置已保存"
+
+#: userpoints_best_answer.module:145
+msgid "You do not have enough user points."
+msgstr "你的剩余分数不足"
+
+#: userpoints_best_answer.module:205
+msgid "award"
+msgstr "奖励"
+
+#: userpoints_best_answer.module:225
+msgid "Question Closed."
+msgstr "问题已结束"
+
+#: userpoints_best_answer.module:234
+msgid "Questioner cannot award himself!"
+msgstr "提问人不能奖励自己"
+
+#: userpoints_best_answer.module:239
+msgid "Award"
+msgstr "奖励分数"
+
+#: userpoints_best_answer.module:240
+msgid "Is this the best answer to your question?"
+msgstr "这是你觉得的最佳答案吗？"
+
+#: userpoints_best_answer.module:244
+msgid "Question"
+msgstr "问题"
+
+#: userpoints_best_answer.module:248
+msgid "Answer"
+msgstr "回答"
+
+#: userpoints_best_answer.module:252
+msgid "Confirm"
+msgstr "确认"
+
+#: userpoints_best_answer.module:256
+msgid "Submit"
+msgstr "提交"
+
+#: userpoints_best_answer.module:266
+msgid "Please confirm your submission."
+msgstr "请确认"
+
+#: userpoints_best_answer.module:0
+msgid "userpoints_best_answer"
+msgstr "userpoints_best_answer"
+
+#: userpoints_best_answer.info:0
+msgid "User Points Best Answer"
+msgstr "User Points 最佳答案"
+
+#: userpoints_best_answer.info:0
+msgid "Users can ask questsions and assign userpoints to the best answer."
+msgstr "用户可以提问并设置分数奖励"
+
+#: userpoints_best_answer.info:0
+msgid "Userpoints"
+msgstr "Userpoints"
+

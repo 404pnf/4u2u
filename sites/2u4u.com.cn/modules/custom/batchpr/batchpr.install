@@ -1,0 +1,66 @@
+<?php
+// $Id: path_redirect.install,v 1.2.2.6.2.26 2009/12/01 05:40:09 davereid Exp $
+
+/**
+ * @file
+ * Install and uninstall schema and functions for the path_redirect module.
+ */
+
+/**
+ * Implement hook_schema().
+ */
+function batchpr_schema() {
+  $schema['pr_nid'] = array(
+    'description' => 'Stores relationship on redirects and node.',
+    'fields' => array(
+      'rid'  => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Unique path redirect ID.',
+      ),
+			'nid'  => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Unique node ID.',
+      ),
+    ),
+    'primary key' => array('rid','nid'),
+   
+  );
+	$schema['pr_tid'] = array(
+    'description' => 'Stores relationship on redirects and node.',
+    'fields' => array(
+      'rid'  => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Unique path redirect ID.',
+      ),
+			'tid'  => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Unique Term ID.',
+      ),
+    ),
+    'primary key' => array('rid','tid'),
+   
+  );
+
+  return $schema;
+}
+
+/**
+ * Implement hook_install().
+ */
+function batchpr_install() {
+  drupal_install_schema('batchpr');
+}
+
+/**
+ * Implement hook_uninstall().
+ */
+function batchpr_uninstall() {
+  // Remove tables.
+  drupal_uninstall_schema('batchpr');
+
+  // Remove variables.
+}

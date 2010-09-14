@@ -1,0 +1,20 @@
+name = 2u4u.main
+description = dependencies placeholder
+core = 6.x
+package = 2u4u
+version = 6.01
+dependencies[] = link
+dependencies[] = gift_points
+dependencies[] = userreg
+dependencies[] = kc_info
+dependencies[] = wordprofile
+dependencies[] = batchpr
+dependencies[] = client_login
+dependencies[] = ucenter
+dependencies[] = disney
+dependencies[] = userpoints
+dependencies[] = rules
+dependencies[] = text
+dependencies[] = fckeditor
+dependencies[] = imce
+

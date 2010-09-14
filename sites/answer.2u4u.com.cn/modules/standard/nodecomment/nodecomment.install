@@ -1,0 +1,90 @@
+<?php
+// $Id: nodecomment.install,v 1.1.2.4.2.3 2008/10/05 15:41:34 sirkitree Exp $
+
+/**
+ * @file
+ * Install file for nodecomment
+ */
+ 
+/**
+ * Implementation of hook_enable().
+ */
+function nodecomment_enable() {
+  $t = get_t();
+  // Disable comment.module since it is incompatible with nodecomment
+  $result = db_query("UPDATE {system} SET status = 0 WHERE type = 'module' AND name = 'comment' AND status = 1");
+  if (db_affected_rows()) {
+    drupal_set_message($t('Comment module has been deactivated -- it is incompatible with Node Comment module.'));
+  }
+}
+
+function nodecomment_install() {
+  $t = get_t();
+  drupal_set_message($t('Installing Node Comments.'));  
+  drupal_install_schema('nodecomment');
+  _nodecomment_install_type_create();
+}
+
+function _nodecomment_install_type_create() {
+  // During install profiles, node and user modules aren't yet loaded.
+  // Ensure they're loaded before calling node_get_types().
+  include_once './'. drupal_get_path('module', 'node') .'/node.module';
+  include_once './'. drupal_get_path('module', 'user') .'/user.module';
+  $types = node_get_types();
+  $types = array_change_key_case($types, CASE_LOWER);
+
+  if (!in_array('comment', array_keys($types))) {
+    // Create the comment content type.
+    $nodecomment_node_type = array(
+      'type' => 'comment',
+      'name' => t('Comment'),
+      'module' => 'node',
+      'description' => t('A comment for use with the nodecomment module.'),
+      'title_label' => t('Subject'),
+      'body_label' => t('Body'),
+      'custom' => TRUE,
+      'modified' => TRUE,
+      'locked' => FALSE,
+    );
+    $nodecomment_node_type = (object)_node_type_set_defaults($nodecomment_node_type);
+    node_type_save($nodecomment_node_type);
+
+    // Default to not promoted.
+    variable_set('node_options_comment', array('status'));
+    cache_clear_all();
+    system_modules();
+    menu_rebuild();
+    node_types_rebuild();
+  }
+}
+
+function nodecomment_schema() {
+  $schema['node_comments'] = array(
+    'fields' => array(
+      'cid'      => array('type' => 'int', 'not null' => TRUE, 'default' => 0, 'disp-width' => '11'),
+      'pid'      => array('type' => 'int', 'not null' => TRUE, 'default' => 0, 'disp-width' => '11'),
+      'nid'      => array('type' => 'int', 'not null' => TRUE, 'default' => 0, 'disp-width' => '11'),
+      'hostname' => array('type' => 'varchar', 'length' => '128', 'not null' => TRUE, 'default' => ''),
+      'thread'   => array('type' => 'varchar', 'length' => '255', 'not null' => TRUE),
+      'name'     => array('type' => 'varchar', 'length' => '60', 'not null' => FALSE),
+      'uid'      => array('type' => 'int', 'not null' => TRUE, 'default' => 0, 'disp-width' => '11'),
+      'mail'     => array('type' => 'varchar', 'length' => '64', 'not null' => FALSE),
+      'homepage' => array('type' => 'varchar', 'length' => '255', 'not null' => FALSE)
+    ),
+    'primary key' => array('cid'),
+    'indexes' => array(
+      'lid' => array('nid')),
+  );
+  return $schema;
+}
+
+function nodecomment_uninstall() {
+  drupal_uninstall_schema('nodecomment');
+}
+
+function nodecomment_update_6000() {
+  // adding uid to schema. this is needed to avoid the (not verified) that theme_user now implements
+  $ret = array();
+  db_add_field($ret, 'node_comments', 'uid', array('type' => 'int', 'not null' => TRUE, 'default' => 0, 'disp-width' => '11'));
+  return $ret;
+}

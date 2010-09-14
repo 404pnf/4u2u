@@ -1,0 +1,138 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ *  对于不用运送的产品,可以使用积分直接购买.
+ */
+
+
+/**
+ * Implementation of hook_menu().
+ */
+function quickbuy_menu() {
+	$items = array();
+
+  $items['quickbuy/checkout/complete'] = array(
+    'title' => '购买成功',
+    'description' => '已经成功地购买.',
+    'page callback' => 'quickbuy_checkout_complete',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+    'file' => 'quickbuy.pages.inc',
+  );
+ 
+  return $items;
+}
+
+function quickbuy_menu_alter(&$items){
+	unset($items['user/%user/view']);  
+	$items['cart/checkout']['page callback'] = 'quickbuy_checkout';
+	$items['cart/checkout']['file'] ='quickbuy.pages.inc';
+	$items['cart/checkout']['file path'] =drupal_get_path('module','quickbuy');
+
+}
+
+/**
+ * Implementation of hook_cart_pane().
+ */
+function quickbuy_cart_pane($items) {
+	global $user;
+	$first_node =  node_load($items[0]->nid);
+	$shippable = uc_cart_is_shippable();
+	if($first_node->moneyable != 1 && !$shippable && $user->uid){
+		$body ='<div align="right">'. drupal_get_form('quickbuy_points_ec_form') .'</div>';
+	}else{
+		$body = "";
+	}
+  $panes[] = array(
+    'id' => 'quickbuy_points_ec',
+    'title' => t('积分快速结算'),
+    'enabled' => FALSE,
+    'weight' => 1,
+    'body' => $body,
+  );
+
+  return $panes;
+}
+function quickbuy_points_ec_form(){
+	drupal_add_css(drupal_get_path('module', 'quickbuy') .'/quickbuy.css');
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => '积分快速结算',
+  );
+  return $form;
+}
+function quickbuy_points_ec_form_submit($form, &$form_state){
+	global $user;
+  $items = uc_cart_get_contents();
+  
+  if (!is_array($items) || count($items) == 0) {
+    drupal_set_message(t('You do not have any items in your shopping cart.'));
+    return;
+  }
+  
+	$subtotal = 0;
+  if (is_array($items) && count($items) > 0) {
+    foreach ($items as $item) {
+      $data = module_invoke($item->module, 'cart_display', $item);
+      if (!empty($data)) {
+        $subtotal += $data['#total'];
+      }
+    }
+   }
+  //获取用户当前积分
+  $user_points = userpoints_get_current_points($user->uid);
+  
+  //用户当前积分不足
+  if( $user_points <  $subtotal){
+  	drupal_set_message(t('您的积分不足,请及时充值'));
+  	drupal_goto('cart');
+  }
+	  
+	// 生成订单
+	 if (empty($_SESSION['cart_order'])) {
+	   $order = uc_order_new($user->uid);
+	   $_SESSION['cart_order'] = $order->order_id;
+	 }
+	  else {
+	   $order = new stdClass();
+	    $order->uid = $user->uid;
+	    $order->order_id = $_SESSION['cart_order'];
+	    $order->order_status = uc_order_state_default('in_checkout');
+	 }
+	 $order->products = $items;
+	 $order->order_total = $subtotal;
+	 uc_order_save($order);
+	 
+	// 扣除积分
+	$pointExch	= intval(variable_get(USERPOINTS_UC_PAYMENT, 1));
+	$points		= intval(((round($subtotal) * $pointExch) * (-1)));
+	$description	= 'User made a purchase and paid with points (Ubercart Order ' . $order->order_id . ')'; 
+  $params = array (
+		'tid' => variable_get(USERPOINTS_PAY_CATEGORY, NULL),
+		'uid' => $user->uid,
+		'points' => $points,
+		'operation' => 'delete',
+		'description' => $description,
+		'entity_id' => $order->order_id,
+		'entity_type' => 'Ubercart Payment',
+		'moderate' => variable_get(USERPOINTS_PAY_MODERATE, 0),
+	);
+	userpoints_userpointsapi($params);
+	
+	//完成订单
+	uc_payment_enter($order->order_id, 'points', $subtotal, $user->uid, NULL, $description);
+	db_query("insert into {uc_up_payment_log} (uid, oid, points) values(%d, %d, %d)",$user->uid, $order->order_id, $points);
+	uc_order_update_status($order->order_id, 'payment_received');
+	uc_order_update_status($order->order_id, 'completed');
+	
+	uc_cart_empty(uc_cart_get_id());
+	$_SESSION['do_complete'] = TRUE;
+	//drupal_goto('quickbuy/checkout/complete');
+	$form_state['redirect']  ='quickbuy/checkout/complete';
+	
+}
+
+
+

@@ -1,0 +1,36 @@
+<?php
+// $Id: nodehierarchy_views.install,v 1.1.4.2 2008/12/12 15:44:35 ronan Exp $
+
+// Create the database table on install (MySQL only for now)
+function nodehierarchy_views_install() {
+  drupal_install_schema('nodehierarchy_views');
+}
+
+function nodehierarchy_views_uninstall() {
+  drupal_uninstall_schema('nodehierarchy_views');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function nodehierarchy_views_schema() {
+  $schema['nodehierarchy_views'] = array(
+    'fields' => array(
+      'nid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('The {node}.nid whose children are being embedded.'),
+      ),
+      'nh_children_view' => array(
+        'type' => 'varchar',
+        'length' => '32',
+        'default' => '',
+        'not null' => TRUE,
+        'description' => t('The {views_view}.name of the embedded view.'),
+      ),
+    ),
+    'primary key' => array('nid'),
+  );
+  return $schema;
+}

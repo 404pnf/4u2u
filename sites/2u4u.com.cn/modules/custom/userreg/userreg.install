@@ -1,0 +1,49 @@
+<?php
+// $Id$
+/**
+ * Install the initial schema.
+ */
+function userreg_install() {
+  drupal_install_schema('userreg');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function userreg_uninstall() {
+  // Drop database schema.
+  drupal_uninstall_schema('userreg');
+}
+
+function userreg_schema() {
+  $schema['userreg'] = array(
+    'description' => 'Stores user reg source.',
+    'fields' => array(
+      'uid' => array(
+        'description' => 'Stores the user id to be notified (inviter).',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'source' => array(
+        'description' => 'Stores the code of the invitee.',
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+			'created' => array(
+        'description' => 'Stores the creation time of the user.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'unique keys' => array(
+      'uid_invitee' => array('uid', 'source'),
+    )
+  );
+
+  return $schema;
+}
+

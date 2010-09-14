@@ -1,0 +1,4 @@
+# AuthName "图书充值的统计信息，只有有权限的人员如销售部和技术人员可以查看"
+#AuthType Basic
+#AuthUserFile /var/www/passwd-file/.htpasswd
+#require valid-user 

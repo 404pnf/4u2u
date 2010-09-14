@@ -1,0 +1,4 @@
+name = Gift Points
+description = "Top up user points using gift code"
+package = 2u4u
+core = 6.x

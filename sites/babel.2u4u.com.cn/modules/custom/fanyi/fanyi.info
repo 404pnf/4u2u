@@ -1,0 +1,23 @@
+; $Id: project.info,v 1.5 2007/06/08 05:50:53 dries Exp $
+name = 翻译大赛
+description = 所有关于翻译大赛的操作都在此模块.
+version = VERSION
+core = 6.x
+
+dependencies[] = userpoints
+dependencies[] = nodecomment
+dependencies[] = nodehierarchy
+dependencies[] = nodehierarchy_views
+dependencies[] = nodevote
+dependencies[] = userreference
+dependencies[] = link
+dependencies[] = flag_actions
+dependencies[] = number
+dependencies[] = flag
+dependencies[] = text
+dependencies[] = hierarchical_select
+
+; Information added by drupal.org packaging script on 2008-08-14
+version = "6.4"
+project = "drupal"
+datestamp = "1218672610"

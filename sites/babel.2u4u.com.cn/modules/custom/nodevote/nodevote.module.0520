@@ -1,0 +1,732 @@
+<?php
+
+//$Id: nodevote.module,v 1.31.2.1 2008/10/15 16:52:12 kbahey Exp $
+
+// Copyright 2005 Khalid Baheyeldin http://2bits.com
+
+define('NODEVOTE_MIN_SCORE',               1);
+define('NODEVOTE_MAX_SCORE',               100);
+define('NODEVOTE_VOTE_DEFAULT',            0);
+define('NODEVOTE_TYPE',                    'nodevote_type_');
+define('NODEVOTE_PERM_VIEW',               'view nodevote');
+define('NODEVOTE_PERM_USE',                'use nodevote');
+define('NODEVOTE_VOTE_OWN_NODE',           'nodevote_vote_own_node');
+define('NODEVOTE_CHANGE_VOTE',             'nodevote_change_vote');
+define('NODEVOTE_RESULT_VOTED',            'nodevote_result_voted');
+define('NODEVOTE_RESULT_DISPLAY_PAGE',     'nodevote_result_display_page');
+define('NODEVOTE_RESULT_DISPLAY_TEASER',   'nodevote_result_display_teaser');
+define('NODEVOTE_DAILY_THRESHOLD',         'nodevote_daily_threshold');
+define('NODEVOTE_BLOCK_COUNT',             'nodevote_block_count');
+define('NODEVOTE_HIGHEST_BLOCK_THRESHOLD', 'nodevote_highest_block_threshold');
+define('NODEVOTE_USERPOINTS',              'nodevote_userpoints');
+
+function nodevote_help($path, $arg) {
+  $output = '';
+
+  switch ($path) {
+    case 'admin/settings/nodevote':
+      $output = t('This module provides the facility to vote on certain node types using several criteria.');
+      break;
+  }
+  return $output;
+}
+
+function nodevote_menu() {
+  $items = array();
+
+  $items['nodevote/%node/add'] = array(
+    'page callback' => 'nodevote_page',
+    'page arguments' => array(1),
+    'title' => t('Nodevote add'),
+    'access callback' => 'user_access',
+    'access arguments' => array(NODEVOTE_PERM_USE),
+    'type' => MENU_CALLBACK
+  );
+
+  $items['nodevote/%node'] = array(
+    'page callback' => 'nodevote_page',
+    'page arguments' => array(1),
+    'title' => t('Nodevote view'),
+    'access callback' => 'user_access',
+    'access arguments' => array(NODEVOTE_PERM_VIEW),
+    'type' => MENU_CALLBACK
+  );
+
+  $items['admin/settings/nodevote'] = array(
+    'title' => t('Nodevote'),
+    'description' => t('Change settings for voting on nodes.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('nodevote_admin_settings'),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM, // optional
+  );
+
+    $items['get_subcategory'] = array(
+        'page callback' => 'get_subcategory_js',
+        'access arguments' => array('access content'),
+        'type' => MENU_CALLBACK,
+    );
+
+   return $items;
+}
+
+function nodevote_perm() {
+  return array (NODEVOTE_PERM_VIEW, NODEVOTE_PERM_USE);
+}
+
+
+function nodevote_admin_settings() {
+  $set = 'types';
+  $form[$set] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Enable voting for these node types:'),
+  );
+
+  foreach(node_get_types() as $type => $name) {
+    $form[$set][NODEVOTE_TYPE . $type] = array(
+      '#type' => 'checkbox',
+      '#title' => $name->name,
+      '#return_value' => 1,
+      '#default_value' => variable_get(NODEVOTE_TYPE . $type, '0'),
+    );
+  }
+
+  $set = 'setting';
+  $form[$set] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Settings'),
+  );
+
+  $_display = array(
+    0 => t('Text'),
+    1 => t('Stars'),
+    2 => t('Both')
+  );
+  $form[$set][NODEVOTE_RESULT_DISPLAY_PAGE]= array(
+    '#type'          => 'radios',
+    '#title'         => t('Vote result display (page view)'),
+    '#default_value' => variable_get(NODEVOTE_RESULT_DISPLAY_PAGE, 0),
+    '#options'       =>  $_display,
+    '#description'   => t('Select which format the results of the vote will be displayed in when in node view.'));
+
+  $_display = array(
+    0 => t('Text'),
+    1 => t('Stars'),
+    2 => t('Both'),
+    3 => t('None'));
+  $form[$set][NODEVOTE_RESULT_DISPLAY_TEASER]= array(
+    '#type'          => 'radios',
+    '#title'         => t('Vote result display (teaser view)'),
+    '#default_value' => variable_get(NODEVOTE_RESULT_DISPLAY_TEASER, 0),
+    '#options'       =>  $_display,
+    '#description'   => t('Select which format the results of the vote will be displayed in when in teaser view.'));
+
+  $set='advance';
+  $form[$set] = array(
+    '#type'  => 'fieldset',
+    '#title' => t('Advanced Settings'),
+  );
+   $form[$set][NODEVOTE_RESULT_VOTED] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show vote results only if user has voted on node.'),
+    '#return_value' => 1,
+    '#default_value' => variable_get(NODEVOTE_RESULT_VOTED, 0),
+  );
+  $form[$set][NODEVOTE_CHANGE_VOTE] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Allow user to vote again.'),
+    '#return_value' => 1,
+    '#default_value' => variable_get(NODEVOTE_CHANGE_VOTE, 0),
+  );
+  $form[$set][NODEVOTE_VOTE_OWN_NODE] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Allow user to vote on his own node.'),
+    '#return_value' => 1,
+    '#default_value' => variable_get(NODEVOTE_VOTE_OWN_NODE, 0),
+  );
+  $form[$set][NODEVOTE_DAILY_THRESHOLD] = array(
+    '#type' => 'select',
+    '#title' => t('Daily threshold'),
+    '#options' => drupal_map_assoc(array(5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 100, 250)),
+    '#default_value' => variable_get(NODEVOTE_DAILY_THRESHOLD, 10),
+    '#description' => t('The maximum number of votes a user can cast in a 24 hour period.'),
+  );
+  $form[$set][NODEVOTE_BLOCK_COUNT] = array(
+    '#type' => 'select',
+    '#title' => t('Node per block'),
+    '#options' => drupal_map_assoc(array(3, 5, 7, 10, 15, 20, 25)),
+    '#default_value' => variable_get(NODEVOTE_BLOCK_COUNT, 3),
+    '#description' => t('Number of nodes to show in blocks.'),
+  );
+  $form[$set][NODEVOTE_HIGHEST_BLOCK_THRESHOLD] = array(
+    '#type' => 'select',
+    '#title' => t('Highest block vote threshold'),
+    '#options' => drupal_map_assoc(array(3, 5, 7, 10, 15, 20, 25)),
+    '#default_value' => variable_get(NODEVOTE_HIGHEST_BLOCK_THRESHOLD, 3),
+    '#description' => t('Nodes must have the given number of votes before they show in the highest block.'),
+  );
+
+foreach(user_roles() as $value){
+
+	$roels[$value] = $value;
+	
+}
+
+  $form['who_can_view'] = array(
+    '#type' => 'select',
+    '#title' => t('请选择哪个角色能查看结果'),
+    '#options' => $roels,
+    '#default_value' => variable_get('who_can_view', '技术人员'),
+  );
+
+  return system_settings_form($form);
+}
+
+/**
+ * Check if the current voter has cast his maximum daily votes.
+ * The user is allowed to vote if he did not exceed the threshold.
+ *
+ * @param $uid
+ *   The the ID of the voting user.
+ * @param $threshold
+ *   The maximum number votes allowed (per user) in a 24-hour period.
+ * @return
+ *   True if the user did not exceed the threshold.  False otherwise.
+ */
+function _nodevote_within_threshold($uid, $threshold) {
+  $number = db_result(db_query("SELECT count(uid) FROM {nodevote} WHERE uid = '%s' AND timestamp > '%d'", $uid, time() - 86400));
+  return ($number < $threshold ? TRUE : FALSE);
+}
+
+function nodevote_link($type, $node, $teaser = FALSE) {
+  if ($type == 'node' && $teaser) {
+    if (_nodevote_is_votable($node)) {
+      $links['nodevote_link'] = array(
+        'title' => t('Vote on it'),
+        'href'  => "node/$node->nid"
+        );
+    }
+  }
+  return $links;
+}
+
+function nodevote_user($op) {
+  global $user;
+
+  switch($op) {
+    case 'delete':
+      db_query('DELETE FROM {nodevote} WHERE uid = %d', $user->uid);
+      break;
+  }
+}
+
+function nodevote_block($op = 'list', $delta = 0, $edit = array()) {
+  $num = variable_get(NODEVOTE_BLOCK_COUNT, 3);
+  $threshold = variable_get(NODEVOTE_HIGHEST_BLOCK_THRESHOLD, 3);
+
+  $block_title = array();
+  $block_title[] = t('Most voted for nodes');
+  $block_title[] = t('Highest rated nodes');
+  $block_title[] = t('Most voting users');
+
+  switch ($op) {
+    case 'list':
+      $blocks[0]['info'] = $block_title[0];
+      $blocks[1]['info'] = $block_title[1];
+      $blocks[2]['info'] = $block_title[2];
+      return $blocks;
+
+    case 'view':
+      if (user_access(NODEVOTE_PERM_VIEW)) {
+        switch ($delta) {
+          case 0:
+            $title = $block_title[$delta];
+            $sql = 'SELECT n.nid, n.title, COUNT(*) AS num_votes
+              FROM {node} n, {nodevote} nv
+              WHERE n.nid = nv.nid
+              GROUP BY n.nid
+              ORDER BY num_votes DESC';
+            $content = node_title_list(db_query_range($sql, 0, $num));
+            break;
+
+          case 1:
+            $title = $block_title[$delta];
+            $sql = 'SELECT n.nid, n.title, AVG(vote) AS av_avg
+              FROM {node} n, {nodevote} nv
+              WHERE n.nid = nv.nid
+              GROUP BY n.nid
+              HAVING COUNT(*) >= %d
+              ORDER BY av_avg DESC';
+            $content = node_title_list(db_query_range($sql, $threshold, 0, $num));
+            break;
+
+          case 2:
+            $title = $block_title[$delta];
+            $result = db_query_range('SELECT nv.uid, u.name, COUNT(*) AS num_votes
+              FROM {nodevote} nv, {users} u
+              WHERE u.uid = nv.uid
+              GROUP BY nv.uid
+              ORDER BY num_votes DESC', 0, $num);
+            while ($account = db_fetch_object($result)) {
+              $items[] = $account;
+            }
+            $content = theme('user_list', $items);
+            break;
+        }
+
+        $block['subject'] = $title;
+        $block['content'] = $content;
+
+        return $block;
+      }
+  }
+}
+
+function nodevote_page($node) {
+  global $user;
+  $edit = $_POST;
+
+  $op  = arg(2);
+
+  switch($op) {
+    case 'add':
+      $vote = $edit['vote'];
+      if (_nodevote_validate_vote($vote)) {
+        if (_nodevote_user_voted($user->uid, $node->nid)){
+          $result = db_query("UPDATE {nodevote} SET  vote = %d WHERE  uid = %d AND nid = %d", $vote, $user->uid , $node->nid);
+        }
+        else {
+          // check to see if the user has voted too many times today
+          if(_nodevote_within_threshold($user->uid, variable_get(NODEVOTE_DAILY_THRESHOLD, 10))) {
+            // log the vote
+            $result = db_query("INSERT INTO {nodevote} VALUES (%d, %d, %d, %d)", $user->uid, $node->nid, $vote, time());
+            // do the userpoints dance
+            nodevote_do_userpoints();
+          }
+        else {
+          // if they've voted too many times today, show a message
+          $output = t("You can only vote %number times in 24 hours. Please try again later.", array('%number' => variable_get(NODEVOTE_DAILY_THRESHOLD, 10)));
+          drupal_set_message($output, 'error');
+        }
+        $o = l(t('Back to node'), 'node/' . $node->nid);
+        }
+        drupal_goto("node/" . $node->nid);
+      }
+      else {
+        drupal_set_message(t('You must select a valid vote score.'), 'error');
+      }
+      $o = l(t('Back to node'), 'node/' . $node->nid);
+      break;
+
+    case 'view':
+    default:
+      if (_nodevote_vote_is_visible($node)) {
+        $vote_data = _nodevote_get_vote_data($node->nid);
+        $o = theme('nodevote_display_vote', $vote_data);
+      }
+      break;
+    }
+
+    print theme('page', $o);
+}
+
+function nodevote_nodeapi(&$node, $op, $teaser, $page) {
+  global $user;
+  switch($op) {
+    case 'load':
+      if (variable_get(NODEVOTE_TYPE . $node->type, '0')) {
+        if (_nodevote_vote_is_visible($node)) {
+          $extra['nodevote']->vote_display = 1;
+        }
+        if (_nodevote_is_votable($node)) {
+          $extra['nodevote']->vote_do = 1;
+        }
+      }
+      return $extra;
+
+    case 'view':
+
+	if($node->field_fanyi_zhuangtai[0]['value'] == 3 || $node->field_bookcase_zhuangtai[0]['value'] == 3){
+
+
+      if (variable_get(NODEVOTE_TYPE . $node->type, 0)) {
+        if ($node->nodevote->vote_display) {
+          $vote_data = _nodevote_get_vote_data($node->nid, $page);
+          $node->content['nodevote_display'] = array(
+            '#value' => theme('nodevote_display_vote', $vote_data),
+            '#weight' => 10,
+          );
+        }
+      }
+
+      if ($page) {
+        if ($node->nodevote->vote_do) {
+          $vote = theme('nodevote_do_vote', $node);
+          $node->content['nodevote'] = array(
+            '#value' => $vote,
+			'#weight' => 15,
+          );
+        }
+      }
+	
+	} // 只有在开放评分的时候才显示此内容
+
+      break;
+
+    case 'alter':
+      if(!$page) {
+        if (variable_get(NODEVOTE_RESULT_DISPLAY_TEASER, 0) != 3) {
+          $data = _nodevote_get_vote_data($node->nid, $page);
+          $node->content['nodevote_result'] = array(
+            '#value' => theme('nodevote_display_vote', $vote_data),
+            '#weight' => 10,
+          );
+		    }
+      }
+      break;
+
+    case 'delete':
+      db_query('DELETE FROM {nodevote} WHERE nid = %d', $node->nid);
+      break;
+  }
+}
+
+function _nodevote_user_voted($uid, $nid) {
+  if (db_result(db_query('SELECT count(nid) FROM {nodevote} WHERE uid = %d AND nid = %d', $uid, $nid))) {
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
+}
+
+function _nodevote_get_vote_data($nid, $page = TRUE) {
+  $result = db_fetch_array(db_query('SELECT COUNT(*) AS votes, AVG(vote) AS score FROM {nodevote} WHERE nid = %d', $nid));
+
+  $score = $result['score'];
+  $votes = $result['votes'];
+
+  if ($page) {
+    $vote_display = variable_get(NODEVOTE_RESULT_DISPLAY_PAGE, 0);
+  }
+  else {
+    $vote_display = variable_get(NODEVOTE_RESULT_DISPLAY_TEASER, 0);
+  }
+
+  return array('score' => $score, 'votes' => $votes, 'vote_display' => $vote_display);
+}
+
+function theme_nodevote_display_vote($vote_data) {
+	
+  $score        = $vote_data['score'];
+  $votes        = $vote_data['votes'];
+  $vote_display = $vote_data['vote_display'];
+
+  switch($vote_display) {
+    case 1:
+      $result  = _nodevote_display_stars($votes, $score);
+      break;
+
+    case 2:
+      $result  = _nodevote_display_stars($votes, $score);
+      $result .= _nodevote_display_number($votes, $score);
+      break;
+
+    case 0:
+    default:
+      $result  = _nodevote_display_number($votes, $score);
+      break;
+  }
+
+  $output .= '<div id="nodevote result">';
+
+
+global $user;
+
+if(in_array(variable_get('who_can_view', '技术人员'),$user->roles)){
+
+  $output .= '<h3>' . t('该翻译目前投票结果 (管理员可见)') . '</h3>';
+  $output .= $result;
+
+}
+
+     $user_score = db_result(db_query("SELECT vote FROM {nodevote} WHERE uid = %d AND nid = %d" , $user->uid ,arg(1)));
+
+	 if($user_score){
+			$output .= '<h3>' . t('您的投票结果') . '</h3>';
+		 $output .= '<br />您的投票分数:  <span style="color:red;">'.$user_score.'</span> 分.谢谢您的投票!';
+	 }
+
+
+  $output .= '</div>';
+
+  return $output;
+}
+
+function _nodevote_display_number($votes, $score) {
+  $output = '';
+  $output .= '<br/>平得分: <span style="color:red;">'.number_format($score).'</span> 分, 投票人数: <span style="color:red;">'.$votes.'</span> 次<br /><br />';
+  return $output;
+}
+
+function _nodevote_display_stars($votes, $score) {
+  global $base_path;
+  for ($i = 1; $i< NODEVOTE_MAX_SCORE+1; $i++) {
+    if ($score >= $i) {
+      $val = 'on';
+      $alt = '+';
+    }
+    else {
+      $val = 'off';
+      $alt = '-';
+    }
+    $stars .='<img src="' . $base_path . drupal_get_path('module', 'nodevote') . '/star_' . $val . '.png" alt="' . $alt . '" />';
+  };
+
+  return $stars;
+}
+
+function _nodevote_is_votable($node) {
+  global $user;
+
+  $ret = FALSE;
+
+  // Is user logged in?
+  if ($user->uid) {
+    // Is node type votable?
+    if (variable_get(NODEVOTE_TYPE . $node->type, 0)) {
+      // Does the user has permission to vote?
+      if (user_access(NODEVOTE_PERM_USE)) {
+        // Is the node posted by someone else?
+        if (($node->uid != $user->uid) || (variable_get(NODEVOTE_VOTE_OWN_NODE, 0))) {
+          // Did the user already vote on this node?
+          if ((!_nodevote_user_voted($user->uid, $node->nid)) || (variable_get(NODEVOTE_CHANGE_VOTE, 0))){
+            $ret = TRUE;
+          }
+        }
+      }
+    }
+  }
+  return $ret;
+}
+
+function _nodevote_vote_is_visible($node) {
+  global $user;
+  $ret = FALSE;
+  if (user_access(NODEVOTE_PERM_VIEW)) {
+    if (!variable_get(NODEVOTE_RESULT_VOTED, 0)) {
+      $ret = TRUE;
+    }
+    else {
+      if (_nodevote_user_voted($user->uid, $node->nid)) {
+        $ret = TRUE;
+      }
+    }
+  }
+  return $ret;
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function nodevote_theme() {
+  return array(
+    'nodevote_display_vote' => array(
+      'arguments' => array('vote_data' => NULL),
+    ),
+    'nodevote_do_vote' => array(
+      'arguments' => array('node' => NULL),
+    ),
+  );
+}
+
+function theme_nodevote_do_vote($node) {
+  return drupal_get_form('nodevote_rate_form', $node);
+}
+
+function nodevote_rate_form($form_state, $node) {
+  global $user;
+
+ drupal_add_css(drupal_get_path("module","duhougan")."/duhougan.css");
+
+$degree = array('you'=>'优','liang' =>'良','zhong'=>'中','cha'=>'差');
+
+  $score = array();
+  $r = 0;
+  $score[] = t('Select');
+  if (_nodevote_user_voted($user->uid, $node->nid)){
+     $r = db_result(db_query("SELECT vote FROM {nodevote} WHERE uid = %d AND nid = %d" , $user->uid ,$node->nid));
+     $score[] =$r;
+  }
+
+  for($j=NODEVOTE_MIN_SCORE; $j<NODEVOTE_MAX_SCORE+1; $j++) {
+    $score[$j] = $j;
+  }
+
+
+  $set='rate';
+  $form[$set] = array(
+    '#type'   => 'fieldset',
+    '#title'  => '投票打分',
+    '#prefix' => '<div id="nodevote-vote">',
+    '#suffix' => '</div>',
+	 '#weight' => 20,
+   );
+
+  $form[$set]['degree'] = array(
+    '#type' => 'select',
+    '#title' => t('请选择等级'),
+    '#default_value' => 'you',
+    '#options' => $degree,
+	 '#prefix' => '<div id="select-dengji">',
+     '#suffix' => '</div>',
+	 '#ahah' => array(
+            'path' => 'get_subcategory',
+            'wrapper' => 'sub_category_wapper',
+        ),
+  );
+
+	for($i=100;$i>90;$i--){
+		$default_options[$i] = $i;
+	}
+
+  $form[$set]['vote'] = array(
+    '#type' => 'select',
+    '#title' => '分数',
+    '#default_value' => 100,
+    '#options' => $default_options,
+	 '#prefix' => '<div id="sub_category_wapper">',
+     '#suffix' => '</div>',
+  );
+
+  $form[$set]['button'] = array(
+    '#type'  => 'submit',
+	 '#prefix' => '<div id="pingfen-submit">',
+     '#suffix' => '</div>',
+    '#value' => '提交',
+  );
+
+  $form['#method'] = 'post';
+  $form['#action'] = url('nodevote/' . $node->nid . '/add');
+  $form['#attributes'] = array('class' => 'nodevote-form');
+
+  return $form;
+}
+
+function _nodevote_validate_vote($vote) {
+
+  if (!is_numeric($vote)) {
+    return FALSE;
+  }
+
+  if ($vote >= NODEVOTE_MIN_SCORE && $vote <= NODEVOTE_MAX_SCORE) {
+    return TRUE;
+  }
+
+  return FALSE;
+}
+
+
+function get_subcategory_js(){
+
+	 $vid = $_POST['degree'];
+
+	   switch ($vid) {
+			case 'you':
+
+				for($i=100;$i>=90;$i--){
+					$option[$i] = $i;
+				}
+			break;
+
+		   case 'liang':
+			   for($i=89;$i>=76;$i--){
+					$option[$i] = $i;
+				}
+			break;
+
+		   case 'zhong':
+			   for($i=75;$i>=66;$i--){
+					$option[$i] = $i;
+				}
+			break;
+		   case 'cha':
+			   for($i=65;$i>=50;$i--){
+					$option[$i] = $i;
+				}
+			break;
+		 default:
+			 for($i=60;$i>=0;$i--){
+					$option[$i] = $i;
+				}
+	   }
+
+    $form['rate']['vote'] = array(
+        '#type' => 'select',
+        '#title' => '分数',
+        '#prefix' => '<div id="sub_category_wapper">',
+        '#suffix' => '</div>',
+        '#options' => $option,
+    );
+
+  $output .= ahah_render($form, 'vote');
+ 
+  print drupal_to_js(array('data' => $output, 'status' => true));
+
+  exit();
+ 
+}
+
+
+function ahah_render($fields, $name) {
+
+  $form_state = array('submitted' => FALSE);
+  $form_build_id = $_POST['form_build_id'];
+  $form = form_get_cache($form_build_id, $form_state);
+  $form[$name] = $fields;
+  form_set_cache($form_build_id, $form, $form_state);
+  $form += array(
+    '#post' => $_POST,
+    '#programmed' => FALSE,
+  );
+  // Rebuild the form.
+  $form = form_builder($_POST['form_id'], $form, $form_state);
+
+  // Render the new output.
+  $new_form = $form[$name];
+  return drupal_render($new_form);
+
+}
+
+function nodevote_userpoints($op, $points = 0, $uid = 0, $event = '') {
+  switch($op) {
+    case 'setting':
+      $group = 'nodevote';
+      $form[$group] = array(
+        '#type'        => 'fieldset',
+        '#collapsible' => TRUE,
+        '#collapsed'   => TRUE,
+        '#title'       => t('!Points for nodevote', userpoints_translation()),
+      );
+
+      $form[$group][NODEVOTE_USERPOINTS] = array(
+        '#type'          => 'textfield',
+        '#title'         => t('!Points for voting using nodevote', userpoints_translation()),
+        '#default_value' => variable_get(NODEVOTE_USERPOINTS, 0),
+        '#size'          => 5,
+        '#maxlength'     => 5,
+      );
+    return $form;
+  }
+}
+
+function nodevote_do_userpoints() {
+  global $user;
+
+  if (module_exists('userpoints')) {
+    $points = variable_get(NODEVOTE_USERPOINTS, 0);
+    userpoints_userpointsapi('points', $points, $user->uid, 'nodevote');
+  }
+}
+

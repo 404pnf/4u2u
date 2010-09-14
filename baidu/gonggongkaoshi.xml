@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="gbk"?>
+<!-- XML文档需以gbk方式编码；除content1、link外，所有标签为必有字段-->
+
+<DOCUMENT>
+<!--需要大写，标记整个xml文件的开始和结束-->
+	
+<item>
+        <key>公共英语等级考试</key>
+        <display>
+		<url><![CDATA[http://2u4u.com.cn/node/61424]]></url>
+		<title>2010年全国公共英语等级考试时间一览表</title>
+		<showurl><![CDATA[2u4u.com.com.cn]]></showurl>
+		<pagesize></pagesize>
+		<date>2010-07-01</date>
+		<form col0="等级" col0link=""  col1="一级" col1link="" col2="二级" col2link="" col3="三级" col3link="" col4="四级" col4link="" col5="五级" col5link=""/>
+		<form col0="上半年考试时间" col0link=""  col1="PETS-1B 3月20-21日" col1link="" col2="3月20-21日" col2link="" col3="3月20-21日" col3link="" col4="无" col4link="" col5="6月19-20日" col5link="" />
+		<form col0="上半年考试时间" col0link=""  col1="PETS-1B 3月20-21日" col1link="" col2="3月20-21日" col2link="" col3="3月20-21日" col3link="" col4="无" col4link="" col5="6月19-20日" col5link="" />
+		<form col0="下半年考试时间" col0link=""  col1="PETS-1 9月11-12日" col1link="" col2="9月11-12日" col2link="" col3="9月11-12日" col3link="" col4="9月11-12日" col4link="" col5="12月18-19日" col5link=""/>
+		<form col0="笔试时间" col0link=""  col1="9:00-10:30" col1link="" col2="9:00-11:00" col2link="" col3="9:00-11:00" col3link="" col4="9:00-11:20" col4link="" col5="上午" col5link="" />
+		<form col0="口试时间" col0link=""  col1="8分钟" col1link="" col2="10分钟" col2link="" col3="口试10分钟" col3link="" col4="口试12分钟" col4link="" col5="下午口试" col5link="" />
+		<link linkurl="http://2u4u.com.cn/"  linkcontent="更多" />
+	</display>
+</item>
+</DOCUMENT>

@@ -1,0 +1,131 @@
+/*.view-content .views-field-field-yuedu-cover-fid {
+padding:5px 20px 0px 20px;
+float:left;
+height:180px;
+}
+
+.attachment .view-content .views-field-field-yuedu-cover-fid {
+float:none;
+}
+
+.attachment .views-view-grid td{
+width:100px;
+vertical-align: top;
+margin:0 10px;
+}
+
+.attachment .views-view-grid tr{
+height:200px;
+}
+.attachment .views-view-grid tr .views-field-field-yuedu-cover-fid {
+height:160px;
+vertical-align:top;
+}
+
+*/
+/* hover css document */
+
+
+/* body.page-yueduwhx div.views-row{
+position:relative;
+width:150px;
+float:left;
+opacity:0.99; 
+}
+body.page-yueduwhx div.views-field-field-yuedu-summary-value{
+position:absolute;
+display:none;
+top:15px;
+left:150px;
+width:300px;
+z-index:9999;
+}
+body.page-yueduwhx div.hover div.views-field-field-yuedu-summary-value{
+display:block;
+} */
+
+
+/* 新书快递 */
+.view-whx-yuedu  .view-display-id-attachment_5 .views-field-field-yuedu-cover-fid{
+float:left;
+margin-right:18px;
+}
+.view-whx-yuedu  .view-display-id-attachment_5 .views-field-field-yuedu-summary-value{
+clear:left;
+}
+.view-whx-yuedu  .view-display-id-attachment_5 td{
+padding:5px 10px 8px 3px;
+border-bottom:1px dotted #d1d1d1;
+vertical-align:top;
+}
+
+
+
+/* hover css */
+
+/* ie中 z-index在拥有position:relative的祖先元素中必须声明z-index其子元素才有可能通过z-index大于祖先元素而设置相对位置层次。
+但是当祖先元素中同时有float:left/right时，加上z-index也不能修正ie的z-index的bug。
+因为float:left属性使紧随其后的元素层次高于前边的元素，所以我改成float:right，这样最后一个元素（view生成的元素排行）会放到第一位（页面上的显示位置），它的层次高于其他元素，这样他的子元素就会覆盖别的父元素。
+*/
+.view-whx-yuedu  .view-display-id-attachment_4 .item-list,
+.view-whx-yuedu  .view-display-id-attachment_1 .item-list{
+position:relative; 
+width:100px;
+float:right;
+margin-right:15px;
+}
+.view-whx-yuedu  .view-display-id-attachment_4  .views-row,
+.view-whx-yuedu  .view-display-id-attachment_1  .views-row{
+position:absolute;
+display:none;
+}
+/* .view-whx-yuedu  .view-display-id-attachment_4 div.hover .views-row,
+.view-whx-yuedu  .view-display-id-attachment_1 div.hover .views-row{
+display:block;
+z-index:9999;
+top:15px;
+left:120px;
+width:300px;
+z-index:9999;
+}  */
+
+/* 阴影 ie不支持*/
+.shadow-right {
+-moz-border-radius:3px 3px 3px 3px;
+-moz-box-shadow:2px 2px 2px #999999;
+}
+/* 边框及颜色 */
+.detail-tip {
+background:none repeat scroll 0 0 #FFFFFF;
+border:1px solid #DDDDDD;
+padding:13px 13px 10px;
+position:absolute;
+width:300px;
+top:15px;
+left:110px;
+ z-index:9999; 
+}
+/* 小三角 */
+.arrow-left {
+background:url("images/arrow_gray.gif") no-repeat scroll 0 0 transparent;
+height:9px;
+left:0;
+margin-left:-6px;
+position:absolute;
+top:30px;
+width:6px;
+z-index:9999; 
+}
+
+
+/* 小组 开始*/
+
+.page-xiaozuwhx .view-xiaozu-whx .view-content{
+margin:24px 0;
+}
+
+/* term global */
+
+.taxonomy{
+float:right;
+}

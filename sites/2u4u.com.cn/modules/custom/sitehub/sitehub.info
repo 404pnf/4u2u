@@ -1,0 +1,9 @@
+name = Site Hub
+description = Share users and single singn on between sites in the hub
+core = 6.x
+package = 2u4u
+version = 6.x-1
+dependencies[] = services
+dependencies[] = user_service
+dependencies[] = system_service
+dependencies[] = xmlrpc_server

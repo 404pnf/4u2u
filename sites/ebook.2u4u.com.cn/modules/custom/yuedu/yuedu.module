@@ -1,0 +1,148 @@
+<?php
+
+function yuedu_menu() {
+  $items = array ();
+  $items ['yuedu/doc'] = array (
+    'page callback' => 'yuedu_transfer_page', 
+		'access callback' => true, 
+		'type' => MENU_CALLBACK, 
+		'file' => 'yuedu.pages.inc',
+  );
+  $items ['yuedu/fullscreen'] = array (
+    'page callback' => 'yuedu_fullscreen',
+		'access callback' => true,
+		'type' => MENU_CALLBACK, 
+		'file' => 'yuedu.pages.inc',
+  );
+  $items ['admin/settings/yuedu/import'] = array (
+    'title' => 'Ebook Bulk Import',
+		'page callback' => 'yuedu_import',
+		'access callback' => true,
+		'file' => 'yuedu.admin.inc',
+  );
+  $items['yuedu/buy']= array (
+    'page callback' => 'yuedu_buy_access',
+		'access callback' => true,
+		'type' => MENU_CALLBACK,
+		'file' => 'yuedu.pages.inc',
+  );
+  return $items;
+}
+
+/*
+ * hook_file_delete
+ */
+function yuedu_file_delete($file) {
+  $nid = $file->delete_nid;
+  if ($nid > 0) {
+    $swfDir = file_directory_path() . '/pdf/swf/' . $nid;
+    delete_directory($swfDir);
+  }
+}
+
+/*
+ * Node hook
+ */
+function yuedu_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  if ($node->type == 'ebook') {
+    switch ($op) {
+      case 'presave':
+        if (isset($node->field_yuedu_pdf)) {
+          //convert_pdf($node);
+          $node->field_yuedu_player [0] ['format'] = 2;
+        }
+        break;
+      case 'insert':
+        //if (isset($node->field_yuedu_pdf)) {
+          //convert_pdf($node);
+          //$node->field_yuedu_player [0] ['format'] = 2;
+          //node_save($node);
+        //}
+         break;
+      case 'view':
+        $mpath = drupal_get_path('module', 'yuedu');
+        drupal_add_js ( $mpath . '/browserScroll.js' );
+if($node->field_yuedu_player [0] ['value']==null){
+  $file = $node->field_yuedu_pdf [0];
+  $path_parts = pathinfo($file ['filepath']);
+  $filename = $path_parts ['filename'];
+  $fileext = $path_parts ['extension'];
+  $swfDir = file_directory_path() . '/pdf/swf/' . $node->nid;
+ 
+$domain = $_SERVER ['SERVER_NAME'];
+  $swfUrl = "http://$domain/sites/$domain/files/Yuedu.swf";
+  $number = count(scandir($swfDir)) - 2;
+  $contentUrl = "http://$domain/yuedu/doc/" . $node->nid . '/';
+  $node->field_yuedu_player [0] ['value'] = swf($swfUrl, array (
+    'params' => array (
+    'height' => '700', 'width' => '100%', 'wmode' => 'window', 'allowscriptaccess' => 'samedomain', 'wmode' => 'transparent'
+  ), 'flashvars' => array (
+    'num' => $number - 1, 'url' => $contentUrl, 'name' => $path_parts ['filename'], 'nid' => $node->nid
+  )
+  ));
+
+  $preview =(int)$number*0.4;
+  if($preview <= 20){
+        $preview = 20;
+  }
+  $node->field_yuedu_preview[0]['value'] = $preview;
+  $cover = $node->field_yuedu_cover;
+node_save($node); 
+}
+      break;
+    }
+  }
+}
+
+function delete_directory($dirname) {
+  if (is_dir($dirname)) $dir_handle = opendir($dirname);
+  if (! $dir_handle) return false;
+  while ($file = readdir($dir_handle)) {
+    if ($file != "." && $file != "..") {
+      if (! is_dir($dirname . "/" . $file)) unlink($dirname . "/" . $file);
+      else
+        delete_directory($dirname . '/' . $file);
+    }
+  }
+  closedir($dir_handle);
+  rmdir($dirname);
+  return true;
+}
+
+
+function yuedu_check_access($nid){
+	global $user;
+
+	foreach($user->roles as $role){
+		if($role == "频道管理员" || $role == "频道编辑" || $role == "包月用户"|| $role == "读书包月用户"  ){
+			return true;
+		}
+	}
+	//Anoym user
+	if($user->uid == null){
+		return false;
+	}
+	
+	$node = node_load($nid);
+	$price = $node->field_yuedu_pricebypoints[0]['value'];
+	
+	if($price){
+	 $sql = "select * from {yuedu_transaction} where nid=%d AND uid=%d";
+     $transaction = db_fetch_object(db_query($sql, $nid,$user->uid));
+     if($transaction!=null)
+     {
+     	
+     	return true;
+     }else
+     {
+     	return false;
+     }
+	}
+	else
+	{
+		return true;
+	}
+}
+
+
+

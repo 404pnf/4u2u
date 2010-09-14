@@ -1,0 +1,86 @@
+/* $Id: bullets.css,v 1.3.4.1 2008/12/07 18:09:24 pasqualle Exp $ */
+
+div.tabs{
+  clear:both;
+}
+ul.primary{
+  font-size:11px;
+  list-style: none;
+  border:none;
+  margin:0;
+}
+ul.primary li{
+  float: left;
+  height:20px;
+  margin:0 5px;
+  padding: 0 0 0 10px;
+  background:transparent url(images/bullets.png) no-repeat 0 -80px;
+}
+ul.primary li a{
+  margin: 0;
+  display:block;
+  padding:0px 17px 0px 7px;
+  text-decoration:none;
+  color: #FFF !important;
+  background:transparent url(images/bullets.png) no-repeat right -100px ;
+  border:none;
+  line-height:170%;
+}
+ul.primary li:hover a{
+  background-position: right -60px ;
+  background-color:transparent;
+}
+ul.primary li:hover{
+  background-position: 0 -40px;
+}
+ul.primary li.active a,
+ul.primary li.active a:hover{
+  background-color:transparent;
+  color: #FFF !important;
+  background-position:right -20px;
+  border:none;
+}
+ul.primary li.active{
+  background-position: 0 0;
+}
+
+ul.secondary 
+{
+	margin:0;
+	padding:0;
+	border:none;
+	
+}
+ul.secondary li{
+  border:none;
+  float: left;
+  height:20px;
+  margin:0 5px;
+  padding: 0 0 0 10px;
+  background:transparent url(images/bullets.png) no-repeat 0 -80px;
+}
+ul.secondary li a{
+  margin: 0;
+  display:block;
+  padding:0px 17px 0px 7px;
+  text-decoration:none;
+  color: #FFF !important;
+  background:transparent url(images/bullets.png) no-repeat right -100px ;
+  border:none;
+  line-height:170%;
+}
+ul.secondary li:hover a{
+  background-position: right -60px ;
+}
+ul.secondary li:hover{
+  background-position: 0 -40px;
+}
+ul.secondary li.active a,
+ul.secondary li.active a:hover{
+  color: #FFF !important;
+  background-position:right -20px;
+  border:none;
+}
+ul.secondary li.active{
+  background-position: 0 0;
+}

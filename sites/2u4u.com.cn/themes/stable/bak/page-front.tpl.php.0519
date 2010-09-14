@@ -1,0 +1,331 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print $language->language ?>" lang="<?php print $language->language ?>" dir="<?php print $language->dir ?>">
+
+  <head>
+    <title><?php print $head_title; ?></title>
+    <?php print $head; ?>
+    <?php print $styles; ?>    
+	<link href="/sites/all/modules/views.6.x.2.8/css/views.css?2" media="all" rel="stylesheet" type="text/css">
+    <!--[if lte IE 6]><style type="text/css" media="all">@import "<?php print $base_path . path_to_theme() ?>/css/ie6.css";</style><![endif]-->
+    <!--[if IE 7]><style type="text/css" media="all">@import "<?php print $base_path . path_to_theme() ?>/css/ie7.css";</style><![endif]-->
+  </head>
+
+  <body class="<?php print $body_classes; ?>">
+    
+    <div id="skip"><a href="#content">Skip to Content</a> <a href="#navigation">Skip to Navigation</a></div>  
+    <div id="page">
+
+    <!-- ______________________ HEADER _______________________ -->
+
+    <div id="header">
+
+      <div id="logo-title">
+	
+        <?php if (!empty($logo)): ?>
+          <a href="<?php print $front_page; ?>" title="<?php print t('Home'); ?>" rel="home" id="logo">
+            <img src="<?php print $logo; ?>" alt="<?php print t('Home'); ?>"/>
+          </a>
+        <?php endif; ?>
+
+        <div id="name-and-slogan">
+          <?php if (!empty($site_name)): ?>
+            <h1 id="site-name">
+              <a href="<?php print $front_page ?>" title="<?php print t('Home'); ?>" rel="home"><span><?php print $site_name; ?></span></a>
+            </h1>
+          <?php endif; ?>
+          <?php if (!empty($site_slogan)): ?>
+            <div id="site-slogan"><?php print $site_slogan; ?></div>
+          <?php endif; ?>
+        </div> <!-- /name-and-slogan -->
+
+      </div> <!-- /logo-title -->
+
+      <?php if ($header): ?>
+        <div id="header-region">
+          <?php print $header; ?>
+        </div>
+      <?php endif; ?>
+
+      <?php print $search_box; ?>
+
+    </div> <!-- /header -->
+
+    <!-- ______________________ MAIN _______________________ -->
+
+    <div id="main" class="clearfix">
+    
+      <div id="content">
+        <div id="content-inner" class="inner column center">
+
+          <?php if ($messages || $help ): ?>
+            <div id="content-header">
+			
+              <?php print $messages; ?>
+
+              <?php print $help; ?> 
+
+            </div> <!-- /#content-header -->
+          <?php endif; ?>
+		  
+		  <!--我们的内容 start-->
+		  <div id="font-content-area" class="content-area">
+		  
+	<div id="main_top" class="clearfix"> 
+	
+		<div id="user_login_chzh_zhx">
+		  <div id= "user_unlogin" class="user_login">
+				<?php $block_user_login = module_invoke('user', 'block', 'view', 0); ?>
+				<h2><?php print $block_user_login['subject']; ?></h2>
+				<?php print $block_user_login['content']; ?>
+		  </div>
+		  
+		  <div id= "user_logined" class="user_login">
+				<?php $block_user_login = module_invoke('block', 'block', 'view', 44); ?>
+				<h2><?php print $block_user_login['subject']; ?></h2>
+				<?php print $block_user_login['content']; ?>
+		  </div>
+		  
+		  <div id= "chongzhi">
+		  	<?php $block_user_login = module_invoke('gift_points', 'block', 'view', 0); ?>
+				<h2><?php print $block_user_login['subject']; ?></h2>
+				<?php print $block_user_login['content']; ?>
+		  </div>
+		  
+		  <div id= "yonghuzhongxin">
+				<?php $block_user_center= module_invoke('block', 'block', 'view', 70); ?>
+				<h2><?php print $block_user_center['subject']; ?></h2>
+				<?php print $block_user_center['content']; ?>
+		  </div>
+		</div> 
+		
+		<div id="huandeng_jifen">
+			<div id= "huandengpian" class="clearfix">
+				<? print views_embed_view('whx_frontpage', $display_id = 'attachment_10');?>	
+			</div>
+		
+			
+			<div id= "jifenhuanli">
+				<h1>预留给悠游“积分换礼的图”</h1>
+			</div>
+		</div>
+		
+
+
+
+		
+		<div id="search_tuijian">  
+			<div id= "block_search">
+				<?php $block_search = module_invoke('search', 'block', 'view', 0); ?>
+				<?php print $block_search['content']; ?>
+			</div>
+			<div id= "rediantuijian" class="clearfix">
+				<? print views_embed_view('whx_frontpage', $display_id = 'attachment_11');?>				
+			</div>
+		</div> 
+	</div>
+	
+		  <div id= "view_yuedu" class=" font_tonglan   clearfix">
+			<div id="yuedu_title" class="title"><h2>电子图书馆</h2></div>
+			<div id="yuedu_left" class="left">
+				<div id="yuedu_hover">
+					<? print views_embed_view('whx_frontpage', $display_id = 'attachment_4');?>
+					<? print views_embed_view('whx_frontpage', $display_id = 'attachment_1');?>
+					<? print views_embed_view('whx_frontpage', $display_id = 'attachment_5');?>
+				</div>
+				<div id="yuedu_xinshu">
+					<? print views_embed_view('whx_frontpage', $display_id = 'attachment_3');?>
+				</div>
+			</div>
+			<div id="yuedu_right" class="right">
+				<div id= "block_yuedu_term">
+					<?php $block_search = module_invoke('taxonomyblocks', 'block', 'view', 2); ?>
+					<?php print $block_search['content']; ?>
+				</div>
+			</div>
+		  </div>
+		  
+		  <div id= "view_shipin" class=" font_tonglan   clearfix">
+			<div id="shipin_title" class="title"><h2>多媒体课堂</h2></div>
+			<div id="shipin_left" class="left">
+				<div id="shipin_bofang">
+					<? print views_embed_view('whx_frontpage', $display_id = 'attachment_2');?>
+				</div>
+				<div id="shipin_liebiao">
+					<? print views_embed_view('whx_frontpage', $display_id = 'attachment_6');?>
+				</div>
+			</div>
+			<div id="shipin_right" class="right">
+				<div id= "block_shipin_term">
+					<?php $block_search = module_invoke('taxonomyblocks', 'block', 'view', 2); ?>
+					<?php print $block_search['content']; ?>
+				</div>
+			</div>
+		  </div>
+		  
+		  <div id= "view_quiz" class=" font_tonglan   clearfix">
+			<div id="quiz_title"><h2>测试中心</h2></div>
+			<div id="quiz_content">
+				<div id="quiz_zhuanxiang">
+					<h3>专项测试<span>——测试您的专项英语水平</span></h3>
+					<?php
+						$view = views_get_view('whx_frontpage');
+						print $view->execute_display('attachment_7', array('1978'));
+					?>
+				</div>
+				<div id="quiz_kaoshi">
+					<h3>考试测试<span>——考试临近，来摸底测试吧</span></h3>
+					<?php
+						$view = views_get_view('whx_frontpage');
+						print $view->execute_display('attachment_7', array('8587'));
+					?>
+				</div>
+				<div id="quiz_quwei">
+				<h3>趣味测试<span>——测试万花筒</span></h3>
+					<?php
+						$view = views_get_view('whx_frontpage');
+						print $view->execute_display('attachment_7', array('1977'));
+					?>
+				</div>
+			</div>
+		  </div>
+		  
+		  
+		  <div id="guanggao" class=" clearfix">
+			<h1>“通栏广告”的占位符</h1>
+		  </div>
+		  
+		  
+		  <div id= "view_hudong" class=" font_tonglan   clearfix">
+			<div id="hudong_title"><h2>互动圈子</h2></div>
+			<div id="xiaozu_remenziyuan">
+				<div id="xiaozu">
+					<? print views_embed_view('whx_frontpage', $display_id = 'attachment_8');?>					
+				</div>
+				<div id="xiaozu_remenziyuan">
+					<h2>“热门资源”</h2>
+					<div>热门资源占位</div>
+				</div>
+			</div>
+			<div id="shequ_blog_wenda">
+				<div id= "shequ">
+					<h2>社区</h2>
+					<div>社区占位</div>
+				</div>
+				<div id= "shequ">
+					<h2>“博客”</h2>
+					<div>博客占位</div>
+				</div>
+				<div id= "wenda">
+					<? print views_embed_view('whx_frontpage', $display_id = 'attachment_9');?>	
+				</div>
+			</div>
+		  </div>
+		
+		
+		<div id= "block_hezuo">
+			<!--<?php $block_search = module_invoke('search', 'block', 'view', 0); ?><?php print $block_search['content']; ?>-->
+			<h2>“合作支持”</h2>预留区块
+		</div>
+		
+		
+		
+			</div><!--我们的内容 end-->
+          <?php print $feed_icons; ?>
+
+
+          </div>
+        </div> <!-- /content-inner /content -->
+
+        <?php if (!empty($primary_links) or !empty($secondary_links)): ?>
+          <div id="navigation" class="menu <?php if (!empty($primary_links)) { print "with-main-menu"; } if (!empty($secondary_links)) { print " with-sub-menu"; } ?>">
+            <?php if (!empty($primary_links)){ print theme('links', $primary_links, array('id' => 'primary', 'class' => 'links main-menu')); } ?>
+            <?php if (!empty($secondary_links)){ print theme('links', $secondary_links, array('id' => 'secondary', 'class' => 'links sub-menu')); } ?>
+          </div> <!-- /navigation -->
+        <?php endif; ?>
+		
+		<?php if ($right): ?>
+          <div id="sidebar-second" class="column sidebar second">
+            <div id="sidebar-second-inner" class="inner">
+              <?php print $right; ?>
+            </div>
+          </div>
+        <?php endif; ?> <!-- /sidebar-second -->
+		
+      </div> <!-- /main -->
+
+      <!-- ______________________ FOOTER _______________________ -->
+
+      <?php if(!empty($footer_message) || !empty($footer_block)): ?>
+        <div id="footer">
+          <?php print $footer_message; ?>
+          <?php print $footer_block; ?>
+        </div> <!-- /footer -->
+      <?php endif; ?>
+
+    </div> <!-- /page -->
+    <?php print $scripts; ?>
+	<?php print $closure; ?>
+	<?php if($closure_region): ?>
+		<div id="closure_region">
+			<?php print $closure_region; ?>
+			<script type="text/javascript">
+var e_addhover1='.views-field-field-shipin-cover-fid';
+var e_hidden1='.views-field-field-shipin-neirong-value';
+var e_neirong1='div.neirong';
+var e_addhover2='#yuedu_hover .item-list h3';
+var e_hidden2='#yuedu_hover .item-list ul';
+var e_neirong2='#yuedu_hover ul.neirong li';
+
+
+function element_shipin_hover(e_addhover,e_hidden,e_neirong){
+$(e_addhover).hover(function(){
+	$(this).addClass('hover');
+	$(this).nextAll().filter(e_hidden).addClass('neirong');
+	$(e_neirong).before('<div class="detail-tip shadow-right"></div>');
+    $('.detail-tip').html($(e_neirong).html());
+    $('.detail-tip').append('<span class="arrow-left"></span>');
+},function(){
+	$(this).removeClass('hover');
+	$(this).nextAll().filter(e_hidden).removeClass('neirong');
+	$('.detail-tip').remove();
+});
+}
+
+        var hl=$("#huandengpian .views-row .views-field-field-yuedu-cover-fid-1"),
+			h2=$("#huandengpian .views-row .views-field-title"),
+			content1=$("#huandengpian .views-row .views-field-field-yuedu-cover-fid"),
+			content2=$("#huandengpian .views-row .views-field-field-yuedu-summary-value");
+
+$(function(){
+hl.mouseover(function() {			
+            $(".views-row").removeClass("on");
+			$(this).parent().addClass("on");
+            content1.hide();content2.hide();
+			$("div.on .views-field-field-yuedu-cover-fid").show();
+			$("div.on .views-field-field-yuedu-summary-value").show();
+            return false;
+        });  
+		h2.mouseover(function() {			
+            $(".views-row").removeClass("on");
+			$(this).parent().addClass("on");
+            content1.hide();content2.hide();
+			$("div.on .views-field-field-yuedu-cover-fid").show();
+			$("div.on .views-field-field-yuedu-summary-value").show();
+            return false;
+        });  
+$('#yuedu_hover .view-header').mouseover(function(){
+	$('#yuedu_hover .view-content').hide();
+	$(this).next().show();
+	$('#yuedu_hover .view-header').removeClass('on');
+	$(this).addClass('on');
+});
+element_shipin_hover(e_addhover1,e_hidden1,e_neirong1);
+element_shipin_hover(e_addhover2,e_hidden2,e_neirong2);
+}
+);
+</script>
+		</div>
+	<?php endif; ?>
+  </body>
+</html>

@@ -1,0 +1,7 @@
+; $Id$
+name = File download
+description =定制的文件下载页面，用来替换默认的uc_file里面的用户文件下载页面.
+dependencies[] = uc_file
+package = Ubercart - extra
+core = 6.x
+php = 5.0

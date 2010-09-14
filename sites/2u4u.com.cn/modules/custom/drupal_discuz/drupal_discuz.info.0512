@@ -1,0 +1,4 @@
+﻿name = 首页调用论坛信息 
+description = 获取discuz论坛数据
+core = 6.x
+

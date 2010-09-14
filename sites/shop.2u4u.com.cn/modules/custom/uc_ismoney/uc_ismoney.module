@@ -1,0 +1,345 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ *  对于产品,设置其是使用积分购买还是使用现金购买.
+ */
+
+
+/**
+ *  实现hook_form_alter钩子，添加一个复选框，用来判定商品是否需要现金购买.
+ */
+function uc_ismoney_form_alter(&$form, $form_state, $form_id) {
+	
+  if(uc_product_is_product_form($form)){
+	  $exist_moneyable = db_result(db_query("SELECT moneyable FROM {uc_ismoney}  WHERE vid = %d",$form['#node']->vid));
+	  $form['base']['moneyable'] = array(
+	    '#type' => 'checkbox',
+	    '#title' => t('如果想让本商品用现金结帐，勾选这里。默认用积分结帐。'),
+	    '#default_value' => isset($exist_moneyable) ? $exist_moneyable : 0,
+	    '#weight' => -100,
+	  );
+	  //如果默认为现金，此时修改价格的前缀和后缀（单位），改为￥
+	  if($exist_moneyable){
+	  	$currency_sign = '￥';
+		  $form['base']['prices']['list_price']['#field_prefix'] =$currency_sign;
+		  $form['base']['prices']['list_price']['#field_suffix'] ='';
+		  $form['base']['prices']['cost']['#field_prefix'] =$currency_sign;
+		  $form['base']['prices']['cost']['#field_suffix'] ='';
+		 	$form['base']['prices']['sell_price']['#field_prefix'] =$currency_sign;
+		  $form['base']['prices']['sell_price']['#field_suffix'] ='';
+	  }
+	  
+  }
+ 
+ 
+}
+
+/**
+* 实现 hook_nodeapi().这里负责字段moneyable的增删改查操作。
+*/
+function uc_ismoney_nodeapi(&$node, $op, $teaser, $page) {
+	//global $user;
+  if(!uc_product_is_product($node)){
+  	  return;
+  }
+	switch ($op) {
+		  
+		
+    // The 'view' operation means the node is about to be displayed.
+    case 'view':
+     	//if(uc_product_is_product($node)){
+   		// Add our form as a content item.
+   		$node->content['moneyable'] = array(
+   			'#value' => $node->moneyable,
+   			//'#access' => $enabled['display_price'],
+   			'#weight' => 0,
+   		);
+   		//$node = $variables['node'];
+			if($node->moneyable){
+				$label = '￥: ';
+			}else{
+				$label = '积分: ';
+			}
+			$node->content['sell_price']['#value'] = '<div class="sell_price">' . $label .  number_format($node->sell_price,2) . '</div>';
+			$node->content['display_price']['#value'] = '<div class="display_price">' .$label  . number_format($node->sell_price,2). '</div>';
+   		 
+   		//这部分逻辑处理最好放在主题层进行处理，userpoints_ubercart的支付模块在这里做了处理，这里不是好的处理地方
+      //$node->content['sell_price']['#value'] .= '<div class="sell_price">' . t('!Points: ' . $pointCost, userpoints_translation()) . '</div>';
+			//$node->content['display_price']['#value'] .= '<div class="display_price">' . t('!Points: ' . $pointCost, userpoints_translation()) . '</div>';
+     	//}
+      break;
+   case 'load':
+   		//if(uc_product_is_product($node)){
+ 			return db_fetch_array(db_query("SELECT moneyable  FROM {uc_ismoney}  WHERE vid = %d",$node->vid));
+   		//}
+    	break;  
+    	    
+   case 'insert':
+   		//if(uc_product_is_product($node)){
+ 			db_query("INSERT INTO {uc_ismoney} (vid, nid, moneyable) VALUES (%d, %d, %d)",
+				$node->vid, $node->nid, $node->moneyable
+			);
+   		//}
+    	break;  
+    	
+   case 'update':
+   		//if(uc_product_is_product($node)){
+		 if ($node->revision) {
+		 		db_query("INSERT INTO {uc_ismoney} (vid, nid, moneyable) VALUES (%d, %d, %d)",
+				$node->vid, $node->nid, $node->moneyable
+			);
+		 }
+		 else{
+		 		$exist_vid = db_result(db_query("SELECT vid FROM {uc_ismoney}  WHERE vid = %d",$node->vid));
+		 		if($exist_vid){
+		 			db_query("UPDATE {uc_ismoney} SET moneyable = %d WHERE vid = %d", $node->moneyable, $node->vid);
+		 		
+		 		}else{
+		 			db_query("INSERT INTO {uc_ismoney} (vid, nid, moneyable) VALUES (%d, %d, %d)", $node->vid, $node->nid, $node->moneyable);
+		 		}
+		 	  
+		 }
+   		//}
+    	break;  
+    	
+   case 'delete':
+   		//if(uc_product_is_product($node)){
+ 			db_query('DELETE FROM {uc_ismoney} WHERE nid = %d', $node->nid);
+   		//}
+      
+      break;
+	}
+}
+
+/**
+* 实现钩子hook_add_to_cart().用来控制购物车中的商品是使用积分,还是使用现金
+*/
+function uc_ismoney_add_to_cart($nid, $qty, $data) {
+	$cart_id = uc_cart_get_id();
+	$total_records = db_result(db_query("SELECT count(*) FROM {uc_cart_products} c WHERE c.cart_id = '%s'", $cart_id));
+	if($total_records ==0){
+		return;
+	}
+
+
+/**
+* 在ubercart 6.23中不能用uc_cart_get_contents，如果用了匿名用户无法添加产品到购物车
+* 详见我们在drupal.org上提交的issue。老葛花了2天的时间才找到问题所在，6.23中，如果用下面>注释掉的代码，那么匿名用户添加产品到购物车的时候，  $_SESSION['uc_cart_id’] 就没有存到sess
+ion中，就丢失了
+* 我们提交的issue：
+* http:*drupal.org/node/858816#comment-3313716
+* 有很多人遇到了和我们一样的问题，但只有一个人找到了原因：
+* http:*drupal.org/node/858816#comment-3313716
+*/
+
+	//$items = uc_cart_get_contents();
+	//if (!is_array($items) || count($items) == 0) {
+   // drupal_set_message(t('You do not have any items in your shopping cart.'));
+  //  return;
+  //}
+	$first_nid = db_result(db_query("SELECT nid FROM {uc_cart_products} c WHERE c.cart_id = '%s'", $cart_id));
+  $first_node =  node_load($first_nid);
+	$node = node_load($nid);
+  //注意在系统中,节点类型为product的商品，是积分商品，其它节点类型为现金商品，积分商品和现金商品不能同时添加到购物车
+  /*
+	if($node->moneyable != $first_node->moneyable){
+  	//为现金时,moneyable值为1;为积分时,moneyable值为0
+  	if($first_node->moneyable){
+  		$message = t('积分和现金不能同时使用,购买购物车中的已有商品需要使用现金购买,此时不能再添加积分商品;您可以先完成结算,或者清空购物车,然后再添加积分商品');
+			$result[] = array(
+        'success' => FALSE,
+        'message' => $message,
+      );
+  	}else{
+  		$message = t('积分和现金不能同时使用,购买购物车中的已有商品需要使用积分购买,此时不能再添加现金商品;您可以先完成结算,或者清空购物车,然后再添加现金商品');
+			$result[] = array(
+        'success' => FALSE,
+        'message' => $message,
+      );
+  	}
+  }
+	*/
+	if($first_node->moneyable){
+  	//为现金时,moneyable值为1;为积分时,moneyable值为0
+  	if($node->moneyable){
+  		
+  	}else{
+  		$message = t('积分和现金不能同时使用,购买购物车中的已有商品需要使用现金购买,此时不能再添加积分商品;您可以先完成结算,或者清空购物车,然后再添加积分商品');
+			$result[] = array(
+        'success' => FALSE,
+        'message' => $message,
+      );
+  	}
+  }
+	else{
+		if($node->moneyable){
+  		$message = t('积分和现金不能同时使用,购买购物车中的已有商品需要使用积分购买,此时不能再添加现金商品;您可以先完成结算,或者清空购物车,然后再添加现金商品');
+			$result[] = array(
+        'success' => FALSE,
+        'message' => $message,
+      );
+  	}else{
+  		
+  	}
+	}
+  return $result;
+}
+
+/**
+ * 实现hook_uc_price_handler().
+ */
+function uc_ismoney_uc_price_handler() {
+  return array(
+    'format' => array(
+      'title' => t('2u4u price handler'),
+      'description' => t('The 2u4u handler formatter passes prices through a single currency formatter based on the store currency display settings.'),
+      'callback' => 'uc_ismoney_price_handler_format',
+    ),
+  );
+}
+
+
+
+/**
+ * 2u4u 价格处理格式器; 使用站点货币设置以及是否使用现金来格式化价格.
+ */
+function uc_ismoney_price_handler_format($price, $options){
+	$output = '';
+	
+	//下面的if语句，用来判断现金商品，此时的价格显示为人民币的形式
+	//购物车结算页面
+	if(arg(0)=='cart'){
+		$items = uc_cart_get_contents();
+		if (is_array($items) && count($items) > 0) {
+	   // drupal_set_message(t('You do not have any items in your shopping cart.'));
+	  	 $first_node =  node_load($items[0]->nid);
+	  	 if($first_node->moneyable ==1){
+	  	 	 $output .= '￥';
+	  	 	  // Format the number, like 1234.567 => 1,234.57
+  			 $output .= number_format($price, $options['prec'], $options['dec'], $options['thou']);
+  			 return $output;
+	  	 }
+	  } 
+	}
+	//商品节点页面
+	if(arg(0)=='node' && arg(1) > 0 ){
+		
+	  	 $node =  node_load(arg(1));
+	  	 //节点22022就是积分换礼页面jifenduihuan，这里使用了节点占位符的方式。
+	  	 if($node->moneyable ==1 && arg(1) !=22022){
+	  	 	 $output .= '￥';
+	  	 	  // Format the number, like 1234.567 => 1,234.57
+  			 $output .= number_format($price, $options['prec'], $options['dec'], $options['thou']);
+  			 return $output;
+	  	 }
+	}
+		//后台的订单管理页面
+	if(arg(0)=='admin' && arg(1) =='store' && arg(2) =='orders' && arg(3) > 0){
+			$order_id = arg(3);
+	  	//$order = uc_order_load($order_id);
+	  	$nid = db_result(db_query("SELECT nid FROM {uc_order_products} WHERE order_id = %d ORDER BY order_product_id", $order_id));
+	  	
+	  	 //$nid = $order->products[0]->nid;
+	  	 //print_r($order);
+	  	 $node = node_load($nid);
+	  	 //节点22022就是积分换礼页面jifenduihuan，这里使用了节点占位符的方式。
+	  	 
+	  	 //if($node->type !='product'){
+	  	 if($node->moneyable ==1){
+	  	 	 $output .= '￥';
+	  	 	  // Format the number, like 1234.567 => 1,234.57
+  			 $output .= number_format($price, $options['prec'], $options['dec'], $options['thou']);
+  			 return $output;
+	  	 }
+	}
+	//前台的订单查看页面
+	if(arg(0)=='user' && arg(1) > 0 && arg(2) =='order' && arg(3) > 0){
+			$order_id = arg(3);
+	  	//$order = uc_order_load($order_id);
+	  	$nid = db_result(db_query("SELECT nid FROM {uc_order_products} WHERE order_id = %d ORDER BY order_product_id", $order_id));
+	  	
+	  	 //$nid = $order->products[0]->nid;
+	  	 //print_r($order);
+	  	 $node = node_load($nid);
+	  	 //节点22022就是积分换礼页面jifenduihuan，这里使用了节点占位符的方式。
+	  	 
+	  	 //if($node->type !='product'){
+	  	 if($node->moneyable ==1){
+	  	 	 $output .= '￥';
+	  	 	  // Format the number, like 1234.567 => 1,234.57
+  			 $output .= number_format($price, $options['prec'], $options['dec'], $options['thou']);
+  			 return $output;
+	  	 }
+	}
+	
+	//下面的代码是默认的实现
+
+  // If the value is less than the minimum precision, zero it.
+  if ($options['prec'] > 0 && abs($price) < 1 / pow(10, $options['prec'])) {
+    $price = 0;
+  }
+
+  // Force the price to a positive value and add a negative sign if necessary.
+  if ($price < 0) {
+    $price = abs($price);
+    $output .= '-';
+  }
+
+  // Add the currency sign first if specified.
+  if ($options['sign'] && !$options['sign_after']) {
+    $output .= $options['sign'];
+  }
+
+  // Format the number, like 1234.567 => 1,234.57
+  $output .= number_format($price, $options['prec'], $options['dec'], $options['thou']);
+
+  // Add the currency sign last if specified.
+  if ($options['sign'] && $options['sign_after']) {
+    $output .= $options['sign'];
+  }
+
+  return $output;
+}
+
+/**
+ * 实现钩子 hook_form_FORMID_alter().
+ */
+function uc_ismoney_form_uc_cart_checkout_form_alter(&$form, &$form_state) {
+  global $user;
+	$items = uc_cart_get_contents();
+	if (is_array($items) && count($items) > 0) {
+   // drupal_set_message(t('You do not have any items in your shopping cart.'));
+  	$first_node =  node_load($items[0]->nid);
+  	//if($first_node->type !='product'){
+  	//如果是现金，那么将积分支付方法去除。
+  	if($first_node->moneyable == 1){
+  	 	foreach (_payment_method_list() as $method) {
+  	 	 	if($method['id'] =='points'){
+  	 	 		unset($form['panes']['payment']['payment_method']['#options'][$method['id']]);
+  	 	 	}
+  	 	}
+  	}
+  	//如果不是现金，那么将非积分支付方法去除。
+  	else{
+  	 	foreach (_payment_method_list() as $method) {
+  	 	 	if($method['id'] !='points'){
+  	 	 		unset($form['panes']['payment']['payment_method']['#options'][$method['id']]);
+  	 	 	}
+  	 	 }
+  	 }
+	}
+}
+
+/**
+ * Implementation of hook_views_api().
+ */
+function uc_ismoney_views_api() {
+  return array(
+    'api' => '2.0',
+    'path' => drupal_get_path('module', 'uc_ismoney') .'/views',
+  );
+}
+
+

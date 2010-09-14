@@ -1,0 +1,128 @@
+body,div,ul,li{
+	font-size:12px;
+	font-family: "宋体";
+	line-height: 16px;
+    margin:0 auto;
+    padding:0;
+}
+/*whx添加，为了使页面居中，但下面的margin-left的设置影响了整体布局。*/
+ body{
+text-align:center;
+}
+#content-area{
+text-align:left;
+margin:0 auto;
+padding:0;
+width: 801px;
+} 
+.text-2 {
+	font-size: 12px;
+	font-weight: bold;
+	color: #990000;
+}
+.div-logo {
+	width: 807px;
+	height: 41px;
+	background-image:url(image_03.gif);
+}
+.text {
+	color: #FFFFFF;
+}
+
+.div-top {
+	width: 807px;
+	height: 387px;
+	background-repeat: no-repeat;
+}
+.div-bg {
+	width: 801px;
+	height: 1720px;
+	background-color: #F0B63E;
+}
+.div-left {
+	float:left;
+	height: 1550px;
+	margin-left:-1px;
+	width:580px;
+}
+.div-right {
+	width: 220px;
+	height: 980px;
+	float:right;
+}
+.author {
+	color: #AEA202;
+}
+a:link{
+color:#FFFFFF;
+text-decoration:none;
+}
+a:visited {
+color: #FFFFFF;
+text-decoration:none;
+}
+a:hover {
+color: #5E4600;
+text-decoration:underline;
+}
+ul{
+list-style:none;
+}
+.main{
+	clear:both;
+	padding:8px;
+	text-align:center;
+	height: 105px;
+}
+#tabs1{
+	text-align:left;
+	width:350px;
+	margin-left: 7px;
+	height: 150px;
+}
+.menu1box{
+position:relative;
+overflow:hidden;
+height:22px;
+width:400px;
+text-align:left;
+}
+#menu1{
+position:absolute;
+top:0;
+left:0;
+z-index:1;
+}
+#menu1 li{
+float:left;
+display:block;
+cursor:pointer;
+width:65px;
+text-align:center;
+line-height:22px;
+height:21px;
+background-image:url(2.gif)
+}
+#menu1 li.hover{
+background:#fff;
+background-image:url(1.gif)
+}
+.main1box{
+clear:both;
+margin-top:-1px;
+border:1px solid #E0C5C5;
+height:110px;
+width:540px;
+}
+#main1 ul{
+display: none;
+}
+#main1 ul.block{
+	display: block;
+	margin-left: 3px;
+}
+.div-bg2 {
+	width: 801px;
+	height: 850px;
+	background-color: #F0B63E;
+}

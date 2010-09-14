@@ -1,0 +1,192 @@
+<?php 
+
+function importer_menu()
+{
+	$items=array();
+	$items['admin/settings/import']=array(
+		'title'=>'Legacy Importer',
+		'page callback'=>'drupal_get_form',
+		'page arguments'=>array('importer_form'),
+		'access callback' => true,
+		'type' => MENU_CALLBACK,
+	);
+	$items['admin/settings/import/user_ahah']=array(
+		'title'=>'wait...',
+		'page callback'=>'importer_user_run',
+		'access callback'=>true,
+		'type'=>MENU_CALLBACK,
+	);
+	$items['admin/settings/import/question_ahah']=array(
+		'title'=>'wait...',
+		'page callback'=>'importer_question_run',
+		'access callback'=>true,
+		'type'=>MENU_CALLBACK,
+	);
+	$items['admin/settings/import/answer_ahah']=array(
+		'title'=>'wait...',
+		'page callback'=>'importer_answer_run',
+		'access callback'=>true,
+		'type'=>MENU_CALLBACK,
+	);
+	return $items;
+}
+
+function importer_form(){
+	
+	drupal_set_message("If you don't know what this module does, you should better leave now. Before importing anything, make sure the 'best answer' module is enabled and also the legacy tables are imported into the database.",'warning');
+	$form=array();
+
+	$form['import_user']=array(
+		'#type'=>'button',
+		'#value'=>'Import Users',
+		'#ahah' => array(
+	      'path' => 'admin/settings/import/user_ahah',
+	      'wrapper' => 'importer_user_result',
+	      'method' => 'replace',
+	      'effect' => 'fade',
+		  'progress' => array('type' => 'bar', 'message' => t('Please wait...')),
+	    ),
+	);
+	$form['import_user_result']=array(
+		'#type'=>'item',
+		'#value'=>'<div id=importer_user_result></div>',
+	);
+	
+	$form['import_question']=array(
+		'#type'=>'button',
+		'#value'=>'Import Questions',
+		'#ahah' => array(
+	      'path' => 'admin/settings/import/question_ahah',
+	      'wrapper' => 'importer_question_result',
+	      'method' => 'replace',
+	      'effect' => 'fade',
+		  'progress' => array('type' => 'bar', 'message' => t('Please wait...')),
+	    ),
+	);
+	$form['import_question_result']=array(
+		'#type'=>'item',
+		'#value'=>'<div id=importer_question_result></div>',
+	);
+	
+		$form['import_answer']=array(
+		'#type'=>'button',
+		'#value'=>'Import Answers',
+		'#ahah' => array(
+	      'path' => 'admin/settings/import/answer_ahah',
+	      'wrapper' => 'importer_answer_result',
+	      'method' => 'replace',
+	      'effect' => 'fade',
+		  'progress' => array('type' => 'bar', 'message' => t('Please wait...')),
+	    ),
+	);
+	$form['import_answer_result']=array(
+		'#type'=>'item',
+		'#value'=>'<div id=importer_answer_result></div>',
+	);
+	
+	return $form;
+}
+
+function importer_user_run(){
+	
+	$sql = "SELECT * FROM {oask_User}";
+	$result = db_query(db_rewrite_sql($sql));
+	while ($data = db_fetch_object($result)) {
+		$user_found = user_load( array ('name' => $data->name) ); 
+		$account=array();
+		$account['name']=$data->name;
+		$account['mail']=$data->email;
+		$account['pass']=$data->email;
+//		$account['profile-telephone']=$data->email;
+	    $user=user_save( $user_found, $account );
+		db_query("UPDATE {profile_values} SET value = '%s' WHERE fid = 2 AND uid=%d" , $data->Telephone,$user->uid);
+	    db_query("UPDATE {profile_values} SET value = '%s' WHERE fid = 3 AND uid=%d" , $data->address,$user->uid);
+	    db_query("UPDATE {profile_values} SET value = '%s' WHERE fid = 4 AND uid=%d" , $data->truename,$user->uid);
+	    db_query("UPDATE {profile_values} SET value = '%s' WHERE fid = 5 AND uid=%d" , $data->msn,$user->uid);
+	   $i++;
+	}
+	//$user=user_load(1);
+		
+	$output=$i." Users Imported!";
+	//  	// Final rendering callback.
+	drupal_json(array('status' => TRUE, 'data' => $output));
+	
+}
+
+function importer_question_run(){
+	$sql = "SELECT * FROM {oask_Question}";
+	$result = db_query(db_rewrite_sql($sql));
+	while ($data = db_fetch_object($result)) {
+		
+	  $user=user_load(array('name'=>$data->sender));
+	  $node->type = variable_get('question_node_type','');
+	 
+	  //There came the surprise for me:
+	  module_load_include('inc', 'node', 'node.pages');
+	
+	  //The following appends the current user id for creator,
+	  //also sets default promote and publish flags, and sets the current creation time
+	  node_object_prepare($node);
+	
+	  $node->title = check_plain($data->title);
+	  $node->uid=$user->uid;
+	  $node->name=$user->name;
+	  $node->body = check_markup($data->content);
+	  $node->created = strtotime( $data->sendtime );
+	  $node->changed = strtotime( $data->ChangeTime );
+	  
+	  node_save($node);
+	  //replace the id of the old system table with the new node id. prepation for the anwser import
+	  db_query("UPDATE {oask_Reply} SET attachid = %d WHERE qid = %d" , $node->nid,$data->ID);
+	   
+	  unset($node);
+	  $i++;
+	}
+	$output=$i." Questions Imported!";
+	//  	// Final rendering callback.
+	drupal_json(array('status' => TRUE, 'data' => $output));
+	
+}
+
+function importer_answer_run(){
+	$sql = "SELECT * FROM {oask_Reply} where NeedVerify = 0";
+	$result = db_query(db_rewrite_sql($sql));
+	while ($data = db_fetch_object($result)) {
+//	$data = db_fetch_object($result);
+	$user=user_load(array('name'=>$data->replyer));
+	  $node->type = 'node_comment';
+	 
+	  //There came the surprise for me:
+	  module_load_include('inc', 'node', 'node.pages');
+	
+	  //The following appends the current user id for creator,
+	  //also sets default promote and publish flags, and sets the current creation time
+	  node_object_prepare($node);
+	
+	 // $node->title = "Best Answer";
+	  $node->uid=$user->uid;
+	  $node->name=$user->name;
+	  $node->body = check_markup($data->content);
+	  $node->created = strtotime( $data->replytime );
+	  $node->comment_target_nid=$data->attachid;
+	  node_save($node);
+	  if($data->best=="-1")
+	  {
+	  	$fieldname=variable_get('answer_nid_holder','');
+	  	$qnode=node_load($data->attachid);
+	  	$field=$qnode->$fieldname;
+	  	$field[0]['value']=$node->nid;
+	  	$qnode->$fieldname=$field;
+	  	node_save($qnode);
+	  	unset($qnode);
+	  }
+	  unset($node);
+	  $i++;
+	}
+	
+	$output=$i." Answers Imported!";
+	//  	// Final rendering callback.
+	drupal_json(array('status' => TRUE, 'data' => $output));
+	
+}
+?>

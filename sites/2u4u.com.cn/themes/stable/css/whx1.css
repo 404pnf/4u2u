@@ -1,0 +1,1332 @@
+@charset "utf-8"; /* CSS Document */
+ 
+/* -----------------------------------电子图书馆 阅读 开始 -----------------------------*/
+/* 新书快递 */
+.view-whx-yuedu  .view-display-id-attachment_5 .views-field-field-yuedu-cover-fid{
+float:left;
+margin-right:18px;
+}
+.view-whx-yuedu  .view-display-id-attachment_5 .views-field-field-yuedu-summary-value{
+clear:left;
+}
+.view-whx-yuedu  .view-display-id-attachment_5 .views-row{
+padding:5px 10px 8px 3px;
+border-bottom:1px dashed #D1D1D1;
+}
+/* hover css */
+/* + front page 首页*/
+.view-whx-yuedu  .view-display-id-attachment_4 .item-list,
+.view-whx-yuedu  .view-display-id-attachment_1 .item-list{
+position:relative; 
+width:100px;
+float:left;
+margin:0 8px 0 32px;
+z-index:100;
+}
+
+.front #yuedu_hover .view-display-id-attachment_2 .item-list,
+.front #yuedu_hover .view-display-id-attachment_1 .item-list,
+.front #yuedu_hover .view-display-id-attachment_3 .item-list{
+position:relative; 
+width:100px;
+float:right;
+z-index:10;
+margin:9px 30px 20px 3px;
+
+padding:1px 0 0 1px;
+background:url("fp_images/book.gif") no-repeat scroll 0 0 transparent;
+/* * margin:9px 30px 5px 3px;*/
+_ margin:9px 19px 15px 9px; 
+}
+
+.view-whx-yuedu  .view-display-id-attachment_4  .views-row,
+.view-whx-yuedu  .view-display-id-attachment_1  .views-row,
+.front #yuedu_hover .view-display-id-attachment_2 ul li,
+.front #yuedu_hover   .view-display-id-attachment_1  ul li,
+.front #yuedu_hover   .view-display-id-attachment_3  ul li{
+position:absolute;
+display:none;
+list-style:none;
+z-index:999;
+}
+/* 阴影 ie不支持*/
+.shadow-right {
+-moz-border-radius:3px 3px 3px 3px;
+-moz-box-shadow:2px 2px 2px #999999;
+}
+/* 边框及颜色 */
+.detail-tip {
+background:none repeat scroll 0 0 #FFFFFF;
+border:1px solid #DDDDDD;
+padding:13px 13px 10px;
+position:absolute;
+width:300px;
+top:0px;
+left:110px;
+z-index:9999; 
+}
+/* 小三角 */
+.arrow-left {
+background:url("images/arrow_gray.gif") no-repeat scroll 0 0 transparent;
+height:9px;
+left:0;
+margin-left:-6px;
+position:absolute;
+top:30px;
+width:6px;
+z-index:9999; 
+}
+/* 阅读首页 hover end */
+
+/* 阅读滚动 开始  */
+/* prev, next, prevPage and nextPage buttons */
+.anniu{
+float:right;
+width:110px;
+display:inline;
+}
+a#prev1, a#next1 ,a#prev2, a#next2,a#prev3 ,a#next3,a#prev4, a#next4,a#prev5 ,a#next5,a#prev6, a#next6,a#prev7 ,a#next7{
+	width:18px;
+	height:18px;
+	background:url(images/left.png) 0 -18px no-repeat;
+	float:right;
+	cursor:pointer;
+	font-size:1px;
+}
+a#next1 ,a#next2,a#next3,a#next4,a#next5,a#next6,a#next7{
+	background:url(images/right.png) 0 -18px no-repeat;
+}
+
+a#prev1.disabled, a#next1.disabled, a#prev2.disabled, a#next2.disabled, a#prev3.disabled, a#next3.disabled, a#prev4.disabled, a#next4.disabled, a#prev5.disabled, a#next5.disabled, a#prev6.disabled, a#next6.disabled, a#prev7.disabled, a#next7.disabled{
+	background-position:0 0;		
+}
+/* position and dimensions of the navigator */
+#navi1,#navi2 ,.navi{
+	float:right;
+	margin-top:2px;
+}
+/* items inside navigator */
+#navi1 a ,#navi2 a ,.navi a {
+	width:8px;
+	height:8px;
+	float:left;
+	margin:3px;
+	background:url(images/navigator.png) 0 0 no-repeat;
+	font-size:1px;
+}
+/* mouseover state */
+#navi1 a:hover,#navi2 a:hover ,.navi a:hover{
+	background-position:0 -8px;      
+}
+/* active state (current page state) */
+#navi1 a.active ,#navi2 a.active ,.navi a.active {
+	background-position:0 -16px;     
+} 	
+/* this makes it possible to add next button beside view-content */
+.view-whx-yuedu .view-display-id-attachment_4 ,.view-whx-yuedu .view-display-id-attachment_1{
+	position:relative;
+	overflow:hidden;
+	width: 725px;
+	height:180px;
+	clear:both;
+}
+.view-whx-yuedu .view-display-id-attachment_4 .view-header,.view-whx-yuedu .view-display-id-attachment_1 .view-header{
+height:25px;
+}
+.view-whx-yuedu .view-display-id-attachment_4 .view-header h2,.view-whx-yuedu .view-display-id-attachment_1 .view-header  h2{
+display:inline;
+float:left;
+}
+.view-whx-yuedu .view-display-id-attachment_4  .view-content ,
+.view-whx-yuedu .view-display-id-attachment_1  .view-content {
+position:absolute;
+width:20000em;
+_left:-30px; 
+}
+/* 阅读滚动 结束 end  */
+
+
+/* -------------------------------------视频开始啦 -------------------------------------*/
+/* + front page */
+/* 在css中隐藏，实现js中的.hide() ，防止在页面不加载js时出现页面混乱的问题*/
+.view-whx-shipin .views-field-field-shipin-neirong-value,
+.front .view-display-id-attachment_6 .views-field-field-shipin-neirong-value,
+.view-whx-shipin .attachment-after .view-display-id-attachment_4 .view-content,
+.view-whx-shipin .attachment-after .view-display-id-attachment_5 .view-content,
+.view-whx-shipin .attachment-after .view-display-id-attachment_6 .view-content
+{
+display:none;
+}
+/* attachment-before */
+/* 整体外框 加边、两个附件的位置控制、即第二个附件（热门推荐）的两列排版、hover后的小tip边框及颜色*/
+.view-whx-shipin .attachment-before{
+border:1px dashed #DDDDDD;
+height:430px;
+}
+.view-whx-shipin .view-display-id-attachment_1,
+.front #view_shipin .view-display-id-attachment_2  {
+float:left;
+display:inline; 
+width:320px;
+clear:none;
+margin:0 17px;
+}
+.view-whx-shipin .view-display-id-attachment_2,
+.front #view_shipin .view-display-id-attachment_6  {
+float:left;
+display:inline; 
+width:240px;
+clear:none;
+}
+.view-whx-shipin .view-display-id-attachment_1  .views-field-title,.view-whx-shipin .view-display-id-attachment_2 .view-header p{
+margin:10px 0;
+font-weight:bold;
+font-size:1.2em;
+}
+
+/* 两行排列 */
+.view-whx-shipin .view-display-id-attachment_2 .views-row,
+.front #view_shipin .view-display-id-attachment_6 .views-row{
+vertical-align:top;
+width:200px;
+min-height:100px;
+padding:0 17px 10px 0px;
+line-height:16px;
+left:0;
+position:relative;
+top:0;
+float:right;
+z-index:10;
+}
+/* 首页3列排版 */
+.front #view_shipin .view-display-id-attachment_6 .views-row{
+padding:0 4px 15px 15px;
+* padding:0 2px 15px 3px;
+_ padding:0 2px 15px 3px;
+width:115px;
+* width:120px;
+_ width:120px;
+}
+/*小边框及颜色 */
+.view-whx-shipin .attachment-before .detail-tip,
+.front #view_shipin .view-display-id-attachment_6 .detail-tip{
+background:none repeat scroll 0 0 #FFFFFF;
+border:1px solid #D1D1D1;
+padding:3px 4px;
+width:120px;
+position:absolute;
+top:-1px;
+left:110px;
+z-index:99999; 
+}
+.front #view_shipin .view-display-id-attachment_6 .detail-tip{
+left:115px;
+}
+.view-whx-shipin .attachment-before .shadow-right,
+.front #view_shipin .view-display-id-attachment_6  .shadow-right{
+-moz-border-radius:0px 0px 0px 0px;
+-moz-box-shadow:0px 0px 0px #999999;
+}
+/* 保持附件的相对位置，clear:both让after不飘到before的位置 */
+.view-whx-shipin .attachment-after,.view-whx-shipin .attachment-before{
+position:relative; 
+display:block;
+clear:both;
+}
+
+/* attachment-after */
+/* 可点击的按钮 */
+/* 前面的标题：在真正的view首页内容中输出，以保证其位置在before的后面，after的前面*/
+.page-shipinwhx .view-whx-shipin .view-content .views-field-nothing h2{
+margin-top:30px;
+}
+/* 实现可按字宽度变化的小圆角按钮，对标签a和a span分别定义背景图，一个position为left top，另一个为right top */
+.view-whx-shipin .attachment-after .view-header a{
+position:absolute;
+top:-38px;
+left:100px;
+line-height:12px;
+margin:0 5px;
+line-height:26px;
+}
+.view-header a.on, .view-header a.on span{
+background:url("images/green_tab.gif") no-repeat scroll 0 0 transparent;
+color:#FFFFFF;
+display:block;
+background-position:left center;
+padding:0 0 0 8px;
+}
+.view-header a.on span{
+background-position:right center;
+padding:2px 8px 2px 0;
+}
+#attachment3 {
+left:100px;
+}
+#attachment4 {
+left:180px;
+}
+#attachment5 {
+left:260px;
+}
+#attachment6 {
+left:340px;
+}
+/* 内容的位置 绝对位置*/
+.view-whx-shipin .attachment-after .view-content{
+position:absolute;
+display:block;
+clear:both;
+margin-top:0px;
+z-index:1;
+width:600px;
+}
+/* 视频图片的大小占位 */
+.view-whx-shipin .attachment-after .views-field-field-shipin-cover-fid{
+float:left;
+margin-right:10px;
+display:inline;
+height:80px;
+width:100px;
+}
+/* 两列排版 */
+.view-whx-shipin .attachment-after .views-row{
+vertical-align:top;
+width:280px;
+height:110px;
+padding:5px 15px 5px 5px;
+position:relative;
+float:right; 
+display:inline;
+z-index:10;
+}
+/*hover css  边框及颜色 */
+.view-whx-shipin .attachment-after .detail-tip {
+background:none repeat scroll 0 0 #FFFFFF;
+border:1px solid #DDDDDD;
+padding:10px 13px;
+position:absolute;
+height:90px;
+top:0px;
+left:110px;
+z-index:9999; 
+width:460px;
+}
+
+/* 分类显示 mtag*/
+.section-mtag #content-area .views-row{
+clear:both;
+border-bottom:1px dashed #d1d1d1;
+padding:10px 0;
+} 
+.section-mtag #content-area .views-field-field-shipin-cover-fid{
+float:left;
+padding:25px 30px 0 0;
+}
+.section-mtag #content-area .views-field-field-shipin-neirong-value{
+margin-left:130px;
+}
+/* 视频node页 */
+.node-type-shipin #content-area{
+font-size:13px;
+}
+.node-type-shipin  #shipin-tab_area {
+border:3px solid #32A442;
+clear:both;
+width:954px;
+}
+.node-type-shipin #shipin-tab_area #shipin_area {
+float:left;
+padding:20px 30px 0 30px;
+width:350px;
+}
+.node-type-shipin #shipin-tab_area #tab_area {
+float:left;
+padding:20px 20px 0 0;
+width:510px;
+}
+.node-type-shipin  #shipin-tab_area .shipin-panes {
+border:1px solid #cccccc;
+height:530px;
+padding:10px;
+overflow-y:scroll;
+}
+.node-type-shipin  .field-field-shipin-neirong .field-items {
+height:250px;
+padding:0 10px;
+overflow-y:scroll;
+}
+UL.shipin-tabs li{
+display:inline;
+background-image:url("images/shipinkt_tabbg.jpg");
+background-repeat:no-repeat; 
+font-size:14px; 
+width:97px; 
+height:27px; 
+line-height:27px; 
+padding:3px 30px 15px 20px; 
+}
+UL.shipin-tabs li a{ 
+color:#FFFFFF;
+}
+UL.shipin-tabs li.current{
+ background-image:url("images/shipinkt_tabbgcurrent.jpg"); 
+ }
+UL.shipin-tabs li.current a{
+  color:#000000;
+}
+/* end */
+
+/* ----------------------------------大礼包 开始 --------------------------*/
+/* 展开与折叠的css */
+a.libao{
+color:#6F0000;
+float:none;
+padding-left:26px;
+}
+.hidden{
+display:none;
+}
+
+/* dalibao 页面整体外框 在common.css中定义，为了使按钮与内容合为一体，加了负的margin值*/
+/* .section-libao #content-area {
+margin-top:-6px;
+} */
+.section-libao .view-whx-dalibao{
+margin-left:9px;
+}
+.section-libao .view-whx-dalibao .view-content tr {
+border-top:1px solid #DDDDDD;
+vertical-align:top;
+line-height:1.6em;
+}
+.section-libao .view-whx-dalibao .view-content td {
+width:270px;
+padding:5px 10px 15px 0;
+}
+.section-libao .view-whx-dalibao .view-content tr.row-first{
+border-top:0px;
+}
+
+/* 颜色设置 */
+/* 翻页、 标题、书的列表*/
+.section-libao .view-whx-dalibao .item-list ul li a{
+color:#380102;
+}
+.section-libao .view-whx-dalibao .item-list ul li.pager-current {
+font-weight:bold;
+color:#6F0000;
+}
+.section-libao .view-whx-dalibao .views-field-title {
+font-size:1.1em;
+font-weight:bold;
+color:#6F0000;
+cursor:pointer;
+}
+.section-libao .view-whx-dalibao .views-field-title a:hover{
+color:#FF0000
+}
+.section-libao .view-whx-dalibao .views-field-field-product-tuijian-value  ol,
+.section-libao .view-whx-dalibao .views-field-field-product-neirongtiyao-value ol{
+color:#380102;
+}
+/* 积分及按钮 */
+.section-libao .view-whx-dalibao .views-field-sell-price {
+float:left;
+color:#ee0000;
+padding:0 0 0 3px;
+} 
+
+
+/* -----------------------------quiz 开始-------------------------- */
+/* quiz view的整体字体颜色 */
+.view-whx-quiz {
+color:#333333;
+}
+/* 首页图片与小题两栏 排列*/
+.view-whx-quiz .attachment-before .view-whx-quiz{
+clear:none;
+}
+.view-whx-quiz  .attachment-before .view-content{
+float:left;
+height:374px;
+overflow:hidden;
+padding:10px;
+position:relative;
+width:275px;
+clear:none;
+margin-bottom:40px;
+}
+.view-whx-quiz  .view-display-id-attachment_1 .view-content,.view-whx-quiz  .view-display-id-attachment_3 .view-content,.view-whx-quiz  .view-display-id-attachment_5 .view-content{
+background:none repeat scroll 0 0 #F4EDEE;
+margin-right:10px;
+}
+/* 标题与连接、摘要、点击率的颜色、大小 */
+.view-whx-quiz .view-header  a  ,
+.view-whx-quiz .view-header a:visited,
+.view-whx-quiz .views-field-title  a  ,
+.view-whx-quiz .views-field-title  a:visited{
+color:#911D2B;
+cursor:pointer;
+text-decoration:none;
+font-weight:700;
+}
+.view-whx-quiz .view-header h1{
+padding-bottom:0px;
+}
+h1 span {
+color:#666666;
+font-size:12px;
+font-weight:400;
+margin-left:10px;
+}
+.view-whx-quiz .views-row{
+margin-bottom:20px;
+clear:both;
+}
+.view-whx-quiz  .attachment-before .views-field-teaser {
+min-height:60px;
+overflow:hidden;
+}
+.view-whx-quiz .views-field-totalcount {
+color:#999999;
+float:right;
+margin-top:-22px;
+}
+/* 分类显示区块 */
+.section-quizwhx .attachment-before .view-content{
+background:none repeat scroll 0 0 #EDF4F1;
+float:none;
+clear:both;
+width:575px;
+height:275px;
+margin-bottom:20px;
+}
+/* 内容中的小图 */
+.section-quizwhx .view-whx-quiz .views-field-field-quiz-tuijian-pic-fid {
+float:right;
+margin:0 0 20px 10px;
+}
+/* 分类推荐图 */
+.section-quizwhx .attachment-before .views-field-field-quiz-tuijian-pic-fid{
+float:left;
+padding-right:10px;
+margin:0px;
+}
+.section-quizwhx .attachment-before .views-field-teaser{
+height:250px;
+}
+/* quiz 结束 */
+
+
+/* ----------------------------------翻译大赛 fanyi 开始 ---------------------------*/
+/* right sidebar */
+/* 复写右边栏宽度，以适应设计稿右边栏较窄的要求 */
+.node-type-fanyi-chapter #sidebar-second,.node-type-bookcase  #sidebar-second{
+width:300px;
+}
+/* ie中翻译章节、翻译书籍node页的导航条向右错位了，通过margin来设置，确定导航的布局后需要修改 */
+*html .node-type-fanyi-chapter #navigation ,*html .node-type-bookcase #navigation {
+margin-left:-70px;
+} 
+/* 整体下移 20px，以保证“返回首页”的位置 */
+#sidebar-second #block-views-fanyi_taxonomy-block_4{
+margin-top:20px;
+}
+/* 复写公共定义连接的颜色 */
+ #sidebar-second #block-views-fanyi_taxonomy-block_4 a,#sidebar-second #block-menu-menu-fanyi a{
+color:#000000;
+} 
+/* "返回活动首页"的位置背景图等，待设定 */
+#sidebar-second #block-views-fanyi_taxonomy-block_4 .attachment .view-header {
+background-image:none;
+border:0 none;
+margin:-72px 10px 20px 0;
+}
+/* IE6调整 ,用了绝对位置*/
+*html #sidebar-second #block-views-fanyi_taxonomy-block_4 .attachment .view-header {
+background-image:none;
+border:0 none;
+display:block;
+position:absolute;
+right:0px;
+top:40px;
+line-height:35px;
+}
+/* 两列排版 */
+#sidebar-second #block-views-fanyi_taxonomy-block_4 .view-content .views-row{
+float:left;
+padding:0 20px;
+width:88px;
+}
+#sidebar-second #block-views-fanyi_taxonomy-block_4 .view-content .views-row-last{
+float:none;
+}
+/* end right sidebar */
+
+
+
+/* 翻译分类显示页面*/
+.section-fanyi .view-fanyi .views-row{
+height:125px;
+line-height:25px;
+}
+/* “书名”、“章节数”、“最后更新时间”标题及内容的位置大小图片 */
+.section-fanyi #list_common_title div{
+background-image:url("images/video_titleall.jpg");
+font-size:12px;
+font-weight:bold;
+line-height:25px;
+height:25px;
+float:left;
+text-align:center;
+display:block;
+margin-top:-6px;
+}
+.section-fanyi .view-fanyi .views-field-title,
+.section-fanyi .view-fanyi .views-field-field-bookcase-zhangjieshu-value,
+.section-fanyi .view-fanyi .views-field-changed{
+background-color:#F3F3F3;
+font-size:12px;
+font-weight:normal;
+height:25px;
+float:left;
+text-align:center;
+display:block;
+margin:0px;
+}
+.section-fanyi .view-fanyi .views-field-title a{
+font-weight:bold;
+color:#996600;
+}
+.section-fanyi #list_common_title #lbookname,
+.section-fanyi .view-fanyi .views-field-title{
+width:30%;
+}
+.section-fanyi #list_common_title #lbookzhangjie,
+.section-fanyi .view-fanyi .views-field-field-bookcase-zhangjieshu-value{
+width:50%;
+}
+.section-fanyi #list_common_title #lbooktime,
+.section-fanyi .view-fanyi .views-field-changed{
+width:20%;
+}
+/* 中文书名、作者等左侧排列 以及中间的分割线 */
+.section-fanyi .view-fanyi .views-field-field-bookcase-ctitle-value,
+.section-fanyi .view-fanyi .views-field-field-bookcase-author-value,
+.section-fanyi .view-fanyi .views-field-totalcount,
+.section-fanyi .view-fanyi .views-field-field-bookcase-zhuangtai-value{
+width:150px;
+float:left;
+clear:left;
+height:25px;
+border-right:1px solid #dddddd;
+padding:0 10px;
+}
+/* 中文书名连接颜色 */
+.section-fanyi .view-fanyi .views-field-field-bookcase-ctitle-value a{
+color:#000000;
+}
+/* 简介、创建章节连接右侧排列 */
+.section-fanyi .view-fanyi .views-field-field-bookcase-contentintro-value, .section-fanyi .view-fanyi .views-field-field-bookcase-add-newchapter-url {
+float:right;
+margin-top:-75px;
+width:420px;
+}
+* html .section-fanyi .view-fanyi .views-field-field-bookcase-contentintro-value, .section-fanyi .view-fanyi .views-field-field-bookcase-add-newchapter-url {
+float:right;
+margin-top:0px;
+width:420px;
+}
+*+html .section-fanyi .view-fanyi .views-field-field-bookcase-contentintro-value, .section-fanyi .view-fanyi .views-field-field-bookcase-add-newchapter-url {
+float:right;
+margin-top:0px;
+width:420px;
+}
+.section-fanyi .view-fanyi .views-field-field-bookcase-contentintro-value .field-content{
+text-indent:26px;
+height:75px;
+}
+.section-fanyi .view-fanyi .views-field-field-bookcase-add-newchapter-url{
+text-align:right;
+margin-top:-25px;
+}
+/* 创建翻译书籍的链接 */
+.section-fanyi .attachment .view-fanyi .views-row{
+height:0px;
+}
+.section-fanyi .attachment .view-fanyi .views-field-field-bookcase-add-newchapter-url {
+/* margin-top:-45px; */
+position:relative;
+top:-40px;
+}
+/* end 翻译分类页面 */
+
+
+/* 翻译推荐开始 tab */
+/* .section-fanyituijian #main #content-header .tabs ul.primary li a {
+height:35px;
+line-height:35px;
+}
+.section-fanyituijian #main #content-header .tabs ul.primary li.active a {
+background-image:url("images/remph_titilebg2.jpg");
+}
+.section-fanyituijian #main #content-header .tabs ul.primary li.active a span {
+background-image:url("images/remph_titilebg1.jpg");
+color:#FFFFFF;
+font-size:14px;
+font-weight:700;
+height:30px;
+}
+.section-fanyituijian #main #content-header .tabs ul.primary li a .tab {
+background-image:none;
+color:#000000;
+font-size:12px;
+font-weight:100;
+} */
+/* 整体 table*/
+.section-fanyituijian  #main #content-area .view-fanyi-tuijian .view-content table{
+background-color:#FFFFFF;
+border:medium none;
+margin:0 auto;
+height:25px;
+line-height:25px;
+color:#666666;
+}
+/* 我也来推荐的位置 */
+.section-fanyituijian #main #content-area .attachment-before .view-header{
+background-image:url("images/wanttoask.jpg");
+background-position:left center;
+background-repeat:no-repeat;
+float:right;
+font-weight:bold;
+position:absolute;
+top:0px;
+left:510px;
+padding-left:20px;
+}
+/* 首行 */
+.section-fanyituijian  #main #content-area  .view-fanyi-tuijian .view-content thead tr{
+height:50px;
+line-height:20px;
+vertical-align:bottom;
+}
+/* 首列 */
+.section-fanyituijian #main #content-area .view-id-fanyi_tuijian .views-field-title{
+width:130px;
+}
+/* 第一行第一列 */
+.section-fanyituijian #main #content-area .view-id-fanyi_tuijian thead .views-field-title{
+background-image:url("images/lastnewslist.jpg");
+background-repeat:no-repeat;
+background-position:left bottom;
+font-size:14px;
+text-indent:20px;
+color:#32A444;
+text-align:left;
+}
+/* 具体内容 +我的巴别*/
+.section-fanyituijian #main #content-area .view-id-fanyi_tuijian .view-content tbody tr td ,
+#sidebar-second #block-views-fanyi-block_1 .view-content tbody tr td ,
+#sidebar-second #block-views-fanyi-block_2 .view-content tbody tr td ,
+#sidebar-second #block-views-fanyi-block_3 .view-content tbody tr td ,
+#sidebar-second #block-views-fanyi_tuijian-block_1 .view-content tbody tr td {
+background-color:#FFFFFF;
+border-bottom:1px solid #E5EBE1;
+}
+.section-fanyituijian #main #content-area .view-id-fanyi_tuijian a{
+color:#32A444;
+}
+/* 得票的设置 */
+.section-fanyituijian #main #content-area .view-id-fanyi_tuijian tbody .views-field-count {
+width:30px;
+color:#AE6000;
+background-image:url("images/youwenyouda_xuanshangfenshu.jpg");
+background-position:left center;
+background-repeat:no-repeat;
+padding-left:20px;
+}
+/* 投票，连接 的设置 */
+.section-fanyituijian #main #content-area .view-id-fanyi_tuijian .views-field-ops,
+.section-fanyituijian #main #content-area .view-id-fanyi_tuijian .views-field-field-fanyi-tuijian-lianjie-url{
+width:30px;
+padding:0px;
+}
+/* 覆盖2u4u中的th.active的颜色 */
+.section-fanyituijian #main #content-area .view-id-fanyi_tuijian thead th.active{
+color:#666666;
+font-size:12px;
+}
+/* end 翻译推荐 */
+
+
+/* 我的巴别  开始*//* 巴别塔图片 *//* 位置布局 */
+.babie {
+color:#996600;
+float:left;
+line-height:1.5em;
+width:200px;
+}
+/* 覆盖原有css */	
+.section-user #content-area .profile .picture {
+margin-top:0px;
+position:static;
+float:left;
+width:55px;
+}
+.section-user  #content-area .profile h3 {
+clear:left;
+}
+/* 巴别塔字颜色、图片 */
+.babie span{
+color:#000000;
+font-weight:bold;
+}
+.babie_jibie div{
+background-image:url("images/babie_mu.gif");
+background-position:right center;
+background-repeat:no-repeat;
+padding-right:20px;
+width:115px;
+}
+.babie_jibie .mu{
+background-image:url("images/babie_mu.gif");
+}
+.babie_jibie .tie{
+background-image:url("images/babie_tie.gif");
+}
+.babie_jibie .tong{
+background-image:url("images/babie_tong.gif");
+}
+.babie_jibie .yin{
+background-image:url("images/babie_yin.gif");
+}
+.babie_jibie .jin{
+background-image:url("images/babie_jin.gif");
+}
+
+/* 翻译bookcase与fanyi_chapter类型node页整体布局 */
+/* 外框 */
+.node-type-fanyi-chapter  #content-inner,
+.node-type-bookcase  #content-inner{
+border:1px solid #D1D1D1;
+padding:0 9px;
+min-height:300px;
+width:650px;
+}
+/* 去掉章节表格的宽度2u4u中 ,并设置章节内容布局 */
+#all-chapter-list table.sticky-enabled{
+border:medium none;
+margin:0 auto;
+clear:both;
+}
+#all-chapter-list table.sticky-enabled tr td{
+background-color:#FFFFFF;
+border-bottom:1px solid #E5EBE1;
+height:28px;
+padding:0 5px;
+}
+#all-chapter-list  td a:link,#all-chapter-list  td a:visited{
+color:#32A442;
+}
+/* bookcase 中书名、作者、章节数、状态、内容的布局 */
+.node-type-bookcase #content-area .node-inner .content{
+clear:both;
+}
+.node-type-bookcase .field-field-bookcase-ctitle,
+.node-type-bookcase  .field-field-bookcase-author,
+.node-type-bookcase  .field-field-now-total-zhangjie,
+.node-type-bookcase  .field-field-bookcase-zhangjieshu,
+.node-type-bookcase  .field-field-bookcase-zhuangtai{
+display:block;
+float:left;
+margin-left:20px;
+width:180px;
+overflow:hidden;
+}
+.node-type-bookcase  .field-field-now-total-zhangjie{
+float:left;
+clear:left;
+}
+.node-type-bookcase  .field-field-bookcase-contentintro{
+clear:left;
+padding:15px 26px;
+text-indent:26px;
+}
+/* 标题 加颜色*/
+.node-type-bookcase #content-header h1.title{
+color:#996600
+}
+/* 章节与标题在同一行 */
+.node-type-fanyi-chapter .field-field-fanyi-zhangjie {
+float:right;
+padding-right:25px;
+margin-top:-25px;
+font-size:1.1em;
+font-weight:bold;
+}
+/* 翻译人横排+评论作者颜色*/
+ .node-type-fanyi-chapter .field-field-fanyi-translators  {
+float:left;
+width:500px;
+line-height:150%;
+}
+.node-type-fanyi-chapter .field-field-fanyi-translators .field-label {
+float:left;
+} 
+.node-type-fanyi-chapter .field-field-fanyi-translators .field-items .field-item {
+float:left;
+}
+.node-type-fanyi-chapter .field-field-fanyi-translators  a:link,.node-type-fanyi-chapter .field-field-fanyi-translators  a:visited,
+.node-type-fanyi_comment .meta a{
+color:#996600;
+}
+/* 翻译状态 */
+.node-type-fanyi-chapter .field-field-fanyi-zhuangtai{
+line-height:150%;
+}
+/* 上一章、下一章链接右对齐 */
+.node-type-fanyi-chapter  #prev-next{
+float:left;
+padding-left:550px;
+line-height:150%;
+} 
+/* 投票打分横排 */
+.node-type-fanyi-chapter #nodevote-vote fieldset{
+clear:both;
+height:60px;
+padding:10px;
+}
+.node-type-fanyi-chapter #nodevote-vote fieldset div,
+.node-type-fanyi-chapter #nodevote-vote fieldset label,
+.node-type-fanyi-chapter #nodevote-vote fieldset  select,
+.node-type-fanyi-chapter #nodevote-vote fieldset  input {
+float:left;
+height:40px;
+line-height:40px;
+margin:0 2px;
+}
+.node-type-fanyi-chapter #nodevote-vote fieldset #pingfen-submit input {
+height:20px;
+margin:10px;
+}
+.node-type-fanyi-chapter #nodevote-vote fieldset select {
+height:20px;
+margin-top:10px;
+}
+/* 优良中差图片 */
+div #edit-degree-you-wrapper,div #edit-degree-liang-wrapper,div #edit-degree-zhong-wrapper,div #edit-degree-cha-wrapper{
+height:40px;
+width:60px;
+font-size:0;
+}
+div #edit-degree-you-wrapper{
+background:url(fanyi_images/you.jpg) no-repeat right center;
+}
+div #edit-degree-liang-wrapper{
+background:url(fanyi_images/liang.jpg) no-repeat right center;
+}
+div #edit-degree-zhong-wrapper{
+background:url(fanyi_images/zhong.jpg) no-repeat right center;
+}
+div #edit-degree-cha-wrapper{
+background:url(fanyi_images/cha.jpg) no-repeat right center;
+}
+.node-type-fanyi-chapter  #page #page-inner #main #main-inner #content #content-inner .content .form-submit{
+height:40px;
+line-height:40px;
+}
+
+/* 投票打分结果 */
+#content-area .node-type-fanyi-chapter div h3{
+font-size:1.1em;
+margin:0px;
+line-height:2em;
+}
+#content-area .node-type-fanyi-chapter div br{
+display:none;
+}
+/* add翻译页面整体字体的设置 */
+/* .section-node-add #content .content {
+font-size:12px;
+line-height:100%;
+}
+.section-node-add #content .node-type-fanyi-chapter  h2.title {
+font-size:1.3em;
+line-height:100%;
+font-weight:bold;
+padding:5px 10px 20px 0;
+}
+ */
+/* 翻译评论 */
+.node-type-fanyi-chapter #comments .view-header{
+background-image:url("images/video_titleall.jpg");
+border:medium none;
+clear:both;
+font-size:13px;
+font-weight:700;
+height:35px;
+line-height:35px;
+margin-left:-9px;
+width:648px;
+text-align:left;
+padding-left:20px;
+}
+.node-type-fanyi-chapter #comments .view-header a,.node-type-fanyi-chapter .comment_add a{
+color:red;
+padding-left:18px;
+}
+.node-type-fanyi-chapter #comments .view-header .title ,.node-type-fanyi-chapter .comment_add{
+background-image:url("images/pinglun.gif");
+background-position:left center;
+background-repeat:no-repeat;
+}
+.node-type-fanyi_comment{
+width:100%;
+border-bottom:1px dotted #d1d1d1;
+clear:both;
+}
+.node-type-fanyi_comment h2.title{
+background-color:#f3f3f3;
+font-size:1.1em;
+line-height:2em;
+padding-left:20px;
+font-weight:600;
+}
+.node-type-fanyi_comment h2.title a,.node-type-fanyi-chapter #prev-next a{
+color:#000000;
+}
+.node-type-fanyi_comment .content{
+text-indent:26px;
+}
+.node-type-fanyi_comment .links li {
+background-image:url("images/fanyi_comment_button.gif");
+background-repeat:no-repeat;
+display:block;
+float:left;
+height:1.3em;
+line-height:1.3em;
+text-align:center;
+width:55px;
+margin:0 0 2px 0;
+}
+.node-type-fanyi_comment .links li.statistics_counter{
+background-image:none;
+}
+.node-type-fanyi_comment .links li a{
+color:#996600;
+} 
+/* end 翻译章节node页布局 */
+
+
+/* -------------------------  小组 开始 ---------------------------- */
+/* 右边栏小组头像对齐 */
+#sidebar-second .block-id-2490 td{
+vertical-align:top;
+}
+
+/* --------------------------------导航 -----------------------*/
+ul#primary {
+ position: relative;
+ float: left;
+}
+ul#primary li{
+ display:block;
+ float:left;
+ height:53px;
+ line-height:40px;
+ font-size:14px;
+ font-weight:bold;
+ padding:0 12px;
+ z-index: 4; 
+}
+ul#primary li a{
+ display:block;
+ float:left;
+ height:53px;
+ line-height:40px;
+ 
+ color:#961F1F; 
+ position: relative;
+ z-index: 5;
+}
+
+ul#primary li.blob{
+ position: absolute;
+ top: 0;
+ z-index: 1; 
+ background: url("fp_images/bg-6.gif") no-repeat scroll 0 -1px; 
+
+ padding:0 0 0 12px; 
+}
+ul#primary li.blob a{
+position: absolute;
+top: 0;
+z-index: 1; 
+background: url("fp_images/bg-6.gif") no-repeat scroll right -1px;
+display: block;
+cursor:default;
+} 
+ul#primary li a:hover {
+color:#ffffff;
+text-decoration:none;
+}
+
+
+/* ----------------header -----------------*/
+/* logo 左飘*/
+#logo-title {
+	height: 50px;
+	width: 160px;
+	float: left;
+	margin-top: 5px;
+}
+/* logo右侧的区域 */
+#header-region{
+float:right;
+width:800px;
+padding-top: 20px;
+}
+/* 具体内容 */
+#block-block-73{
+	float: right;
+/* 	height: 20px; */
+}
+/* 联系方式 */
+.head-tel {
+background:url("fp_images/tel.gif") no-repeat scroll left center transparent;
+color:#E9742E;
+font-weight:bold;
+margin-left:20px;
+padding-left:20px;
+}
+/* 用户登录以及用户名和积分的颜色设置 */
+.user_log,.user_log a,.user_log a:link,.user_log a:visited,.user_log a:hover {
+color:#9E254A;
+}
+
+
+/*----------------------------------- 首页flash 幻灯片---------------------------------*/
+#huandengpian{	/* 幻灯片总体设置 */
+position:relative;
+/* width:480px; */
+border:1px solid #CA8080;
+background-color:#ffffff;
+}
+		/* 幻灯片左侧大图与文字 */
+#huandengpian .views-field-field-fpflash-image-fid,#huandengpian .views-field-field-fpflash-description-value{
+width:340px;
+padding:5px 5px 1px;
+display:none;
+line-height:19px;
+margin:0;
+height:200px;
+}
+#huandengpian .views-field-field-fpflash-description-value{
+height:45px;
+}
+#huandengpian .views-row-1 .views-field-field-fpflash-image-fid,#huandengpian .views-row-1 .views-field-field-fpflash-description-value{
+display:block;
+}
+
+		/* 右侧标题 */
+#huandengpian .views-field-title{
+width:115px;
+border-top:1px solid #dddddd;
+border-left:1px solid #dddddd;
+left:352px;
+padding:5px;
+position:absolute;
+height:42px;/* _height:43px; */
+/* overflow:visible; */
+/* margin-left:12px;
+padding-left:-12px; */
+}
+#huandengpian .views-field-title  span.field-content{
+display:block;
+height:39px;
+line-height:20px;
+position:relative;
+left:-12px;
+padding-left:12px;
+* margin-top:2px;
+}
+/* 标题鼠标hover的样式 */
+#huandengpian .on .views-field-title{
+background-color:#F7D9D7;
+border:1px solid #E9C0BE;
+border-right:0px;
+height:41px; _height:42px; 
+z-index:5;
+}
+#huandengpian .on .views-field-title  span.field-content{
+background:url("fp_images/arrow2.gif") no-repeat scroll left center transparent;
+}
+#huandengpian .on .views-field-title  a{
+color:#961F1F;
+text-decoration:none;
+}
+		/* 标题相对于#huandengpian的绝对位置 */
+#huandengpian .views-row-1 .views-field-title {
+border-top:0;
+height:42px;
+top:0px;_top:1px;
+}
+
+#huandengpian .views-row-2 .views-field-title {
+top:51px;_top:52px;
+}
+#huandengpian .views-row-3 .views-field-title {
+top:103px;_top:104px;
+}
+#huandengpian .views-row-4 .views-field-title {
+top:154px;_top:155px;
+}
+#huandengpian .views-row-5 .views-field-title {
+border-bottom:0;
+top:205px;_top:208px;
+}
+
+/* 幻灯片 flash end */
+
+
+/* 电子图书馆切换 */
+#view_yuedu{
+position:relative;
+}
+#yuedu_left{
+position:absolute; 
+top:0px;
+width:705px;
+float:left;
+z-index:1;
+}
+#shipin_left{
+float:left;
+position:relative;
+width:705px;
+z-index:1;
+}
+
+#yuedu_right,#shipin_right{
+float:right;
+padding:0 15px;
+position:relative;
+width:215px;
+}
+
+ #yuedu_hover UL.dl-tabs li.tabs {
+ display:block;
+height:25px;
+padding:15px 17px 0;
+text-align:center;
+width:85px;
+float:left;
+background:url("fp_images/tab-6.gif") no-repeat scroll 0 0 transparent;
+cursor:pointer;
+left:140px;
+position:relative;
+}
+/* #yuedu_hover UL.dl-tabs li#tab1{
+ margin-left:140px;_ margin-left: 70px;
+ } */
+ #yuedu_hover UL.dl-tabs li.active{
+background:url("fp_images/tab-5.gif") no-repeat scroll 0 0 transparent;
+}
+#yuedu_hover UL.dl-tabs li.active a{
+background:none;
+color:#961F1F;
+border-bottom:none;
+}
+#yuedu_hover UL.dl-tabs li  a{
+float:none; 
+background:none;
+border:none;
+padding:0;
+text-align:center;
+width:100%;
+list-style:none;
+display:inline;
+}
+#yuedu_hover  .dl-panes {
+border:0 none;
+left:2px;
+padding:0;
+top:10px;
+}
+#yuedu_hover  .dl-panes .pane{
+display:none;
+}
+/* #yuedu_hover  .dl-panes #pane_tab1{
+display:block;
+} */
+#yuedu_hover .dl-panes .on {
+	display:block;
+}
+#yuedu_xinshu{
+border-top:1px dashed #dddddd;
+margin:0 10px 0 18px;
+clear:both;
+height:80px;
+* margin:0 5px 0 8px;
+_ margin:0 5px 0 8px;
+}
+
+
+
+
+/*--------------- 切换tabs ----------------*/
+UL.dl-tabs{ position:relative; z-index:5;clear:both;}
+UL.dl-tabs li {
+display:inline;
+}
+UL.dl-tabs li  a{
+float:left; 
+background:url("images/dl_images-05.gif") repeat-x scroll 0 0 transparent;
+border:1px solid #DDDDDD;
+padding:4px 0 3px;
+text-align:center;
+width:140px;
+list-style:none;
+display:block;
+}
+UL.dl-tabs li.active a{
+background:none;
+color:#961F1F;
+border-bottom:1px solid #FFFFFF;
+ z-index:7;
+}
+.dl-panes{
+border-top:1px solid #ddd;
+padding:10px;
+position:relative;
+top:-1px;
+z-index:1;
+}
+.dl-panes .pane {
+display:none;
+}
+#pane_tab1 ,#pane_tab4 {
+display:block;
+}
+/* 首页登录 区块显示设置*/
+#pane_ltab1 {
+display:block;
+}
+/* this makes it possible to add next button beside view-content */
+.gundong .view-content{
+position:relative;
+width:20000em;
+z-index:1;
+}
+.gundong  .view-content .views-row{
+float:left;
+width:120px;
+}
+.gundong .view-product-dl{
+	position:relative;
+	overflow:hidden;
+	width: 600px;
+	clear:both;
+}
+ 

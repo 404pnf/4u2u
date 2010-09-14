@@ -1,0 +1,78 @@
+<?php
+// $Id: nodehierarchy.install,v 1.1.4.2 2008/05/14 22:22:00 ronan Exp $
+
+/**
+ * Implementation of hook_install().
+ */
+function nodehierarchy_install() {
+  // Create tables.
+  drupal_install_schema('nodehierarchy');
+}
+
+/**
+ * Implementation of hook_enable().
+ */
+function nodehierarchy_enable() {
+  // Insert records into the nodehierarchy for nodes that are missing.
+  nodehierarchy_add_default_parents();
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function nodehierarchy_schema() {
+  $schema['nodehierarchy'] = array(
+    'fields' => array(
+      'nid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('The {node}.nid whose parent is being defined.'),
+      ),
+      'parent' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('The {node}.nid of the parent node.'),
+      ),
+      'order_by' => array(
+        'type' => 'float',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => t('The sort order or weight of the node.'),
+      ),
+    ),
+    'primary key' => array('nid'),
+  );
+  return $schema;
+}
+
+function nodehierarchy_uninstall() {
+  drupal_uninstall_schema('nodehierarchy');
+  foreach (node_get_types() as $key => $type) {
+    variable_del('nh_child_'. $key);
+    variable_del('nh_parent_'. $key);
+    variable_del('nh_defaultparent_'. $key);
+  }
+}
+
+function nodehierarchy_update_1() {
+  return nodehierarchy_add_default_parents();
+}
+
+// Add nodehierarchy records for pre-existing nodes.
+function nodehierarchy_add_default_parents() {
+  $out = array();
+  $result = db_query("SELECT n.nid FROM {node} n LEFT JOIN {nodehierarchy} h ON n.nid = h.nid WHERE h.parent IS NULL ORDER BY n.nid");
+  $order_by = 1;
+  while ($node = db_fetch_object($result)) {
+    if (function_exists("update_sql")) {
+      $out[] = update_sql("INSERT INTO {nodehierarchy} VALUES ($node->nid, 0, $order_by)");
+    }
+    else {
+      db_query("INSERT INTO {nodehierarchy} VALUES ($node->nid, 0, $order_by)");
+    }
+    $order_by++;
+  }
+  return $out;
+}

@@ -1,0 +1,41 @@
+name = 2u4u.ebook
+description = dependencies holder
+core = 6.x
+package = 2u4u
+version = 6.01
+dependencies[] = link
+dependencies[] = userpoints
+;dependencies[] = rules
+dependencies[] = text
+; 阅读的flash播放器需要amfphp来和service通讯
+dependencies[] = amfphp
+; 阅读模块需要下面的service配合flash播放器
+dependencies[] = System Service
+dependencies[] = User Service
+; 通过点击flag和用户加分
+dependencies[] = duhougan
+dependencies[] = yuedu
+; 读后感选取赛区的联动菜单？
+dependencies[] = ahah_helper
+; 阅读频道生成分类的区块
+; 不知道用在哪里了？
+dependencies[] = taxonomyblocks
+dependencies[] = content_profile
+; 为主站首页输出views
+dependencies[] = views_service
+; 阅读频道的flash播放器需要swftools支持
+dependencies[] = swftools
+; 读后感比赛关联读后感文章和ebook
+dependencies[] = nodehierarchy
+; drupal核心的自带模块，负责php filter，在views的header中以及读后感
+; 比赛首页中都内嵌了php代码。这些代码争取逐步移到模块和模板中
+dependencies[] = php
+; 暂时我们用gmail发信
+dependencies[] = phpmailer
+; 这个不确定是否读后感还在用 选取省市、赛区和组别的
+dependencies[] = hierarchical_select
+;dependencies[] = swftools
+;dependencies[] = swftools
+;dependencies[] = swftools
+;dependencies[] = swftools
+

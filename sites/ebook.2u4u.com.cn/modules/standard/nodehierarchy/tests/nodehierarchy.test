@@ -1,0 +1,153 @@
+<?php
+
+/**
+ * Base class for nodehierarchy tests.
+ * Defines helper functions.
+ */
+class NodehierarchyTestCase extends DrupalWebTestCase {
+  var $content_types  = array();
+  var $nodes          = array();
+
+  /**
+   * Enable Nodehierarchy module.
+   */
+  function setUp() {
+    parent::setUp('nodehierarchy');
+  }
+
+  // Login/user helper functions
+  /**
+   * Creates a user / role with certain permissions and then logs in as that user
+   * @param $permissions Array containing list of permissions.
+   */
+  function loginWithPermissions($permissions = NULL) {
+    if (!isset($permissions)) {
+      $permissions = array(
+        'access content',
+        'administer content types',
+        'administer nodes',
+        'administer hierarchy',
+        'create child nodes',
+        'edit all node parents',
+        'edit own node parents',
+        'reorder children',
+        'view site outline',
+      );
+    }
+    $user = $this->drupalCreateUser($permissions);
+    $this->drupalLogin($user);
+  }
+  
+  /**
+   * Create a parent node type
+   * 
+   * @return 
+   *   Created node type object.
+   */  
+  function createParentType() {
+    $parent_type_name = 'simpletest'. mt_rand();
+    $type = $this->drupalCreateContentType(array('type' => $parent_type_name, 'name' => $parent_type_name, 'nh_parent' => 1));
+    return $type;
+  }
+  
+  /**
+   * Create a child node type
+   * 
+   * @return 
+   *   Created node type object.
+   */  
+  function createChildType() {
+    $child_type_name = 'simpletest'. mt_rand();
+    $type = $this->drupalCreateContentType(array('type' => $child_type_name, 'name' => $child_type_name, 'nh_child' => 1));
+    return $type;
+  }
+  
+  /**
+   * Creates a parent node.
+   * 
+   * @param $settings
+   *   An associative array of settings to be passed to drupalCreateNode. If none given
+   *   then it creates a new node type and uses that instead
+   * @return 
+   *   Created node object.
+   */  
+  function createParentNode($edit = array()) {
+    if(isset($edit['type'])) {
+      $ctype = $this->createParentType();
+      $edit['type'] = $ctype->type;
+    }
+    $node = $this->drupalCreateNode($edit);
+    
+    return $node;
+  }
+}
+
+class NodeHierarchyCreateParentChildTests extends NodehierarchyTestCase {
+  
+  function getInfo() {
+    return array(
+      'name' => t('Nodehierarchy Test Functionality'),
+      'description' => t('Test nodehierarchy.'),
+      'group' => t('Nodehierarchy'),
+    );
+  }
+
+  function setUp() {
+    parent::setUp();
+    $this->loginWithPermissions();
+  }
+
+  function testCreateChildNode() {
+    $parent_node = $this->createParentNode();
+    
+    $child_type = $this->createChildType();
+    
+    $edit['type'] = $child_type->type;
+    $edit['parent'] = $parent_node->nid;
+    $child_node = $this->drupalCreateNode($edit);
+    $child_node_load = node_load($child_node->nid);
+    $this->assertEqual($parent_node->nid, $child_node_load->parent, 'Child node has parent id: ' . $child_node_load->parent);
+  }  
+}
+
+class NodeHierarchyPermissionsTests extends NodehierarchyTestCase {
+  
+  function getInfo() {
+    return array(
+      'name' => t('Nodehierarchy Permissions'),
+      'description' => t('Test nodehierarchy permissions.'),
+      'group' => t('Nodehierarchy'),
+    );
+  }
+
+  function setUp() {
+    parent::setUp();
+  }
+
+  function testSiteOutlineInvalidPermissions() {
+    // all sorts of permissions except 'view site outline'
+    $perm = array(
+      'access content',
+      'administer nodes',
+      'administer hierarchy',
+      'create child nodes',
+      'edit all node parents',
+      'edit own node parents',
+      'reorder children',
+    );
+    $this->loginWithPermissions($perm);
+    
+    $this->drupalGet('admin/content/nodehierarchy');
+    $this->assertResponse('403', 'Site Outline returned 403 Forbidden');
+  }  
+
+  function testSiteOutlineValidPermissions() {
+    $perm = array(
+      'view site outline',
+    );
+    $this->loginWithPermissions($perm);
+        
+    $this->drupalGet('admin/content/nodehierarchy');
+    $this->assertResponse('200', 'Site Outline returned 200');
+  }
+}

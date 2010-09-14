@@ -1,0 +1,3 @@
+name = "Legacy Importer"
+description = "Import old data (users and q&a)"
+core = 6.x

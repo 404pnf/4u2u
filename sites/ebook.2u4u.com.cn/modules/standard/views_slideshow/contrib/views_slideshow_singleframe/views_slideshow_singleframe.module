@@ -1,0 +1,53 @@
+<?php
+// $Id: views_slideshow_singleframe.module,v 1.1.2.1.2.3 2009/09/26 22:20:50 redndahead Exp $
+
+/**
+ *  @file
+ *  The Views Slideshow: SingleFrame adds a Single Frame slideshow mode to Views Slideshows.
+ */
+
+/**
+ *  Implements hook_theme().
+ */
+function views_slideshow_singleframe_theme($existing, $type, $theme, $path) {
+  return array(
+    'views_slideshow_singleframe' => array(
+      'arguments' => array('view' => NULL, 'options' => array(), 'rows' => array(), 'title' => ''),
+      'template' => 'views-slideshow-singleframe',
+      'file' => 'views_slideshow_singleframe.theme.inc',
+    ),
+    'views_slideshow_singleframe_controls' =>array(
+      'arguments' => array('id' => '', 'view' => NULL, 'options' => array()),
+      'file' => 'views_slideshow_singleframe.theme.inc',
+    ),
+    'views_slideshow_singleframe_control_previous' =>array(
+      'arguments' => array('id' => '', 'view' => NULL, 'options' => array()),
+      'file' => 'views_slideshow_singleframe.theme.inc',
+    ),
+    'views_slideshow_singleframe_control_pause' =>array(
+      'arguments' => array('id' => '', 'view' => NULL, 'options' => array()),
+      'file' => 'views_slideshow_singleframe.theme.inc',
+    ),
+    'views_slideshow_singleframe_control_next' =>array(
+      'arguments' => array('id' => '', 'view' => NULL, 'options' => array()),
+      'file' => 'views_slideshow_singleframe.theme.inc',
+    ),
+    'views_slideshow_singleframe_pager' => array(
+      'arguments' => array('id' => '', 'view' => NULL, 'options' => array()),
+      'file' => 'views_slideshow_singleframe.theme.inc',
+    ),
+    'views_slideshow_singleframe_image_count' => array(
+      'arguments' => array('id' => '', 'view' => NULL, 'options' => array()),
+      'file' => 'views_slideshow_singleframe.theme.inc',
+    ),
+    'views_slideshow_singleframe_no_display_section' => array(
+      'arguments' => array('view' => NULL, 'rows' => NULL, 'id' => NULL, 'mode' => NULL, 'teaser' => TRUE),
+      'file' => 'views_slideshow_singleframe.theme.inc',
+    ),    
+    'views_slideshow_singleframe_no_display_teaser' => array(
+      'arguments' => array('item' => NULL, 'id' => NULL, 'count' => NULL),
+      'file' => 'views_slideshow_singleframe.theme.inc',
+    ),
+  );
+}
+

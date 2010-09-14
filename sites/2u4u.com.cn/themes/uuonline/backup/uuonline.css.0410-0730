@@ -1,0 +1,1829 @@
+/* $Id: zen.css,v 1.14.2.1 2009/02/13 07:46:04 johnalbin Exp $ */
+
+/*
+ * ZEN STYLES
+ *
+ * This is an example stylesheet. Sub-themes should NOT include the zen/zen.css
+ * file, but instead copy this CSS to their own stylesheets.
+ *
+ * In this stylesheet, we have included all of the classes and IDs from this
+ * theme's tpl.php files. We have also included many of the useful Drupal core
+ * styles to make it easier for theme developers to see them.
+ *
+ * Many of these styles are over-riding Drupal's core stylesheets, so if you
+ * remove a declaration from here, the styles may still not be what you want
+ * since Drupal's core stylesheets are still styling the element. See the
+ * drupal6-reference.css file for a list of all Drupal 5.x core styles.
+ *
+ * In addition to the style declarations in this file, other Drupal styles that
+ * you might want to override or augment are those for:
+ *
+ *   Book Navigation  See line 74  of Zen's drupal6-reference.css file
+ *   Forum            See line 197 of Zen's drupal6-reference.css file
+ *   Menus            See line 667 of Zen's drupal6-reference.css file
+ *   News Aggregator  See line 20  of Zen's drupal6-reference.css file
+ *   Polls            See line 287 of Zen's drupal6-reference.css file
+ *   Search           See line 320 of Zen's drupal6-reference.css file
+ *   User Profiles    See line 945 of Zen's drupal6-reference.css file
+ */
+
+
+/** body **/
+
+  body
+  {
+    margin: 0;
+    padding: 0;
+  }
+
+  #page
+  {
+  }
+
+  #page-inner
+  {
+  }
+
+/** header **/
+  #header
+  {
+  }
+
+  #header-inner
+  {
+	padding:15px 0 15px 0;
+	margin:0 auto;
+	width:940px;
+  }
+
+  #logo-title /* Wrapper for logo, website name, and slogan */
+  {
+  }
+
+  #logo /* Wrapper for logo */
+  {
+    margin: 0 10px 0 0;
+    padding: 0;
+  }
+
+  #logo-image /* The actual logo image */
+  {
+  }
+
+  h1#site-name, div#site-name /* The name of the website */
+  {
+    color:#666;
+    margin: 0;
+    font-size: 1.8em;
+    line-height: 1.3em;
+  }
+
+  #site-name a:link,
+  #site-name a:visited
+  {
+    color: #000;
+    text-decoration: none;
+  }
+
+  #site-name a:hover
+  {
+    text-decoration: none;
+  }
+
+  #site-slogan /* The slogan (or tagline) of a website */
+  {
+	padding-top:20px;
+  }
+
+  #header-blocks /* Wrapper for any blocks placed in the header region */
+  {
+  }
+
+/** main (container for everything else) **/
+  #main
+  {
+  padding:20px 0 7px 0;
+  }
+
+  #main-inner
+  {
+	margin:0 auto;
+	width:940px;
+  }
+
+/** content **/
+  #content
+  {
+  border-right:1px solid #EBE8D5;
+  padding-right:20px;
+  min-height:500px;
+  height:auto !important;
+  height:500px;
+  position:relative;
+  }
+
+  #content-inner
+  {
+	
+  }
+
+  #mission /* The mission statement of the site (displayed on homepage) */
+  {
+  }
+
+  #content-top /* Wrapper for any blocks placed in the "content top" region */
+  {
+  }
+
+  #content-header /* Wrapper for breadcrumb, title, messages, tabs, and help */
+  {
+  	padding-bottom:2em;
+  }
+
+  .breadcrumb /* The path to the current page in the form of a list of links */
+  {
+    padding-bottom: 0; /* Undo system.css */
+  }
+
+  h1.title, /* The title of the page */
+  h2.title, /* Block title or the title of a piece of content when it is given in a list of content */
+  h3.title /* Comment title */
+  {
+    margin: 0;
+  }
+
+  div.messages /* Important messages (status, warning, and error) for the user */
+  {
+  }
+
+  div.status /* Normal priority messages */
+  {
+  }
+
+  div.warning, tr.warning /* Medium priority messages */
+  {
+    /* border: 1px solid #f0c020; */ /* Drupal core uses: 1px solid #f0c020 */
+  }
+
+  div.error, tr.error /* High priority messages. See also the .error declaration below. */
+  {
+  }
+
+  div.tabs /* See also the tabs.css file. */
+  {
+  }
+
+  .help /* Help text on a page */
+  {
+    margin: 1em 0;
+  }
+
+  .more-help-link /* Link to more help */
+  {
+    font-size: 0.85em;
+    text-align: right;
+  }
+
+  #content-area /* Wrapper for the actual page content */
+  {
+  }
+
+  .item-list .pager /* A list of page numbers when more than 1 page of content is available */
+  {
+    clear: both;
+    margin: 1em 0;
+    text-align: center;
+    padding:20px 0 0 0;
+  }
+
+  .pager a, .pager strong.pager-current
+  {
+    padding: 0.5em;
+  }
+
+  .feed-icons /* The links to the RSS or Atom feeds for the current list of content */
+  {
+    margin: 1em 0;
+  }
+
+  #content-bottom /* Wrapper for any blocks placed in the "content bottom" region */
+  {
+  }
+
+/** navbar **/
+  #navbar
+  {
+  }
+
+  #navbar-inner
+  {
+  }
+
+  #search-box /* Wrapper for the search form */
+  {
+  }
+
+  #edit-search-theme-form-1-wrapper label /* Label that says "Search this site:" */
+  {
+    display: none;
+  }
+
+  #primary/* Primary links */
+  {
+
+  }
+
+#primary{
+	position: relative;
+	padding: 0;
+	margin: 0;
+	background: url(images/primary_bg.png) repeat-x; /*tab background image path*/
+	height: 41px;
+}
+#primary ul{
+	padding:0;
+	list-style-type:none;
+	margin:0 auto;
+	width:940px;
+}
+
+#primary ul li{
+	float:left;
+}
+
+#primary ul li a{
+	float: left;
+	display: block;
+	color:#fff;
+	text-decoration: none;
+	font-family: sans-serif;
+	font-size: 14px;
+	font-weight: bold;
+	padding:0 0 0 16px; /*Padding to accomodate left tab image. Do not change*/
+	height: 41px;
+	line-height: 41px;
+	text-align: center;
+	cursor: pointer;	
+}
+
+#primary ul li a span{
+	float: left;
+	display: block;
+	padding: 0 24px 0 8px; /*Padding of menu items*/
+}
+#primary ul li a:hover{color:#fff;background:transparent url(images/primary_bg_OVER.png) repeat-x top left;}
+#primary ul li a:hover span{display:block;width:auto;cursor:pointer;}
+#primary ul li.active a,#primary_menu ul li a.active:hover{
+	color: #fff;
+	background: url(images/primary_left_ON.png) no-repeat; /*left tab image path*/
+	background-position: left top;
+}
+
+#primary ul li a.active span{
+	color: #fff;
+	background: url(images/primary_right_ON.png) no-repeat right top; /*right tab image path*/
+}
+
+  #secondary /* Secondary links */
+  {
+  }
+
+/** sidebar-left **/
+  #sidebar-left
+  {
+  }
+
+  #sidebar-left-inner
+  {
+  }
+
+/** sidebar-right **/
+  #sidebar-right
+  {
+  }
+
+  #sidebar-right-inner
+  {
+  }
+
+/** footer **/
+  #footer
+  {
+  }
+
+  #footer-inner
+  {
+  }
+
+  #footer-message /* Wrapper for the footer message from Drupal's "Site information"
+                     and for any blocks placed in the footer region */
+  {
+  }
+
+/** closure **/
+  #closure-blocks /* Wrapper for any blocks placed in the closure region */
+  {
+  }
+
+/** Drupal nodes **/
+  .node /* Node wrapper */
+  {
+  }
+
+  .node-inner /* Additional wrapper for node */
+  {
+  }
+
+  .sticky /* A sticky node (displayed before others in a list) */
+  {
+  }
+
+  .node-unpublished /* Unpublished nodes */
+  {
+    /* background-color: #fff4f4; */ /* Drupal core uses a #fff4f4 background */
+  }
+
+  .node-unpublished div.unpublished, /* The word "Unpublished" displayed beneath the content. */
+  .comment-unpublished div.unpublished
+  {
+    height: 0;
+    overflow: visible;
+    color: #d8d8d8;
+    font-size: 75px;
+    line-height: 1;
+    font-family: Impact, "Arial Narrow", Helvetica, sans-serif;
+    font-weight: bold;
+    text-transform: uppercase;
+    text-align: center;
+    word-wrap: break-word; /* A very nice CSS3 property */
+  }
+
+  .node-mine /* A node created by the current user */
+  {
+  }
+
+  .node-teaser /* A node displayed as teaser */
+  {
+  }
+
+  /* All nodes are given a node-type-FOO class that describes the type of
+   * content that it is. If you create a new content type called
+   * "my-custom-type", it will receive a "node-type-my-custom-type" class.
+   */
+  .node-type-page /* Page content node */
+  {
+  }
+
+  .node-type-story /* Story content node */
+  {
+  }
+
+  .node h2.title /* Node title */
+  {
+	
+  }
+
+  .marker /* "New" or "Updated" marker for content that is new or updated for the current user */
+  {
+    color: #c00;
+  }
+
+  .node .picture /* The picture of the node author */
+  {
+  float:left;
+  border:1px solid #AAAAAA;
+height:50px;
+overflow:hidden;
+padding:1px;
+width:50px;
+  }
+
+  .node.node-unpublished .picture,
+  .comment.comment-unpublished .picture
+  {
+    position: relative; /* Otherwise floated pictures will appear below the "Unpublished" text. */
+  }
+
+  .node .meta /* Wrapper for submitted and terms data */
+  {
+  }
+
+  .node .submitted /* The "posted by" information */
+  {
+  }
+
+  .node .terms /* Node terms (taxonomy) */
+  {
+  }
+
+  .node .content /* Node's content wrapper */
+  {
+  clear:both;
+  }
+
+  .node div.links /* Wrapper for node links */
+  {
+    margin: 1em 0;
+  }
+
+  ul
+  {
+  	list-style-type: none;
+  }
+  ul.links /* Taxonomy links, node links, comment links */
+  {
+    margin: 0;
+    padding: 0;
+  }
+
+  ul.links.inline
+  {
+    display: inline;
+  }
+
+  ul.links li
+  {
+    display: inline;
+    list-style-type: none;
+    padding: 0 0.5em;
+  }
+
+  .preview .node /* Preview of the content before submitting new or updated content */
+  {
+    /* background-color: #ffffea; */ /* Drupal core uses a #ffffea background */
+  }
+
+/** Drupal comments **/
+  #comments /* Wrapper for the list of comments and its title */
+  {
+    margin: 40px 0 20px 0;
+    position:relative;
+  }
+  #comments .box
+  {
+    margin: 40px 0 20px 0;
+  }
+  #comments-title /* Heading for the list of comments */
+  {
+  }
+
+  .comment /* Wrapper for a single comment */
+  {
+  }
+
+  .comment-inner /* Additional wrapper for a single comment */
+  {
+  padding:10px 15px 0;
+  }
+.node-container, .comment-container {
+background-color:#FFFFFF;
+border:1px solid #CCCCCC;
+position:relative;
+}
+  .comment-preview /* Preview of the comment before submitting new or updated comment */
+  {
+  }
+
+  .comment.new /* A new comment since the user last viewed the page. */
+  {
+  }
+
+  .comment.odd /* An odd-numbered comment in the list of comments */
+  {
+  }
+
+  .comment.even /* An even-numbered comment in the list of comments */
+  {
+  }
+
+  .comment.first /* The first comment in the list of comments */
+  {
+  }
+
+  .comment.last /* The last comment in the list of comments */
+  {
+  }
+
+  .comment-unpublished /* Unpublished comments */
+  {
+    /* background-color: #fff4f4; */ /* Drupal core uses a #fff4f4 background */
+  }
+
+  .comment-unpublished div.unpublished /* The word "Unpublished" displayed beneath the content. See also the div.unpublished declaration in the node section above. */
+  {
+  }
+
+  .comment-published /* Published comments */
+  {
+  }
+
+  .comment-by-anon /* A comment created by an anonymous user */
+  {
+  }
+
+  .comment-by-author /* A comment created by the node's author */
+  {
+  }
+
+  .comment-mine /* A comment created by the current user */
+  {
+  }
+
+  .comment h3.title /* Comment title */
+  {
+  }
+
+  .new /* "New" marker for comments that are new for the current user */
+  {
+    color: #c00;
+  }
+
+  .comment .picture /* The picture of the comment author */
+  {
+  }
+
+  .comment .submitted /* The "posted by" information */
+  {
+  }
+
+  .comment .content /* Comment's content wrapper */
+  {
+  }
+
+  .comment .user-signature /* The user's signature */
+  {
+  }
+
+  .comment div.links /* Wrapper for comment links. See also the ul.links declaration in the node section above. */
+  {
+    margin: 1em 0;
+  }
+
+  .indented /* Nested comments are indented */
+  {
+    /* margin-left: 25px; */ /* Drupal core uses a 25px left margin */
+  }
+
+  .preview .comment /* Preview of the comment before submitting new or updated comment */
+  {
+    /* background-color: #ffffea; */ /* Drupal core uses a #ffffea background */
+  }
+
+/** Drupal blocks **/
+  .block /* Block wrapper */
+  {
+    margin-bottom: 1em;
+  }
+
+  .block.region-odd /* Zebra striping for each block in the region */
+  {
+  }
+
+  .block.region-even /* Zebra striping for each block in the region */
+  {
+  }
+
+  .block.odd /* Zebra striping independent of each region */
+  {
+  }
+
+  .block.even /* Zebra striping independent of each region */
+  {
+  }
+
+  .region-count-1 /* Incremental count for each block in the region */
+  {
+  }
+
+  .count-1 /* Incremental count independent of each region */
+  {
+  }
+
+  .block-inner /* Additional wrapper for block */
+  {
+  }
+
+  .block h2.title, .node h2.title { /* Block title */
+    background-image:url(images/subheader_bg_right.jpg);
+    background-position:right top;
+    background-repeat:no-repeat;
+    height:30px;
+    margin-left:12px;
+    width:548px;
+    font-size:14px;
+	padding-top:5px;
+	color:#666;
+  }
+  .h2Container
+  {
+	position:relative;
+	top:0;
+	font-size:14px;
+	color:#666666;
+	font-weight:normal;
+	background-color:transparent;
+	background-image:url(images/subheader_bg_left.jpg);
+	background-position:left top;
+	background-repeat:no-repeat;
+  }
+  #sidebar-right .block h2.title {
+    width:300px;
+  }
+  .block h2.title a
+  {
+	color:#666;
+  }
+  .block .content /* Block's content wrapper */
+  {
+  }
+
+  #block-aggregator-category-1 /* Block for the latest news items in the first category */
+  {
+  }
+
+  #block-aggregator-feed-1 /* Block for the latest news items in the first feed */
+  {
+  }
+
+  #block-block-1 /* First administrator-defined block */
+  {
+  }
+
+  #block-blog-0 /* "Recent blog posts" block */
+  {
+  }
+
+  #block-book-0 /* "Book navigation" block for the current book's table of contents */
+  {
+  }
+
+  #block-comments-0 /* "Recent comments" block */
+  {
+  }
+
+  #block-forum-0 /* "Active forum topics" block */
+  {
+  }
+
+  #block-forum-1 /* "New forum topics" block */
+  {
+  }
+
+  #block-menu-2 /* "Primary links" block */
+  {
+  }
+
+  #block-node-0 /* "Syndicate" block for primary RSS feed */
+  {
+  }
+
+  #block-poll-0 /* "Most recent poll" block */
+  {
+  }
+
+  #block-profile-0 /* "Author information" block for the profile of the page's author */
+  {
+  }
+
+  #block-search-0 /* "Search form" block */
+  {
+	padding-bottom:7px;
+  }
+
+  #block-statistics-0 /* "Popular content" block */
+  {
+  }
+
+  #block-user-0 .block-inner/* "User login form" block */
+  {
+	  background-image:url(images/loginbox_bg_right.jpg);
+	  background-position:right top;
+	  background-repeat:no-repeat;
+	  height:201px;
+	  width:315px;
+  }
+  #block-user-0{
+	position:relative;
+	top:0;
+	height:201px;
+	color:#666666;
+	font-weight:normal;
+	background-color:transparent;
+	background-image:url(images/loginbox_bg_left.jpg);
+	background-position:left top;
+	background-repeat:no-repeat;
+}
+  #block-user-0 .form-item
+  {
+	font-size:12px;
+	line-height:20px;
+	margin-bottom:14px;
+	width:200px;
+  
+  }
+  #block-user-1 /* "Navigation" block for Drupal navigation menu */
+  {
+  }
+
+  #block-user-2 /* "Who's new" block for a list of the newest users */
+  {
+  }
+
+  #block-user-3 /* "Who's online" block for a list of the online users */
+  {
+  }
+
+/** Drupal boxes **/
+  /* Wrapper for Comment form, Comment viewing options, Menu admin, and
+   * Search results.
+   */
+  .box /* Wrapper for box */
+  {
+  }
+
+  .box-inner /* Additional wrapper for box */
+  {
+  }
+
+  .box h2.title /* Box title */
+  {
+  }
+
+  .box .content /* Box's content wrapper */
+  {
+  }
+
+/** Miscellaneous Drupal styles **/
+  .error /* Errors that are separate from div.messages status messages (see above.) */
+  {
+    /* color: #e55; */ /* Drupal core uses a #e55 background */
+  }
+
+  .warning /* Warnings that are separate from div.messages status messages (see above.) */
+  {
+    /* color: #e09010; */ /* Drupal core uses a #e09010 background */
+  }
+
+  .more-link /* Aggregator, blog, and forum more link */
+  {
+    text-align: right;
+  }
+
+  #user-login-form /* Drupal's default login form */
+  {
+    text-align: left;
+  }
+
+  tr.even /* Some tables have rows marked even or odd. */
+  {
+    background-color: #fff; /* Drupal core uses a #eee background */
+  }
+
+  tr.odd
+  {
+    background-color: #fff; /* Drupal core uses a #eee background */
+  }
+
+  li a.active /* The active item in a Drupal menu */
+  {
+    color: #000;
+  }
+
+
+/** Drupal forms **/
+  .form-item, /* Wrapper for a form element (or group of form elements) and its label */
+  .form-checkboxes,
+  .form-radios
+  {
+    margin: 1em 0;
+  }
+
+  .form-item input.error, /* Highlight the form elements that caused a form submission error */
+  .form-item textarea.error,
+  .form-item select.error
+  {
+    border: 2px solid #c00;
+  }
+
+  .form-item label /* The label for a form element */
+  {
+    display: block;
+    font-weight: bold;
+  }
+
+  .form-item label.option /* The label for a radio button or checkbox */
+  {
+    display: inline;
+    font-weight: normal;
+  }
+
+  .form-required /* The part of the label that indicates a required field */
+  {
+    color: #c00;
+  }
+
+  .form-item .description /* The descriptive help text (separate from the label) */
+  {
+    font-size: 0.85em;
+  }
+
+
+  .container-inline div, .container-inline label /* Inline labels and form divs */
+  {
+    display: inline;
+  }
+
+  .tips /* Tips for Drupal's input formats */
+  {
+    margin: 0;
+    padding: 0;
+    font-size: 0.9em;
+  }
+
+/** OpenID **/
+  /* The default styling for the OpenID login link seems to assume Garland's
+   * styling of list items.
+   */
+  #user-login-form ul /* OpenID creates a new ul above the login form's links. */
+  {
+    margin-bottom: 0; /* Position OpenID's ul next to the rest of the links. */
+  }
+
+  #user-login-form li.openid-link, /* The "Log in using OpenID" links. */
+  #user-login li.openid-link
+  {
+    margin-top: 1em;
+    margin-left: -20px; /* Un-do some of the padding on the ul list. */
+  	padding-left: 20px;
+  	background-position: left center;
+  }
+
+  #user-login-form li.user-link, /* The "Cancel OpenID login" links. */
+  #user-login li.user-link
+  {
+    margin-top: 1em;
+  	list-style-type: disc;
+  	list-style-position: outside;
+  }
+
+  #user-login li.openid-link, /* The OpenID links on the /user form. */
+  #user-login li.user-link
+  {
+    margin-left: -2em; /* Un-do all of the padding on the ul list. */
+  }
+
+#user-login-form .form-submit
+{
+	float:right;
+	margin-right:20px;
+}
+/** Drupal admin tables **/
+  /* We overrode these styles in html-elements.css, but restore them for the
+   * forms on the site.
+   */
+  form tbody
+  {
+    border-top: 1px solid #ccc;
+  }
+
+  form th
+  {
+    text-align: left;
+    padding-right: 1em;
+    border-bottom: 3px solid #ccc;
+  }
+
+  form tbody th
+  {
+    border-bottom: 1px solid #ccc;
+  }
+
+  form thead th
+  {
+    text-align: left;
+    padding-right: 1em;
+    border-bottom: 3px solid #ccc;
+  }
+
+
+
+.block-search-0
+{
+	
+}
+.view-gushu-shouye ul li
+{
+}
+
+.view-shouye-shu-juhe table
+{
+	padding:10px 0;
+	width:580px;
+}
+.view-shouye-shu-juhe table tr,.view-shouye-shu-juhe table td
+{
+	width:20%;
+	padding-bottom:30px;
+	vertical-align:top;
+	
+}
+table.views-view-grid{
+	margin:20px 0 0 0;
+}
+.imagecache-tu2shu1_thumb img{
+	width:72px;
+	height:105px;
+	overflow:hidden;
+	border: 1px solid #ccc;
+	padding:1px;
+	display:block;
+}
+.imagecache-user_and_group_50_50 img, .view-shou3ye4-re4men2yong4hu4 img
+{
+	width:50px;
+	height:50px;
+	overflow:hidden;
+	border: 1px solid #ccc;
+	padding:1px;
+	display:block;
+}
+
+.view-gushu-shouye{
+	
+}
+.views-field-field-gu4shi1-dian4ying3hai3bao4-fid{
+	
+}
+.block-search .block-inner{
+  background-image:url(images/searchbox_bg_right.png);
+  background-position:right top;
+  background-repeat:no-repeat;
+  height:71px;
+  width:540px;
+}
+.block-search/* Block title */
+{
+	position:relative;
+	top:0;
+	height:71px;
+	font-size:14px;
+	color:#666666;
+	font-weight:normal;
+	background-color:transparent;
+	background-image:url(images/searchbox_bg_left.png);
+	background-position:left top;
+	background-repeat:no-repeat;
+}
+.block-search .block-inner .content{
+  background-image:url(images/searchbox_bg.png);
+  background-position:right top;
+  background-repeat:repeat-x;
+  margin:0 20px;
+  height:100%;
+}
+.block-search .h2Container, .block-search h2.title
+{
+	background:none;
+}
+.block-search .form-text
+{
+	color:#aaa;
+	font-size:16px;
+	width:70;
+	float:left;
+	width:370px;
+	margin:0 20px;
+}
+#search-block-form {
+	padding:10px 0 0;
+}
+
+#block-block-2{
+clear:both;
+padding:0 0 10px;
+width:500px;
+}
+#block-block-2 #welcome{
+background:transparent url(images/welcome.png) no-repeat scroll left top;
+padding-bottom:0;
+text-indent:-8008px;
+}
+#block-block-2 ul{
+	list-style-type:none;
+}
+#block-block-2 h1{
+	height:33px;
+	width:290px;
+	margin-bottom:10px;
+}
+#block-block-2 #slogan{
+	margin:10px 20px;
+	line-height: 16pt;	
+}
+#quick_link ul{
+	color:#008BCC;
+	list-style-type:none;
+}
+#quick_link ul li{
+	float:left;
+	font-size:18px;
+	margin:0 10px 0 30px;
+	padding:0;
+	width:160px;
+}
+#quick_link ul li span{
+
+	color:#666;
+	float:left;
+	clear:both;
+	font-size:12px;
+}
+#first_but{
+	border-right:1px solid #999;	
+}
+
+
+#user-login-form label{
+	font-weight:normal;
+	float:left;
+	width:50px;
+	text-align:right;
+	padding-right:3px;
+}
+#block-user-0 .content{
+	margin:20px 0 0 0;
+	float:right;
+	text-align:right;
+}
+#block-user-0 #edit-submit{
+	font-size:12px;
+	margin:10px 15px 0 0;
+	float:right;
+}
+#block-user-0 .item-list ul{
+	padding:0;
+	margin:0;
+	list-style-type:none;
+	float:left;
+	font-size:11px;
+	padding-left:10px;
+	top:0;
+}
+#block-user-0 .block-icon{
+	margin:30px 15px 0 15px;
+	background:#333 url(images/user_icon.png) left top no-repeat;
+	float:left;
+	width:62px;
+	height:66px;
+	border:2px solid #fff;	
+	overflow:hidden;
+	display:inline;
+}
+#block-user-0 input.edit-name, #block-user-0 input..edit-pass
+{
+	width:120px;
+}
+#block-user-0 span.form-required
+{
+	display:none;
+}
+#block-views-shou3ye4_rem4men2xiao3zu4block_2, #block-views-shou3ye4_re4men2yong4hu4block_1
+{
+	width:560px;
+}
+
+#block-views-shou3ye4_rem4men2xiao3zu4block_2 td, #block-views-shou3ye4_re4men2yong4hu4block_1 td
+{
+	vertical-align:top;
+	width:85px;
+}
+#block-views-shou3ye4_rem4men2xiao3zu4block_2 .views-field-title, #block-views-shou3ye4_re4men2yong4hu4block_1 .views-field-title
+{
+}
+
+
+/*  view view-gushu-shouye*/
+
+.view-gushu-shouye{
+}
+.view-gushu-shouye .views-field-field-gu4shi1-dian4ying3hai3bao4-fid{
+	width:73px;
+	height:105px;
+	border:1px solid #ccc;	
+	overflow:hidden;
+	padding:1px;
+}
+.view-gushu-shouye ul{
+	list-style-type:none;
+	margin:0;
+	padding:0;
+}
+.view-gushu-shouye .views-field-title, .view-gushu-shouye .views-field-field-tu2shu1-fu4biao1ti2-value, .view-gushu-shouye .views-field-field-gu4shi1-zuo4zhe3-value,
+.view-gushu-shouye .views-field-field-gu4shi4-jie4shao4-value, .view-gushu-shouye .views-field-comment-count
+{
+	font-size:11px;
+	padding-left:100px;
+}
+.view-gushu-shouye .views-field-title
+{
+	font-size:14px;
+}
+.view-gushu-shouye ul .views-field-field-gu4shi1-dian4ying3hai3bao4-fid{
+	float:left;
+	padding:0;
+}
+.view-gushu-shouye .view-content ul li
+{
+
+}
+
+#footer
+{
+	font-size:12px;
+	background:#ECEFF5 url(images/footer_bg.png) left top repeat-x;
+}
+#footer-inner
+{
+	padding:30px 0 50px 0;
+	width:940px;
+	margin:0 auto;
+}
+fieldset{
+border:none;
+}
+
+#user-register label, #user-login label, #user-pass label
+{
+	text-align:right;
+	float:left;
+	width:80px;
+	padding-right:30px;
+}
+#user-register input.form-text, #user-login input.form-text, #user-pass input.form-text
+{
+	font-size:16px;
+	width:400px;
+	clear:right;
+}
+#user-register .form-item, #user-login .form-item, #user-pass .form-item
+{
+	padding-bottom:7px;
+}
+#user-register .description, #user-login .description, #user-pass .description
+{
+	font-size:10px;
+	padding-left:110px;
+	width:400px;
+}
+#edit-notify-decision-wrapper label
+{
+	text-align:left;
+	width:80%;
+	padding-left:20%;
+	clear:right;
+}
+#edit-notify-decision-wrapper input
+{
+	text-align:left;
+	width:1em;
+}
+#user-register span.password-strength, #user-register span.password-confirm, #user-register .password-description{
+	display:none;
+	clear:both;
+	display:block;
+	margin-left:110px;
+	font-size:10px;
+	width:400px;
+}
+#user-register .form-submit, #user-login .form-submit, #user-pass .form-submit
+{
+float:right;
+}
+#content-area
+{
+	padding:0;
+}
+
+
+input.form-submit,
+input.teaser-button {                                    /* default styling for all form buttons */
+  background: transparent url(images/button_bg.png) no-repeat left center;
+  border: 1px solid #fff;
+  color: #999;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  margin: 0 2px;
+  padding: 1px 2px;
+  text-transform: uppercase;
+  outline: 1px solid #9BABB0;
+  -moz-border-radius: 4px;
+  -moz-outline-radius: 4px;
+  -webkit-border-radius: 4px;
+}
+
+input.form-submit:hover,
+input.teaser-button:hover  {
+  background-position: right center;
+  cursor: pointer;
+}  
+
+
+
+/*OG*/
+
+.view-content .views-table
+{
+	width:540px;
+}
+.view-group-show-og-profile-pictures .views-row-even, .view-group-show-og-profile-pictures .views-row-odd
+{
+	height:70px;
+	border-bottom:1px solid #EBE8D5;
+	clear:both;
+	margin-bottom:30px;
+}
+.view-group-show-og-profile-pictures .views-field-field-group-profile-picture-fid, .view-xiao3zu3-og-tracker .views-field-picture
+{
+
+}
+.view-xiao3zu3-og-tracker .views-field-picture .picture{
+
+}
+
+.view-group-show-og-profile-pictures .views-field-title, .view-group-show-og-profile-pictures .views-field-description-1, .view-group-show-og-profile-pictures .views-field-member-count, .view-group-show-og-profile-pictures .views-field-post-count, .views-field-field-blog-leading-photo-fid, .views-field-field-blog-lu4xiang4-value
+{
+	padding-left:80px;
+	left:0;
+}
+.view-group-show-og-profile-pictures .views-field-member-count, .view-group-show-og-profile-pictures .views-field-post-count
+{
+	float:right;
+	padding-left:10px;
+}
+.view-group-show-og-profile-pictures label, .view-xiao3zu3-og-tracker .views-field-picture label
+{
+	display:none;
+}
+.view-group-show-og-profile-pictures .views-field-member-count label, .view-group-show-og-profile-pictures .views-field-post-count label
+{
+	display:inline;
+}
+.view-group-show-og-profile-pictures .views-field-title
+{
+	font-size:14px;
+	font-weight:bold; 
+}
+.view-group-show-og-profile-pictures tr td img
+{
+	padding:7px 0 7px 3px;
+}
+.view-xiao3zu3-og-tracker ul
+{
+	height: 1%;
+	padding:0;
+	margin:0;
+}
+.view-xiao3zu3-og-tracker .view-content ul li
+{
+	position: relative;
+	border-bottom:1px solid #EBE8D5;
+	clear:both;
+	margin-bottom:30px;
+	padding-bottom:20px;
+	height:160px;
+}
+.view-xiao3zu3-og-tracker ul li div
+{
+	float:right;
+	left:40px;
+	width:500px;
+}
+.view-xiao3zu3-og-tracker ul li div div
+{
+	padding-left:0;
+	width:500px;
+}
+.view-xiao3zu3-og-tracker ul li .views-field-title
+{
+	font-size:14px;
+	font-weight:bold;
+}
+.view-xiao3zu3-og-tracker ul li .views-field-body, .view-xiao3zu3-og-tracker ul li .views-field-comment-count
+{
+	padding-top:20px;
+}
+.view-xiao3zu3-og-tracker ul li .views-field-picture
+{
+	padding:1px;
+	float:left;
+}
+.view-xiao3zu3-og-tracker ul li .views-field-picture .picture
+{
+	width:50px;
+		float:left;
+}
+
+#content table td
+{
+	padding-right:14px;
+}
+#content table td
+{
+}
+#content table th
+{
+	display:none;
+}
+.view-group-show-og-profile-pictures, .view-xiao3zu3-og-tracker
+{
+	padding:40px 30px 40px 0;
+}
+.views-field-field-gu4shi1-zuo4zhe3-value label, .views-field-field-gu4shi4-jie4shao4-value label
+{
+float:left;
+}
+.field-field-gu4shi1-dian4ying3hai3bao4, .field-field-tu2shu1-feng1mian4
+{
+	padding-bottom:30px;
+	float:left;
+}
+
+.field-field-gu4shi1-zuo4zhe3, .field-field-gu4shii-shu1ming2, .field-field-tu2shu1-fu4biao1ti2,
+.field-field-tu2shu1-zuo4zhe3
+{
+	padding-left:180px;
+}
+.field-field-gu4shi1-dian4ying3hai3bao4 .field-label, .field-field-tu2shu1-feng1mian4 .field-label
+{
+	display:none;
+}
+.field-field-gu4shu4-yuan2zhu4, .field-field-gu4shi4-jie4shao4, .field-field-gu4shi1-wikipedia, .field-field-gu4shi1-more-movie-posters, .field-field-tu2shu1-jian3jie4
+{
+	clear:both;
+}
+.field-field-gu4shu4-yuan2zhu4 .field-label, .field-field-gu4shi4-jie4shao4 .field-label, .field-field-gu4shi1-wikipedia .field-label, .field-field-gu4shi1-more-movie-posters .field-label,
+.field-field-tu2shu1-yang4zhang1tu2 .field-label, .field-field-tu2shu1-xiang1-guan1 .field-label,
+.field-field-tu2shu1-jian3jie4 .field-label
+{
+    background-image:url(images/subheader_bg_right.jpg);
+    background-position:right top;
+    background-repeat:no-repeat;
+    height:30px;
+    margin-left:12px;
+    width:528px;
+    font-size:14px;
+	padding-top:5px;
+  }
+.field-field-gu4shu4-yuan2zhu4, .field-field-gu4shi4-jie4shao4, .field-field-gu4shi1-wikipedia, .field-field-gu4shi1-more-movie-posters,
+.field-field-tu2shu1-yang4zhang1tu2, .field-field-tu2shu1-xiang1-guan1,
+.field-field-tu2shu1-jian3jie4
+  {
+	position:relative;
+	top:0;
+	font-size:14px;
+	color:#666666;
+	font-weight:normal;
+	background-color:transparent;
+	background-image:url(images/subheader_bg_left.jpg);
+	background-position:left top;
+	background-repeat:no-repeat;
+  }
+.field-field-gu4shi1-more-movie-posters img
+{
+	float:left;
+	padding:10px;
+}
+.fivestar-static-form-item
+{
+	clear:both;
+}
+#main ul
+{
+
+}
+.field-field-gu4shi4-jie4shao4 .field-items, .field-field-gu4shu4-yuan2zhu4 .field-items, .field-field-gu4shi1-wikipedia .field-items,
+.field-field-gu4shi1-more-movie-posters .field-items
+{
+	width:520px;
+	padding:20px 0 40px 0;
+}
+.field-field-gu4shi1-zuo4zhe3, .field-field-gu4shi1-zuo4zhe3 .field-label
+{
+	background:none;
+}
+.field-field-gu4shu4-yuan2zhu4
+{
+	
+}
+#frontpage, .node-inner .content
+{
+	padding-bottom:30px;
+}
+#frontpage
+{
+	color:#666;
+}
+#site-slogan
+{
+background:transparent url(images/head_slogan.png) no-repeat scroll left top;
+height:17px;
+text-indent:-8008px;
+width:130px;
+float:left;
+margin-top:20px;
+}
+#node-154
+{
+	width:611px;
+	height:374px;
+	background:transparent url(images/ceshi.png) no-repeat left top;
+}
+#node-154 .node-inner
+{
+	width:550px;
+	margin:0 auto;
+	padding:10px 0;
+	
+}
+#node-154 .node-inner .content h2
+{
+	height:40px;
+	background:transparent url(images/ceshi_button.png) no-repeat left top;
+	margin:20px 20px 0 0;
+	padding-left:60px;
+	padding-top:5px;
+}
+#node-154 .node-inner .content div
+{
+	padding:20px 0 0 0;
+}
+#node-154 .node-inner .content center
+{
+	padding:20px 0 0 0;
+}
+
+.dushu_teaser .delicious img
+{
+	display:none;
+}
+.dushu_teaser .delicious
+{
+	float:left;
+	background:transparent url(images/mp3.png) no-repeat scroll 0 2px;
+	padding-left: 20px;
+	width:80%;
+	margin-left: 100px;
+}
+
+.teaser_title
+{
+	font-weight:bold;
+	font-size: 1.3em;
+    line-height: 1.3em;
+    margin-bottom: 0.769em;
+}
+.teaser_title a,.teaser_comment a, .views-field-title a, h2 a:link
+{
+	color:#666;
+}
+.views-field-title label
+{
+	display:none;
+}
+.view-og-ghp-ron .views-field-title label
+{
+	display:inline;
+}
+.view-dushu-shu-juhe .teaser_img
+{
+	float:left;
+	margin-right:24px;
+}
+.teaser_comment
+{
+	background:transparent url(images/comment.png) no-repeat scroll 0 center;
+	float:right;
+	position:relative;
+	top:0;
+	right:0;
+	padding-left: 20px;
+}
+
+#clom2{
+	float:left;
+}
+.node_img
+{
+	float:left;
+	margin-right:24px;
+	border: 1px solid #ccc;
+	padding:1px;
+}
+.node_title
+{
+		font-weight:bold;
+    font-size: 1.5em;
+    line-height: 1.3em;
+    margin-top: 0.667em;
+    margin-bottom: 0.667em;
+}
+.text_content
+{
+	margin-right: 50px;
+}
+.fivestar label
+{
+	display:none;
+}
+.fivestar-static-form-item, form.fivestar-widget
+{
+	clear:none;
+}
+.fivestar
+{
+	padding-top:10px;
+}
+div.fivestar-widget-static .star span.on {
+background:transparent url(images/fivestar.png) no-repeat scroll 0 -32px;
+}
+div.fivestar-widget-static .star span.off, div.fivestar-widget .star, div.fivestar-widget .star a{
+background:transparent url(images/fivestar.png) no-repeat scroll 0 0;
+}
+
+#block-menu-menu-dushu-tab .h2Container
+{
+	display:none;
+}
+  #block-menu-menu-dushu-tab
+  {
+
+	background: url(images/tab-bar.png) repeat-x left bottom;
+	float:left;
+	width:100%;
+    margin: 0 0 10px 0;
+  }
+#block-menu-menu-dushu-tab ul a
+{
+	color: #000;
+    background: url(images/tab-left.png) no-repeat left -38px;
+	text-decoration: none;
+    margin: 0;
+    padding: 0 0 0 5px;
+}
+
+#block-menu-menu-dushu-tab ul a span
+{
+	margin: 0;
+    padding: 4px 13px 0 6px;
+    background: url(images/tab-right.png) no-repeat right -38px;
+	padding-right: 10px
+}
+
+#block-menu-menu-dushu-tab ul a, #block-menu-menu-dushu-tab ul a span
+{
+display: block;
+float: left
+}
+
+/* Commented backslash hack hides rule from IE5-Mac \*/
+#block-menu-menu-dushu-tab ul a, #block-menu-menu-dushu-tab ul a span
+{
+float: none
+}
+/* End IE5-Mac hack */
+
+#block-menu-menu-dushu-tab ul a:hover
+{
+    border-width: 0;
+    background-color: transparent;
+    background: url(images/tab-left.png) no-repeat left -76px;
+}
+
+#block-menu-menu-dushu-tab ul a:hover span
+{
+    background: url(images/tab-right.png) no-repeat right -76px;
+}
+
+  #block-menu-menu-dushu-tab ul li.active-trail a,
+  #block-menu-menu-dushu-tab ul li.active-trail a:hover
+  {
+    border-width: 0;
+    color: #000;
+    background-color: transparent;
+    background: url(images/tab-left.png) no-repeat left 0;
+  }
+
+  #block-menu-menu-dushu-tab ul li.active-trail a .tab,
+  #block-menu-menu-dushu-tab ul li.active-trail a:hover .tab
+  {
+    background: url(images/tab-right.png) no-repeat right 0;
+  }
+  
+#block-menu-menu-dushu-tab ul
+{
+	  height:24px;
+	    _width: 100%; /* Otherwise IE5 treats the ul as floated */
+    _w\idth: auto; /* Reset to auto width for IE6 */
+	    _display: inline; /* Otherwise the blocks mistakenly get 100% width in IE5 */
+    _di\splay: inline-block; /* Otherwise the blocks mistakenly get 100% width in IE6 */
+    cursor: pointer;
+list-style: none;
+margin: 0;
+padding: 0 0 0 10px;
+}
+
+#block-menu-menu-dushu-tab ul li
+{
+float: left;
+display: block;
+margin: 0;
+padding: 0
+}
+
+.ctl {
+font-size: 0px;
+position: absolute;
+top: -1px;
+left: -1px;
+z-index: 1;
+}
+
+.ctr {
+font-size: 0px;
+position: absolute;
+top: -1px;
+right: -1px;
+z-index: 1;
+}
+
+.cbl {
+font-size: 0px;
+position: absolute;
+bottom: -1px;
+left: -1px;
+z-index: 1;
+}
+
+.cbr {
+font-size: 0px;
+position: absolute;
+bottom: -1px;
+right: -1px;
+z-index: 1;
+}
+
+.corners-4x4 {
+width: 4px;
+height: 4px;
+}
+
+.node-corner-tl,
+.comment-corner-tl,
+.group-corner-tl {
+background: transparent url(images/corners-4x4-ccc-fff.gif) no-repeat 0 0;
+}
+
+.node-corner-tr,
+.comment-corner-tr,
+.group-corner-tr {
+background: transparent  url(images/corners-4x4-ccc-fff.gif) no-repeat -4px 0;
+}
+
+.node-corner-bl,
+.comment-corner-bl,
+.filter-corner-bl,
+.group-events-corner-bl {
+background: transparent url(images/corners-4x4-ccc-fff.gif) no-repeat 0 -4px;
+}
+
+.node-corner-br,
+.comment-corner-br,
+.filter-corner-br,
+.group-events-corner-br {
+background: transparent url(images/corners-4x4-ccc-fff.gif) no-repeat -4px -4px;
+}
+
+.node-corner-links-bl,
+.comment-corner-links-bl {
+background: transparent url(images/corners-4x4-ccc-fff.gif) no-repeat 0 -4px;
+}
+
+.node-corner-links-br,
+.comment-corner-links-br {
+background: transparent url(images/corners-4x4-ccc-fff.gif) no-repeat -4px -4px;
+}
+
+.comment-solved .comment-corner-tl {
+background: transparent url(images/corners-4x4-ccc-fff.gif) no-repeat 0 0;
+}
+
+.comment-solved .comment-corner-tr {
+background: transparent  url(images/corners-4x4-ccc-fff.gif) no-repeat -4px 0;
+}
+
+
+.node-user-picture, .comment-user-picture {
+background-color:#B1B1B1;
+border:1px solid #B1B1B1;
+height:32px;
+left:-49px;
+overflow:hidden;
+position:absolute;
+top:0;
+width:32px;
+}
+.node-bubble, .comment-bubble {
+background:transparent url(images/comment-bubble.gif) no-repeat scroll 0 0;
+height:12px;
+left:-9px;
+position:absolute;
+top:12px;
+width:9px;
+}
+.comment-title{
+    font-size: 1.3em;
+    line-height: 1.3em;
+    margin-top: 0.769em; /* Equivalent to 1em in the page's base font: 1 / 1.3 = 0.769 */
+    margin-bottom: 0.769em;
+    font-weight:normal;
+}
+.node-user-picture, .comment-user-picture {
+background-color:#B1B1B1;
+border:1px solid #B1B1B1;
+height:32px;
+left:-49px;
+overflow:hidden;
+position:absolute;
+top:0;
+width:32px;
+}
+.comment-container {
+margin:15px 0 0 49px;
+}
+.comment-meta {
+color:#999999;
+padding-bottom:10px;
+}
+.comment-inner .content {
+color:#666666;
+padding-bottom:5px;
+}
+.views-row-odd,.views-row-even{
+	border-bottom:1px solid #B1B1B1;
+	padding:10px 0;
+	margin:10px 0;
+}
+.view-xiaozhu-souye-zuixin .views-row-odd,.view-xiaozhu-souye-zuixin .views-row-even{
+	padding:2px 0;
+	clear:both;
+	height:50px;
+	border:none;
+	background: url(images/line_bottom.gif) no-repeat right bottom;
+	
+}
+.view-xiaozhu-souye-zuixin .views-field-field-group-profile-picture-fid, .thmr_call .picture{
+	float:left;
+	padding-right:20px;
+}
+.view-xiaozhu-souye-zuixin .views-field-field-group-profile-picture-fid label{
+	display:none;
+}
+.view-xiaozhu-souye-zuixin .views-field-post-count, .view-xiaozhu-souye-zuixin .views-field-member-count{
+	float:right;
+	padding-right:20px;
+}
+.view-xiaozhu-souye-zuixin .views-field-description label, .view-xiaozhu-souye-zuixin .views-field-title label{
+	display:none;
+}
+.view-xiaozhu-souye-zuixin .views-field-title, .view-xiao3zu3-og-tracker .views-field-title{
+	font-size:1.3em;
+	font-weight:bold;
+	line-height:1.3em;
+	margin-bottom:.1em;
+}
+.view-xiaozhu-souye-zuixin .views-field-description p, .view-xiao3zu3-og-tracker .views-field-description p{
+	margin:0;
+}
+.view-xiao3zu3-og-tracker .views-field-title,.view-xiao3zu3-og-tracker .views-field-name,.view-xiao3zu3-og-tracker .views-field-body,.view-xiao3zu3-og-tracker .views-field-timestamp,.view-xiao3zu3-og-tracker .views-field-last-updated,.view-xiao3zu3-og-tracker .views-field-changed{
+	margin-left:70px;
+}
+.field-label{
+	display:none;
+}
+.og-mission{
+	background-color:#FFFDE6;
+	padding:15px;
+}
+.content .content-area .picture
+{
+	float:left;
+}
+
+#blog .content, #blog .meta, #blog ul.links{
+	margin-left:70px;
+}
+#blog .field-field-blog-leading-photo{
+	float:right;
+	margin:0 0 10px 20px;
+}

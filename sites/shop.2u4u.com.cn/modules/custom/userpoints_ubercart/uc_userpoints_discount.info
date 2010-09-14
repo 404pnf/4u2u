@@ -1,0 +1,17 @@
+; $Id: uc_userpoints_discount.info,v 1.1.4.1 2009/05/14 02:47:13 smokris Exp $
+name = Userpoints Discounts
+description = Interfaces userpoints with ubercart, so users discount final price with points.
+package = Ubercart - Userpoints
+dependencies[] = userpoints
+dependencies[] = uc_order
+dependencies[] = uc_cart
+dependencies[] = uc_payment
+core = 6.x
+php = 5.x
+
+; Information added by drupal.org packaging script on 2009-05-14
+version = "6.x-2.x-dev"
+core = "6.x"
+project = "userpoints_ubercart"
+datestamp = "1242304427"
+

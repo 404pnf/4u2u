@@ -1,0 +1,44 @@
+<?php
+// $Id: project.install,v 1.9 2008/01/30 20:27:28 goba Exp $
+
+/**
+ * Implementation of hook_install().
+ */
+function fanyi_install() {
+  // Create tables.
+  drupal_install_schema('fanyi');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function fanyi_uninstall() {
+  // Remove tables.
+  drupal_uninstall_schema('fanyi');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function fanyi_schema() {
+  $schema['babie_points'] = array(
+    'fields' => array(
+      'uid' => array(
+        'description' => t('uid'),
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'points' => array(
+        'description' => t('babie_points for one user'),
+        'type' => 'int',
+        'unsigned' => TRUE,
+      ),
+	),
+    'indexes' => array(
+      'uid' => array('uid')
+      ),
+  );
+  return $schema;
+}
+

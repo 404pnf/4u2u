@@ -1,0 +1,263 @@
+<?php
+function importvideo_menu(){
+	$items = array();	
+	$items['admin/import_video'] = array(
+	  'title' => 'IMPORT VIDEO',
+	  'type'  => MENU_CALLBACK,
+	  'access callback' => true,
+	  'page callback' => 'flv_import',	
+	);
+    
+	$items['admin/update_video_tn'] = array(
+	 'type' => MENU_CALLBACK,
+	 'access callback' => true,
+	 'page callback' => 'update_video',
+	);	
+	
+	return $items;
+	
+}
+
+
+function flv_import(){
+	
+  $mime = 'flv-application/octet-stream'; //flv的自定义类型
+
+  $dir = "/home/apache/data/html/2u4u/sites/video.2u4u.com.cn/files/shipin/tmp/";
+  
+  $files =  read_dir($dir);
+
+   $files = urldecode($files);
+   $files = iconv("GB2312","UTF-8",$files); //Ŀ¼�����ĵ��ļ�����Ҫת��
+   $i = 0;
+  if(strpos($files,";")){
+	  $new_files = explode(";",$files);
+	  foreach($new_files as $value){
+	  if(strlen($value)>0&&$value!=''){
+	  	
+	  	  $value = trim($value);
+	  	 
+		  $file_drupal_path = "sites/video.2u4u.com.cn/files/shipin/flv/".$value.".flv";
+		
+		
+		  $file = new stdClass();
+		  $file->filename = $value;  
+		  $file->filepath = $file_drupal_path;
+		 // var_dump($file->filepath);
+		  
+		
+		  $file->check = db_result(db_query("SELECT fid FROM {files} WHERE filepath = '%s'", $file->filepath));
+
+		 if($file->check>0){
+		  	continue;
+		 }else{
+		 
+		  $file->filemime = $mime;
+		  $file->filesize = filesize($file_drupal_path);
+		
+		  $file->uid = 1;
+		  $file->status = FILE_STATUS_PERMANENT;
+		  $file->timestamp = time();
+		  drupal_write_record('files', $file);
+		  $file->fid = db_result(db_query("SELECT fid FROM {files} WHERE filepath = '%s'", $file->filepath));
+		
+		if($file->fid>0){
+			
+		  $node = new StdClass();
+		  $node->type = 'shipin';
+		  $node->body = '';
+		  $node->title =  $value;
+
+		  $node->field_pronounciation = array(
+		    array(
+		      'fid' => $file->fid,
+		      'title' => basename($file->filename),
+		      'filename' => $file->filename,
+		      'filepath' => $file->filepath,
+		      'filesize' => $file->filesize,
+		      'mimetype' => $mime,
+		      'description' => basename($file->filename),
+		      'list' => 1,
+		    ),
+		  );
+		  $node->uid = 1;
+		  $node->status = 1;
+		  $node->active = 1;
+		  $node->promote = 1;
+		  node_save($node);
+		  
+		  //д��content_type_shipin
+		  
+		//  $video = new StdClass();
+		  $video = new stdClass();
+		   $video->nid = db_result(db_query("SELECT nid FROM {node} WHERE title = '%s' ORDER BY nid DESC LIMIT 1", basename($file->filename))); 
+		   $video->vid = db_result(db_query("SELECT vid FROM {node_revisions} WHERE nid = '%d' ORDER BY vid DESC LIMIT 1 ", $video->nid)); 
+		  /*
+		   $video->field_shipin_upload_fid = $file->fid;
+		  $video->field_shipin_upload_list = 1;
+		  $video->field_shipin_upload_data = 'a';
+		  $video->field_shipin_neirong_value = 'a';
+		  $video->field_shipin_neirong_format = 3;
+		  $video->field_shipin_jiaoben_value = 'a';
+		  $video->field_shipin_danci_value = 'a';
+		  $video->field_shipin_yuyanjiexi_value = 'a';
+		
+		*/
+		
+
+		   //$sql = "INSERT INTO {content_type_shipin}(vid,nid,field_shipin_upload_fid,field_shipin_upload_list,field_shipin_neirong_format) VALUES (%d,%d,%d,%d,%d)";
+           $sql = "INSERT INTO {content_type_shipin}(vid,nid,field_shipin_upload_fid,field_shipin_points_value) VALUES (%d, %d,%d,%d)";
+           
+		   $arr = array($video->vid,$video->nid,$file->fid,20);  //默认视频积分为20分
+		   $rs = db_query($sql,$arr);
+		   echo $video->nid."<br>";
+		   if($rs){
+		   	  $i++;		   	
+		   }
+		  
+		  // var_dump($video);
+		  // $rs = node_save($video);
+		  //$rs =  drupal_write_record('test',$video,array('nid','vid'));
+	
+	    }
+		  }
+	  	}
+	   }  
+    }
+    echo "共成功导入".$i."个视频";
+}
+
+/*
+ * 对已上传的视频进行截图 
+ * 输入：图片存放路径、视频存放地址、文件名
+ * 用php执行shell截图命令，使用ffmpeg工具
+ */
+
+
+function import_video_tn($image,$video,$name){
+
+
+		if(strpos($name,".flv"))
+		     $filename =  substr($name,0,-4);
+		else 
+		     $filename = $name;
+  
+    if(file_exists($video.$filename.".flv")&&!file_exists($image.$filename.".jpg")){
+
+			//	$cmdline = "/usr/bin/ffmpeg -y -i /var/www/html/drupal/sites/video.2u4u.com.cn/files/shipin/flv/\"".$filename."\".flv -ss 20 -vframes 1  /var/www/html/drupal/sites/video.2u4u.com.cn/files/shipin/tn/\"".$filename."\".jpg";           //截图shell命令
+			$cmdline = "/usr/bin/ffmpeg -y -i ".$video."\"".$filename."\".flv -ss 20 -vframes 1 ".$image."\"".$filename."\".jpg";           //截图shell命令
+                        echo $cmdline."<br>";
+			system(escapeshellcmd($cmdline));
+	     
+	    }
+
+	}
+
+
+	/*
+	 * 对没有截图的视频进行更新，加上图片地址
+	 * 1、找出没有截图的视频名称
+	 * 2、根据名称，查看图片是否存在，若不存在，调用import_video_tn函数进行截图
+	 * 3、图片若已存在，使用stdClass类保持到files表中
+	 */
+	
+
+function update_video(){
+
+	$sql = "SELECT fl.`filename`,fl.`fid`,sp.`nid` FROM `files` fl LEFT JOIN `content_type_shipin` sp ON fl.fid= sp.field_shipin_upload_fid WHERE sp.field_shipin_cover_fid is NULL AND fl.filepath LIKE '%s' "; 
+    $rs = db_query($sql,'%shipin/flv%');
+    $j = 0;
+
+   while($row = db_fetch_object($rs)){
+       $check = '';
+		if(strpos($row->filename,"."))
+		     $filename =  substr($row->filename,0,-4);
+		else 
+		     $filename = $row->filename;
+	
+
+		$root_dir = "/home/apache/data/html/2u4u/sites/video.2u4u.com.cn/files/";
+		$img_dir = $root_dir."shipin/tn/";
+		$video_dir = $root_dir."shipin/flv/";
+		
+		if(!file_exists($img_dir.$filename.".jpg")){	
+ 	               import_video_tn($img_dir,$video_dir,$filename); 
+       }
+	
+ 
+	      $mime = "image/jpeg";
+
+		  $image_drupal_path = "sites/video.2u4u.com.cn/files/shipin/tn/".$filename.".jpg";
+
+		 
+	
+        //检查该图片文件是否已存在
+		  $check = db_result(db_query("SELECT fid FROM {files} WHERE filepath = '%s'", $image_drupal_path));
+	 if($check>0){
+	    continue;
+	 }else{
+
+                  $image = new stdClass();
+                  $image->filename = $filename.".jpg";
+
+		  $image->filepath = $image_drupal_path;
+		  $image->filemime = $mime;
+		  $image->filesize = filesize($image_drupal_path);
+		
+		  $image->uid = 1;
+		  $image->status = FILE_STATUS_PERMANENT;
+		  $image->timestamp = time();
+		  drupal_write_record('files', $image);   //图片信息保存在files数据表中
+		  
+		  $pic->fid = db_result(db_query("SELECT fid FROM {files} WHERE filepath = '%s'", $image_drupal_path));
+		
+		   if($pic->fid>0){
+		      
+		   	  $pic->field_shipin_cover_list = '1';
+		      $pic->field_shipin_cover_data = 'a:3:{s:11:"description";s:0:"";s:3:"alt";s:0:"";s:5:"title";s:0:"";}';
+              $query = "UPDATE `content_type_shipin` SET field_shipin_cover_fid = '%d',field_shipin_cover_list='%d',field_shipin_cover_data='%s' WHERE nid= '%d' ";
+              $array = array($pic->fid,$pic->field_shipin_cover_list,$pic->field_shipin_cover_data,$row->nid);
+
+              $res = db_query($query,$array);
+              if($res){
+                 echo $pic->fid."<br>";
+              	 $j++;
+               }
+          }
+
+		 
+   }	
+
+ }
+	
+	
+  echo "更新了".$j."条记录";	
+ 
+}
+
+
+
+
+function read_dir($dir){
+	
+	
+	
+$path = $dir;	
+
+if (is_dir($path)) { 
+
+	if ($dh = opendir($path)) { 
+		while (($file = readdir($dh)) !== false) { 
+		if ($file!="." && $file!="..") { 
+		  if(strpos($file,".flv")){	
+			$data .= urlencode(trim(substr($file,0,-4)));
+			$data .= ";";
+		  }
+		}
+	  }
+	 
+    }
+  }	
+	
+	return $data;
+}

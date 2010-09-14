@@ -1,0 +1,68 @@
+102,107c102,104
+< //drupal_set_message("presave");
+< //         convert_pdf(&$node);
+< //$node->field_yuedu_sku[0]['value'] = '111';
+<          //$node->field_yuedu_player [0] ['format'] = 2;
+< 	//node_save($node);  
+<       }
+---
+>           convert_pdf($node);
+>           $node->field_yuedu_player [0] ['format'] = 2;
+>         }
+111,116c108,110
+< //drupal_set_message($node->nid);
+<   //       convert_pdf(&$node);
+<     //      $node->field_yuedu_player [0] ['format'] = 2;
+< //$node->field_yuedu_sku[0]['value'] = '111';
+< //print_r($node);
+<       //    node_save($node);
+---
+>           convert_pdf($node);
+>           $node->field_yuedu_player [0] ['format'] = 2;
+>           node_save($node);
+129,130c123
+< /*  
+< $numberOfFiles = count($node->field_yuedu_pdf);
+---
+>   $numberOfFiles = count($node->field_yuedu_pdf);
+146,147d138
+< */
+< 
+157,160c148,149
+<     //$out = @shell_exec("/usr/local/bin/pdf2swf -s poly2bitmap $dest -o $swfDir/%.ds &");
+< sleep(60);
+< drupal_set_message('hi');
+< }
+---
+>     $out = exec("/usr/local/bin/pdf2swf $dest -o $swfDir/%.ds >> /tmp/output");
+>   }
+173c162
+<  
+---
+>   
+180d168
+< 
+199d186
+< node_save($node);
+387c374
+< 			    $node->format = 2;
+---
+> 			    $node->format = 1;
+389,392c376,377
+< convert_pdf($node);
+< //node_save($node);
+< 			    //drupal_set_message($dirname.$file);
+< 			  //  unlink($dirname.$filename);
+---
+> //			    drupal_set_message($dirname.$file);
+> 			    unlink($dirname.$filename);
+439,443c424,426
+< 				if($price>0){
+<                                   $sql = "insert into {yuedu_transaction} (nid, uid, sku, time,points) values(%d,%d,%d,%d,%d)";
+< 			          db_query($sql,$nid,$user->uid,$sku,time(),$price);
+< 				  drupal_set_message("成功购买，扣除积分 $price");
+<                                }
+---
+> 				$sql = "insert into {yuedu_transaction} (nid, uid, sku, time,points) values(%d,%d,%d,%d,%d)";
+> 				db_query($sql,$nid,$user->uid,$sku,time(),$price);
+> 				drupal_set_message("成功购买，扣除积分 $price");

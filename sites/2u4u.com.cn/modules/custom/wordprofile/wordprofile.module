@@ -1,0 +1,28 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * 用来修改单次大赛信息表单的状态.
+ */
+function wordprofile_form_user_profile_form_alter(&$form, &$form_state){
+	//判断当前为单词大赛信息编辑页面
+	if(arg(0)=='user' && arg(2) == 'edit' && arg(3) == '单词大赛信息') {
+		//如果用户已经报名了，这里的判断条件为参赛口profile_vgame_entry属性不为空。
+		$account = $form['_account']['#value'];
+		if(!empty($account->profile_vgame_entry)){
+			//将单词大赛对应的表单元素的属性disabled设置为TRUE，这样用户就不可以再编辑了。
+			//profile_vgame_entry ： 参赛口
+			$form['单词大赛信息']['profile_vgame_entry']['#attributes'] = array('disabled' => TRUE);
+			//profile_vgame_cat ： 比赛小组
+			$form['单词大赛信息']['profile_vgame_cat']['#attributes'] = array('disabled' => TRUE);
+			//profile_city ： 城市
+                    //	$form['单词大赛信息']['profile_city']['#attributes'] = array('disabled' => TRUE);
+			//profile_school ： 学校
+	//	$form['单词大赛信息']['profile_school']['#attributes'] = array('disabled' => TRUE);
+			//profile_class ： 班级
+       //			$form['单词大赛信息']['profile_class']['#attributes'] = array('disabled' => TRUE);
+		}
+	}
+}
+

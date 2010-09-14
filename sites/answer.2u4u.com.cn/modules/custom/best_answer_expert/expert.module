@@ -1,0 +1,94 @@
+<?php 
+
+/**
+ *实现钩子hook_menu
+**/
+function expert_menu() {
+  $items['admin/settings/expert'] = array(
+    'title' => '有问有答专家相关设置',
+    'page callback' => 'expert_config_page',
+		'access callback' => 'user_access',
+    'access arguments' => array('administer site configuration'),
+    'file' => 'expert.admin.inc',
+  );
+	return $items;
+}
+/**
+ *实现钩子hook_form_alter
+**/
+function expert_form_alter(&$form,&$form_state,$form_id) {
+  //print_r($form_id);
+  if($form_id == 'best_answer_node_form' && arg(2) == 'best-answer' &&arg(3) == 'expert'){
+	//if(arg(2) == 'best-answer' && arg(3) == 'expert'){
+		//pay attention to this term 39 it's only work on ask for expert
+		//术语ID为39,表示专家类型的提问,添加CSS去处"在光标处截断摘要"
+		drupal_add_css(drupal_get_path('module','expert').'/expert.css');
+		$form['taxonomy']['8']['#default_value'] =  39; 
+		$form['taxonomy']['8']['#attributes'] = array('disabled'=>TRUE,);
+		$form['field_best_answer_award']['#element_validate'] =   array('expert_mimimum_points_validate'); 		
+	}
+	else if($form_id == 'best_answer_node_form' && arg(2) == 'best-answer'){
+			$options = $form['taxonomy']['8']['#options'];
+			$new_options = array();
+			foreach($options as $key => $value){
+				if(!isset($value->option[39] )){
+					$new_options[$key] = $value;
+				}
+			}
+			//$options[39] = NULL;
+			//print_r($new_options);
+			$form['taxonomy']['8']['#options'] = $new_options;
+	}
+	else if($form_id == 'best_answer_node_form' && arg(2) == 'edit'){
+	//print_r($form['taxonomy']['8']);
+		drupal_add_css(drupal_get_path('module','expert').'/expert.css');
+		if(in_array(39,$form['taxonomy']['8']['#default_value'])){
+			$form['taxonomy']['8']['#default_value'] =  39; 
+			$form['taxonomy']['8']['#attributes'] = array('disabled'=>TRUE,);
+			$form['field_best_answer_award']['#element_validate'] =   array('expert_mimimum_points_validate'); 	
+		}else{
+			$options = $form['taxonomy']['8']['#options'];
+			$new_options = array();
+			foreach($options as $key => $value){
+				if(!isset($value->option[39] )){
+					$new_options[$key] = $value;
+				}
+			}
+			//$options[39] = NULL;
+			$form['taxonomy']['8']['#options'] = $new_options;
+		}
+	}
+ // }
+	
+}
+
+function expert_mimimum_points_validate($element, &$form_state){
+	$value = $element[0]['#value']['value'];
+	$mimimum_value = variable_get('expert_minimum_points',10);
+	if($value < $mimimum_value){
+		form_error($element, t('向专家提问至少需要10个积分.'));
+	}
+}
+/**
+ *实现钩子hook_cron
+**/
+
+function expert_cron() {
+	$sql ="SELECT n.nid, n.created ";
+	$sql .="FROM node n ";
+	$sql .="LEFT JOIN flag_content fc ON n.nid = fc.content_id ";
+	$sql .="LEFT JOIN content_type_best_answer ctba ON n.vid = v.vid ";
+	$sql .="WHERE n.status <> 0 AND (fc.uid IS NULL) AND n.type='best_answer' AND fc.fid IS NULL ";
+	$sql .= "AND ctba.field_best_answer_bestanswer_id_value > 0 ";
+	//$sql .= "ORDER BY n.created DESC";
+	
+	$result = db_query_range($sql,  0, 1000);
+	$flag = flag_get_flag('tiwen_status');
+  while ($n = db_fetch_object($result)) {
+		//$node = node_load($n->nid);
+		//if($node->field_best_answer_bestanswer_id){
+			$flag->flag('flag',$n->nid, NULL, TRUE);
+		//}
+  }
+
+}

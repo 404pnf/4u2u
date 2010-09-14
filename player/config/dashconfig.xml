@@ -1,8 +1,0 @@
-<params>
-	<gateway>http://video.2u4u.com.cn/services/amfphp</gateway>
-	<apiKey>3239daeb437f82bbd0a952589be9559a</apiKey>
-	<baseURL>http://video.2u4u.com.cn</baseURL>
-	<flashvars>
-	   <drupalversion>6</drupalversion>
-	</flashvars>
-</params>

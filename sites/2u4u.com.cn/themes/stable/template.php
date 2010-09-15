@@ -527,14 +527,30 @@ function phptemplate_get_video($view_name,$display_id){
 	return $output;
 }
 
+<<<<<<< HEAD
 function phptemplate_get_ebook($view_name,$display_id = 'default'){
+=======
+<<<<<<< HEAD
+function phptemplate_get_ebook($view_name,$display_id){
+=======
+function phptemplate_get_ebook($view_name,$display_id = 'default'){
+>>>>>>> 38bb059944fd61a7cfe8c157a96ad4d10e7dd137
+>>>>>>> 9e2f05ab6c023db767b6cf2c5d5072543ee31dd3
 	$args=func_get_args();
 	array_shift($args);	//remove $view_name
 	if(count($args)){
 		array_shift($args);	//remove $display_id
 	}
 	$output='';
+<<<<<<< HEAD
 	$ebook=xmlrpc('http://ebook.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,array(),0,0,true);
+=======
+<<<<<<< HEAD
+	$ebook=xmlrpc('http://ebook.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);
+=======
+	$ebook=xmlrpc('http://ebook.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,array(),0,0,true);
+>>>>>>> 38bb059944fd61a7cfe8c157a96ad4d10e7dd137
+>>>>>>> 9e2f05ab6c023db767b6cf2c5d5072543ee31dd3
 	$output.=$ebook[0];
 	
 	return $output;

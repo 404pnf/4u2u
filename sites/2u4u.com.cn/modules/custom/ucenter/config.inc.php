@@ -35,7 +35,15 @@ define('UC_PPP', '20');
 
 //通信相关
 //define('UC_KEY', '123456789');				// 与 UCenter 的通信密钥, 要与 UCenter 保持一致
+<<<<<<< HEAD
 //define('UC_API', 'http://u.2u4u.com.cn/ucenter');	// UCenter 的 URL 地址, 在调用头像时依赖此常量
+=======
+<<<<<<< HEAD
+//define('UC_API', 'http://u.2n4n.com.cn/ucenter');	// UCenter 的 URL 地址, 在调用头像时依赖此常量
+=======
+//define('UC_API', 'http://u.2u4u.com.cn/ucenter');	// UCenter 的 URL 地址, 在调用头像时依赖此常量
+>>>>>>> 38bb059944fd61a7cfe8c157a96ad4d10e7dd137
+>>>>>>> 9e2f05ab6c023db767b6cf2c5d5072543ee31dd3
 //define('UC_CHARSET', 'utf8');				// UCenter 的字符集
 //define('UC_IP', '');					// UCenter 的 IP, 当 UC_CONNECT 为非 mysql 方式时, 并且当前应用服务器解析域名有问题时, 请设置此值
 //define('UC_APPID', 1);					// 当前应用的 ID

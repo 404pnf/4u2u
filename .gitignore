@@ -20,4 +20,8 @@ del/*
 */guanlisjk/*
 */del/*
 */bak/*
+<<<<<<< HEAD
 player/
+=======
+*/backup/*
+>>>>>>> 38bb059944fd61a7cfe8c157a96ad4d10e7dd137

@@ -8,6 +8,9 @@
     <?php print $styles; ?>
     <!--[if lte IE 6]><style type="text/css" media="all">@import "<?php print $base_path . path_to_theme() ?>/css/ie6.css";</style><![endif]-->
     <!--[if IE 7]><style type="text/css" media="all">@import "<?php print $base_path . path_to_theme() ?>/css/ie7.css";</style><![endif]-->
+	
+	<?php print $scripts; ?>
+	
 <?php $node_url=drupal_get_path_alias($_GET['q']);?>
 <?php $pos=strpos($node_url,'disney');?>
 <?php if($pos!== false ): ?>
@@ -122,7 +125,7 @@
 
     </div> <!-- /page -->
 	
-	<?php print $scripts; ?>
+	
 	<script type="text/javascript">
 var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
 document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F116fea821e3bfb6c5a7d4b187a50b502' type='text/javascript'%3E%3C/script%3E"));

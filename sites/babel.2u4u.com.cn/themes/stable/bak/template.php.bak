@@ -412,7 +412,7 @@ function stable_breadcrumb($breadcrumb) {
     return '<div class="breadcrumb">'. implode(' » ', $breadcrumb) .'</div>';
   }
 }
-/* 老葛下面写的具有通用性,而且不会出现在聚合页面term掉错的情况
+
 function stable_print_zcxh($terms) {
 $output=""; 
 $new_array = array();
@@ -434,128 +434,11 @@ foreach($terms as $tid=>$term ){
   }
   
   return $output=substr($output,0,strlen($output)-3);//去掉最后一个顿号，并返回输出值
-} */
-
-/* 
-此处传入的$terms是数组，以tid为键，term对象为值 
-$terms的结构事
-	Array {
-		[3] => stdClass Object (
-			[tid] => 3
-			[vid] => 1
-			[name] => vancouver
-			[description] => by land, sea and air
-			[wight] => 0 
-			//[parent_term_tid] => ptid
-			)
-	}
-
- */
-function stable_print_zcxh_by_object($terms) {
-$output=""; 
-$new_array = array();
-foreach($terms as $tid=>$term ){
- $parent_terms = taxonomy_get_parents($tid);
-
- /* 取得第一个父亲 一个tid可能有多个parents，或更多级的parents，
- $parent_term现在就成了上面 $term那样的一个数组形式，
- 也有tid, name, description等属性 */ 
- $parent_term = array_shift($parent_terms); 
- //为$term对象创建2个新的属性，
- //一个是parent_term_id一个是parent_term_name
- $term->parent_term_tid = $parent_term->tid;
- $term->parent_term_name = $parent_term->name;
- 
- $new_array[$parent_term->tid][] = $term;
-  }
-  
-  foreach($new_array as $ptid=>$sub_terms ){
-   
-	$output .=$sub_terms[0]->parent_term_name.'：';
-	foreach($sub_terms as $sub_terms_term ){
-		$output .= '<a href="/download/'.$sub_terms_term->tid.'">'.$sub_terms_term->name.'</a>、';
-	}
-  }
-  
-  return $output=substr($output,0,strlen($output)-3);//去掉最后一个顿号，并返回输出值
 }
 
 function stable_dl_sellprice($field){
-	$str = $field->original_value;
-	$str = preg_match('/\d+/',$str,$matches);
-	$price_num = $matches[0];
-	
-	return $price_num ;
-}
-
-function phptemplate_get_quizs($view_name,$display_id='default'){
-	$args=func_get_args();
-	array_shift($args);	//remove $view_name
-	if(count($args)){
-		array_shift($args);	//remove $display_id
-	}
-	$output='';
-	$quizs=xmlrpc('http://quiz.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);
-	$output.=$quizs[0];
-	
-	return $output;
-}
-
-function phptemplate_get_group($view_name,$display_id='default'){
-	$args=func_get_args();
-	array_shift($args);	//remove $view_name
-	if(count($args)){
-		array_shift($args);	//remove $display_id
-	}
-	$output='';
-	$group=xmlrpc('http://group.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);
-	$output.=$group[0];
-	
-	return $output;
-}
-
-function phptemplate_get_video($view_name,$display_id){
-	$args=func_get_args();
-	array_shift($args);	//remove $view_name
-	if(count($args)){
-		array_shift($args);	//remove $display_id
-	}
-	$output='';
-	$video=xmlrpc('http://video.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);
-	$output.=$video[0];
-	
-	return $output;
-}
-
-<<<<<<< HEAD
-function phptemplate_get_ebook($view_name,$display_id = 'default'){
-=======
-function phptemplate_get_ebook($view_name,$display_id){
->>>>>>> c760df481cdb710642b2ff0f1380cb127f18f3f3
-	$args=func_get_args();
-	array_shift($args);	//remove $view_name
-	if(count($args)){
-		array_shift($args);	//remove $display_id
-	}
-	$output='';
-<<<<<<< HEAD
-	$ebook=xmlrpc('http://ebook.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,array(),0,0,true);
-=======
-	$ebook=xmlrpc('http://ebook.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);
->>>>>>> c760df481cdb710642b2ff0f1380cb127f18f3f3
-	$output.=$ebook[0];
-	
-	return $output;
-}
-function phptemplate_get_answer($view_name,$display_id){
-	$args=func_get_args();
-	array_shift($args);	//remove $view_name
-	if(count($args)){
-		array_shift($args);	//remove $display_id
-	}
-	$output='';
-	$answer=xmlrpc('http://answer.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);
-	$output.=$answer[0];
-	
-	return $output;
+$str = $field->original_value;
+$str = preg_match('/\d+/',$str,$matches);
+$price_num = $matches[0];
+return $price_num ;
 }

@@ -1,13 +1,13 @@
 <?php
     
 // Auto-rebuild the theme registry during theme development.
-if (theme_get_setting('stable_rebuild_registry')) {
+if (theme_get_setting('video_rebuild_registry')) {
   drupal_rebuild_theme_registry();
 }
 
 // Add Zen Tabs styles
-if (theme_get_setting('stable_zen_tabs')) {
-  drupal_add_css( drupal_get_path('theme', 'stable') .'/css/tabs.css', 'theme', 'screen');
+if (theme_get_setting('video_zen_tabs')) {
+  drupal_add_css( drupal_get_path('theme', 'video') .'/css/tabs.css', 'theme', 'screen');
 }
 
 /*
@@ -19,7 +19,7 @@ if (theme_get_setting('stable_zen_tabs')) {
  *	  The name of the theme function being called ("page" in this case.)
  */
 
-function stable_preprocess_page(&$vars, $hook) {
+function video_preprocess_page(&$vars, $hook) {
 
   // Don't display empty help from node_help().
   if ($vars['help'] == "<div class=\"help\"><p></p>\n</div>") {
@@ -32,7 +32,7 @@ function stable_preprocess_page(&$vars, $hook) {
   if (user_access('administer blocks')) {
 	  $body_classes[] = 'admin';
 	}
-	if (theme_get_setting('stable_wireframe')) {
+	if (theme_get_setting('video_wireframe')) {
     $body_classes[] = 'with-wireframes'; // Optionally add the wireframes style.
   }
   if (!empty($vars['primary_links']) or !empty($vars['secondary_links'])) {
@@ -50,8 +50,8 @@ function stable_preprocess_page(&$vars, $hook) {
     // Add unique classes for each page and website section
     $path = drupal_get_path_alias($_GET['q']);
     list($section, ) = explode('/', $path, 2);
-    $body_classes[] = stable_id_safe('page-'. $path);
-    $body_classes[] = stable_id_safe('section-'. $section);
+    $body_classes[] = video_id_safe('page-'. $path);
+    $body_classes[] = video_id_safe('section-'. $section);
 
     if (arg(0) == 'node') {
       if (arg(1) == 'add') {
@@ -147,7 +147,7 @@ function stable_preprocess_page(&$vars, $hook) {
     $vars['template_files'] = $suggestions;
   }
 } */
-function stable_preprocess_node(&$vars, $hook) {
+function video_preprocess_node(&$vars, $hook) {
   // Special classes for nodes
   $classes = array('node');
   if ($vars['sticky']) {
@@ -173,7 +173,7 @@ function stable_preprocess_node(&$vars, $hook) {
   $classes[] = 'clearfix';
   
   // Class for node type: "node-type-page", "node-type-story", "node-type-my-custom-type", etc.
-  $classes[] = stable_id_safe('node-type-' . $vars['type']);
+  $classes[] = video_id_safe('node-type-' . $vars['type']);
   $vars['classes'] = implode(' ', $classes); // Concatenate with spaces
 }
 
@@ -189,14 +189,14 @@ function stable_preprocess_node(&$vars, $hook) {
  *   The name of the theme function being called ("block" in this case.)
  */ 
 
-function stable_preprocess_block(&$vars, $hook) {
+function video_preprocess_block(&$vars, $hook) {
     $block = $vars['block'];
 
     // special block classes
     $classes = array('block');
-    $classes[] = stable_id_safe('block-' . $vars['block']->module);
-    $classes[] = stable_id_safe('block-' . $vars['block']->region);
-    $classes[] = stable_id_safe('block-id-' . $vars['block']->bid);
+    $classes[] = video_id_safe('block-' . $vars['block']->module);
+    $classes[] = video_id_safe('block-' . $vars['block']->region);
+    $classes[] = video_id_safe('block-id-' . $vars['block']->bid);
     $classes[] = 'clearfix';
     
     // support for Skinr Module
@@ -206,7 +206,7 @@ function stable_preprocess_block(&$vars, $hook) {
     
     $vars['block_classes'] = implode(' ', $classes); // Concatenate with spaces
 
-    if (theme_get_setting('stable_block_editing') && user_access('administer blocks')) {
+    if (theme_get_setting('video_block_editing') && user_access('administer blocks')) {
         // Display 'edit block' for custom blocks.
         if ($block->module == 'block') {
           $edit_links[] = l('<span>' . t('edit block') . '</span>', 'admin/build/block/configure/' . $block->module . '/' . $block->delta,
@@ -275,7 +275,7 @@ function stable_preprocess_block(&$vars, $hook) {
  *    The name of the template being rendered ("comment" in this case.)
  */
 
-function stable_preprocess_comment(&$vars, $hook) {
+function video_preprocess_comment(&$vars, $hook) {
   // Add an "unpublished" flag.
   $vars['unpublished'] = ($vars['comment']->status == COMMENT_NOT_PUBLISHED);
 
@@ -324,7 +324,7 @@ function stable_preprocess_comment(&$vars, $hook) {
  * 	  string The rendered menu item.
  */ 	
 
-function stable_menu_item_link($link) {
+function video_menu_item_link($link) {
   if (empty($link['localized_options'])) {
     $link['localized_options'] = array();
   }
@@ -343,7 +343,7 @@ function stable_menu_item_link($link) {
  *  Duplicate of theme_menu_local_tasks() but adds clear-block to tabs.
  */
 
-function stable_menu_local_tasks() {
+function video_menu_local_tasks() {
   $output = '';
   if ($primary = menu_primary_local_tasks()) {
     if(menu_secondary_local_tasks()) {
@@ -363,7 +363,7 @@ function stable_menu_local_tasks() {
  * 	Add custom classes to menu item
  */	
 	
-function stable_menu_item($link, $has_children, $menu = '', $in_active_trail = FALSE, $extra_class = NULL) {
+function video_menu_item($link, $has_children, $menu = '', $in_active_trail = FALSE, $extra_class = NULL) {
   $class = ($menu ? 'expanded' : ($has_children ? 'collapsed' : 'leaf'));
   if (!empty($extra_class)) {
     $class .= ' '. $extra_class;
@@ -372,7 +372,7 @@ function stable_menu_item($link, $has_children, $menu = '', $in_active_trail = F
     $class .= ' active-trail';
   }
 #New line added to get unique classes for each menu item
-  $css_class = stable_id_safe(str_replace(' ', '_', strip_tags($link)));
+  $css_class = video_id_safe(str_replace(' ', '_', strip_tags($link)));
   return '<li class="'. $class . ' ' . $css_class . '">' . $link . $menu ."</li>\n";
 }
 
@@ -392,7 +392,7 @@ function stable_menu_item($link, $has_children, $menu = '', $in_active_trail = F
  *	  The converted string
  */	
 
-function stable_id_safe($string) {
+function video_id_safe($string) {
   // Replace with dashes anything that isn't A-Z, numbers, dashes, or underscores.
   $string = strtolower(preg_replace('/[^a-zA-Z0-9_-]+/', '-', $string));
   // If the first character is not a-z, add 'n' in front.
@@ -407,13 +407,13 @@ function stable_id_safe($string) {
  *	Alow you to customize the breadcrumb markup
  */
 
-function stable_breadcrumb($breadcrumb) {
+function video_breadcrumb($breadcrumb) {
   if (!empty($breadcrumb)) {
     return '<div class="breadcrumb">'. implode(' » ', $breadcrumb) .'</div>';
   }
 }
-/* 老葛下面写的具有通用性,而且不会出现在聚合页面term掉错的情况
-function stable_print_zcxh($terms) {
+
+function video_print_zcxh($terms) {
 $output=""; 
 $new_array = array();
 foreach($terms as $tid=>$term ){
@@ -434,128 +434,11 @@ foreach($terms as $tid=>$term ){
   }
   
   return $output=substr($output,0,strlen($output)-3);//去掉最后一个顿号，并返回输出值
-} */
-
-/* 
-此处传入的$terms是数组，以tid为键，term对象为值 
-$terms的结构事
-	Array {
-		[3] => stdClass Object (
-			[tid] => 3
-			[vid] => 1
-			[name] => vancouver
-			[description] => by land, sea and air
-			[wight] => 0 
-			//[parent_term_tid] => ptid
-			)
-	}
-
- */
-function stable_print_zcxh_by_object($terms) {
-$output=""; 
-$new_array = array();
-foreach($terms as $tid=>$term ){
- $parent_terms = taxonomy_get_parents($tid);
-
- /* 取得第一个父亲 一个tid可能有多个parents，或更多级的parents，
- $parent_term现在就成了上面 $term那样的一个数组形式，
- 也有tid, name, description等属性 */ 
- $parent_term = array_shift($parent_terms); 
- //为$term对象创建2个新的属性，
- //一个是parent_term_id一个是parent_term_name
- $term->parent_term_tid = $parent_term->tid;
- $term->parent_term_name = $parent_term->name;
- 
- $new_array[$parent_term->tid][] = $term;
-  }
-  
-  foreach($new_array as $ptid=>$sub_terms ){
-   
-	$output .=$sub_terms[0]->parent_term_name.'：';
-	foreach($sub_terms as $sub_terms_term ){
-		$output .= '<a href="/download/'.$sub_terms_term->tid.'">'.$sub_terms_term->name.'</a>、';
-	}
-  }
-  
-  return $output=substr($output,0,strlen($output)-3);//去掉最后一个顿号，并返回输出值
 }
 
-function stable_dl_sellprice($field){
-	$str = $field->original_value;
-	$str = preg_match('/\d+/',$str,$matches);
-	$price_num = $matches[0];
-	
-	return $price_num ;
-}
-
-function phptemplate_get_quizs($view_name,$display_id='default'){
-	$args=func_get_args();
-	array_shift($args);	//remove $view_name
-	if(count($args)){
-		array_shift($args);	//remove $display_id
-	}
-	$output='';
-	$quizs=xmlrpc('http://quiz.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);
-	$output.=$quizs[0];
-	
-	return $output;
-}
-
-function phptemplate_get_group($view_name,$display_id='default'){
-	$args=func_get_args();
-	array_shift($args);	//remove $view_name
-	if(count($args)){
-		array_shift($args);	//remove $display_id
-	}
-	$output='';
-	$group=xmlrpc('http://group.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);
-	$output.=$group[0];
-	
-	return $output;
-}
-
-function phptemplate_get_video($view_name,$display_id){
-	$args=func_get_args();
-	array_shift($args);	//remove $view_name
-	if(count($args)){
-		array_shift($args);	//remove $display_id
-	}
-	$output='';
-	$video=xmlrpc('http://video.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);
-	$output.=$video[0];
-	
-	return $output;
-}
-
-<<<<<<< HEAD
-function phptemplate_get_ebook($view_name,$display_id = 'default'){
-=======
-function phptemplate_get_ebook($view_name,$display_id){
->>>>>>> c760df481cdb710642b2ff0f1380cb127f18f3f3
-	$args=func_get_args();
-	array_shift($args);	//remove $view_name
-	if(count($args)){
-		array_shift($args);	//remove $display_id
-	}
-	$output='';
-<<<<<<< HEAD
-	$ebook=xmlrpc('http://ebook.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,array(),0,0,true);
-=======
-	$ebook=xmlrpc('http://ebook.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);
->>>>>>> c760df481cdb710642b2ff0f1380cb127f18f3f3
-	$output.=$ebook[0];
-	
-	return $output;
-}
-function phptemplate_get_answer($view_name,$display_id){
-	$args=func_get_args();
-	array_shift($args);	//remove $view_name
-	if(count($args)){
-		array_shift($args);	//remove $display_id
-	}
-	$output='';
-	$answer=xmlrpc('http://answer.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);
-	$output.=$answer[0];
-	
-	return $output;
+function video_dl_sellprice($field){
+$str = $field->original_value;
+$str = preg_match('/\d+/',$str,$matches);
+$price_num = $matches[0];
+return $price_num ;
 }

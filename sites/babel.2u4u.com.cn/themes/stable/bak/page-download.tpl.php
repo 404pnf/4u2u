@@ -8,17 +8,6 @@
     <?php print $styles; ?>
     <!--[if lte IE 6]><style type="text/css" media="all">@import "<?php print $base_path . path_to_theme() ?>/css/ie6.css";</style><![endif]-->
     <!--[if IE 7]><style type="text/css" media="all">@import "<?php print $base_path . path_to_theme() ?>/css/ie7.css";</style><![endif]-->
-<<<<<<< HEAD
-	
-	<?php print $scripts; ?>
-	
-=======
->>>>>>> c760df481cdb710642b2ff0f1380cb127f18f3f3
-<?php $node_url=drupal_get_path_alias($_GET['q']);?>
-<?php $pos=strpos($node_url,'disney');?>
-<?php if($pos!== false ): ?>
-<script type="text/javascript" src="http://cdn1.2u4u.com.cn/disney/js/submit.js"></script>
-<?php endif;?>
   </head>
 
   <body class="<?php print $body_classes; ?>">
@@ -26,7 +15,9 @@
     <div id="skip"><a href="#content">Skip to Content</a> <a href="#navigation">Skip to Navigation</a></div>  
     <div id="page">
 
+    <!-- ______________________ HEADER _______________________ -->
 	
+<!-- whx 修改logo的alt以及rel-->
     <div id="header">
 	<div id="header-middle">
       <div id="logo-title">
@@ -36,6 +27,17 @@
             <img src="<?php print $logo; ?>" alt="<?php print $site_name; ?>"/>
           </a>
         <?php endif; ?>
+
+        <div id="name-and-slogan">
+          <?php if (!empty($site_name)): ?>
+            <h1 id="site-name">
+              <a href="<?php print $front_page ?>" title="<?php print t('Home'); ?>" rel="home"><span><?php print $site_name; ?></span></a>
+            </h1>
+          <?php endif; ?>
+          <?php if (!empty($site_slogan)): ?>
+            <div id="site-slogan"><?php print $site_slogan; ?></div>
+          <?php endif; ?>
+        </div> <!-- /name-and-slogan -->
 
       </div> <!-- /logo-title -->
 
@@ -73,12 +75,16 @@
           <?php if ($breadcrumb || $title || $mission || $messages || $help || $tabs): ?>
             <div id="content-header">
 			
-			  <?php if(!empty($node) && $node->type == 'readthink'): ?>
+			  <?php $node=node_load(arg(1));if($nodt->type == 'readthink'): ?>
 				<?php print $breadcrumb; ?>
 			  <?php endif; ?>
 
-              <?php if(!empty($title) && $node->nid != 55446 && $node->type != 'og_group'): ?>
+              <?php if ($title): ?>
                 <div class="title_bg"><h1 class="title"><?php print $title; ?></h1></div>
+              <?php endif; ?>
+
+              <?php if ($mission): ?>
+                <div id="mission"><?php print $mission; ?></div>
               <?php endif; ?>
 
               <?php print $messages; ?>
@@ -93,7 +99,11 @@
           <?php endif; ?>
 
           <div id="content-area">
-            <?php print $content; ?>
+			    <div class="dlsearch1">
+                    <?php print $download_search; ?>
+                </div>
+            <?php print $content; ?> 
+
           </div> <!-- /#content-area -->
 
           <?php print $feed_icons; ?>
@@ -106,6 +116,8 @@
 
           </div>
         </div> <!-- /content-inner /content -->
+
+
 
         <?php if ($right): ?>
           <div id="sidebar-second" class="column sidebar second">
@@ -128,26 +140,57 @@
 
     </div> <!-- /page -->
 	
-<<<<<<< HEAD
-	
-=======
 	<?php print $scripts; ?>
->>>>>>> c760df481cdb710642b2ff0f1380cb127f18f3f3
-	<script type="text/javascript">
-var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
-document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F116fea821e3bfb6c5a7d4b187a50b502' type='text/javascript'%3E%3C/script%3E"));
-</script>
-        <SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery-ui.min.js"></SCRIPT>
+
+	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery-ui.min.js"></SCRIPT>
 	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.spasticNav.js"></SCRIPT>
 	
 	<?php if($closure_region): ?>
 		<div id="closure_region">
 			<?php print $closure_region; ?>
-			<script type="text/javascript">
-				$(function(){$('a:[href^=http][href*=2u4u.com.cn]').attr('target','_blank');});
-			</script>
 		</div>
 	<?php endif; ?>
+	<SCRIPT>
+// perform JavaScript after the document is scriptable.
+$(function() {
+	
+	$("div.view-display-id-attachment_5").scrollable({
+		size: 5,
+		vertical:false,
+		clickable:false,
+		navi:'.navi',
+		items:'.view-content',
+		prevPage:'#prev1',//跳转到上一页
+		nextPage:'#next1',//跳转到下一页
+		//hoverClass: 'hover',
+		easing:'linear'
+	});
+	$("div.view-display-id-attachment_6").scrollable({
+		size: 5,
+		vertical:false,
+		clickable:false,
+		navi:'.navi',
+		items:'.view-content',
+		prevPage:'#prev2',//跳转到上一页
+		nextPage:'#next2',//跳转到下一页
+		//hoverClass: 'hover',
+		easing:'linear'
+	});
+	$("div.view-display-id-attachment_7").scrollable({
+		size: 5,
+		vertical:false,
+		clickable:false,
+		navi:'.navi',
+		items:'.view-content',
+		prevPage:'#prev3',//跳转到上一页
+		nextPage:'#next3',//跳转到下一页
+		//hoverClass: 'hover',
+		easing:'linear'
+	});
+});
+
+</SCRIPT>	
+
 	<?php print $closure; ?>
   </body>
 </html>

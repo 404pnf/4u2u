@@ -100,10 +100,14 @@
                           <div class="main dl-panes clear">
 							<div id="pane_tab1" class="pane">
                               <!--未登录-->
-				<?php $block = module_invoke('user', 'block', 'view', 0); ?>	
-				<?php print $block['content']; ?>
+							  
+				<?php /* $block = module_invoke('user', 'block', 'view', 0); print $block['content']; */ ?>
 
-				
+		<?php if ($user_login): ?>
+              <?php print $user_login; ?>
+          <?php endif; ?>
+		
+		
 				<!--已登录-->
 				<?php $block = module_invoke('block', 'block', 'view', 44); ?>
 				<?php print $block['content']; ?>
@@ -111,8 +115,10 @@
                             </div>
 							<div id="pane_tab2" class="pane">
                               <!--积分充值-->
-				<?php $block = module_invoke('gift_points', 'block', 'view', 0); ?>
-				<?php print $block['content']; ?>
+				<?php /* $block = module_invoke('gift_points', 'block', 'view', 0); print $block['content']; */ ?>
+				<?php 
+					print drupal_get_form('recommender_points_form');
+				?>
                             </div>
 
 							

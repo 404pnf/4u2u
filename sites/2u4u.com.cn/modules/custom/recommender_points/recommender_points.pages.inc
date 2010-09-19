@@ -10,8 +10,8 @@ function recommender_points_topup_page(){
 	}
 	else {
 		//对于匿名用户，为其返回相应的提示，提示登录
-		$output .= t('您好，只有<a href="http://2u4u.com.cn/user?destination=chongzhi">登录</a>后，才能把积分充入您的账号。');
-		$output .= t('如果您还没有账号，<a href="http://2u4u.com.cn/user/register">注册</a>只需半分钟。');
+		$output .= t('您好，只有<a href="http://2u4u.com.cn/user?destination=chongzhi/recommender">登录</a>后，才能把积分充入您的账号。');
+		$output .= t('如果您还没有账号，<a href="http://2u4u.com.cn/user/register?destination=chongzhi/recommender">注册</a>只需半分钟。');
 	}
 	return $output;
 }

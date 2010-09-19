@@ -3,21 +3,80 @@
 function disney_menu(){
 	
 	$items =array();
+	
 	$items['disney']=array(
 	    'title' => '迪士尼英语家庭版',
 	    'page callback' => 'disney_list_page',
-		'file' => 'disney.pages.inc',
 	    'access callback' => true,
 	    'type' => MENU_CALLBACK,
+	    'file' => 'disney.page.inc'
 	);
    $items['disney/series'] = array(
-   	'title' => '',
-   	'page callback' => 'disney_series',
-	'file' => 'disney.pages.inc',
-    'page arguments' =>array(2),
-   	'access callback'=>true,
-    'type' => MENU_CALLBACK,
+	   	'title' => t(''),
+	   	'page callback' => 'disney_series',
+	    'page arguments' =>array(2),
+	   	'access callback'=>true,
+	    'type' => MENU_CALLBACK,
+	    'file' => 'disney.page.inc'
    );
+   
+   
+   $items['admin/settings/add/disney/series'] = array(
+	    'title'=>t('迪士尼英语管理'),
+	    'description'=>t('添加/删除迪士尼英语家庭版系列名称'),
+		'page callback' => 'disney_series_add_page', 
+		'access arguments' => array('administer users'),
+	    'file' => 'disney.admin.inc'
+    
+   );
+   
+   $items['admin/settings/delete/disney/series'] = array(
+	    'title'=>t(''),
+		'page callback' => 'disney_series_delete', 
+	    'page arguments' =>array(5),
+		'access arguments' => array('administer users'),
+	    'type' => MENU_CALLBACK,
+	    'file' => 'disney.admin.inc'
+   );
+   
 	return $items;
 	
 }
+ 
+
+function disney_block($op = 'list', $delta = 0, $edit = array()){
+  
+  if ($op == 'list') {
+    $blocks[0]['info'] = t('迪士尼英语分类');
+    // Not worth caching.
+    $blocks[0]['cache'] = BLOCK_NO_CACHE;
+    return $blocks;
+  }
+	
+  if($op == 'view'){
+  	$block['subject'] = t('迪士尼英语分类');
+  	$block['content'] = get_disney_series();
+  	return $block;
+  }   
+}
+
+
+function get_disney_series(){
+	
+	$sql = "SELECT * FROM {disney_series} ORDER BY `series_id` ";	
+	$res = db_query($sql);
+	$content .= "<ul>";
+	while($row = db_fetch_object($res)){		
+		if($row->series_name!=''){
+			
+			$content .= "<li><img border='0' src='/sites/2u4u.com.cn/themes/2u4u/images/view-headerlist.jpg'><a href='/disney/series/".$row->series_id."'>".$row->series_name."</a></li>";
+			
+		}
+	}
+	$content .= "</ul>";	
+	return $content;
+	
+}
+
+
+?>

@@ -51,3 +51,29 @@ function invite_admin_config_form_validate($form,&$form_state){
 		form_set_error('invite_award_points_per_user',t('积分比例应该是大于0的数字'));
 	}
 }
+
+function invite_admin_list_page(){
+	$output ="";
+	//$output .=t("邀请记录汇总排名");
+	
+	$sql = "SELECT uid, count(invitee) as subtotal FROM {invite} WHERE invitee > 0 GROUP BY uid ORDER BY subtotal DESC";
+	$pager_num = 0;
+	$result = pager_query($sql, 50, $pager_num, NULL);
+	//$header = array("Email地址","邀请时间","再次邀请","删除");
+	$header = array("用户","邀请人数");
+	$ta = array('id' => 'invite-sum-table', 'align' => 'center');
+	$trows = array();
+	while($data = db_fetch_object($result)){
+		$current_user = user_load($data->uid);
+		$trows[] = array(
+			array('data'=>l($current_user->name,'user/'.$current_user->uid),'valign'=>'top'),
+			array('data'=>$data->subtotal,'valign'=>'top'),
+			
+			//array('data'=>l('删除','invite/delete/'.$data->invite_id),'valign'=>'top'),
+		);
+	}
+	$output .= theme('table', $header, $trows, $ta);
+  $output .= theme('pager', NULL, 50, $pager_num);
+	
+	return $output;
+}

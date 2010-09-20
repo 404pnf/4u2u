@@ -57,7 +57,38 @@ function invite_menu() {
 	
 	
 	// User profile tabs
-  $items['user/%user/invites'] = array(
+/*   $items['user/%user/invites'] = array(
+    'title' => '你的邀请历史',
+    'page callback' => 'invite_user_pending_page',
+		'page arguments' => array(1),
+    'access callback' => 'invite_user_access',
+		'access arguments' => array(1),
+		'type' => MENU_LOCAL_TASK,
+    'file' => 'invite.pages.inc',
+  );
+	
+	$items['user/%user/invites/pending'] = array(
+    'title' => '你的邀请历史',
+    'page callback' => 'invite_user_pending_page',
+    'page arguments' => array(1),
+    'access callback' => 'invite_user_access',
+		'access arguments' => array(1),
+		'type' => MENU_DEFAULT_LOCAL_TASK,
+    'file' => 'invite.pages.inc',
+  );
+	
+  $items['user/%user/invites/accepted'] = array(
+    'title' => '你邀请到的朋友',
+    'page callback' => 'invite_user_accepted_page',
+    'page arguments' => array(1),
+    'access callback' => 'invite_user_access',
+		'access arguments' => array(1),
+		'type' => MENU_LOCAL_TASK,
+    'weight' => 5,
+    'file' => 'invite.pages.inc',
+  ); */
+  
+    $items['user/%user/invites'] = array(
     'title' => '你的邀请历史',
     'page callback' => 'invite_user_accepted_page',
 		'page arguments' => array(1),
@@ -89,6 +120,8 @@ function invite_menu() {
     'file' => 'invite.pages.inc',
   );
 
+
+	
 	$items['admin/user/invite'] = array(
     'title' => '邀请',
     'page callback' => 'invite_admin_config_page',

@@ -210,7 +210,7 @@ function invite_user_accepted_page($account){
 	$result = pager_query($sql, 50, $pager_num, NULL, $account->uid);
 	$count = db_result(db_query("SELECT COUNT(*) FROM {invite} WHERE uid= %d AND joined > 0", $account->uid));
 	//$header = array("用户","注册时间");
-	$header = array("用户","注册时间");
+	$header = array("用户","注册时间","Email");
 	$ta = array('id' => 'invite-table', 'align' => 'center');
 	$trows = array();
 	while($data = db_fetch_object($result)){
@@ -218,7 +218,7 @@ function invite_user_accepted_page($account){
 		$trows[] = array(
 			array('data'=>l($invitee->name,'user/'.$invitee->uid),'valign'=>'top'),
 			array('data'=>format_date($data->joined,'custom','Y-m-d - H:i'),'valign'=>'top'),
-			
+			array('data'=>$invitee->mail,'valign'=>'top'),
 			//array('data'=>l('删除','invite/delete/'.$data->invite_id),'valign'=>'top'),
 		);
 	}

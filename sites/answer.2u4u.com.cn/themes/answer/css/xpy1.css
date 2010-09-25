@@ -13,6 +13,9 @@
 #my-answer {
 	margin:10px 0 0 20px;
 	font-weight:bold;
+	background:url(fp_images/07.gif) no-repeat;
+	text-indent:20px;
+	background-position:left 3px;
 }
 
 #block-search-0 #edit-search-block-form-1{
@@ -183,7 +186,7 @@ padding-left:13px;
 .page-wenda tbody tr.odd td, .page-wenda tbody tr.even td{
 	padding:5px 3px 5px 8px;
 }
-.page-wenda .views-field-title{
+.page-wenda #content-area .views-field-title{
 	width:63%;
 	padding-left:10px;
 }
@@ -198,7 +201,7 @@ padding-left:13px;
 }
 
 .page-wenda .views-field .jifentu{
-	background:url(images/qian.gif) no-repeat scroll right center transparent;
+	background:url(images/qian.png) no-repeat scroll right center transparent;
 	width:40px;
 }
 
@@ -399,4 +402,7 @@ background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/erjibg.gif") repe
 .section-node #content-bottom .block-inner{
 	border:1px solid #CECECE;
 	margin-top:15px;
+}
+#edit-search-block-form-1-wrapper label{
+display:none;
 }

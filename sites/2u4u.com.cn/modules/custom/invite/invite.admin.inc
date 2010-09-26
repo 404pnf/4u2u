@@ -42,6 +42,28 @@ function invite_admin_config_form(){
 		'#default_value' => variable_get('invite_default_email_link', $default_invite_default_email_link),
 		'#description' => t('默认邀请邮件正文下面的邀请链接，这里使用令牌占位符[join-link]，用户不可以修改'),
 	);
+	
+	$form['email_validate'] = array(
+		'#type' => 'fieldset',
+		'#title' => t('默认邀请奖励验证码邮件'),
+		'#collapsible' => TRUE,
+		'#collapsed' => TRUE,
+		
+	);
+	$default_invite_default_email_validate_title = t('您通过朋友[inviter]的推广链接成功加入2u4u,您可以为邀请人奖励相应积分');
+	$form['email_validate']['invite_default_email_validate_title'] = array(
+		'#title' => t('主题'),
+		'#type' => 'textfield',
+		'#default_value' => variable_get('invite_default_email_validate_title', $default_invite_default_email_validate_title),
+		'#description' => t('默认邀请验证邮件的主题，这里可以使用令牌占位符[inviter]，用户不可以修改'),
+	);
+	$default_invite_default_email_validate_body = t('您通过朋友[inviter]的推广链接成功加入2u4u,您可以为邀请人奖励相应积分。点击下面的链接，为其奖励积分。 [join-link]');
+	$form['email_validate']['invite_default_email_validate_body'] = array(
+		'#title' => t('正文'),
+		'#type' => 'textarea',
+		'#default_value' => variable_get('invite_default_email_validate_body', $default_invite_default_email_validate_body),
+		'#description' => t('默认邀请验证邮件的正文，这里可以使用令牌占位符[join-link]，用户不可以修改'),
+	);
 	return system_settings_form($form);
 }
 

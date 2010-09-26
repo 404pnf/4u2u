@@ -135,7 +135,7 @@ function invite_method_email_form_submit($form,&$form_state){
 		$invite_id = _invite_get_inviteid_by_uid_and_email($user->uid, $to, $values);
 		$values['invite_link'] =  $invite_link.'_'.$invite_id; 
 		if(module_exists('job_queue')){
-			job_queue_add('drupal_mail', '发送邀请链接的邮件', array('invite', 'invite_notify', $to, $subject, $body, $from, $headers), '', TRUE);
+			job_queue_add('drupal_mail', '发送邀请链接的邮件', array('invite', 'invite_notify', $to, language_default(), $values, $from), '', TRUE);
 		}else{
 			drupal_mail('invite', 'invite_notify', $to, language_default(), $values, $from);
 		}
@@ -210,7 +210,7 @@ function invite_user_accepted_page($account){
 	$result = pager_query($sql, 50, $pager_num, NULL, $account->uid);
 	$count = db_result(db_query("SELECT COUNT(*) FROM {invite} WHERE uid= %d AND joined > 0", $account->uid));
 	//$header = array("用户","注册时间");
-	$header = array("用户","注册时间","Email");
+	$header = array("用户","注册时间","Email","Referrer");
 	$ta = array('id' => 'invite-table', 'align' => 'center');
 	$trows = array();
 	while($data = db_fetch_object($result)){
@@ -219,6 +219,8 @@ function invite_user_accepted_page($account){
 			array('data'=>l($invitee->name,'user/'.$invitee->uid),'valign'=>'top'),
 			array('data'=>format_date($data->joined,'custom','Y-m-d - H:i'),'valign'=>'top'),
 			array('data'=>$invitee->mail,'valign'=>'top'),
+			//array('data'=>l('删除','invite/delete/'.$data->invite_id),'valign'=>'top'),
+			array('data'=>$data->referrer,'valign'=>'top'),
 			//array('data'=>l('删除','invite/delete/'.$data->invite_id),'valign'=>'top'),
 		);
 	}
@@ -310,7 +312,7 @@ function invite_resend_invite_form_submit($form,&$form_state){
 	$invite_id = _invite_get_inviteid_by_uid_and_email($user->uid, $email, $values);
 	$values['invite_link'] =  $invite_link.'_'.$invite_id; 
 	if(module_exists('job_queue')){
-		job_queue_add('drupal_mail', '发送邀请链接的邮件', array('invite', 'invite_notify', $email, $subject, $body, $from, $headers), '', TRUE);
+		job_queue_add('drupal_mail', '发送邀请链接的邮件', array('invite', 'invite_notify', $email, language_default(), $values, $from), '', TRUE);
 	}else{
 		drupal_mail('invite', 'invite_notify', $email, language_default(), $values, $from);
 	}
@@ -318,4 +320,49 @@ function invite_resend_invite_form_submit($form,&$form_state){
 		
 	drupal_set_message(t('您的再次邀请已发送,对方接受邀请注册后，就会为您添加相应的积分'));
 	drupal_goto('user/'.$user->uid.'/invites');
+}
+
+function invite_award_inviter_callback(){
+  //邀请人
+	$inviter = arg(2);
+	//被邀请人
+	$invitee = arg(3);
+	//奖励码
+	$awardcode = arg(4);
+	//被邀请人对象
+	$invitee_user = user_load($invitee); 
+	$sql = "SELECT * FROM {invite} WHERE uid= %d AND invitee= %d ";
+	//邀请记录对象
+	$invite = db_fetch_object(db_query($sql, $inviter, $invitee));
+	//邀请记录不存在
+	if(empty($invite) || !isset($invite->invite_id)){
+		drupal_set_message(t('积分奖励码无效，无法为邀请人添加积分'));
+		drupal_goto('invite');
+	}
+	//邀请记录中email不为空，此时表示已经为用户奖励了积分
+	//drupal_set_message($invite->email."123123".$invitee);
+	if(!empty($invite->email)){
+		drupal_set_message(t('已经为邀请人奖励了相应积分，本链接有效性只有一次，请勿重复点击'));
+		drupal_goto('invite');
+	}
+	$md5_value = md5($invitee_user->mail.$invite->invite_id);
+	//奖励码无效
+	if($awardcode != $md5_value){
+		drupal_set_message(t('积分奖励码无效，无法为邀请人添加积分'));
+		drupal_goto('invite');
+	}else{
+		$sql = "UPDATE {invite} SET email = '%s' WHERE invite_id= %d";
+		db_query($sql, $invitee_user->mail, $invite->invite_id);
+		
+		//为邀请人添加分数
+		$params = array (
+			'uid' => $inviter,
+			'points' => variable_get('invite_award_points_per_user',30),
+			'description' => t('通过邀请用户获取的积分.邀请了用户:@username(ID: @uid)',array('@username'=>$invitee_user->name,'@uid'=>$invitee_user->uid)),
+		);
+		userpoints_userpointsapi($params);
+		drupal_set_message(t('成功的为邀请人奖励了相应积分，现在您也可以通过邀请朋友挣取积分了'));
+		drupal_goto('invite');
+	}
+	
 }

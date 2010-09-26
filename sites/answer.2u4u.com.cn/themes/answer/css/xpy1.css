@@ -234,7 +234,7 @@ padding-left:13px;
 
 
 .view-content .views-field-name .field-content{
-	margin-left:5px;
+	margin-left:15px;
 	font-size:14px;
 	font-weight:bold;
 }
@@ -248,9 +248,9 @@ padding-left:13px;
 }
 
 .views-field-signature{
-	width:140px;
+	width:120px;
 	float:right;
-	line-height:15px;	
+	line-height:17px;	
 
 }
 .views-field-nothing .field-content a{
@@ -375,6 +375,9 @@ background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/erjibg.gif") repe
 	background-color:#EFEFEF;
 	margin-top:15px;
 	padding:10px 5px 5px 20px;
+	border-top:1px solid #585858;
+	border-left:1px solid #585858;
+	border-right:1px solid #585858;
 }
 
 .section-node #content-area{
@@ -405,4 +408,26 @@ background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/erjibg.gif") repe
 }
 #edit-search-block-form-1-wrapper label{
 display:none;
+}
+#block-views-test_answer-block_4 .views-field-picture{
+	width:80px;
+	float:left;
+}
+thead th.views-field-name, thead th.views-field-timestamp{
+    text-align:center;
+}
+
+
+.page-wenda .item-list li.pager-ellipsis {
+	border:0px;
+	color:#000000;
+}
+
+.view-test-answer .views-table th .active {
+background:url("images/xulie.gif") no-repeat scroll right center transparent;
+display:block;
+width:63px;
+}
+.view-test-answer .views-table a.active img {
+background-color:#f2f2f2;
 }

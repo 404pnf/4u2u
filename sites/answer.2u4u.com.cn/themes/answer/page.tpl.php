@@ -88,7 +88,7 @@
 				<?php print $breadcrumb; ?>
 			  <?php endif; ?>
 
-              <?php if(!empty($title) && $node->nid != 55446 && $node->type != 'og_group'): ?>
+              <?php if(!empty($title) && $node->nid != 55446 && $node->type != 'best_answer'): ?>
                 <div class="title_bg"><h1 class="title"><?php print $title; ?></h1></div>
               <?php endif; ?>
 

@@ -66,8 +66,8 @@
                          </div>
  
                  <?php print $content_top; ?>
-                         <div>
-                               <div id="my-ask" class="myask">
+			 <div>
+			       <div id="my-ask" class="myask">
                                  <a href="/node/add/best-answer" target="_blank"><img src="/sites/answer.2u4u.com.cn/themes/answer/css/images/wytw.gif"></a>
                                </div>
                                <div id="rule" class="rules">

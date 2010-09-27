@@ -45,6 +45,14 @@ function invite_menu() {
     'file' => 'invite.pages.inc',
   );
 	
+	$items['invite/award/%/%/%'] = array(
+    'title' => '奖励邀请人积分',
+    'page callback' => 'invite_award_inviter_callback',
+		'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'invite.pages.inc',
+  );
+	
 	/*
 	$items['invite/delete'] = array(
     'title' => '邀请朋友加入',
@@ -95,6 +103,14 @@ function invite_menu() {
     'access arguments' => array('administer users'),
     'file' => 'invite.admin.inc',
   );
+	
+	$items['admin/user/invite/list'] = array(
+    'title' => '邀请记录汇总排名',
+    'page callback' => 'invite_admin_list_page',
+		'access callback' => 'user_access',
+    'access arguments' => array('administer users'),
+    'file' => 'invite.admin.inc',
+  );
 
   return $items;
 }
@@ -117,7 +133,7 @@ function invite_user($op, &$edit, &$account, $category = null) {
 				$uid = $_GET['uid'];
 				$usercode = $_GET['usercode'];
 				//通过默认推广链接过来的.
-				if(strlen($usercode)==32){
+				if(strlen($usercode)<=32){
 					//查询邀请链接是否有效
 					$sql = "SELECT COUNT(uid) FROM {usercode} WHERE uid= %d AND ucode = '%s' ";
 					$count = db_result(db_query($sql,$uid,$usercode));
@@ -127,6 +143,7 @@ function invite_user($op, &$edit, &$account, $category = null) {
 						$current_time = time();
 						$referrer = isset($_SERVER['HTTP_REFERER'])?$_SERVER['HTTP_REFERER']:'';
 						db_query($sql, $uid, $account->uid, $current_time, $current_time, $current_time, $referrer);
+						/*
 						//为邀请人添加分数
 						$params = array (
 							'uid' => $uid,
@@ -134,6 +151,26 @@ function invite_user($op, &$edit, &$account, $category = null) {
 							'description' => t('通过邀请用户获取的积分.邀请了用户:@username(ID: @uid)',array('@username'=>$account->name,'@uid'=>$account->uid)),
 						);
 						userpoints_userpointsapi($params);
+						*/
+						//先验证新注册用户的email，如果email真实存在，用户收到邮件后，点击链接就可以为推荐人加分了
+						$invite_id = db_last_insert_id('invite','invite_id');
+						$awardcode = md5($account->mail.$invite_id);
+						//注意，第3个参数为邀请人id，第4个参数为被邀请人id，第5个参数为奖励码
+						$invite_link = 'http://'.$_SERVER['HTTP_HOST'].base_path()."invite/award/".$uid.'/'.$account->uid.'/'.$awardcode;
+						
+						$job_queue_exists = module_exists('job_queue');
+						
+						$values['invite_link'] =  $invite_link; 
+						$inviter_user = user_load($uid);
+						$values['name'] = $inviter_user->name;
+						$from = variable_get('site_mail', ini_get('sendmail_from'));
+						$email = $account->mail;
+						if(module_exists('job_queue')){
+							job_queue_add('drupal_mail', '发送奖励码验证链接的邮件', array('invite', 'invite_email_validate', $email, language_default(), $values, $from), '', TRUE);
+						}else{
+							drupal_mail('invite', 'invite_email_validate', $email, language_default(), $values, $from);
+						}
+
 					}
 				}
 				//通过email邀请过来的用户
@@ -147,8 +184,8 @@ function invite_user($op, &$edit, &$account, $category = null) {
 					$count = db_result(db_query($sql,$uid,$usercode));
 					
 					if($count){
-						$invite_exist_sql = "SELECT COUNT(invite_id) FROM {invite} WHERE invite_id= %d";
-						$invite_exist_count = db_result(db_query($invite_exist_sql,$uid,$usercode));
+						$invite_exist_sql = "SELECT COUNT(invite_id) FROM {invite} WHERE uid= %d AND invite_id= %d";
+						$invite_exist_count = db_result(db_query($invite_exist_sql, $uid, $invite_id));
 						if($invite_exist_count){
 							//更新邀请记录
 							$sql = "UPDATE {invite} SET invitee = %d, changed = %d, joined =%d, referrer = '%s' WHERE invite_id =%d";
@@ -213,6 +250,17 @@ function invite_mail($key, &$message, $params) {
 			//$message['body'][] ='success';
 			//$message['body'][] = $params['body'];
 			//$message['body'][] = $params['invite_link'];
+			break;
+		case 'invite_email_validate':
+      
+			$obj = (object)$params;
+      $original_subject = variable_get('invite_default_email_validate_title', t('您通过朋友[inviter]的推广链接成功加入2u4u,您可以为邀请人奖励相应积分'));
+      $message['subject'] = token_replace($original_subject,'invite',$obj);
+					
+      $original_body = variable_get('invite_default_email_validate_body',t('您通过朋友[inviter]的推广链接成功加入2u4u,您可以为邀请人奖励相应积分。点击下面的链接，为其奖励积分。 [join-link]'));
+			$message['body'][] = token_replace($original_body,'invite',$obj);
+			
+			break;
   }
 }
 

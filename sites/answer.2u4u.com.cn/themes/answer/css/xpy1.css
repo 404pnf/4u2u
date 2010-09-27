@@ -13,6 +13,9 @@
 #my-answer {
 	margin:10px 0 0 20px;
 	font-weight:bold;
+	background:url(fp_images/07.gif) no-repeat;
+	text-indent:20px;
+	background-position:left 3px;
 }
 
 #block-search-0 #edit-search-block-form-1{
@@ -183,7 +186,7 @@ padding-left:13px;
 .page-wenda tbody tr.odd td, .page-wenda tbody tr.even td{
 	padding:5px 3px 5px 8px;
 }
-.page-wenda .views-field-title{
+.page-wenda #content-area .views-field-title{
 	width:63%;
 	padding-left:10px;
 }
@@ -198,7 +201,7 @@ padding-left:13px;
 }
 
 .page-wenda .views-field .jifentu{
-	background:url(images/qian.gif) no-repeat scroll right center transparent;
+	background:url(images/qian.png) no-repeat scroll right center transparent;
 	width:40px;
 }
 
@@ -231,7 +234,7 @@ padding-left:13px;
 
 
 .view-content .views-field-name .field-content{
-	margin-left:5px;
+	margin-left:15px;
 	font-size:14px;
 	font-weight:bold;
 }
@@ -245,9 +248,9 @@ padding-left:13px;
 }
 
 .views-field-signature{
-	width:140px;
+	width:120px;
 	float:right;
-	line-height:15px;	
+	line-height:17px;	
 
 }
 .views-field-nothing .field-content a{
@@ -284,7 +287,7 @@ text-decoration:none;
 	color:#7A7A7A;
 	margin-left:4px;
 }
-.page-node-add-best-answer #content-area{
+.page-node-add-best-answer #content-area, .page-node-add-best-answer-expert #content-area{
 	background-color:#EFEFEF;
 	padding:5px 0 20px 20px;
 	margin-top:15px;
@@ -318,7 +321,7 @@ text-decoration:none;
 }
 
 
-.page-node-add-best-answer #content-area .tips{
+.page-node-add-best-answer #content-area .tips, .page-node-add-best-answer-expert #content-area .tips{
 	display:none;
 }
 
@@ -330,7 +333,7 @@ text-decoration:none;
 	display:none;
 }
 
-.page-node-add-best-answer .node-form #edit-submit{
+.page-node-add-best-answer .node-form #edit-submit, .page-node-add-best-answer-expert .node-form #edit-submit{
 	background-image:url(images/tijiaowenti.gif);
 	border:0 none;
 	cursor:pointer;
@@ -371,16 +374,18 @@ background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/erjibg.gif") repe
 .section-node #content-header{
 	background-color:#EFEFEF;
 	margin-top:15px;
-	padding:10px 5px 5px 20px;
+	padding:5px 5px 5px 20px;
+	border-top:1px solid #CECECE;
+	border-left:1px solid #CECECE;
+	border-right:1px solid #CECECE;
 }
 
-.section-node #content-area{
-	background-color:#EFEFEF;
-}
 
-.section-node #content-area .submitted{
-	color:#767676;
-	margin-left:20px;
+.section-node #content-area .submitted, .form-item .best_answer_submitted .form-item, .view-content .node-inner .submitted.clear{
+	color:#969696;
+	padding-left:20px;
+	
+
 }
 
 
@@ -394,9 +399,147 @@ background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/erjibg.gif") repe
 
 .section-node #content-area .taxonomy{
 	margin-right:15px;
+	color:#969696;
+	float:right;
 }
 
 .section-node #content-bottom .block-inner{
 	border:1px solid #CECECE;
 	margin-top:15px;
+}
+#edit-search-block-form-1-wrapper label{
+display:none;
+}
+#block-views-test_answer-block_4 .views-field-picture{
+	width:80px;
+	float:left;
+}
+thead th.views-field-name, thead th.views-field-timestamp{
+    text-align:center;
+}
+
+
+.page-wenda .item-list li.pager-ellipsis {
+	border:0px;
+	color:#000000;
+}
+
+.view-test-answer .views-table th .active {
+	background:url("images/xulie.gif") no-repeat scroll right center transparent;
+	display:block;
+	width:63px;
+}
+.view-test-answer .views-table a.active img {
+	background-color:#f2f2f2;
+}
+
+.node-inner .title_links{
+	background:#EFEFEF;
+	padding-left:20px;
+	border-left:1px solid #CECECE;
+	border-right:1px solid #CECECE;
+}
+
+
+.page-node-add-best-answer-expert .title_bg h1.title{
+	display:none;
+}
+
+.page-node-add-best-answer .body-field-wrapper p, .page-node-add-best-answer-expert .body-field-wrapper p{
+	display:none;
+}
+
+#main #content-inner #content-header{
+	margin-top:15px;
+}
+#content-inner #content-header h1.title{
+	color:#961F1F;
+	padding:0 0 0 40px;
+}
+
+#content-inner #content-area .node-inner .best_answer{
+	display:none;
+}
+
+#content-inner #content-area .node-inner{
+	border-bottom:1px solid #CECECE;
+	border-left:1px solid #CECECE;
+	border-right:1px solid #CECECE;
+}
+#content-inner #content-area .node-inner .title_bg h1.title{
+	background:#EFEFEF;
+	padding-left:20px;
+	margin-bottom:5px;
+}
+
+#content-inner #content-area .node-inner .content.clear p{
+	font-size:14px;
+	margin-top:10px;
+}
+
+#content-inner #content-area .node-inner .field-item.odd{
+	background:url("images/qian.png") no-repeat scroll left center transparent;
+	background-position:83px 2px;
+}
+
+li.comment_add.first.last a{
+	background-image:url("images/huifu.gif");
+	width:40px;
+	height:22px;
+	display:block;
+	text-decoration:none;
+	margin:10px 0 10px 20px;
+	color:#816700;
+	font-weight:bold;
+	padding:3px 0 0 13px;
+	font-size:14px;
+}
+ul.links.inline li{
+	padding:0px;
+}
+
+#content-inner #content-area .best_answer{
+	border:1px solid #CECECE;
+	margin-top:10px;
+}
+.node_bestanswer .form-item{
+	padding:0px;
+	margin:0px;
+}
+
+.node_bestanswer .form-item label{
+	background:url("images/good.gif") no-repeat scroll 16px center #FCEFEF;
+	height:30px;
+	line-height:33px;
+	text-indent:38px;
+	color:#961F1F;
+	font-size:14px;
+	margin-bottom:8px;
+}
+
+.best_answer .form-item .best_answer_body .form-item, .view-content .node-inner .content.clear{
+	margin:10px 0 10px 20px;
+	font-size:14px;
+}
+
+.block-inner .content{
+	padding:0px;
+}
+
+#content-bottom .block-inner .content .view-header{
+	background-color:#E7E7E7;
+	height:28px;
+	padding:5px 0 0 20px;
+	font-weight:bold;
+	font-size:14px;
+}
+
+.block-inner .content .view-content .node-inner{
+	background-color:#F8F8F8;
+	margin-left:10px;
+	width:97%;
+}
+
+.view-content .node-inner .links.clear{
+	background:url("images/huifuhuida.gif") no-repeat scroll 16px center;
 }

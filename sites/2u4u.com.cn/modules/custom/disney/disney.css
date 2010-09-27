@@ -36,6 +36,12 @@ padding:20px;
 .page-disney .title{
 display:none;
 }
+
+.page-disney .block-title {
+	display:inline;
+}
+
+
 #block-block-68 .block-inner {
 border:1px solid #D1D1D1;
 line-height:25px;

@@ -100,10 +100,13 @@
 							<div id="pane_ltab1" class="pane">
                               <!--未登录-->
                               <!--不能使用module_invoke_all来调登录框，会出现ucenter module无法hook到登录的情况-->
-				<?php //$block = module_invoke('user', 'block', 'view', 0); ?>	
-				<?php //print $block['content']; ?>
-			      <!--使用drupal_get_form就不会有上面提到的问题-->
-				<?php if(user_is_anonymous()){print drupal_get_form('user_login_block');} ?>
+<?php /* $block = module_invoke('user', 'block', 'view', 0); print $block['content']; */ ?>
+<!--使用drupal_get_form一段时间后又出现上面提到的问题，就改用老葛教的另外一招加载把区块放在特殊region里，加载本region-->
+				<?php /* if(user_is_anonymous()){print drupal_get_form('user_login_block');}  */?>
+		<?php if ($user_login): ?>
+              <?php print $user_login; ?>
+          <?php endif; ?>
+			      
 				
 
 				

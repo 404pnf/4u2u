@@ -143,14 +143,38 @@ body , div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, fieldset,
  display:none;
  float:left;
 }
-#gift-points-chongzhi-form #edit-gcode-wrapper .form-text{
+#recommender-points-form  #edit-gcode-1-wrapper label,#recommender-points-form .form-item{
+ float:left;
+ padding:0px 10px;
+}
+
+#gift-points-chongzhi-form #edit-gcode-wrapper .form-text,#recommender-points-form #edit-gcode-1.form-text{
 width:150px;
 }
-#gift-points-chongzhi-form  #edit-gcode-wrapper.form-item{
+#gift-points-chongzhi-form  #edit-gcode-wrapper.form-item,#recommender-points-form  #edit-gcode-1-wrapper.form-item{
 display:block;
 margin-top:17px;
 }
-#gift-points-chongzhi-form .form-submit{
+
+/* 推荐人的css */
+#recommender-points-form  #edit-recommender-wrapper.form-item{
+margin-top:17px;
+}
+
+#recommender-points-form  #edit-recommender-wrapper .form-text{
+	width:150px;
+}
+.tips-recommender {
+float:left;
+margin-bottom:1em;
+margin-top:17px;
+}
+#edit-recommender-wrapper label {
+float:left;
+}
+/* ---end推荐人----- */
+
+#gift-points-chongzhi-form .form-submit,#recommender-points-form .form-submit{
 	background-image: url(images_bangzhu/image_14.gif);
 	background-repeat: no-repeat;
 	height: 33px;

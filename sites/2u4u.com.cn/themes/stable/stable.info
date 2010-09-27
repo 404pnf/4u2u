@@ -12,7 +12,7 @@ regions[right] = right sidebar
 regions[footer_block] = Footer
 regions[content_top] = Content top
 regions[content_bottom] = Content bottom
-regions[download_search] = Download search
+regions[user_login] =User login
 regions[closure_region] = closure
 
 features[] = logo

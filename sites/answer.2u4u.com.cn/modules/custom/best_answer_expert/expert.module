@@ -11,6 +11,13 @@ function expert_menu() {
     'access arguments' => array('administer site configuration'),
     'file' => 'expert.admin.inc',
   );
+	$items['admin/settings/expert/cron'] = array(
+    'title' => '手工运行',
+    'page callback' => 'expert_run_cron_page',
+		'access callback' => 'user_access',
+    'access arguments' => array('administer site configuration'),
+    'file' => 'expert.admin.inc',
+  );
 	return $items;
 }
 /**
@@ -74,21 +81,141 @@ function expert_mimimum_points_validate($element, &$form_state){
 **/
 
 function expert_cron() {
-	$sql ="SELECT n.nid, n.created ";
-	$sql .="FROM node n ";
-	$sql .="LEFT JOIN flag_content fc ON n.nid = fc.content_id ";
-	$sql .="LEFT JOIN content_type_best_answer ctba ON n.vid = v.vid ";
-	$sql .="WHERE n.status <> 0 AND (fc.uid IS NULL) AND n.type='best_answer' AND fc.fid IS NULL ";
-	$sql .= "AND ctba.field_best_answer_bestanswer_id_value > 0 ";
-	//$sql .= "ORDER BY n.created DESC";
+	$sql ="SELECT n.nid, n.created, n.vid ";
+	$sql .="FROM {node} n ";
+	$sql .="LEFT JOIN {content_type_best_answer} ctba ON n.vid = ctba.vid ";
+	$sql .="WHERE n.status <> 0  AND n.type='best_answer' ";
+	$sql .= "AND ctba.field_best_answer_bestanswer_id_value is NULL ";
+	$sql .= "AND n.created < %d ";
+	//$sql .= "ORDER BY n.created ASC";
 	
-	$result = db_query_range($sql,  0, 1000);
-	$flag = flag_get_flag('tiwen_status');
-  while ($n = db_fetch_object($result)) {
-		//$node = node_load($n->nid);
-		//if($node->field_best_answer_bestanswer_id){
-			$flag->flag('flag',$n->nid, NULL, TRUE);
-		//}
+	//30天以前的
+	$expert_minimum_days = variable_get('expert_minimum_days',30);
+	$limit = time() - $expert_minimum_days*24*60*60;
+	$result = db_query_range($sql, $limit, 0,100 );
+  while ($node = db_fetch_object($result)) {
+		db_query('UPDATE {content_type_best_answer} SET field_best_answer_bestanswer_id_value = -1 WHERE vid = %d', $node->vid);
+	
+  }
+	
+	$m_sql ="SELECT n.nid, n.created, n.vid, n.title, n.uid ";
+	$m_sql .="FROM {node} n ";
+	$m_sql .="LEFT JOIN {content_type_best_answer} ctba ON n.vid = ctba.vid ";
+	$m_sql .="LEFT JOIN {jijiangdaoqi} j ON n.vid = j.vid ";
+	$m_sql .="WHERE n.status <> 0  AND n.type='best_answer' ";
+	$m_sql .= "AND ctba.field_best_answer_bestanswer_id_value is NULL ";
+	$m_sql .= "AND j.send is NULL ";
+	$m_sql .= "AND n.created < %d ";
+	//$sql .= "ORDER BY n.created ASC";
+	$m_limit = time()-($expert_minimum_days-7)*24*60*60;
+	
+	$m_result = db_query_range($m_sql, $m_limit, 0,100 );
+  while ($n = db_fetch_object($m_result)) {
+		db_query('INSERT INTO {jijiangdaoqi} (vid, nid, send) VALUES(%d, %d, %d)', $n->vid, $n->nid, 1);
+	
+		$values =array();
+		$values['question_title'] = $n->title;
+		$values['question_link'] = url('node/'.$n->nid,array('absolute' => TRUE));
+		
+		//发件箱
+		$from = variable_get('site_mail', ini_get('sendmail_from'));
+		
+		//收件箱
+		$quser = user_load($n->uid);
+		$to = $quser->mail;
+		
+		//最佳答案通知邮件
+		drupal_mail('expert', 'jijiangdaoqi', $to, language_default(), $values, $from);
   }
 
 }
+
+/**
+ * Implementation of hook_mail().
+ */
+ 
+function expert_mail($key, &$message, $params) {
+	$language = $message['language'];
+  switch ($key) {
+    case 'jijiangdaoqi':
+			
+			$obj = (object)$params;
+			//token_replace($original, $type = 'invite', $object = NULL);
+      $original_subject = variable_get('expert_jijiangdaoqi_email_title',t('您的提问"[question-title]"即将到期'));
+      $message['subject'] = token_replace($original_subject,'expert',$obj);
+			
+      $original_body = variable_get('expert_jijiangdaoqi_email_body',t('您的提问"[question-title]"即将到期，请及时处理。\n [question-link] '));
+			$message['body'][] = token_replace($original_body,'expert',$obj);
+			
+			break;
+		case 'huidatiwen':
+     
+			$obj = (object)$params;
+      $original_subject = variable_get('expert_huidatiwen_email_title',t('您的提问"[question-title]"已有人回答'));
+      $message['subject'] = token_replace($original_subject,'expert',$obj);
+			
+      $original_body = variable_get('expert_huidatiwen_email_body',t('您的提问"[question-title]"已有人回答，快去看看吧。\n [question-link] '));
+			$message['body'][] = token_replace($original_body,'expert',$obj);
+			break;
+			
+		case 'zuijiadaan':
+   
+			$obj = (object)$params;
+      $original_subject = variable_get('expert_zuijiadaan_email_title',t('您对提问"[question-title]"的回答已被选为最佳答案'));
+      $message['subject'] = token_replace($original_subject,'expert',$obj);
+			
+      $original_body = variable_get('expert_zuijiadaan_email_body', t('您对提问"[question-title]"的回答已被选为最佳答案，快去看看吧。\n [question-link] '));
+			$message['body'][] = token_replace($original_body,'expert',$obj);
+			break;
+				
+  }
+}
+
+/**
+ * Implementation of hook_token_values().
+ */
+ 
+function expert_token_values($type = 'all', $object = NULL) {
+  $values = array();
+  if ($type == 'expert' && is_object($object)) {
+    $values['question-title']            = check_plain($object->question_title);
+    $values['question-title-raw']        = $object->question_title;
+		$values['question-link']          = $object->question_link;
+  }
+  return $values;
+}
+
+/**
+ * Implementation of hook_token_list().
+ */
+ 
+function expert_token_list($type = 'all') {
+  if ($type == 'invite' || $type == 'all') {
+    $tokens['expert']['question-title']            = t('所提问题标题');
+    $tokens['expert']['question-title-raw']        = t('所提问题标题. 警告 - 原始用户输入.');
+    $tokens['expert']['question-link']          = t('所提问题链接.');
+    return $tokens;
+  }
+}
+function expert_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL){
+	if($op == 'insert' ){
+		if($node->type == 'node_comment' && isset($node->comment_target_nid)){
+			$qnode = node_load($node->comment_target_nid);
+			
+			$values =array();
+			$values['question_title'] = $qnode->title;
+			$values['question_link'] = url('node/'.$qnode->nid,array('absolute' => TRUE));
+			
+			//发件箱
+			$from = variable_get('site_mail', ini_get('sendmail_from'));
+			
+			//收件箱
+			$quser = user_load($qnode->uid);
+			$to = $quser->mail;
+			
+			//最佳答案通知邮件
+			drupal_mail('expert', 'huidatiwen', $to, language_default(), $values, $from);
+		}
+	}
+}
+

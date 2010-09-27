@@ -1,10 +1,56 @@
 <?php
 
 function expert_install(){
-db_query("UPDATE {system} SET weight=999 WHERE name='expert'");
+	drupal_install_schema('expert');
+	db_query("UPDATE {system} SET weight=999 WHERE name='expert'");
 
 }
 function expert_uninstall(){
 	db_query("DELETE FROM {system} WHERE name='expert'");
+}
+
+/**
+ * 实现 hook_schema().
+ */
+function expert_schema() {
+	$schema = array();
+ 	$schema['jijiangdaoqi'] = array(
+		'description' => t('即将到期的提问邮件记录.'),
+		'fields' => array(
+		  'vid' => array(
+		    'description' => t('Revision id of the node.'),
+		    'type' => 'int',
+		    'unsigned' => TRUE,
+		    'not null' => TRUE,
+		    'default' => 0,
+		  ),
+		  'nid' => array(
+		    'description' => t('The node id.'),
+		    'type' => 'int',
+		    'unsigned' => TRUE,
+		    'not null' => TRUE,
+		    'default' => 0,
+		  ),
+		  'send' => array(
+		    'description' => t('Boolean flag signifying that have send email for this node.'),
+		    'type' => 'int',
+		    'size' => 'tiny',
+		    'unsigned' => TRUE,
+		    'not null' => TRUE,
+		    'default' => 0,
+		  ),
+		),
+		'indexes' => array(
+		  'nid' => array('nid'),
+		),
+		'primary key' => array('vid'),
+	);
+
+  return $schema;
+}
+function expert_update_6000() {
+	$ret = array();
+	$ret = drupal_install_schema('expert');
+	return $ret;
 }
 

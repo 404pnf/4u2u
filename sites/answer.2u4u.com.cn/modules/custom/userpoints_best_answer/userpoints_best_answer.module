@@ -127,21 +127,38 @@ function userpoints_best_answer_nodeapi(&$node, $op, $teaser, $page){
 					'#title'=>t('Best Answer'),
 					'#prefix'=>'<div class="best_answer"><div class="node-corner-tl corners-4x4 ctl"></div><div class="node-corner-tr corners-4x4 ctr"></div><div class="node-corner-bl corners-4x4 cbl"></div><div class="node-corner-br corners-4x4 cbr"></div>',
 					'#suffix'=>'</div>',
-					'#type'=>'fieldset'
+					'#type'=>'item',	//modified by whx ('#type'=>'fieldset',)
 				);
-				//$answer['answer']['title']=array(
-				//	'#type'=>'item',
-				//	'#prefix'=>'<div class="best_answer_title">',
-				//	'#suffix'=>'</div>',
-				//	'#value'=>$anode->title,
-				//);
+				/* $answer['answer']['title']=array(
+					'#type'=>'item',
+					'#prefix'=>'<div class="best_answer_title">',
+					'#suffix'=>'</div>',
+					'#value'=>$anode->title,
+				); */
+				
+				//add by whx
+				$answer['answer']['submitted'] = array(
+					'#type'=>'item',
+					'#prefix'=>'<div class="best_answer_submitted">',
+					'#suffix'=>'</div>',
+					'#value'=>best_answer_node_submitted($anode),
+							//best_answer_node_submitted() is copyed from node.module
+				);
+				
 				$answer['answer']['body']=array(
 					'#type'=>'item',
 					'#prefix'=>'<div class="best_answer_body">',
 					'#suffix'=>'</div>',
 					'#value'=>$anode->body,
+					'#weight'=>10,
 				);
 				$node->content[]=$answer;
+				// Add node best answer as a content item.
+				
+				$node->bestanswer[]=$answer;	
+				//Get the best answer for this node from the $anode
+				// and store it in the node object.
+				//whx modified( in node-best_answer.tpl.php use drupal_render($bestanswer) to put the best answer anywhere) ,then use css(display:none)  hide $node->content['answer']. 
 			}
 		}
 		
@@ -198,6 +215,19 @@ function userpoints_best_answer_nodeapi(&$node, $op, $teaser, $page){
 
 }
 
+/**
+ * Format the "Submitted by username on date/time" for $node->content best answer
+ *
+ * @ingroup themeable
+ */
+function best_answer_node_submitted($node) {
+  return t('Submitted by !username on @datetime',
+    array(
+      '!username' => theme('username', $node),
+      '@datetime' => format_date($node->created),
+    ));
+}
+
 
 /*
  * link hook
@@ -211,7 +241,8 @@ function userpoints_best_answer_link($type, $node = NULL, $teaser = FALSE) {
 		if(strcmp($parent_node->type,variable_get('question_node_type',''))==0)
 		{
 			//Only the questioner can see the award link.
-			if($parent_node->uid==$user->uid)
+			//If question has been awarded the award link will be hidden. by whx
+			if($parent_node->uid==$user->uid&&$parent_node->field_best_answer_bestanswer_id[0]['value'] == NULL)
 			{
 				//The questioner cannot answer the question himself and earn the userpoints.
 				if($parent_node->uid!=$node->uid)

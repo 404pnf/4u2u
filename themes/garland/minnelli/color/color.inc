@@ -24,15 +24,15 @@ $info = array(
 
   // Images to copy over.
   'copy' => array(
-    'images/menu-collapsed.gif',
-    'images/menu-collapsed-rtl.gif',
-    'images/menu-expanded.gif',
-    'images/menu-leaf.gif',
+    '../images/menu-collapsed.gif',
+    '../images/menu-collapsed-rtl.gif',
+    '../images/menu-expanded.gif',
+    '../images/menu-leaf.gif',
   ),
 
   // CSS files (excluding @import) to rewrite with new color scheme.
   'css' => array(
-    'style.css',
+    '../style.css',
   ),
 
   // Coordinates of gradient (x, y, width, height).
@@ -47,20 +47,20 @@ $info = array(
   // Coordinates of all the theme slices (x, y, width, height)
   // with their filename as used in the stylesheet.
   'slices' => array(
-    'images/body.png'                      => array(0, 37, 1, 280),
-    'images/bg-bar.png'                    => array(202, 530, 76, 14),
-    'images/bg-bar-white.png'              => array(202, 506, 76, 14),
-    'images/bg-tab.png'                    => array(107, 533, 41, 23),
-    'images/bg-navigation.png'             => array(0, 0, 7, 37),
-    'images/bg-content-left.png'           => array(40, 117, 50, 352),
-    'images/bg-content-right.png'          => array(510, 117, 50, 352),
-    'images/bg-content.png'                => array(299, 117, 7, 200),
-    'images/bg-navigation-item.png'        => array(32, 37, 17, 12),
-    'images/bg-navigation-item-hover.png'  => array(54, 37, 17, 12),
-    'images/gradient-inner.png'            => array(646, 307, 112, 42),
+    '../images/body.png'                      => array(0, 37, 1, 280),
+    '../images/bg-bar.png'                    => array(202, 530, 76, 14),
+    '../images/bg-bar-white.png'              => array(202, 506, 76, 14),
+    '../images/bg-tab.png'                    => array(107, 533, 41, 23),
+    '../images/bg-navigation.png'             => array(0, 0, 7, 37),
+    '../images/bg-content-left.png'           => array(40, 117, 50, 352),
+    '../images/bg-content-right.png'          => array(510, 117, 50, 352),
+    '../images/bg-content.png'                => array(299, 117, 7, 200),
+    '../images/bg-navigation-item.png'        => array(32, 37, 17, 12),
+    '../images/bg-navigation-item-hover.png'  => array(54, 37, 17, 12),
+    '../images/gradient-inner.png'            => array(646, 307, 112, 42),
 
-    'logo.png'                             => array(622, 51, 64, 73),
-    'screenshot.png'                       => array(0, 37, 400, 240),
+    'logo.png'                                => array(622, 51, 64, 73),
+    'screenshot.png'                          => array(0, 37, 400, 240),
   ),
 
   // Reference color used for blending. Matches the base.png's colors.
@@ -68,7 +68,7 @@ $info = array(
 
   // Preview files.
   'preview_image' => 'color/preview.png',
-  'preview_css' => 'color/preview.css',
+  'preview_css' => '../color/preview.css',
 
   // Base file for image generation.
   'base_image' => 'color/base.png',

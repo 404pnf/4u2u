@@ -406,6 +406,7 @@ background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/erjibg.gif") repe
 .section-node #content-bottom .block-inner{
 	border:1px solid #CECECE;
 	margin-top:15px;
+	padding-bottom:10px;
 }
 #edit-search-block-form-1-wrapper label{
 display:none;
@@ -538,8 +539,30 @@ ul.links.inline li{
 	background-color:#F8F8F8;
 	margin-left:10px;
 	width:97%;
+	margin-top:8px;
+	padding-bottom:10px;
+	padding-top:1px;
 }
 
-.view-content .node-inner .links.clear{
-	background:url("images/huifuhuida.gif") no-repeat scroll 16px center;
+.view-content .node-inner .links.clear {
+	background:url("images/huifuhuida.gif") no-repeat scroll 20px center;
+	height:22px;
+	text-indent:18px;
+}
+
+#content-bottom .content .view-content .node-inner h2.title{
+	display:none;
+}
+.indented{
+	margin-left:0px;
+}
+.indented .node-inner .submitted.clear{
+	padding-left:40px;
+}
+.block-inner .content .view-content .indented .node-inner{
+	margin-top:0px;
+	border-top:1px dashed #9F9D9D;
+}
+.indented .node-inner .content.clear{
+	margin-left:40px;
 }

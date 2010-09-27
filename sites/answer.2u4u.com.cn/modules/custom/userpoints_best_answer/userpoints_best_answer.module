@@ -330,6 +330,22 @@ function userpoints_best_answer_award_submit($form,$form_state)
 'description'=>"问答积分",
 //	  'tid' => variable_get('best_answer_tid','')
 	));
+	
+	/*********由老葛添加用来通知用户问题已被设置为最佳答案*******/
+	if(module_exists('expert')){
+		$values =array();
+		$values['question_title'] = $qnode->title;
+		$values['question_link'] = url('node/'.$qnode->nid,array('absolute' => TRUE));
+		//发件箱
+		$from = variable_get('site_mail', ini_get('sendmail_from'));
+		//收件箱
+		$auser = user_load($anode->uid);
+		$to = $auser->mail;
+		//最佳答案通知邮件
+		drupal_mail('expert', 'zuijiadaan', $to, language_default(), $values, $from);
+	}
+	/****************/
+	
 	drupal_goto('node/'.arg(1));
 	
 }

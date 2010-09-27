@@ -1,0 +1,15 @@
+<?php
+// $Id$
+
+//实现hook_menu
+function tongji_menu() {
+  $items['admin/store/orders/tongji'] = array(
+    'title'            => '下载产品购买次数统计',
+    'page callback'    => 'tongji_products_downloads',
+    'access arguments' => array('administer site configuration'),
+    'weight'           => 1,
+    'type'             => MENU_NORMAL_ITEM,
+		'file' => 'tongji.pages.inc',
+  );
+	return $items;
+}

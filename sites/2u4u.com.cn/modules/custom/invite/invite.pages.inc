@@ -52,7 +52,7 @@ function _invite_get_usercode_by_uid($uid){
 	}
 	$count_sql = "SELECT COUNT(uid) FROM {usercode} WHERE uid= %d";
 	$count = db_result(db_query($sql,$uid));
-	if($count ==1){
+	if($count == 1){
 		$sql = "SELECT ucode FROM {usercode} WHERE uid= %d";
 		$usercode = db_result(db_query($sql,$uid));
 		return $usercode;
@@ -61,7 +61,9 @@ function _invite_get_usercode_by_uid($uid){
 		$sql = "DELETE FROM {usercode} WHERE uid = %d";
 		db_query($sql,$uid);
 		//$str = $uid.time();
-		$usercode = drupal_get_token($uid);
+		//原来使用drupal_get_token函数生成32位邀请码,现在直接使用md5，这样用户的新生成的邀请码就不会变化了。后面加了字符串'2u4u'，作为站点的密钥
+		//$usercode = drupal_get_token($uid);
+		$usercode = md5($uid.'2u4u');
 		$sql = "INSERT INTO {usercode} (uid, ucode) VALUES (%d, '%s')";
 		db_query($sql, $uid, $usercode);
 		return $usercode;

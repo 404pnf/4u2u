@@ -12,6 +12,8 @@
 function GET_USERINFO(){return "<?php echo $user_name."(".$user_id.")，欢迎您！";?>";}
 </script>
 <center>
+<!--url's used in the movie-->
+<!-- saved from url=(0013)about:internet -->
 <script language="javascript">
 	if (AC_FL_RunContent == 0) {
 		alert("This page requires AC_RunActiveContent.js.");
@@ -28,7 +30,7 @@ function GET_USERINFO(){return "<?php echo $user_name."(".$user_id.")，欢迎�
 			'loop', 'true',
 			'scale', 'showall',
 			'wmode', 'transparent',
-			'devicefont', 'true',
+			'devicefont', 'false',
 			'id', 'index',
 			'bgcolor', '#ffffff',
 			'name', 'index',
@@ -47,6 +49,8 @@ function GET_USERINFO(){return "<?php echo $user_name."(".$user_id.")，欢迎�
          <li><a href="../words/index.php">单词背诵</a></li>
          <li><a href="../llk/index.php">单词连连看游戏</a></li>
          <li><a href="../sj/index.php">单词射击游戏</a></li>
+         <li><a href="../cj/index.php">抽奖</a></li>
+         <li><a href="../description.html">活动详情</a></li>
      </ul>
      <div class="footer"><span>外语教学与研究出版社版权所有 Copyright © 2008 2U4U.com.cn All Rights Reserved</span></div>
 </div>

@@ -25,10 +25,17 @@ ul,dl,li{
 .selected{color:#ff0;}
 .logo{float:left;margin-top:290px;}
 #logo{
-	position:absolute;
+	position:relative;
 	top:10px;
-	left:20px
+	left:20px;
+	float:left;
 	}
+#main {
+	margin:0 auto;
+	width:1024px;
+	/* position:relative; */
+}	
+	
 .nav{
 	background-color:#A81F26;
 	text-align:center;
@@ -51,8 +58,15 @@ ul,dl,li{
 	padding-top:5px;
 	padding-left:15%;
 	border-top:1px #ecbcb7 solid;
-	position: relative
+	position: relative;
+	width:1024px;
 	}
+.nav ul{
+	padding-left:35%;
+	}
+.nav2 ul{
+	padding-left:30%;
+	}	
 .nav ul li,.nav2 ul li{
 	font-size:15px;
 	line-height:30px;

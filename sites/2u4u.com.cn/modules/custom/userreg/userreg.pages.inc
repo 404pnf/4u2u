@@ -73,6 +73,9 @@ function userreg_callback_page() {
 		'pass2' => $pass,
 	);
 	$form_state['values']['op'] = t('Create new account');
+	global $user;
+  $user = user_load(array('uid' => 1));
+
 	$ret = drupal_execute('user_register', $form_state);
 	$errors = form_get_errors();
 	

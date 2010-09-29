@@ -179,16 +179,22 @@ padding-left:13px;
 .page-wenda tbody{
 	border:0;
 }
-.page-wenda tr.even, tr.odd{
+tr.even, tr.odd{
 	border:0;
 }
 
 .page-wenda tbody tr.odd td, .page-wenda tbody tr.even td{
 	padding:5px 3px 5px 8px;
 }
-.page-wenda #content-area .views-field-title{
-	width:63%;
-	padding-left:10px;
+
+tbody tr td.views-field-field-best-answer-award-value{
+	padding-left:20px;
+}
+
+
+#content-area .views-field-title{
+	width:60%;
+	padding-left:20px;
 }
 
 
@@ -200,12 +206,13 @@ padding-left:13px;
 	padding-left:10px;
 }
 
-.page-wenda .views-field .jifentu{
+.views-field .jifentu{
 	background:url(images/qian.png) no-repeat scroll right center transparent;
-	width:40px;
+	width:35px;
+	margin-left:13px;
 }
 
-.page-wenda .item-list .pager li{
+.item-list .pager li{
 	border:1px solid #CECECE;
 	color:#FFFFFF;
 	margin:0;
@@ -213,7 +220,7 @@ padding-left:13px;
 
 }
  
-.page-wenda .pager-current{
+.pager-current{
 	background-color:#CECECE;
 }
 .page-wenda #content-area .item-list{
@@ -371,15 +378,6 @@ background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/erjibg.gif") repe
 	font-size:12px;
 }
 
-.section-node #content-header{
-	background-color:#EFEFEF;
-	margin-top:15px;
-	padding:5px 5px 5px 20px;
-	border-top:1px solid #CECECE;
-	border-left:1px solid #CECECE;
-	border-right:1px solid #CECECE;
-}
-
 
 .section-node #content-area .submitted, .form-item .best_answer_submitted .form-item, .view-content .node-inner .submitted.clear{
 	color:#969696;
@@ -415,11 +413,10 @@ display:none;
 	float:left;
 }
 thead th.views-field-name, thead th.views-field-timestamp{
-    text-align:center;
+    	padding-left:18px;
 }
 
-
-.page-wenda .item-list li.pager-ellipsis {
+.item-list li.pager-ellipsis {
 	border:0px;
 	color:#000000;
 }
@@ -427,7 +424,9 @@ thead th.views-field-name, thead th.views-field-timestamp{
 .view-test-answer .views-table th .active {
 	background:url("images/xulie.gif") no-repeat scroll right center transparent;
 	display:block;
-	width:63px;
+	width:61px;
+	padding-left:10px;
+	text-decoration:none;
 }
 .view-test-answer .views-table a.active img {
 	background-color:#f2f2f2;
@@ -448,10 +447,6 @@ thead th.views-field-name, thead th.views-field-timestamp{
 .page-node-add-best-answer .body-field-wrapper p, .page-node-add-best-answer-expert .body-field-wrapper p{
 	display:none;
 }
-
-#main #content-inner #content-header{
-	margin-top:15px;
-}
 #content-inner #content-header h1.title{
 	color:#961F1F;
 	padding:0 0 0 40px;
@@ -462,13 +457,12 @@ thead th.views-field-name, thead th.views-field-timestamp{
 }
 
 #content-inner #content-area .node-inner{
-	border-bottom:1px solid #CECECE;
-	border-left:1px solid #CECECE;
-	border-right:1px solid #CECECE;
+	border:1px solid #CECECE;
+	margin-top:15px;
 }
 #content-inner #content-area .node-inner .title_bg h1.title{
 	background:#EFEFEF;
-	padding-left:20px;
+	padding:10px 20px;
 	margin-bottom:5px;
 }
 
@@ -479,12 +473,11 @@ thead th.views-field-name, thead th.views-field-timestamp{
 
 #content-inner #content-area .node-inner .field-item.odd{
 	background:url("images/qian.png") no-repeat scroll left center transparent;
-	background-position:83px 2px;
+	background-position:75px 2px;
 }
 
-li.comment_add.first.last a{
-	background-image:url("images/huifu.gif");
-	width:40px;
+li.comment_add a{
+	background:url("images/huifu.gif") no-repeat;
 	height:22px;
 	display:block;
 	text-decoration:none;
@@ -493,8 +486,9 @@ li.comment_add.first.last a{
 	font-weight:bold;
 	padding:3px 0 0 13px;
 	font-size:14px;
+	width:42px;
 }
-ul.links.inline li{
+#content-inner #content-area .node-inner ul.links.inline li{
 	padding:0px;
 }
 
@@ -543,9 +537,57 @@ ul.links.inline li{
 
 #content-inner #content-header .title_bg h1.title{
 	padding-left:20px;
+	height:30px;
+}
+
+#main #content-inner #content-area{
+	padding:0px;
+}
+
+#content-area .view-content .views-table{
+	width:100%;
+	background-color:#F2F2F2;
+}
+
+#main #content #content-inner #content-area .view-content .views-table tbody{
+	border-top:0 none;
+}
+
+#content-area .view-content .views-table thead th{
+	border-bottom:0 none;
+}
+
+tbody tr.odd td.views-field-title, tbody tr.even td.views-field-title{
+	padding:3px 3px 3px 20px;
+}
+
+thead th.views-field-title{
+	padding:3px 3px 3px 20px;
+	font-size:12px;
+}
+tbody tr.odd td, tbody tr.even td{
+	padding:3px 3px 3px 8px;
+}
+td.active{
+	background-color:#FFFFFF;
+}
+
+#content-area .view-content .views-table .views-field.views-field-created{
+	width:80px;
+}
+#content-area .view-content .views-table thead th.views-field-field-best-answer-award-value, #content-area .view-content .views-table th.views-field.views-field-created{
+	background:url("images/paixu-bg.gif") no-repeat scroll 2px 6px;
 }
 
 
+#content-area .view-content th.views-field-nid{
+	padding:0 0 0 9px;
+}
 
+#content-area .view-content td.views-field-nid{
+	padding-left:25px;
+}
 
-#F2F2F2
+#content-inner #content-area .views-table{
+	margin-left:0px;
+}

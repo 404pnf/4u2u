@@ -51,31 +51,30 @@
 
     <!-- ______________________ MAIN _______________________ -->
 
-   <div id="main" class="clearfix">
-    
-	
-          <?php if ($content_top): ?>
-            <div id="content-top" class="clearfix">
-                         <div id="my-answer">
-                                         <?php Global $user;?>
-                         <?php if($user->uid):?>
-                                         <?php print '<a href="/mywenda/'.$user->uid.'"> 我的问答</a>'?>
-                         <?php else:?>
-                                         <a href="/user"> 我的问答</a>
-                         <?php endif;?>
-                         </div>
  
-                 <?php print $content_top; ?>
-			 <div>
-			       <div id="my-ask" class="myask">
-                                 <a href="/node/add/best-answer" target="_blank"><img src="/sites/answer.2u4u.com.cn/themes/answer/css/images/wytw.gif"></a>
-                               </div>
-                               <div id="rule" class="rules">
-                                  >>><a href="/node/63611">问答规则</a>
-                               </div>
-                         </div>
-            </div> <!-- /#content-top -->
-          <?php endif; ?>
+    <div id="main" class="clearfix">
+         <?php if ($content_top): ?>
+         <div id="content-top" class="clearfix"> 
+			<div id="my-answer">
+					<?php Global $user;?>
+			<?php if($user->uid):?>
+					<?php print '<a href="/mywenda/'.$user->uid.'"> 我的问答</a>'?>
+			<?php else:?>
+					<a href="/user"> 我的问答</a>
+			<?php endif;?>
+			</div>
+		
+			<?php print $content_top; ?>	
+			<div> 
+			      <div id="my-ask" class="myask">
+				<a href="/node/add/best-answer" target="_blank"><img src="/sites/answer.2u4u.com.cn/themes/answer/css/images/wytw.gif"></a>
+                              </div>
+			      <div id="rule" class="rules"> 
+				 >>><a href="/node/63611">问答帮助</a>
+                              </div>
+			</div>       
+		</div> <!-- /#content-top -->
+		<?php endif; ?>	 
 
 
    

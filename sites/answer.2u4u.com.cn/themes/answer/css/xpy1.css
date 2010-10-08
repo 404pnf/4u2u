@@ -68,7 +68,7 @@
 .page-mywenda #content-area .view-header{
 
 	background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/erjibg.gif") 	repeat-x scroll 0 0 transparent;
-	height:35px;
+	height:26px;
 	border-top:1px solid #CECECE;
 	border-left:1px solid #CECECE;
 	border-right:1px solid #CECECE;
@@ -315,9 +315,7 @@ text-decoration:none;
 	border-bottom:0px;
 	font-size:1em;
 }
-.page-mywenda .views-table{
-	border-collapse:separate;
-}
+
 
 .page-node-add-best-answer #content .title_bg h1{
 	display:none;
@@ -348,7 +346,7 @@ text-decoration:none;
 	height:51px;
 	/* text-indent:-5000px; */
 	width:100px;
-	margin:10px 0 0 280px;
+	margin:10px 0 20px 300px;
 	clear:both;
 }
 .section-search #content-header{
@@ -473,7 +471,7 @@ thead th.views-field-name, thead th.views-field-timestamp{
 
 #content-inner #content-area .node-inner .field-item.odd{
 	background:url("images/qian.png") no-repeat scroll left center transparent;
-	background-position:75px 2px;
+	background-position:78px 2px;
 }
 
 li.comment_add a{
@@ -527,12 +525,16 @@ li.comment_add a{
 
 .block-inner .content .view-content .node-inner{
 	background-color:#F8F8F8;
-	margin-left:10px;
+	margin:5px 0 0 10px;
 	width:97%;
+	padding:3px 0 10px 0;
 }
 
-.view-content .node-inner .links.clear{
-	background:url("images/huifuhuida.gif") no-repeat scroll 16px center;
+.node-inner .links li.comment_reply{
+	background:url("images/huifuhuida.gif") no-repeat scroll ;
+	width:50px;
+	height:23px;
+	display:block;
 }
 
 #content-inner #content-header .title_bg h1.title{
@@ -548,6 +550,13 @@ li.comment_add a{
 	width:100%;
 	background-color:#F2F2F2;
 }
+
+.page-mywenda #content-area .view-content .views-table{
+	width:100%;
+	background-color:#FFFFFF;
+}
+
+
 
 #main #content #content-inner #content-area .view-content .views-table tbody{
 	border-top:0 none;
@@ -576,7 +585,7 @@ td.active{
 	width:80px;
 }
 #content-area .view-content .views-table thead th.views-field-field-best-answer-award-value, #content-area .view-content .views-table th.views-field.views-field-created{
-	background:url("images/paixu-bg.gif") no-repeat scroll 2px 6px;
+	background:url("images/paixu-bg.gif") no-repeat scroll 2px 6px #F2F2F2;
 }
 
 
@@ -590,4 +599,48 @@ td.active{
 
 #content-inner #content-area .views-table{
 	margin-left:0px;
+}
+
+
+#content-area .view-content thead th.views-field{
+	background-color:#F2F2F2;
+	margin:0px;
+	height:32px;
+}
+
+.page-mywenda .view-content .views-field-teaser{
+	padding-left:20px;
+	width:82%;
+}
+
+
+.page-mywenda .view-content .views-table thead th.views-field-timestamp{
+	padding-left:30px;
+}
+
+.section-search .box .search-results{
+	padding:0 20px 5px 20px;
+}
+
+.section-search .search-results dd{
+	border-bottom:1px dashed #CECECE;
+}
+.search-results .search-info{
+	font-size:12px;
+	color:#848484;
+}
+.section-search #content-area .search-results dt.title a{
+	color:#961F1F;
+	font-weight:bold;
+}
+
+.page-node #content-inner .node-form .standard{
+	padding:5px 0 0 20px;
+}
+
+#content-inner #content-bottom .block-inner .content{
+	padding:0px;
+}
+.node-inner .links .block ul{
+	padding:0px;
 }

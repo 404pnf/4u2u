@@ -60,7 +60,7 @@
 			<?php if($user->uid):?>
 					<?php print '<a href="/mywenda/'.$user->uid.'"> 我的问答</a>'?>
 			<?php else:?>
-					<a href="/user"> 我的问答</a>
+					<a href="http://2u4u.com.cn/user"> 我的问答</a>
 			<?php endif;?>
 			</div>
 		

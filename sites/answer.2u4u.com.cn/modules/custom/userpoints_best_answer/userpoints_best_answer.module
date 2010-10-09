@@ -322,7 +322,10 @@ function userpoints_best_answer_award_submit($form,$form_state)
 	$field[0]['value']=arg(3);
 	$qnode->$afield=$field;
 	node_save($qnode);
-	$award=$qnode->field_award;
+	
+	$ufield=variable_get('userpoint_field_name','');
+	$award=$qnode->$ufield;
+	//$award=$qnode->field_award; whx修改，不能给最佳答案的用户奖励积分
 	$points=(int)$award[0]['value'];
 	userpoints_userpointsapi(array(
 	  'uid' => $anode->uid,

@@ -285,14 +285,16 @@ text-decoration:none;
 
 .page-node-63611 pre{
 	border:0;
+	font-size:14px;
+	line-height:16px;
+	margin:0px;
+	padding:0px;
 }
 .page-node-63611 h4{
-	font-size:12px;
+	font-size:14px;
 }
 .page-node-63611 h3{
-	font-size:1.8em;
-	color:#7A7A7A;
-	margin-left:4px;
+	display:none;
 }
 .page-node-add-best-answer #content-area, .page-node-add-best-answer-expert #content-area{
 	background-color:#EFEFEF;
@@ -366,7 +368,7 @@ text-decoration:none;
 
 .section-search #content-area .box h2{
 background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/erjibg.gif") repeat-x scroll 0 0 transparent;
-	height:40px;
+	height:36px;
 	font-size:14px;
 	color:#961F1F;
 	padding:5px 0 0 20px;
@@ -385,10 +387,6 @@ background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/erjibg.gif") repe
 }
 
 
-.section-node #content-area .content{
-	margin:0 20px 0 20px;
-
-}
 .field-field-best-answer-bestanswer-id{
 	display:none;
 }
@@ -619,7 +617,7 @@ td.active{
 }
 
 .section-search .box .search-results{
-	padding:0 20px 5px 20px;
+	padding:0 20px 5px 10px;
 }
 
 .section-search .search-results dd{
@@ -631,7 +629,6 @@ td.active{
 }
 .section-search #content-area .search-results dt.title a{
 	color:#961F1F;
-	font-weight:bold;
 }
 
 .page-node #content-inner .node-form .standard{
@@ -641,6 +638,14 @@ td.active{
 #content-inner #content-bottom .block-inner .content{
 	padding:0px;
 }
+
+
+
 .node-inner .links .block ul{
 	padding:0px;
+}
+
+.page-search #content-inner #content-area .content{
+	padding-bottom:10px;
+	padding-left:10px;
 }

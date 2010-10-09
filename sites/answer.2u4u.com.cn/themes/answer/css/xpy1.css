@@ -649,3 +649,6 @@ td.active{
 	padding-bottom:10px;
 	padding-left:10px;
 }
+.page-node #content-inner #content-area .content{
+	padding-left:20px;
+}

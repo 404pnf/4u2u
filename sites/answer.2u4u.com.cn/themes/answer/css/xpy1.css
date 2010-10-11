@@ -200,7 +200,10 @@ tbody tr td.views-field-field-best-answer-award-value{
 
 .page-wenda #fanswer .view-content .views-field-title{
 	padding:0;
+	font-size:1.2em;
 }
+
+
 
 .page-wenda .views-field-field-best-answer-award-value  tbody tr.odd td{
 	padding-left:10px;
@@ -340,14 +343,14 @@ text-decoration:none;
 	display:none;
 }
 
-.page-node-add-best-answer .node-form #edit-submit, .page-node-add-best-answer-expert .node-form #edit-submit{
+.page-node-add-best-answer .node-form #edit-submit, .page-node-add-best-answer-expert .node-form #edit-submit, .section-node-add .node-form #edit-submit{
 	background-image:url(images/tijiaowenti.gif);
 	border:0 none;
 	cursor:pointer;
 	font-size:0;
-	height:51px;
+	height:39px;
 	/* text-indent:-5000px; */
-	width:100px;
+	width:90px;
 	margin:10px 0 20px 300px;
 	clear:both;
 }
@@ -379,7 +382,7 @@ background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/erjibg.gif") repe
 }
 
 
-.section-node #content-area .submitted, .form-item .best_answer_submitted .form-item, .view-content .node-inner .submitted.clear{
+.section-node #content-area .submitted, .form-item .best_answer_submitted .form-item, .view-content .node-inner .submitted.clear, #content-inner #content-area .node-inner span.submitted{
 	color:#969696;
 	padding-left:20px;
 	
@@ -391,7 +394,7 @@ background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/erjibg.gif") repe
 	display:none;
 }
 
-.section-node #content-area .taxonomy{
+.section-node #content-area .taxonomy, .page-node #content-area .taxonomy{
 	margin-right:15px;
 	color:#969696;
 	float:right;
@@ -399,7 +402,7 @@ background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/erjibg.gif") repe
 
 .section-node #content-bottom .block-inner{
 	border:1px solid #CECECE;
-	margin-top:15px;
+	margin-top:10px;
 }
 #edit-search-block-form-1-wrapper label{
 display:none;
@@ -490,7 +493,7 @@ li.comment_add a{
 
 #content-inner #content-area .best_answer{
 	border:1px solid #CECECE;
-	margin-top:10px;
+	margin-top:23px;
 }
 .node_bestanswer .form-item{
 	padding:0px;
@@ -508,7 +511,7 @@ li.comment_add a{
 }
 
 .best_answer .form-item .best_answer_body .form-item, .view-content .node-inner .content.clear{
-	margin:10px 0 10px 20px;
+	margin:10px 10px 10px 20px;
 	font-size:14px;
 }
 
@@ -523,9 +526,7 @@ li.comment_add a{
 
 .block-inner .content .view-content .node-inner{
 	background-color:#F8F8F8;
-	margin:5px 0 0 10px;
-	width:97%;
-	padding:3px 0 10px 0;
+	margin:8px 0 0;
 }
 
 .node-inner .links li.comment_reply{
@@ -623,6 +624,12 @@ td.active{
 .section-search .search-results dd{
 	border-bottom:1px dashed #CECECE;
 }
+
+.section-search .search-results dd.search-result-10-snippet{
+	border-bottom:none;
+	margin-bottom:2.5em;
+}
+
 .search-results .search-info{
 	font-size:12px;
 	color:#848484;
@@ -634,6 +641,8 @@ td.active{
 .page-node #content-inner .node-form .standard{
 	padding:5px 0 0 20px;
 }
+
+
 
 #content-inner #content-bottom .block-inner .content{
 	padding:0px;
@@ -649,6 +658,62 @@ td.active{
 	padding-bottom:10px;
 	padding-left:10px;
 }
-.page-node #content-inner #content-area .content{
+.node-type-best-answer #content-inner #content-area .content, .section-node-add #content-inner #content-area .content{
 	padding-left:20px;
+}
+.page-node #content-bottom .node-inner h2.title{
+	display:none;
+}
+.block-inner .content .node-inner .links ul{
+	padding:0px;
+	
+}
+.block-inner .content .node-inner .clear{
+	padding-left:19px;
+	padding-bottom:10px;
+}
+
+#content-inner #content-header .title_bg h1.title{
+	display:none;
+}
+#node-form .node-form .teaser-button-wrapper{
+	display:none;
+}
+
+.section-node-add #content-inner .node-form .standard{
+	padding:0px;
+}
+.section-node-add #content-inner .node-form .resizable-textarea{
+	width:720px;
+}
+.page-node-add-best-answer #content-inner .node-form .standard{
+	padding:5px 20px 10px 20px;
+}
+.page-node-add-best-answer #content-inner .node-form #edit-title{
+	width:100%;
+}
+.page-node-add-best-answer #content-inner .node-form #edit-body, .section-node-add .resizable-textarea #edit-body{
+	width:95%;
+}
+
+.section-node-add #content-inner .node-inner .links{
+	display:none;
+}
+
+.block-inner .content .view-content .indented{
+	margin:0px;
+	padding:0px 0 0px 20px;
+	border-top:1px dashed #DDDDDD;
+	background-color:#F8F8F8;
+}
+/*.indented{
+	background-color:#F8F8F8;
+	margin:0px;
+}*/
+.node-type-best-answer #content-inner .content .view-content{
+	margin-left:10px;
+	margin-right:10px;
+}
+.section-node-add .node-form .tips, .body-field-wrapper p{
+	display:none;
 }

@@ -5,7 +5,7 @@
       <h3 class="title block-title"><?php print $block->subject; ?></h3>
     <?php endif; ?>
 
-    <div class="content">This is Test This is Test This is Test This is Test This is Test This is test This is Test
+    <div class="content">
       <?php print $block->content; ?>
     </div>
 

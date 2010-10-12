@@ -344,7 +344,7 @@ text-decoration:none;
 }
 
 .page-node-add-best-answer .node-form #edit-submit, .page-node-add-best-answer-expert .node-form #edit-submit, .section-node-add .node-form #edit-submit{
-	background-image:url(images/tijiaowenti.gif);
+	background-image:url(images/tijiaohuida.gif);
 	border:0 none;
 	cursor:pointer;
 	font-size:0;
@@ -377,7 +377,7 @@ background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/erjibg.gif") repe
 	padding:5px 0 0 20px;
 
 }
-.page-node-add-best-answer .description{
+.page-node-add-best-answer .description, .page-node-add-best-answer-expert .description{
 	font-size:12px;
 }
 
@@ -537,8 +537,12 @@ li.comment_add a{
 }
 
 #content-inner #content-header .title_bg h1.title{
-	padding-left:20px;
 	height:30px;
+	background:none;
+	border:0px;
+	margin-left:0px;
+	padding-left:0px;
+	margin-top:10px;
 }
 
 #main #content-inner #content-area{
@@ -673,9 +677,6 @@ td.active{
 	padding-bottom:10px;
 }
 
-#content-inner #content-header .title_bg h1.title{
-	display:none;
-}
 #node-form .node-form .teaser-button-wrapper{
 	display:none;
 }
@@ -684,17 +685,18 @@ td.active{
 	padding:0px;
 }
 .section-node-add #content-inner .node-form .resizable-textarea{
-	width:720px;
+	width:759px;
 }
 .page-node-add-best-answer #content-inner .node-form .standard{
-	padding:5px 20px 10px 20px;
+	padding:5px 15px 10px 15px;
 }
-.page-node-add-best-answer #content-inner .node-form #edit-title{
-	width:100%;
+.page-node-add-best-answer #content-inner .node-form #edit-title, .page-node-add-best-answer-expert #content-inner .node-form #edit-title{
+	width:690px;
 }
-.page-node-add-best-answer #content-inner .node-form #edit-body, .section-node-add .resizable-textarea #edit-body{
-	width:95%;
+.section-node-add .resizable-textarea #edit-body{
+	width:690px;
 }
+
 
 .section-node-add #content-inner .node-inner .links{
 	display:none;
@@ -717,3 +719,15 @@ td.active{
 .section-node-add .node-form .tips, .body-field-wrapper p{
 	display:none;
 }
+.section-wenda #content-inner #content-area{
+	border-top:1px solid #CECECE;
+}
+.page-node-add-best-answer-expert #node-form .node-form .standard{
+	padding:15px;
+}
+.page-node-add-best-answer-expert #node-form .node-form .standard .form-item{
+	margin-top:0px;
+}
+
+.page-node-add-best-answer-expert
+

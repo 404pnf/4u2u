@@ -469,3 +469,44 @@ tbody tr.views-row-last td{
 	border-bottom:0px;
 	margin-bottom:30px;
 }
+
+
+
+
+/*---------------- 加logo后的footer --------------------*/
+#footer_bottom {
+	margin:0 auto;
+	width:960px;
+}
+
+#footer{
+	background:url("fp_images/footer-bg.gif") repeat;
+	margin-top:20px;
+	padding-top:8px;
+}
+
+#closure_region .block,#closure_region ,#closure_region .block-inner .content {
+	margin:0px;
+	padding:0px;
+	height:0px;
+}
+
+#footer_bottom .copyright{
+	margin-top:8px;
+	color:#7B7B7B;
+}
+#footer_bottom .net_license a{
+	color:#7B7B7B;
+}
+#footer_bottom .browser{
+	color:#7B7B7B;
+}
+#footer_bottom .lianjie .separation{
+	margin-left:10px;
+	margin-right:10px;
+}
+#footer_bottom #bottom_copyrignt{
+	width:725px;
+	border-right:1px dashed #CFCFCF;
+	margin-right:30px;
+}

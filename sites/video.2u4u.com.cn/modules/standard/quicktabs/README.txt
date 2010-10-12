@@ -1,5 +1,5 @@
 *******************************************************************************
-$Id: README.txt,v 1.7 2008/11/03 03:31:29 katbailey Exp $
+$Id: README.txt,v 1.7.2.1 2010/09/11 17:42:53 katbailey Exp $
 
 quicktabs
 
@@ -27,6 +27,18 @@ Installation & Use:
 9.  Configure & enable it as required.
 
 
+Note:
+-------------------------------------------------------------------------------
+Because Quicktabs allows your tabbed content to be pulled via ajax, it has its
+own menu callback for getting this content and returning it in JSON format. For
+node content, it uses the standard node_access check to make sure the user has
+access to this content. It is important to note that ANY node can be viewed
+from this menu callback; if you go to it directly at quicktabs/ajax/node/[nid]
+it will return a JSON text string of the node information. If there are certain 
+fields in ANY of your nodes that are supposed to be private, these MUST be 
+controlled at admin/content/node-type/MY_NODE_TYPE/display by setting them to 
+be excluded on teaser and node view. Setting them as private through some other 
+mechanism, e.g. Panels, will not affect their being displayed in an ajax Quicktab.
 
 
 Author:

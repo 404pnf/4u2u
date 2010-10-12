@@ -1,4 +1,4 @@
-// $Id: quicktabs.js,v 1.3.2.18 2009/09/29 03:02:37 pasqualle Exp $
+// $Id: quicktabs.js,v 1.3.2.21 2010/04/20 18:24:05 katbailey Exp $
 
 Drupal.settings.views = Drupal.settings.views || {'ajax_path': 'views/ajax'};
 
@@ -9,6 +9,9 @@ Drupal.behaviors.quicktabs = function (context) {
 };
 
 Drupal.quicktabs = Drupal.quicktabs || {};
+Drupal.quicktabs.ajax = {};
+Drupal.quicktabs.scripts = {};
+Drupal.quicktabs.css = {};
 
 // setting up the inital behaviours
 Drupal.quicktabs.prepare = function(el) {
@@ -19,7 +22,7 @@ Drupal.quicktabs.prepare = function(el) {
   $(el).find('ul.quicktabs_tabs li a').each(function(){
     this.myTabIndex = i++;
     this.qtid = qtid;
-    $(this).bind('click', quicktabsClick);
+    $(this).unbind('click').bind('click', quicktabsClick);
   });
 
   // Search for the active tab.
@@ -66,8 +69,10 @@ Drupal.quicktabs.tab = function (el) {
 
 // ajax callback for non-views tabs
 Drupal.quicktabs.tab.prototype.success = function(response) {
-  var result = Drupal.parseJson(response.data);
-  this.container.append(Drupal.theme('quicktabsResponse', this, result));
+  this.container.append(Drupal.theme('quicktabsResponse', this, response.data.content));
+  $.extend(true, Drupal.settings, response.data.js_css.js_settings);
+  Drupal.quicktabs.ajax.scripts(response.data.js_css.js_files);
+  Drupal.quicktabs.ajax.css_files(response.data.js_css.css_files);
   Drupal.attachBehaviors(this.container);
 }
 
@@ -190,7 +195,58 @@ var quicktabsClick = function() {
 }
 
 // theme function for ajax response
-Drupal.theme.prototype.quicktabsResponse = function(tab, result) {
-  var newDiv = tab.tabObj.type == 'view' ? '<div id="' + tab.tabpage_id + '" class="quicktabs_tabpage"><div></div></div>' : '<div id="' + tab.tabpage_id + '" class="quicktabs_tabpage">' + result['data'] + '</div>';
+Drupal.theme.prototype.quicktabsResponse = function(tab, content) {
+  var newDiv = tab.tabObj.type == 'view' ? '<div id="' + tab.tabpage_id + '" class="quicktabs_tabpage"><div></div></div>' : '<div id="' + tab.tabpage_id + '" class="quicktabs_tabpage">' + content + '</div>';
   return newDiv;
-}; 
+};
+
+
+/**
+ * Quicktabs' implementation of merlinofchaos's CTools js magic for loading
+ * required js files for ajax-loaded content
+ */
+Drupal.quicktabs.ajax.scripts = function(files) {
+  // Build a list of scripts already loaded:
+  $('script').each(function () {
+    Drupal.quicktabs.scripts[$(this).attr('src')] = $(this).attr('src');
+  });
+
+  var html = '';
+  for (i in files) {
+    if (!Drupal.quicktabs.scripts[files[i]]) {
+      Drupal.quicktabs.scripts[files[i]] = files[i];
+      html += '<script type="text/javascript" src="' + files[i] + '"></script>';
+    }
+  }
+
+  if (html) {
+    $('body').append($(html));
+  }
+};
+
+/**
+ * Quicktabs' implementation of merlinofchaos's CTools js magic for loading
+ * required css files for ajax-loaded content
+ */
+Drupal.quicktabs.ajax.css_files = function(files) {
+  // Build a list of css files already loaded:
+
+  $('link:not(.qt-temporary-css)').each(function () {
+    if ($(this).attr('type') == 'text/css') {
+      Drupal.quicktabs.css[$(this).attr('href')] = $(this).attr('href');
+    }
+  });
+
+  var html = '';
+  for (i in files) {
+    if (!Drupal.quicktabs.css[files[i].file]) {
+      html += '<link class="qt-temporary-css" type="text/css" rel="stylesheet" media="' + files[i].media +
+        '" href="' + files[i].file + '" />';
+    }
+  }
+
+  if (html) {
+    $('link.ctools-temporary-css').remove();
+    $('body').append($(html));
+  }
+};

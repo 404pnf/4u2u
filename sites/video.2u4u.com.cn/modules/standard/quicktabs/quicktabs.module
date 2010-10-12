@@ -1,5 +1,5 @@
 <?php
-// $Id: quicktabs.module,v 1.10.2.74 2010/01/10 01:06:40 katbailey Exp $
+// $Id: quicktabs.module,v 1.10.2.80 2010/05/08 22:38:26 pasqualle Exp $
 
 /**
  * Implementation of hook_help().
@@ -27,6 +27,10 @@ function quicktabs_theme() {
     'quicktabs_admin_form_tabs' => array(
       'arguments' => array('form' => NULL),
       'file' => 'includes/admin.inc',
+    ),
+    'quicktabs_views_render' => array(
+      'arguments' => array('view' => NULL, 'tabs' => NULL, 'qtid' => NULL),
+      'file' => 'includes/quicktabs.views.inc',
     ),
     'quicktabs_tabs' => array(
       'arguments' => array('quicktabs', 'active_tab' => 'none'),
@@ -110,20 +114,8 @@ function quicktabs_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'includes/admin.inc',
   );
-  $items['quicktabs/ajax/node'] = array(
-    'page callback' => 'quicktabs_ajax_node',
-    'access callback' => 'user_access',
-    'access arguments' => array('access content'),
-    'type' => MENU_CALLBACK,
-  );
-  $items['quicktabs/ajax/block'] = array(
-    'page callback' => 'quicktabs_ajax_block',
-    'access callback' => 'user_access',
-    'access arguments' => array('access content'),
-    'type' => MENU_CALLBACK,
-  );
-  $items['quicktabs/ajax/qtabs'] = array(
-    'page callback' => 'quicktabs_ajax_qtabs',
+  $items['quicktabs/ajax'] = array(
+    'page callback' => 'quicktabs_ajax',
     'access callback' => 'user_access',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
@@ -196,7 +188,7 @@ function quicktabs_render($quicktabs) {
   if (!isset($javascript['setting'][1]['quicktabs']) || !array_key_exists('qt_'. $quicktabs['qtid'], $javascript['setting'][1]['quicktabs'])) {
     // Only the tabs are used in quicktabs.js
     $settings = array(
-      'tabs' => $quicktabs['ajax'] ? $quicktabs['tabs'] : array_fill_keys(array_keys($quicktabs['tabs']), 0),
+      'tabs' => $quicktabs['ajax'] ? $quicktabs['tabs'] : quicktabs_array_fill_keys(array_keys($quicktabs['tabs']), 0),
     );
     drupal_add_js(array('quicktabs' => array('qt_'. $quicktabs['qtid'] => $settings)), 'setting');
   }
@@ -220,8 +212,6 @@ function quicktabs_render($quicktabs) {
   if ($quicktabs['ajax']) {
     // Prepare ajax views.
     _quicktabs_prepare_views($quicktabs['tabs']);
-    // Prepare ajax quicktabs.
-    _quicktabs_prepare_qts($quicktabs['tabs']);
     // Render only the active tabpage.
     if (isset($active_tab)) {
       $attributes = drupal_attributes(array(
@@ -248,6 +238,20 @@ function quicktabs_render($quicktabs) {
 }
 
 /**
+ * Ajax callback for tab content.
+ */
+function quicktabs_ajax($type) {
+
+  $args = func_get_args();
+  $type = array_shift($args);
+  $func = 'quicktabs_ajax_'. $type;
+  $output = call_user_func_array($func, $args);
+  $js_css = quicktabs_ajax_js_css();
+  $response = array('content' => $output, 'js_css' => $js_css);
+  drupal_json(array('status' => 0, 'data' => $response));
+}
+
+/**
  * Ajax callback for node tabpage.
  */
 function quicktabs_ajax_node($nid, $teaser, $hide_title) {
@@ -258,7 +262,7 @@ function quicktabs_ajax_node($nid, $teaser, $hide_title) {
     'hide_title' => $hide_title,
   );
   $output = quicktabs_render_tabpage($tabpage);
-  drupal_json(array('status' => TRUE, 'data' => $output));
+  return $output;
 }
 
 /**
@@ -272,7 +276,7 @@ function quicktabs_ajax_block($bid, $hide_title) {
   );
 
   $output = quicktabs_render_tabpage($tabpage);
-  drupal_json(array('status' => TRUE, 'data' => $output));
+  return $output;
 }
 
 /**
@@ -285,7 +289,7 @@ function quicktabs_ajax_qtabs($qtid) {
   );
 
   $output = quicktabs_render_tabpage($tabpage);
-  drupal_json(array('status' => TRUE, 'data' => $output));
+  return $output;
 }
 
 /**
@@ -441,6 +445,24 @@ function quicktabs_quicktabs_tabstyles() {
 }
 
 /**
+ * Get a list of all available tab styles, suitable for use as an options array.
+ */
+function quicktabs_style_options($include_defaults = TRUE) {
+  $styles = module_invoke_all('quicktabs_tabstyles');
+  // The keys used for options must be valid html id-s.
+  foreach ($styles as $style) {
+    $style_options[$style] = $style;
+  }
+  ksort($style_options);
+
+  if ($include_defaults) {
+    $style_options = array('nostyle' => t('No style'), 'default' => t('Default style')) + $style_options;
+  }
+
+  return $style_options;
+}
+
+/**
  * Load the quicktabs data.
  */
 function quicktabs_load($qtid, $op = 'view') {
@@ -492,7 +514,13 @@ function quicktabs_render_tabpage($tab, $hide_empty = FALSE) {
             if ($view->access($tab['display'])) {
               $view->set_display($tab['display']);
               $view->set_arguments($tab['args']);
-              $output = $view->preview();
+              $view_output = $view->preview();
+              if (!empty($view->result) || $view->display_handler->get_option('empty') || !empty($view->style_plugin->definition['even empty'])) {
+                $output = $view_output;
+              }
+              else {
+                $output = '';
+              }
             }
             elseif (!$hide_empty) {
               $output = theme('quicktabs_tab_access_denied', $tab);
@@ -589,23 +617,6 @@ function _quicktabs_prepare_views($tabs) {
   }
 }
 
-/**
- * Helper function to add quicktabs settings to ajax tabs.
- */
-function _quicktabs_prepare_qts($tabs) {
-  foreach ($tabs as $key => $tab) {
-    if ($tab['type'] == 'qtabs') {
-      $quicktabs = quicktabs_load($tab['qtid']);
-      // We need to pass view details to js in case there is ajax paging.
-      $settings = array(
-        'quicktabs' => array(
-          'qt_'. $tab['qtid'] => $quicktabs,
-        ),
-      );
-      drupal_add_js($settings, 'setting');
-    }
-  }
-}
 
 /**
  * Helper function to use view arguments from the URL.
@@ -637,10 +648,10 @@ function quicktabs_locale($op = 'groups', $group = NULL) {
     case 'groups':
       return array('quicktabs' => t('Quick Tabs'));
 
-    case 'refresh':
-      if ($group == 'quicktabs') {
-        return quicktabs_locale_refresh();
-      }
+    case 'info':
+      $info['quicktabs']['refresh callback'] = 'quicktabs_locale_refresh';
+      $info['quicktabs']['format'] = FALSE;
+      return $info;
   }
 }
 
@@ -655,4 +666,96 @@ function quicktabs_locale_refresh() {
       tt("quicktabs:tab:$quicktabs[qtid]--$tabkey:title", $tab['title'], NULL, TRUE);
     }
   }
+  return TRUE;
+}
+
+/**
+ * This function is based on the ctools_ajax_render() function in the CTools
+ * AJAX framework. It allows us to pull js/css files and js settings for content
+ * that will be loaded via ajax.
+ */
+function quicktabs_ajax_js_css() {
+  $query_string = '?'. substr(variable_get('css_js_query_string', '0'), 0, 1);
+  $scripts = drupal_add_js(NULL, NULL);
+  foreach ($scripts as $type => $data) {
+    switch ($type) {
+      case 'setting':
+        $settings = $data;
+        break;
+      case 'inline':
+        // currently we ignore inline javascript.
+        break;
+      default:
+        // If JS preprocessing is off, we still need to output the scripts.
+        // Additionally, go through any remaining scripts if JS preprocessing is on and output the non-cached ones.
+        foreach ($data as $path => $info) {
+          $js_files[] = base_path() . $path . ($info['cache'] ? $query_string : '?' . time());
+        }
+    }
+  }
+
+  $css = drupal_add_css();
+
+  foreach ($css as $media => $types) {
+    // If CSS preprocessing is off, we still need to output the styles.
+    // Additionally, go through any remaining styles if CSS preprocessing is on and output the non-cached ones.
+    foreach ($types as $type => $files) {
+      if ($type == 'module') {
+        // Setup theme overrides for module styles.
+        $theme_styles = array();
+        foreach (array_keys($css[$media]['theme']) as $theme_style) {
+          $theme_styles[] = basename($theme_style);
+        }
+      }
+      foreach ($types[$type] as $file => $preprocess) {
+        // If the theme supplies its own style using the name of the module style, skip its inclusion.
+        // This includes any RTL styles associated with its main LTR counterpart.
+        if ($type == 'module' && in_array(str_replace('-rtl.css', '.css', basename($file)), $theme_styles)) {
+          // Unset the file to prevent its inclusion when CSS aggregation is enabled.
+          unset($types[$type][$file]);
+          continue;
+        }
+        // Only include the stylesheet if it exists.
+        if (file_exists($file)) {
+          $css_files[] = array(
+            'file' => base_path() . $file . $query_string,
+            'media' => $media,
+          );
+        }
+      }
+    }
+  }
+
+  $js_css = array();
+  if (!empty($settings)) {
+    $js_css['js_settings'] = call_user_func_array('array_merge_recursive', $settings);
+  }
+  if (!empty($js_files)) {
+    $js_css['js_files'] = $js_files;
+  }
+  if (!empty($css_files)) {
+    $js_css['css_files'] = $css_files;
+  }
+  return $js_css;
+}
+
+/**
+ * Implementation of hook_views_api().
+ */
+function quicktabs_views_api() {
+  return array(
+    'api' => 2,
+    'path' => drupal_get_path('module', 'quicktabs') .'/includes',
+  );
+}
+
+/**
+ * PHP4 version of array_fill_keys().
+ */
+function quicktabs_array_fill_keys($keys, $value){
+  $return = array();
+  foreach ($keys as $key) {
+    $return[$key] = $value;
+  }
+  return $return;
 }

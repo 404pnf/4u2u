@@ -483,8 +483,14 @@ tbody tr.views-row-last td{
 	background:url("fp_images/footer-bg.gif") repeat;
 	margin-top:20px;
 	padding-top:8px;
+	min-width:960px;
 }
-
+#footer .block{
+	margin-bottom:8px;
+}
+/* #footer .block-inner .content {
+padding-bottom:0px;
+} */
 #closure_region .block,#closure_region ,#closure_region .block-inner .content {
 	margin:0px;
 	padding:0px;

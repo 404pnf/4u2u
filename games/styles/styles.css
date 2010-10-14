@@ -33,7 +33,7 @@ ul,dl,li{
 #main {
 	margin:0 auto;
 	width:1024px;
-	/* position:relative; */
+	position:relative; 
 }	
 	
 .nav{
@@ -43,7 +43,8 @@ ul,dl,li{
 	border-top:2px #680404 solid;
 	position:absolute;
 	left:0;
-	bottom:0
+	bottom:0;
+	margin:0 auto;
 	}
 .nav2{
 	background-color:#A81F26;
@@ -93,4 +94,4 @@ ul,dl,li{
 	height:30px;	
 	}
 	
-#user_info{float:right;width:200px;color:#60181c;text-align:right;margin:auto;}
+#user_info{float:right;width:200px;color:#60181c;text-align:right;margin:8px;}

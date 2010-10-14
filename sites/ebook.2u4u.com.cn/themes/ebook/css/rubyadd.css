@@ -65,11 +65,7 @@ margin:10px 20px;
 .page-duhougan-confirm #confirm_message h3{
 margin:30px 0px 20px 56px;
 }
-/* confirm message页面的navigation导航的位置有问题，使用了绝对位置进行调整，整体布局好后进行修改 */
-.section-duhougan_confirm #navigation {
-position:absolute;
-top:50px;
-}
+
 
 /*view-duhougan-fenlie 分类显示 应该为fenlei*/
 .page-fenlei .view-duhougan-fenlie .view-content li,

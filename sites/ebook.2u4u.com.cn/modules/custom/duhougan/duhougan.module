@@ -33,11 +33,13 @@ function duhougan_confirm_page($nid){
 
 	$output .= '<div class="confirm-links"><ul><li>'.l("查看您的读后感","node/".$mycreat_id->max_id).'</li><li>'.l("返回该书","node/".$nid).'</li><li>'.l("返回读后感比赛首页","duhougan").'</li></ul></div>';
 
-if($mycreat_id->total_id == 1){
+	if($mycreat_id->total_id == 1){
 
-	$output .= '<h4>您发表的第一篇读后感会得到'.variable_get('first_duhougan','10').'个积分</h4>';
-}
-
+		$output .= '<h4>您发表的第一篇读后感会得到'.variable_get('first_duhougan','10').'个积分</h4>';
+	}
+	
+	$output .= '</div>';//whx添加，为了闭合上面写的div：'<div id="confirm_message"><h3>您的读后感已经成功发表</h3>'
+	
 return $output;
 
 }

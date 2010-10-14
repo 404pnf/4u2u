@@ -741,15 +741,15 @@ display:none;
 
 
 
-
-.page-shipintest ul.quicktabs_tabs.quicktabs-style-bullets li{
+/*情景百科右边栏 quick tab*/
+#block-quicktabs-1 ul.quicktabs_tabs.quicktabs-style-bullets li{
  	background:none;
 	margin:0px;
 	padding:0px;
 	height:25px;
 }
 
-.page-shipintest ul.quicktabs_tabs.quicktabs-style-bullets li a{
+#block-quicktabs-1 ul.quicktabs_tabs.quicktabs-style-bullets li a{
 	background:url("shipin_images/qjbk-bg.gif") no-repeat scroll left center transparent;
 	margin:0px;
 	padding:0px;
@@ -761,31 +761,172 @@ display:none;
 	font-weight:normal;
 }
 
-.page-shipintest ul.quicktabs_tabs.quicktabs-style-bullets li a:hover{
+#block-quicktabs-1 ul.quicktabs_tabs.quicktabs-style-bullets li a:hover{
 	background:url("shipin_images/qjbk-bg-hover.gif") no-repeat scroll left center transparent;
 }
 
-.page-shipintest ul.quicktabs_tabs.quicktabs-style-bullets li.active a, .page-shipintest ul.quicktabs_tabs.quicktabs-style-bullets li.active a:hover {
+#block-quicktabs-1 ul.quicktabs_tabs.quicktabs-style-bullets li.active a, ul.quicktabs_tabs.quicktabs-style-bullets li.active a:hover {
 	background:url("shipin_images/qjbk-bg-active.gif") no-repeat scroll left center transparent;
 	color:#FFFFFF !important;
 }
-.page-shipintest #quicktabs_container_1 .view-header .tid-10602{
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10593{
 	background:url("shipin_images/tanlun.gif") no-repeat scroll left center transparent;
 	width:202px;
 	height:89px;
 	margin-top:10px;
 }
 
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10602{
+	background:url("shipin_images/xunwen.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
 
-.page-shipintest ul.quicktabs_tabs.quicktabs-style-bullets{
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10599{
+	background:url("shipin_images/zhenglun.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10595{
+	background:url("shipin_images/jieshao.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10596{
+	background:url("shipin_images/qingsu.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10601{
+	background:url("shipin_images/quangao.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10605{
+	background:url("shipin_images/zhutuo.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10600{
+	background:url("shipin_images/weixie.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10597{
+	background:url("shipin_images/hanxuan.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+
+
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10608{
+	background:url("shipin_images/ganxie.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10604{
+	background:url("shipin_images/yanjiang.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10609{
+	background:url("shipin_images/chengzan.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10594{
+	background:url("shipin_images/biaobai.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10598{
+	background:url("shipin_images/qingqiu.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10607{
+	background:url("shipin_images/daoqian.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10610{
+	background:url("shipin_images/yaoqing.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10603{
+	background:url("shipin_images/chenshu.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+#block-quicktabs-1 #quicktabs_container_1 .view-header .tid-10606{
+	background:url("shipin_images/guli.gif") no-repeat scroll left center transparent;
+	width:202px;
+	height:89px;
+	margin-top:10px;
+}
+
+#block-quicktabs-1 ul.quicktabs_tabs.quicktabs-style-bullets{
 	margin:0px 0px 0px 3px;
 	padding:5px 0px 3px 0px;
 }
 
-
-.page-shipintest #quicktabs_container_1 .view-header{
+#block-quicktabs-1 #quicktabs_container_1 .view-header{
 	background:none;
 	height:100px;
 	padding-top:5px;
 	padding-left:3px;
+	margin-bottom:0px;
+}
+
+#block-quicktabs-1 tr.even,
+#block-quicktabs-1 tr.odd{
+	border:none;
+}
+
+#block-quicktabs-1 tbody tr.odd td, 
+#block-quicktabs-1 tbody tr.even td{
+	border:none;
+}
+
+#block-quicktabs-1 thead th{
+	border:none;
+}
+
+#block-quicktabs-1 table{
+	border-collapse:separate;
+}
+
+#sidebar-second  #block-quicktabs-1 .view-content td.views-field-title{
+	line-height:16px;
+	vertical-align:bottom;
+	padding-bottom:8px;
+}
+#block-quicktabs-1 .imagecache-vedio_125_94{
+	width:100px;
+	height:75px;
 }

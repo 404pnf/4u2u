@@ -7,6 +7,7 @@
 <style type="text/css">
 body {
 background:url("images/bg.jpg") no-repeat scroll center top #A81F26;
+text-align:center;
 }
 </style>
 <script language="javascript">AC_FL_RunContent = 0;</script>
@@ -16,6 +17,9 @@ background:url("images/bg.jpg") no-repeat scroll center top #A81F26;
 <div id="main">
 <div id="logo"><img src="images/logo.png"/></div>
 <div id="user_info"><?php echo $user_name."(".$user_id.")，欢迎您！";?></div>
+
+</div>
+
 <div class="nav">
      <ul>
          <li><a href="words/index.php">单词背诵</a></li>
@@ -23,7 +27,6 @@ background:url("images/bg.jpg") no-repeat scroll center top #A81F26;
          <li><a href="sj/index.php">单词射击游戏</a></li>
      </ul>
      <div class="footer"><span>外语教学与研究出版社版权所有 Copyright © 2008 2U4U.com.cn All Rights Reserved</span></div>
-</div>
 </div>
 </body>
 </html>

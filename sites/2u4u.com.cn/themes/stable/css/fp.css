@@ -1283,3 +1283,21 @@ height:108px;
 border:1px solid #9F9D9D;
 margin-top:10px;
 }
+
+
+#footer{
+	background:none;
+	margin-top:0px;
+	padding-top:8px;
+	min-width:960px;
+}
+#footer_bottom #bottom_copyrignt {
+	border:0 none;
+	float:none;
+	margin:0;
+	text-align:center;
+	width:960px;
+}
+#bottom_logo{
+	display:none;
+}

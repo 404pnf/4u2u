@@ -923,8 +923,9 @@ display:none;
 
 #sidebar-second  #block-quicktabs-1 .view-content td.views-field-title{
 	line-height:16px;
-	vertical-align:bottom;
+	vertical-align:top;
 	padding-bottom:8px;
+	padding-left:5px;
 }
 #block-quicktabs-1 .imagecache-vedio_125_94{
 	width:100px;

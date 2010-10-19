@@ -39,7 +39,7 @@ function game_url()
    if($user->uid>0){
 	   $sql = "SELECT sid FROM {sessions} where uid = %d";
 	   $sid = db_result(db_query($sql,$user->uid));
-	   $url = "http://2u4u.com.cn:7788/games/index.php".'?sid='.$sid;
+	   $url = "http://2u4u.com.cn/games/index.php".'?sid='.$sid;
 	   drupal_goto($url);
    }else{
    	   $url = "http://2u4u.com.cn/user?destination=game/link";

@@ -4,3 +4,4 @@ description = 把Discuz的积分转化为Drupal的积分.
 dependencies[] = userpoints
 core = 6.x
 php = 5.0
+package = 2u4u

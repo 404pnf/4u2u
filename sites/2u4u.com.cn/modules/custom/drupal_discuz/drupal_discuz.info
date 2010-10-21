@@ -1,3 +1,4 @@
 name = 首页得到论坛数据
 description = 获取discuz论坛数据
 core = 6.x
+package = 2u4u

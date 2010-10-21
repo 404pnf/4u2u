@@ -4,3 +4,4 @@ description =邀请模块.
 dependencies[] = userpoints
 core = 6.x
 php = 5.0
+package = 2u4u

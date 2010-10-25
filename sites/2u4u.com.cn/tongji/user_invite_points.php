@@ -5,6 +5,7 @@ $sql = "SELECT `name`,ut.`uid`, count( ut.uid ) num, sum( `points` ) points
 FROM `userpoints_txn` ut 
 LEFT JOIN `users` u on u.uid=ut.uid
 WHERE `description` LIKE '通过邀请用户获取的积分%'
+ AND `time_stamp`<UNIX_TIMESTAMP('2010-10-21 00:00:00')
 GROUP BY ut.`uid` 
 ORDER BY num DESC";
 

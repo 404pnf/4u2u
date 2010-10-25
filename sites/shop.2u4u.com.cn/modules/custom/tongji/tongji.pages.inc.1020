@@ -48,7 +48,7 @@ function tongji_products_downloads_list(){
 	}
 	$output = "";
 	//$sql = "SELECT uop.title,uop.nid, uop.price, sum(uop.qty) as total_buy, sum(ufu.accessed) as access_times ";
-	$sql = "SELECT uop.title, uop.nid, sum(uop.price) price, sum(uop.qty) as total_buy ";
+	$sql = "SELECT uop.title, uop.nid, uop.price, sum(uop.qty) as total_buy ";
 	$sql .= "FROM {uc_order_products} uop ";
 	$sql .= "LEFT JOIN {node} n ON uop.nid = n.nid ";
 	$sql .= "LEFT JOIN {uc_orders} uo ON uo.order_id = uop.order_id ";
@@ -75,7 +75,7 @@ function tongji_products_downloads_list(){
 	//$output .= "total_result:".$total_result;
 	$result = pager_query($sql, 50, $pager_num, $count_sql);
 	//$header = array("产品名称","购买次数","下载次数");
-	$header = array("产品名称","总计","购买次数");
+	$header = array("产品名称","价格","购买次数");
 	$ta = array('id' => 'tongji-products-downloads-table', 'align' => 'center');
 	$trows = array();
 	while($data = db_fetch_object($result)){

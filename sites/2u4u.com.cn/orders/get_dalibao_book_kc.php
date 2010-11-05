@@ -1,9 +1,11 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href='table.css' rel='stylesheet' type='text/css' >
+<title>大礼包图书库存预警</title>
+</head>
 <?php
 
-/*
- * **  打印出最近一段时间的网站订单。 by wzs 090913
- * **  时间格式有两种：一是到本周一网站所有的订单（已排除前期的订单）；另一种是上一周的网站订单（周一至周日）
- * */
 
 require 'connect.php';
 
@@ -102,20 +104,14 @@ $sql = "SELECT cp.field_product_neirongtiyao_value AS content,n.`title`
          } 
  	   }	
 	 }
-	 	
-	$table1 = ' <TABLE height=60 cellSpacing=0 borderColorDark=#ffffff width="100%"  
-	bgColor=#ffffff borderColorLight=#c0c0c0 border=1> 
-	   <tbody>
-	    <strong>大礼包图书库存预警</strong>
-		<tr>
-		 <td align="center" >所属礼包</td>	
-		 <td align="center" >图书名</td>
-		 <td align="center" >物料号</td>
-		 <td align="center" >现有库存</td>	
-		
-	</tr>'; 
-	
-	echo $table1.$table;
 }	 
-	 
-
+?>	 
+<div align="center">
+<table id="mytable" cellspacing="0" >
+<th scope="col">所属礼包</th>
+<th scope="col">图书名</th>
+<th scope="col">物料号</th>
+<th scope="col">现有库存</th>	
+<?php echo $table;?>
+</table>
+</div>

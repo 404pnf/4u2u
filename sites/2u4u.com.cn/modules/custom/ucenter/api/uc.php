@@ -1,5 +1,5 @@
 <?php
-define('DRUPAL_ROOT_PATH', 'E:/webproject/2u4u/html/2u4u');
+define('DRUPAL_ROOT_PATH', '/var/www/html/2u4u');
 define('IN_DISCUZ', FALSE);
 define('UC_CLIENT_VERSION', '1.5.0');	//note UCenter 版本标识
 define('UC_CLIENT_RELEASE', '20081031');

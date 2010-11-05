@@ -132,7 +132,7 @@ function ucenter_user($op, &$edit, &$account, $category = null) {
 				$url = $_SERVER['HTTP_REFERER'];				
 			}
 			
-		    if(strpos($url,"user/register")!==false|strpos($url,"20101026_zhuce")!==false|$url==''){
+		    if(strpos($url,"user/register")!==false|$url==''){
 		           $url  = $base_url;				
 	              }
 

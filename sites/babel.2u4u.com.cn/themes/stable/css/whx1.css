@@ -878,7 +878,7 @@ float:left;
 float:left;
 }
 .node-type-fanyi-chapter .field-field-fanyi-translators  a:link,.node-type-fanyi-chapter .field-field-fanyi-translators  a:visited,
-.node-type-fanyi_comment .meta a{
+.node-type-fanyi-chapter #comments .node  .meta a{
 color:#996600;
 }
 /* 翻译状态 */
@@ -961,16 +961,14 @@ padding:5px 10px 20px 0;
 /* 翻译评论 */
 .node-type-fanyi-chapter #comments .view-header{
 background-image:url("images/video_titleall.jpg");
-border:medium none;
 clear:both;
 font-size:13px;
 font-weight:700;
 height:35px;
 line-height:35px;
-margin-left:-9px;
-width:648px;
-text-align:left;
 padding-left:20px;
+text-align:left;
+width:705px;
 }
 .node-type-fanyi-chapter #comments .view-header a,.node-type-fanyi-chapter .comment_add a{
 color:red;
@@ -981,25 +979,25 @@ background-image:url("images/pinglun.gif");
 background-position:left center;
 background-repeat:no-repeat;
 }
-.node-type-fanyi_comment{
+.node-type-fanyi-chapter #comments .node {
 width:100%;
 border-bottom:1px dotted #d1d1d1;
 clear:both;
 }
-.node-type-fanyi_comment h2.title{
+.node-type-fanyi-chapter #comments .node  h2.title{
 background-color:#f3f3f3;
 font-size:1.1em;
 line-height:2em;
 padding-left:20px;
 font-weight:600;
 }
-.node-type-fanyi_comment h2.title a,.node-type-fanyi-chapter #prev-next a{
+.node-type-fanyi-chapter #comments .node  h2.title a,.node-type-fanyi-chapter #prev-next a{
 color:#000000;
 }
-.node-type-fanyi_comment .content{
+.node-type-fanyi-chapter #comments .node  .content{
 text-indent:26px;
 }
-.node-type-fanyi_comment .links li {
+.node-type-fanyi-chapter #comments .node  .links li {
 background-image:url("images/fanyi_comment_button.gif");
 background-repeat:no-repeat;
 display:block;
@@ -1010,10 +1008,10 @@ text-align:center;
 width:55px;
 margin:0 0 2px 0;
 }
-.node-type-fanyi_comment .links li.statistics_counter{
+.node-type-fanyi-chapter #comments .node  .links li.statistics_counter{
 background-image:none;
 }
-.node-type-fanyi_comment .links li a{
+.node-type-fanyi-chapter #comments .node  .links li a{
 color:#996600;
 } 
 /* 翻译bookcase页面出现的增加翻译章节的链接， */

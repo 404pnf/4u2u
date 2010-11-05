@@ -112,23 +112,20 @@
 				
 				<!--已登录 在西面的区块中判断了用户是否登录。没登录输出空，登录输出php内容-->
 				<?php $block = module_invoke('block', 'block', 'view', 44); ?>
-              			  <?php print $block['content']; ?>
+              	<?php print $block['content']; ?>
 				
-                            </div>
-                     	                   <div id="pane_ltab2" class="pane"> 
-                                               <a href="http://2u4u.com.cn/chongzhi/recommender"><img src="/sites/2u4u.com.cn/themes/stable/css/images/money.jpg"></a> 
+                    </div>
+                    <div id="pane_ltab2" class="pane"> 
+                     <!--   <a href="http://2u4u.com.cn/chongzhi/recommender"><img src="/sites/2u4u.com.cn/themes/stable/css/images/money.jpg"></a> -->
 
-
-
-
-					   <!--积分充值-->
-	                           <!--    <?php $block = module_invoke('gift_points', 'block', 'view', 0); ?> -->
-                                   <!--    <?php print $block['content']; ?> -->
-                            </div> 
+					  <!--积分充值-->
+	                  <?php $block = module_invoke('gift_points', 'block', 'view', 0); ?> 
+                      <?php print $block['content']; ?>
+                    </div> 
                               
 							
-                          </div>
                 </div>
+            </div>
 		</div> 
 		        <div class="recommend">用户积分中心</div>
       

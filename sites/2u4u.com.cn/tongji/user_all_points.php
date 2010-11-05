@@ -4,9 +4,10 @@ require 'connect.php';
 $sql = "SELECT `name` , ut.`uid` , sum( `points` ) points
 FROM `userpoints_txn` ut
 LEFT JOIN `users` u ON u.uid = ut.uid
-WHERE `description` LIKE '通过邀请用户获取的积分%'
+WHERE `time_stamp`<UNIX_TIMESTAMP('2010-10-21 00:00:00') AND
+(`description` LIKE '通过邀请用户获取的积分%'
 OR `description` LIKE '图书验证码积分充值.奖励推荐'
-OR `description` LIKE '完成“通寻令%'
+OR `description` LIKE '完成“通寻令%')
 GROUP BY ut.`uid` 
 ORDER BY points DESC";
 

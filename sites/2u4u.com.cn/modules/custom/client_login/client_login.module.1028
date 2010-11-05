@@ -7,15 +7,6 @@ function client_login_menu() {
 	    'page callback' => 'client_login',
 	    'type' => MENU_CALLBACK,
 	    'access callback' => true );
-
-	$items ['client/username'] = array (
-	                        'title' => '客户端用户登录', 
-	                        'page callback' => 'get_username',
-	                        'type' => MENU_NORMAL_ITEM,
-	                        'access callback' => true );
-
-
-
 	return $items;
 }
 
@@ -57,29 +48,4 @@ function client_login(){
 	else{ 
         echo "请重新登录";
 	}
-
-}
-
-
-function get_username(){
-	global $user;
-	$key = $_REQUEST['dis'];
-	
-	$check = db_fetch_object(db_query("SELECT s.`uid`,u.`name` FROM `sessions` s LEFT JOIN `users`  u.uid=s.uid
-							        	WHERE s.`sid`= '%s'", $key));
-	if($check->uid>0){
-	  if($user->uid==$check->uid){
-	  	
-	  	  $arr  = array(1,$check->uid,$check->name);
-	  	
-	 }else{ 
-	 	
-		 $arr  = array(0);	
-		 
-	 }	    
-  }else 
-         $arr  = array(0);	
-         
-         
-     echo  drupal_json($arr);   
 }

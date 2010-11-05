@@ -2,7 +2,7 @@
  
 /* -----------------------------------电子图书馆 阅读 开始 -----------------------------*/
 /* 新书快递 */
-.view-whx-yuedu  .view-display-id-attachment_5 .views-field-field-yuedu-cover-fid{
+.view-whx-yuedu  .view-display-id-attachment_5 .views-field-field-slideshow-cover-fid{
 float:left;
 margin-right:18px;
 height:106px;
@@ -16,29 +16,35 @@ border-bottom:1px dashed #D1D1D1;
 }
 /* hover css */
 /* + front page 首页*/
-.view-whx-yuedu  .view-display-id-attachment_4 .item-list,
-.view-whx-yuedu  .view-display-id-attachment_1 .item-list{
+
+
+
+/*系列图书*/
+
+ .view-whx-yuedu .view-display-id-attachment_1 .item-list{
 position:relative; 
-width:100px;
+width:90px;
 float:left;
-margin:0 8px 0 32px;
+margin:0 9px;
 z-index:100;
 }
-
-.view-whx-yuedu  .view-display-id-attachment_4  .views-row,
-.view-whx-yuedu  .view-display-id-attachment_1  .views-row{
+ .view-whx-yuedu .view-display-id-attachment_1 .item-list img{
+	width:90px;
+	height:120px;
+ }
+ .view-whx-yuedu  .view-display-id-attachment_1  .views-row{
 position:absolute;
 display:none;
 list-style:none;
 z-index:999;
 }
 /* 阴影 ie不支持*/
-.shadow-right {
+ .shadow-right {
 -moz-border-radius:3px 3px 3px 3px;
 -moz-box-shadow:2px 2px 2px #999999;
 }
 /* 边框及颜色 */
-.detail-tip {
+ .detail-tip {
 background:none repeat scroll 0 0 #FFFFFF;
 border:1px solid #DDDDDD;
 padding:13px 13px 10px;
@@ -49,7 +55,7 @@ left:110px;
 z-index:9999; 
 }
 /* 小三角 */
-.arrow-left {
+ .arrow-left {
 background:url("images/arrow_gray.gif") no-repeat scroll 0 0 transparent;
 height:9px;
 left:0;
@@ -63,12 +69,12 @@ z-index:9999;
 
 /* 阅读滚动 开始  */
 /* prev, next, prevPage and nextPage buttons */
-.anniu{
+ .anniu{
 float:right;
 width:110px;
 display:inline;
 }
-a#prev1, a#next1 ,a#prev2, a#next2,a#prev3 ,a#next3,a#prev4, a#next4,a#prev5 ,a#next5,a#prev6, a#next6,a#prev7 ,a#next7{
+ a#prev1, a#next1 ,a#prev2, a#next2,a#prev3 ,a#next3,a#prev4, a#next4,a#prev5 ,a#next5,a#prev6, a#next6,a#prev7 ,a#next7{
 	width:18px;
 	height:18px;
 	background:url(images/left.png) 0 -18px no-repeat;
@@ -76,11 +82,11 @@ a#prev1, a#next1 ,a#prev2, a#next2,a#prev3 ,a#next3,a#prev4, a#next4,a#prev5 ,a#
 	cursor:pointer;
 	font-size:1px;
 }
-a#next1 ,a#next2,a#next3,a#next4,a#next5,a#next6,a#next7{
+ a#next1 ,a#next2,a#next3,a#next4,a#next5,a#next6,a#next7{
 	background:url(images/right.png) 0 -18px no-repeat;
 }
 
-a#prev1.disabled, a#next1.disabled, a#prev2.disabled, a#next2.disabled, a#prev3.disabled, a#next3.disabled, a#prev4.disabled, a#next4.disabled, a#prev5.disabled, a#next5.disabled, a#prev6.disabled, a#next6.disabled, a#prev7.disabled, a#next7.disabled{
+ a#prev1.disabled, a#next1.disabled, a#prev2.disabled, a#next2.disabled, a#prev3.disabled, a#next3.disabled, a#prev4.disabled, a#next4.disabled, a#prev5.disabled, a#next5.disabled, a#prev6.disabled, a#next6.disabled, a#prev7.disabled, a#next7.disabled{
 	background-position:0 0;		
 }
 /* position and dimensions of the navigator */
@@ -106,24 +112,221 @@ a#prev1.disabled, a#next1.disabled, a#prev2.disabled, a#next2.disabled, a#prev3.
 	background-position:0 -16px;     
 } 	
 /* this makes it possible to add next button beside view-content */
-.view-whx-yuedu .view-display-id-attachment_4 ,.view-whx-yuedu .view-display-id-attachment_1{
-	position:relative;
-	overflow:hidden;
-	width: 725px;
+.view-whx-yuedu .view-display-id-attachment_1 .view-content-cover{
+	clear:none;
+	float:right;
 	height:180px;
-	clear:both;
+	overflow:hidden;
+	position:relative;
+	width:540px;
 }
-.view-whx-yuedu .view-display-id-attachment_4 .view-header,.view-whx-yuedu .view-display-id-attachment_1 .view-header{
+ .view-whx-yuedu .view-display-id-attachment_1 .view-header{
 height:25px;
 }
-.view-whx-yuedu .view-display-id-attachment_4 .view-header h2,.view-whx-yuedu .view-display-id-attachment_1 .view-header  h2{
+ .content-content-area-top.view-whx-yuedu .view-display-id-attachment_1 .view-header  h2{
 display:inline;
 float:left;
 }
-.view-whx-yuedu .view-display-id-attachment_4  .view-content ,
-.view-whx-yuedu .view-display-id-attachment_1  .view-content {
+ .view-whx-yuedu .view-display-id-attachment_1  .view-content {
 position:absolute;
 width:20000em;
-_left:-30px; 
+left:-4px; 
 }
 /* 阅读滚动 结束 end  */
+
+
+/* ----------免费阅读、新书快递切换------------- */
+.view-whx-yuedu .attachment-after .view-display-id-attachment_7 .view-content,
+.view-whx-yuedu .attachment-after .view-display-id-attachment_8 .view-content,
+.view-whx-yuedu .attachment-after .view-display-id-attachment_7 .view-footer,
+.view-whx-yuedu .attachment-after .view-display-id-attachment_8 .view-footer
+{
+ display:none;
+} 
+.view-whx-yuedu .attachment-after .view-display-id-attachment_7 .view-content,
+.view-whx-yuedu .attachment-after .view-display-id-attachment_7 .view-footer
+{
+ display:block;
+}
+/* 整体外框 加边、两个附件的位置控制、即第二个附件（热门推荐）的两列排版、hover后的小tip边框及颜色*/
+.view-whx-yuedu .attachment-before{
+   height:610px;
+}
+#attachment7 {
+left:120px;
+}
+#attachment8 {
+left:0px;
+}
+.view-whx-yuedu .view-display-id-attachment_7  .views-field-title,.view-whx-yuedu .view-display-id-attachment_8 .view-header p{
+     font-weight:bold;
+     font-size:1.2em;
+}
+/* 保持附件的相对位置，clear:both让after不飘到before的位置 */
+.view-whx-yuedu .attachment-after,.view-whx-yuedu .attachment-before{
+  position:relative;
+  display:block;
+  clear:both;
+}
+/* attachment-after */
+/* 可点击的按钮 */
+.view-whx-yuedu .attachment-after .view-header a:hover{
+     text-decoration:none;
+}
+
+.view-whx-yuedu .attachment-after .view-header a{
+      position:absolute;
+      top:-30px;
+      line-height:26px;
+      background:url("images/images-10.gif") no-repeat;
+      width:115px;
+      height:29px;
+      padding:2px 8px 2px 28px;
+      display:block;
+	  color:#363636;
+	  font-weight:bold;
+	  font-size:14px;
+}
+
+.view-whx-yuedu .attachment-after .view-header a.on{
+       background:url("images/images-15.gif") no-repeat;
+       height:30px;
+       color:#FFFFFF;
+       font-size:14px;
+       font-weight:bold;
+}
+
+ /* 内容的位置 相关位置*/
+.view-whx-yuedu .attachment-after .view-content{
+        position:relative;
+        display:block;
+        clear:both;
+        margin-top:40px;
+        z-index:1;
+        border-top:4px solid #6A6A7A;
+        border-left:1px solid #CECECE;
+        border-right:1px solid #CECECE;
+}
+
+.attachment-after .views-row{
+    clear:both;
+	 float:none;
+	 padding:5px 0 5px 5px;
+	 border-bottom:1px dashed #d1d1d1;
+	 margin-left:10px;
+}
+
+
+.view-display-id-page_7 .views-field-field-yuedu-cover-fid, .view-display-id-page_8 .views-field-field-yuedu-cover-fid, .section-mtag  .views-field-field-yuedu-cover-fid, .section-taxonomy  .views-field-field-yuedu-cover-fid {
+    float:left;
+	height:148px;
+	width:156px;
+	margin:10px 0 0 0;
+}
+
+.views-yuedu-whx .views-display-id-attachment_11 .views-field-field-yuedu-cover-fid-1{
+        background:black;
+        margin-left:100px;
+}
+/* 免费阅读、新书快递切换 end */
+
+
+/*----------------------------------- 首页flash 幻灯片---------------------------------*/
+#huandengpian{	/* 幻灯片总体设置 */
+position:relative;
+height:400px;
+width:288px;
+border:1px solid #cecece;
+background-color:#eee;
+}
+#huandengpian .view-content{
+margin:8px;	
+}
+
+/* 幻灯片左侧大图与文字 */
+#huandengpian .views-field-field-slideshow-cover-fid,#huandengpian .views-field-title,#huandengpian .views-field-body{
+	width:200px;
+	padding:5px;
+	display:none;
+	line-height:19px;
+}
+
+#huandengpian .views-field-body{
+	height:45px;
+	width:270px;
+}
+#huandengpian  .views-row-1 .views-field-field-slideshow-cover-fid,#huandengpian  .views-row-1 .views-field-title,#huandengpian  .views-row-1 .views-field-body{
+	display:block;
+}
+
+#huandengpian img.imagefield-field_yuedu_cover{
+	width:200px;
+	height:300px;
+}
+#huandengpian .views-field-field-slideshow-cover-fid{
+	height:300px;
+}
+#huandengpian img.imagecache-shu_width_100{
+ width:48px;
+ height:65px;
+}
+
+/* 标题鼠标hover的样式 */
+#huandengpian .on .views-field-field-slideshow-cover-fid-2,#huandengpian .on .views-field-field-slideshow-cover-fid{
+ background-color:#fff;
+ border:1px solid #cecece;
+ -moz-box-shadow:2px 2px 2px #999999;
+ padding:5px;
+ border-left:0px;
+ z-index:5;
+}
+#huandengpian .on .views-field-field-slideshow-cover-fid{
+border:1px solid #cecece;
+}
+
+/* 右侧标题 */
+#huandengpian .views-field-field-slideshow-cover-fid-2{
+	left:219px;
+	padding:5px 5px 5px 6px ;
+	position:absolute;
+	height:65px;
+}
+
+/* 标题相对于#huandengpian的绝对位置 */
+#huandengpian .views-row-1 .views-field-field-slideshow-cover-fid-2 {
+top:8px;
+}
+
+#huandengpian .views-row-2 .views-field-field-slideshow-cover-fid-2 {
+top:86px;
+}
+#huandengpian .views-row-3 .views-field-field-slideshow-cover-fid-2 {
+top:164px;
+}
+#huandengpian .views-row-4 .views-field-field-slideshow-cover-fid-2 {
+top:243px;
+}
+/* 幻灯片 flash end */
+
+/*---------- 系列图书描述布局 --------------*/
+.xilietush-content{
+	clear:both;
+}
+.term-detail{
+	background-color:#EEEEEE;
+	float:left;
+	margin-left:10px;
+	padding:8px 0 8px 10px;
+	width:160px;
+}
+.term-detail .term-name{
+    font-weight:bold;
+    font-size:1.3em;
+    line-height:2em;
+}
+.term-detail .term-description{
+    font-weight:normal;
+    color:#797979;
+    line-height:2em;
+}
+/* 系列图书描述布局 end*/

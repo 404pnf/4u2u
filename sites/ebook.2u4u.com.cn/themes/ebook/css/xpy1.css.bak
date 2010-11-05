@@ -12,7 +12,6 @@
 	padding:0 0 55px 0;
 	border:1px solid #E7E7E7;
 	margin-bottom:10px;
-	height:170px;
 }
 
 .view-whx-yuedu .view-display-id-attachment_4 .view-header h2, .view-whx-yuedu .view-display-id-attachment_1 .view-header h2, .view-whx-yuedu .view-display-id-attachment_5 .view-header h2{
@@ -23,30 +22,21 @@
 	line-height:33px;
 	margin-left:20px;
 	padding-left:13px;
-	float:left;
 } 
 
 .anniu {
 	margin:3px 13px 0 0;
 }
 
-#sidebar-second .block-inner .block-title-bg{
+#sidebar-second h3.title{
 	background-image: url(fp_images/gracy-right-bg.gif);
 	background-repeat: repeat-x;
 	height:33px;
 	color:#961F1F;
 	font-weight:normal;
-	width:218px;
-	border-left:1px solid #CECECE;
-	border-right:1px solid #CECECE;
-}
+	padding:0 0 0 15px;
+	width:203px;
 
-#sidebar-second #block-views-whx_yuedu-block_6 .block-inner .block-title-bg h3{
-	background-image: url(images/paihangbang.gif);
-	background-repeat: no-repeat;
-	border:0px;
-	height:33px;
-	text-indent:30px;
 }
 
 a:link{
@@ -56,6 +46,9 @@ a:link{
 	padding:5px 0 0.25em 2em;
 }
 
+#sidebar-second .block-inner .view-content{
+	padding:8px 8px 0 35px;
+}
 
 .views-field-title{
 	font-size:1em;
@@ -630,6 +623,11 @@ width:100%;
 }
 
 
+.page-quizcenterwhx #sidebar-second .block-inner .view-content{
+	padding:8px 8px 0 16px;
+	_ padding:0;
+	* padding:5px 0 0 0;
+}
 
 .view-id-quiz_taxonomy .view-content .views-row .views-field-name{
 	margin-right:3px;
@@ -771,7 +769,7 @@ width:100%;
 	width:100%;
 }
 .block-title-bg h3.title{
-	background:url("images/images-19.gif") no-repeat scroll left center transparent;
+	background:url("http://video.2u4u.com.cn/sites/video.2u4u.com.cn/themes/video/css/shipin_images/images-19.gif") no-repeat scroll left center transparent;
 	color:#901616;
 	text-indent:15px;
 	line-height:15px;
@@ -791,209 +789,12 @@ width:100%;
 }
 
 
-/* -----------------------------------电子图书馆新版css-----------------------------*/
-
-
-
-#huandengpian .view-content .views-row .views-field-title{
-	font-size:14px;
-	font-weight:bold;
-	width:250px;
-	white-space:nowrap; 
-	text-overflow:ellipsis; 
-	overflow:hidden;
-}
-#huandengpian .view-content .field-content{
-	color:#797979;
-}
-
-#huandengpian{
-	float:left;
-}
-
-#zhongdian, #zhongdianfenlei{
-	width:400px;
-	float:left;
-	margin-left:20px;
-}
-#zhongdian .view-header{
-	background-image:url("http://video.2u4u.com.cn/sites/video.2u4u.com.cn/themes/video/css/shipin_images/images-07.gif");
-	height:23px;
-	margin-bottom:10px;
-	width:329px;
-}
-
-#zhongdian .view-header span{
-	background:url("images/images-19.gif") no-repeat scroll left center transparent;
-	font-size:14px;
-	font-weight:bold;
-	line-height:2px;
-	padding-left:20px;
-}
-
-#xilietushu{
-	margin-top:10px;
-}
-#huandengpian .views-field-field-yuedu-summary-value {
-	padding-bottom:0px;
-}
-
-.item-list ul li{
-	list-style:none;
-	margin:0px;
-	padding:0px;
-}
-#zhongdian .view-content .views-field-title{
-	font-size:14px;
-	font-weight:bold;
-}
-#zhongdian .view-content .views-field-field-yuedu-summary-value{
-	color:#8A8A8A;
-	border-bottom:1px dashed #D1D1D1;
-	padding-bottom:8px;
-	margin-bottom:10px;
-}
-#zhongdian .view-content .views-field-tid{
-	display:none;
-}
-#zhongdian thead th{
+.page-yueduwhx #block-block-79 .content{
 	border:0px;
 }
-#zhongdianfenlei .view-content .views-field-tid .field-content a{
-	color:#96833E;
-}
-#zhongdianfenlei .view-content .views-row{
-	width:398px;
-	white-space:nowrap; 
-	text-overflow:ellipsis; 
-	overflow:hidden;
-	margin-top:5px;
-}
-#zhongdianfenlei .view-content .views-field-title{
-	margin-left:8px;
-}
-
-#sidebar-second .block-inner .view-content {
-	margin-left:10px;
-	padding:0px;
-	margin-right:10px;
-}
-
-.shugang{
-	margin-left:5px;
-	margin-right:5px;
-	color:#868686;
-}
-
-.views-row-last .shugang{
-	color:#FFFFFF;
-}
-
-h3{
-	clear:both;
-	padding-top:15px;
-}
-
-#sidebar-second .block-inner .content .view-content .field-content a:hover{
-	background-color:#CECECE;
-	text-decoration:none;
-	
-}
-
-.term-detail .term-description{
-	line-height:18px;
-}
-
-#zhuantituijian{
-	background-color:#EEEEEE;
-	border:1px solid #CECECE;
-	height:200px;
-	width:725px;
-}
-
-#zhuantituijian .view-display-id-attachment_6 .view-header{
-	background:url("images/images-19.gif") no-repeat scroll left center transparent;
-	font-size:14px;
-	font-weight:bold;
-	margin:5px 0 0 10px;
-	text-indent:20px;
-}
-
-#zhuantituijian .view-display-id-attachment_6 .views-row{
-	margin:6px 0px 0px 6px;
-}
-.view-display-id-page_9 .view-content .views-field-field-yuedu-cover-fid{
-	float:left;
-	margin:10px 20px 10px 10px;
-	background:url("images/book-bg.gif") no-repeat scroll left center transparent;
-	position:relative;
-	padding:5px 10px 2px 4px;
-}
-
-.view-id-whx_yuedu #content-area .view-content .views-field-title{
-	margin-top:10px;
-	font-size:16px;
-}
-
-.view-id-whx_yuedu .view-content .views-field-field-yuedu-author-value{
-	color:#717171;
-	margin-top:5px;
-}
-
-.view-display-id-attachment_7 .view-content .views-field-field-yuedu-summary-value{
-	margin-top:30px;
-	width:550px;
-	white-space:wrap; 
-	text-overflow:ellipsis; 
-	overflow:hidden;
-	height:60px;
-	color:#4D4D4D;
-}
-
-.view-display-id-attachment_7 .view-content .views-field-tid{
-	float:right;
-	margin-right:20px;
-	margin-top:10px;
-}
-
-.view-display-id-attachment_7 .views-field-tid .field-content a{
-	color:#978448;
-}
-
-.view-display-id-attachment_7 .view-content .views-field-field-yuedu-pricebypoints-value{
-	float:left;
-	margin-top:10px;
-}
-
-.attachment-after .views-row{
-	height:180px;
-}
-.view-display-id-attachment_7 .view-content .views-field-title{
-	margin-top:10px;
-}
 
 
-#sidebar-second #block-views-termid_by_name-block_1 .views-row{
-	display:inline;
-}
 
-#sidebar-second #block-views-whx_yuedu-block_6 li.views-row{
-	border-bottom:1px dashed #CECECE;
-	padding:2px 0 2px 0;
-	margin-right:10px;
-}
-#sidebar-second #block-views-whx_yuedu-block_6 li.views-row-first .field-content a, #sidebar-second #block-views-whx_yuedu-block_6 li.views-row-first{
-	color:#841616;
-	font-size:14px;
-	font-weight:bold;
-	margin-right:10px;
-}
 
-#sidebar-second h3.title, #sidebar-second .view-header{
-	background:none;
-	border:0px;
-	padding:0px;
-}
-#zhongdian .view-content .item-list ul li{
-	height:140px;
-}
+
+

@@ -1,0 +1,6 @@
+	
+use imagemagick's convert to strip down all imgs.
+
+	convert -strip file.jpg > tmp/file.jpg
+
+The =strip option will "strip the image of any profiles or comments."  Most of the time, this will reduce the image sice by half.

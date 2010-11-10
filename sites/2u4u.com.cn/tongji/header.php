@@ -7,6 +7,7 @@
 <option value='month' <?php if($_POST['time']=='month') echo "selected"; ?>>本月</option>
 <option value='last_month' <?php if($_POST['time']=='last_month') echo "selected"; ?>>上个月</option>
 <option value='two_month' <?php if($_POST['time']=='two_month') echo "selected"; ?>>上上个月</option>
+<option value='year' <?php if($_POST['time']=='year') echo "selected"; ?>><?php echo date("Y");?>财年</option>
 <option value='all' <?php if($_POST['time']=='all') echo "selected"; ?>>所有</option>
 </select>
 <input type='submit' name='btn' value='提交'>
@@ -42,6 +43,15 @@ if(isset($_POST['btn'])){
           $time_limit = "$time_field>$start AND $time_field<$this_month AND ";
           $string = "从".date("Y-m-d",$start)." 至 ".date("Y-m-d",$this_month);
       }
+
+
+      if($time=='year'){  //上月
+      	  $start = mktime(0, 0 , 0,11,1,date("Y")-1);
+      	  $this_month = mktime(0, 0 , 0,11,1,date("Y"));
+          $time_limit = "$time_field>$start AND $time_field<$this_month AND ";  
+          $string = "从".date("Y-m-d",$start)." 至 ".date("Y-m-d",$this_month);        
+      }
+      
 
       if($time=='all'){  //所有
           $time_limit = "$time_field<$end AND ";     

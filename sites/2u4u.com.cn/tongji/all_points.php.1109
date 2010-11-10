@@ -40,7 +40,7 @@ $i = 0;
 while($row = mysql_fetch_array($result))
 { 
 	$total_times += $row[num]; 
-  	if($i<100){		
+  	if($i<10){		
 		$name =strlen($row['name'])>2?$row['name']:$row[emno];
 		$table.= "<tr><td class='row'>".$name."</td>";
 		$table.="<td class='row'>".$row['num']."</td>";

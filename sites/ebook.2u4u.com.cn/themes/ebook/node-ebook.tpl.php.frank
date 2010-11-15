@@ -61,18 +61,19 @@
 							<a href="#yuedu_player">免费阅读</a> 
 						</div>
 			<?php else: ?>   
-       				<?php if (!yuedu_check_access($node->nid)): ?>
+				<?php if (!yuedu_check_access($node->nid)): ?>
 						<div id='points'><a title="购买本图书" href = "/yuedu/buy/<?=$node->nid?>" class="duihuan"><span class="price"><?php print $node->field_yuedu_pricebypoints[0]['value'];?></span><span class="price_unit">积分</span></a>
 						</div>  
 						
 				<?php endif;?>  
-                        <?php endif; ?>                                			
+			<?php endif;?>  
+			
 				<?php 
 					if (user_is_anonymous()){
 						print t('想阅读更多页面,请').l('登录','user/login');
 					} 
 				?>
-
+				
 				<?php 
 					$output = '';
 					$node_terms=taxonomy_node_get_terms($node , $key = 'tid'); 

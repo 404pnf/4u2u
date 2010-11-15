@@ -330,3 +330,70 @@ top:243px;
     line-height:2em;
 }
 /* 系列图书描述布局 end*/
+
+/*--------------- 评论 ----------------*/
+
+.node-type-ebook #comments{
+	border:1px solid #CECECE;
+	margin-top:15px;
+	padding:10px 0 0 0;
+}
+
+
+.node-type-ebook #comments .submitted{
+	background-color:#F0F0F0;
+	height:30px;
+	border-top:1px solid #CECECE;
+	color:#AEAEAE;
+	padding:6px 0 0 20px;
+}
+
+.node-type-ebook .comments_title{
+	background:url("images/images-19.gif") no-repeat scroll left center transparent;
+	font-weight:bold;
+	font-size:14px;
+	color:#901616;
+	text-indent:20px;
+	margin-left:20px;
+	margin-bottom:5px;
+}
+
+
+.node-type-ebook #comments .indented{
+	margin-left:0;
+}
+
+.node-type-ebook #comments .submitted a{
+	color:#8C6F00;
+}
+
+.node-type-ebook #comments .content{
+	margin:10px 20px 0 20px;
+}
+
+.node-type-ebook #comments ul.links li{
+	float:right;
+	margin-right:10px;
+}
+.node-type-ebook .box form#comment-form>div>div.form-item>label,.node-type-ebook .box form#comment-form>div>div.form-item>a {
+display:none;
+}
+
+.node-type-ebook #edit-preview{
+	display:none;
+}
+
+.node-type-ebook #comment-form #edit-submit{
+	background:url("images/save.jpg") no-repeat scroll left center transparent;
+	border:0px none;
+	width:80px;
+	height:31px;
+	font-size:0px;
+	cursor:pointer;
+	text-indent:-5000px;
+}
+#comments .box{
+	background-color:#F1F1F1;
+	padding-top:5px;
+	padding-bottom:15px;
+}

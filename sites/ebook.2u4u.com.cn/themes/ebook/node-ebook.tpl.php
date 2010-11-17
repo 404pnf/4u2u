@@ -112,7 +112,8 @@
 			<span class="field_content"><?php print $node->field_yuedu_summary[0]['view'] ?></span>
 		</div>
     <?php endif ?>
-    
+	<?php // print fivestar_widget_form($node); ?>
+	<?php print $node->content[fivestar_widget]['#value'];	?>
 		<?php if(strlen($node->field_yuedu_player[0]['view'])>2):?>		  
 			<div class="field_yuedu_player"> 
 				<a id="yuedu_player" name="yuedu_player"></a><span class="field_content"><?php print $node->field_yuedu_player[0]['view'] ?></span>
@@ -153,6 +154,7 @@
 				}
 				else {
 					$relate_ebook =views_embed_view('yuedu_taxonomy_term','block_3',$node->nid,$output);
+					$relate_ebook = '<div class="ebook_none_mrelate">'.$relate_ebook.'</div>';
 				}
 			?>
 	<div class="relatebox">

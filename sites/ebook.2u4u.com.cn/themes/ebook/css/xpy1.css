@@ -1170,12 +1170,14 @@ span.miaoshu span.login_miaoshu a.user_login{
 	margin-bottom:10px;
 }
 
-.relatebox .view-yuedu-taxonomy-term .view-header{
+
+.ebook_none_mrelate .view-yuedu-taxonomy-term .view-header{
 	margin:10px 0 0 20px;
 }
-.relatebox .view-yuedu-taxonomy-term .view-content{
+
+.ebook_none_mrelate .view-yuedu-taxonomy-term .view-content{
 	margin:0 0 0 20px;
 }
-.relatebox .view-yuedu-taxonomy-term .view-content .views-row{
+.ebook_none_mrelate .view-yuedu-taxonomy-term .view-content .views-row{
 	width:117px;
 }

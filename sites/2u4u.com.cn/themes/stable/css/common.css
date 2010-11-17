@@ -520,3 +520,78 @@ padding-bottom:0px;
 	border-right:1px dashed #CFCFCF;
 	margin-right:50px;
 }
+/*--- //footer end ---*/
+
+/*----------------- tagadelic 标签 ----------------*/
+.tagadelic {
+  text-align : justify;
+  margin-right: 0.6em;
+
+}
+a.tagadelic:link,a.tagadelic:visited{
+  color:#901414;
+	font-size:12px;
+
+}
+
+.tagadelic.level1:link,.tagadelic.level1:visited{
+  font-size : 1em;
+  color:#C5A95E;
+
+}
+.tagadelic.level2:link,.tagadelic.level2:visited{
+  font-size : 1.1em;
+  color:#e2ae22;
+
+}
+.tagadelic.level3:link,.tagadelic.level3:visited {
+  font-size : 1.2em;
+  color:#67531e;
+
+}
+.tagadelic.level4:link,.tagadelic.level4:visited {
+  font-size : 1.3em;
+  color:#C66506;
+
+}
+.tagadelic.level5:link,.tagadelic.level5:visited {
+  font-size : 1.4em;
+  color:#9a603c;
+
+}
+.tagadelic.level6:link,.tagadelic.level6:visited {
+  font-size : 1.5em;
+  color:#ed7454;
+
+}
+.tagadelic.level7:link,.tagadelic.level7:visited {
+  font-size : 1.6em;
+  color:#b74f34;
+
+}
+.tagadelic.level8:link,.tagadelic.level8:visited {
+  font-size : 1.7em;
+  color:#F0BA00;
+
+}
+.tagadelic.level9:link,.tagadelic.level9:visited {
+  font-size : 1.8em;
+  color:#c9413b;
+
+}
+.tagadelic.level10:link,.tagadelic.level10:visited {
+  font-size : 2.0em;
+  color:#741a15;
+
+}
+a.tagadelic:hover,a.tagadelic.level1:hover, a.tagadelic.level2:hover, a.tagadelic.level3:hover, a.tagadelic.level4:hover, a.tagadelic.level5:hover, a.tagadelic.level6:hover, a.tagadelic.level7:hover, a.tagadelic.level8:hover, a.tagadelic.level9:hover,a.tagadelic.level10:hover {
+  background-color:#961F1F;
+  color:#fff;
+  padding:3px;
+}
+
+.block-tagadelic .more-link {
+display:none;
+text-align:right;
+}
+/*------//tagadelic end ---------*/

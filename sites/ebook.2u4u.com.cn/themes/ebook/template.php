@@ -423,60 +423,32 @@ function ebook_breadcrumb($breadcrumb) {
     return '<div class="breadcrumb">'. implode(' » ', $breadcrumb) .'</div>';
   }
 }
-/* 老葛下面写的具有通用性,而且不会出现在聚合页面term掉错的情况
-function ebook_print_zcxh($terms) {
-$output=""; 
-$new_array = array();
-foreach($terms as $tid=>$term ){
- $parent_terms = taxonomy_get_parents($tid);
-
- $parent_term = array_shift($parent_terms);
- $terms[$tid]['parent_term_tid'] = $parent_term->tid;
- $terms[$tid]['parent_term_name'] = $parent_term->name;
- $new_array[$parent_term->tid][] = $terms[$tid];
-  }
-  
-  foreach($new_array as $tid=>$sub_terms ){
-   
-	$output .=$sub_terms[0]['parent_term_name'].'：';
-	foreach($sub_terms as $sub_terms_term ){
-		$output .= '<a href="/download/'.$sub_terms_term[tid].'">'.$sub_terms_term[name].'</a>、';
-	}
-  }
-  
-  return $output=substr($output,0,strlen($output)-3);//去掉最后一个顿号，并返回输出值
-} */
-
-/* 
-此处传入的$terms是数组，以tid为键，term对象为值 
-$terms的结构事
-	Array {
-		[3] => stdClass Object (
-			[tid] => 3
-			[vid] => 1
-			[name] => vancouver
-			[description] => by land, sea and air
-			[wight] => 0 
-			//[parent_term_tid] => ptid
-			)
-	}
-
- */
  
-function ebook_output_buy_button($node) {
-  $output ="";
-	$flag_yuedu_freebie = flag_get_flag('yuedu_freebie'); 
-	$flag_limit_read_percentage = flag_get_flag('limit_read_percentage');
-	if($flag_yuedu_freebie && $flag_yuedu_freebie->is_flagged($node->nid)){
-		$output .= "<div id='points_free'><a href='#yuedu_player'>免费阅读</a></div>";
-	}elseif($flag_limit_read_percentage && $flag_limit_read_percentage->is_flagged($node->nid)){
-		$output .= "<div id='points_free'><a href='#yuedu_player'>限制阅读</a></div>";
-	}elseif(!yuedu_check_access($node->nid))){
-		$output .= "<div id='points'>";
-		$output .= "<a title='购买本图书' href = '/yuedu/buy/".$node->nid."' class='duihuan'>";
-		$output .= "<span class='price'>".$node->field_yuedu_pricebypoints[0]['value']."</span>";
-		$output .= "<span class='price_unit'>积分</span>";
-		$output .= "</a></div>"; 
+function phptemplate_get_video($view_name,$display_id){
+	$args=func_get_args();
+	array_shift($args);	//remove $view_name
+	if(count($args)){
+		array_shift($args);	//remove $display_id
 	}
-	return  $output;
+	$output='';
+	$video=xmlrpc('http://video.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);
+	$output.=$video[0];
+	
+	return $output;
 }
+function phptemplate_get_videoterms($view_name,$display_id){
+	$args=func_get_args();
+	array_shift($args);	//remove $view_name
+	if(count($args)){
+		array_shift($args);	//remove $display_id
+	}
+	$output='';
+	$video=xmlrpc('http://video.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,false);
+	foreach($video as $etid=>$tem_terms ){
+		$output.=$video[0][tid].',';
+	}
+	//$output.=$video[0];
+	//$output =substr($output,0,strlen($output)-1);
+	return $output;
+}
+

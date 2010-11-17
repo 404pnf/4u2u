@@ -53,25 +53,34 @@
 
   <div class="content clear">
    <div class="ebook_ad_top clearfix">
-		  <div class="ebook_ad_left fleft">
 			<div class="ebook_title_bg"><h1 class="title"><?php print $title; ?></h1></div>
 				
-			<?php 	$flag = flag_get_flag('yuedu_freebie'); if($flag && $flag->is_flagged($node->nid)): ?>
-						<div id='points_free'>
-							<a href="#yuedu_player">免费阅读</a> 
-						</div>
-			<?php else: ?>   
-       				<?php if (!yuedu_check_access($node->nid)): ?>
+			<?php 	
+				Global $user;
+				$flag = flag_get_flag('yuedu_freebie');
+			if($flag && $flag->is_flagged($node->nid)): 
+			?>
+					<div id='points_free'>
+						<a href="#yuedu_player"></a> 
+					</div>
+			<?php else: ?>                               
+                <?php if ($user->uid): ?>      
+					<?php if (!yuedu_check_access($node->nid)): ?>
 						<div id='points'><a title="购买本图书" href = "/yuedu/buy/<?=$node->nid?>" class="duihuan"><span class="price"><?php print $node->field_yuedu_pricebypoints[0]['value'];?></span><span class="price_unit">积分</span></a>
-						</div>  
-						
-				<?php endif;?>  
-                        <?php endif; ?>                                			
-				<?php 
-					if (user_is_anonymous()){
-						print t('想阅读更多页面,请').l('登录','user/login');
-					} 
-				?>
+						</div> 
+						<span class="miaoshu unaccess_miaoshu">（未兑换只能阅读30%）</span>						
+					<?php else:?>
+						<div id='quanbu'>您已兑换本书，可以阅读全部内容</div>
+					<?php endif;?>  
+                <?php else:?>     
+             		<?php if (user_is_anonymous()):?>
+						<div id='points'><a title="购买本图书" href = "http://2u4u.com.cn/user?destination=http://ebook.2u4u.com.cn/yuedu/buy/<?=$node->nid?>" class="duihuan"><span class="price"><?php print $node->field_yuedu_pricebypoints[0]['value'];?></span><span class="price_unit">积分</span></a>
+						</div> 
+					    <span class="miaoshu"><span class="login_miaoshu">兑换此书，请先<a class="user_login" href="http://2u4u.com.cn/user?destination=http://ebook.2u4u.com.cn/ebook/<?=$node->nid?>">登录</a></span>  <span class="unlogin_miaoshu">（未登录只能阅读10%）</span></span>
+					    
+					<?php endif;?>
+                <?php endif;?>
+			<?php endif; ?>
 
 				<?php 
 					$output = '';
@@ -83,42 +92,77 @@
 				?>		 
 				<?php print $output?>
 					
+			<div class="author_tags clearfix">
 				<?php if(strlen($node->field_yuedu_author[0]['view'])>2):?>		  
-					<div class="field_yuedu_author"> <span class="field_label">作&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;者：</span>
+					<div class="field_yuedu_author fleft"> <span class="field_label">作者：</span>
 						<span class="field_content"><?php print $node->field_yuedu_author[0]['view'] ?></span>
 					</div>
 				 <?php endif ?>
 				<?php if ($terms): ?>
-					<div class="ebook_terms terms terms-inline"><span class="field_label">标&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;签：</span>
+					<div class="ebook_terms terms terms-inline fright"><span class="field_label">标签：</span>
 						<span class="field_content"><?php print $terms; ?></span>
 					</div>
 				<?php endif; ?>
-			</div>	
-			
-			<div id="ebook_ad" class="ebook_ad_right fright">
-				<?php $block = module_invoke('block', 'block', 'view', 77); ?>	
-				<?php print $block['content']; ?>
-			</div>	
+			</div>
+		</div>
 	</div>
 	
-		<?php if(strlen($node->field_yuedu_summary[0]['view'])>2):?>		  
-			<div class="field_yuedu_summary"> <span class="field_label">内容简介：</span>
-				<span class="field_content"><?php print $node->field_yuedu_summary[0]['view'] ?></span>
-			</div>
-		<?php endif ?>
-                <?php print fivestar_widget_form($node); ?>
+	<?php if(strlen($node->field_yuedu_summary[0]['view'])>2):?>		  
+		<div class="field_yuedu_summary">
+			<span class="field_content"><?php print $node->field_yuedu_summary[0]['view'] ?></span>
+		</div>
+    <?php endif ?>
+    
 		<?php if(strlen($node->field_yuedu_player[0]['view'])>2):?>		  
 			<div class="field_yuedu_player"> 
 				<a id="yuedu_player" name="yuedu_player"></a><span class="field_content"><?php print $node->field_yuedu_player[0]['view'] ?></span>
 			</div>
-		 <?php endif ?>
-      <?php //print $content; ?>
-    </div>
+		<?php endif ?>
+     
+    
+
 
     
     <?php if ($links): ?> 
       <div class="links clear"> <?php print $links; ?></div>
     <?php endif; ?>
 
-  </div> <!-- /node-inner -->
+	
+		<?php 
+
+		$output=""; 
+		$output2=""; 
+		$node_terms=taxonomy_node_get_terms($node , $key = 'tid'); 
+		foreach($node_terms as $tid => $tmp_term){
+			$output .= $tid.",";
+			$output2 .= phptemplate_get_videoterms('termid_by_name','default',$tmp_term->name);
+		}
+		$output=substr($output,0,strlen($output)-1);
+		$output2=substr($output2,0,strlen($output2)-1);
+	?>
+	<?php 
+				$relate_video ='';
+				//$relate_ebook ='';
+				
+				$relate_ebook =views_embed_view('yuedu_taxonomy_term','block_2',$node->nid,$output);
+				$relate_video =phptemplate_get_video('media_taxonomy_term','block_3',$output2);
+				
+				
+				if(strlen($relate_video)>146) {
+					$relate_video .='<div class="more-link"><a href="http://video.2u4u.com.cn/erelate/'.$output2.'">更多>></a></div>'; 
+				}
+				else {
+					$relate_ebook =views_embed_view('yuedu_taxonomy_term','block_3',$node->nid,$output);
+				}
+			?>
+	<div class="relatebox">
+		<? print $relate_ebook; ?>
+		<div class="video_relate">
+			<? print $relate_video; ?>
+		</div>
+	</div>
+	
+	
+	
+ </div> <!-- /node-inner -->
 </div> <!-- /node-->

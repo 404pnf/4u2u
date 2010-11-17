@@ -10,9 +10,9 @@
 .view-whx-yuedu .view-display-id-attachment_4, .view-whx-yuedu .view-display-id-attachment_1, .view-whx-yuedu .view-display-id-attachment_5{
 	width:725px;
 	padding:0 0 55px 0;
-	border:1px solid #E7E7E7;
+	border:1px solid #CECECE;
 	margin-bottom:10px;
-	height:170px;
+	height:160px;
 }
 
 .view-whx-yuedu .view-display-id-attachment_4 .view-header h2, .view-whx-yuedu .view-display-id-attachment_1 .view-header h2, .view-whx-yuedu .view-display-id-attachment_5 .view-header h2{
@@ -62,7 +62,7 @@ a:link{
 }
 
 .view-whx-yuedu .view-display-id-attachment_4 .view-content, .view-whx-yuedu .view-display-id-attachment_1 .view-content, .view-whx-yuedu .view-display-id-attachment_5 .view-content{
-	padding:13px 0 25px 0px;
+	padding:10px 0 25px 3px;
 }
 
 element.style{
@@ -313,6 +313,9 @@ opacity:0;
 	background-image:url("fp_images/erjibg.gif");
 	background-repeat:repeat-x;
 	height:46px;
+	border-left:1px solid #CECECE;
+	border-right:1px solid #CECECE;
+	border-top:1px solid #CECECE;
 }
 
 
@@ -711,6 +714,7 @@ width:100%;
 	border-top:1px solid #CECECE;
 	border-left:1px solid #CECECE;
 	border-right:1px solid #CECECE;
+	height:50px;
 }
 
 #ebook_ad #ad{
@@ -729,6 +733,7 @@ width:100%;
 	line-height:35px;
 	width:143px;
 	text-decoration:none;
+	float:left;
 }
 
 .ebook_ad_left #points .price{
@@ -832,7 +837,7 @@ width:100%;
 }
 
 #xilietushu{
-	margin-top:10px;
+	margin-top:20px;
 }
 #huandengpian .views-field-field-yuedu-summary-value {
 	padding-bottom:0px;
@@ -846,12 +851,14 @@ width:100%;
 #zhongdian .view-content .views-field-title{
 	font-size:14px;
 	font-weight:bold;
+	margin-top:5px;
 }
 #zhongdian .view-content .views-field-field-yuedu-summary-value{
 	color:#8A8A8A;
 	border-bottom:1px dashed #D1D1D1;
-	padding-bottom:8px;
-	margin-bottom:10px;
+	padding-bottom:17px;
+	margin-top:8px;
+
 }
 #zhongdian .view-content .views-field-tid{
 	display:none;
@@ -894,9 +901,10 @@ h3{
 	padding-top:15px;
 }
 
-#sidebar-second .block-inner .content .view-content .field-content a:hover{
-	background-color:#CECECE;
+#sidebar-second .block-inner .content .view-termid-by-name .view-content .field-content a:hover{
+	background-color:#870606;
 	text-decoration:none;
+	color:#FFFFFF;
 	
 }
 
@@ -927,7 +935,13 @@ h3{
 	margin:10px 20px 10px 10px;
 	background:url("images/book-bg.gif") no-repeat scroll left center transparent;
 	position:relative;
-	padding:5px 10px 2px 4px;
+	padding:8px 10px 2px 3px;
+}
+
+.section-yuedu .view-yuedu-taxonomy-term .views-field-field-yuedu-cover-fid{
+	background:url("images/book-bg.gif") no-repeat scroll left center transparent;
+	position:relative;
+	padding:8px 0px 2px 3px;
 }
 
 .view-id-whx_yuedu #content-area .view-content .views-field-title{
@@ -935,41 +949,64 @@ h3{
 	font-size:16px;
 }
 
-.view-id-whx_yuedu .view-content .views-field-field-yuedu-author-value{
+.view-id-whx_yuedu .view-content .views-field-field-yuedu-author-value, .view-yuedu-taxonomy-term .view-content .views-field-field-yuedu-author-value{
 	color:#717171;
 	margin-top:5px;
 }
 
-.view-display-id-attachment_7 .view-content .views-field-field-yuedu-summary-value{
-	margin-top:30px;
+.view-display-id-attachment_7 .view-content .views-field-field-yuedu-summary-value,
+.view-display-id-attachment_8 .view-content .views-field-field-yuedu-summary-value,
+.view-yuedu-taxonomy-term .view-content .views-field-field-yuedu-summary-value
+{
+	margin-top:10px;
 	width:550px;
 	white-space:wrap; 
 	text-overflow:ellipsis; 
 	overflow:hidden;
 	height:60px;
-	color:#4D4D4D;
+	color:#8A8A8A;
 }
 
-.view-display-id-attachment_7 .view-content .views-field-tid{
+.view-display-id-attachment_7 .view-content .views-field-tid,
+.view-display-id-attachment_8 .view-content .views-field-tid,
+.view-yuedu-taxonomy-term .view-content .views-field-tid
+{
 	float:right;
 	margin-right:20px;
 	margin-top:10px;
 }
 
-.view-display-id-attachment_7 .views-field-tid .field-content a{
+.view-display-id-attachment_7 .views-field-tid .field-content a,
+.view-display-id-attachment_8 .views-field-tid .field-content a,
+.view-yuedu-taxonomy-term .views-field-tid .field-content a
+{
 	color:#978448;
 }
 
-.view-display-id-attachment_7 .view-content .views-field-field-yuedu-pricebypoints-value{
+.view-display-id-attachment_7 .view-content .views-field-field-yuedu-pricebypoints-value,
+.view-yuedu-taxonomy-term .view-content .views-field-field-yuedu-pricebypoints-value
+{
 	float:left;
 	margin-top:10px;
 }
 
 .attachment-after .views-row{
 	height:180px;
+	margin-right:10px;
 }
-.view-display-id-attachment_7 .view-content .views-field-title{
-	margin-top:10px;
+
+.attachment-after .views-row-last{
+	border-bottom:none;
+}
+
+
+.view-display-id-attachment_7 .view-content .views-field-title, 
+.view-display-id-attachment_8 .view-content .views-field-title,
+.section-yuedu .view-yuedu-taxonomy-term .views-field-title
+{
+	margin-top:13px;
+	font-size:1.4em;
+	font-weight:bold;
 }
 
 
@@ -982,6 +1019,14 @@ h3{
 	padding:2px 0 2px 0;
 	margin-right:10px;
 }
+#sidebar-second #block-views-whx_yuedu-block_6 li.views-row-last{
+	border-bottom:0px;
+}
+#sidebar-second #block-views-whx_yuedu-block_6 .more-link{
+	display:none;
+}
+
+
 #sidebar-second #block-views-whx_yuedu-block_6 li.views-row-first .field-content a, #sidebar-second #block-views-whx_yuedu-block_6 li.views-row-first{
 	color:#841616;
 	font-size:14px;
@@ -996,4 +1041,141 @@ h3{
 }
 #zhongdian .view-content .item-list ul li{
 	height:140px;
+}
+.term-detail{
+	padding:3px 0 8px 10px;
+	margin-top:10px;
+}
+
+.view-whx-yuedu .view-display-id-attachment_1 .item-list img{
+	border:1px solid #CECECE;
+}
+
+
+.view-whx-yuedu .attachment-after .view-content{
+	border-bottom:1px solid #CECECE;
+}
+
+.section-yuedu #main #content-header .title_bg h1.title{
+	background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/red.gif") no-repeat scroll 0 10px transparent;
+	margin-left:20px;
+	padding-left:13px;
+	border:0px;
+}
+
+
+.section-yuedu #content-area .tvi-term-desc{
+	background-color:#FFFCF3;
+	color:#B67C4D;
+	margin-left:10px;
+	padding:18px 15px 20px;
+	text-indent:25px;
+	width:650px;
+}
+
+.section-yuedu .views-field-view-node{
+	display:none;
+}
+
+#sidebar-second #block-block-79 .content{
+	border:0px;
+}
+
+.section-yuedu #content-area .view-content li.views-row-last{
+	border:0px;
+}
+
+.item-list .pager li{
+	border:1px solid #CECECE;
+	color:#FFFFFF;
+	padding:1px 5px;
+	margin:0;
+}
+
+.pager-current{
+	background-color:#CECECE;
+}
+
+.item-list .pager{
+	margin:10px 0 20px 0;
+}
+
+#block-views-termid_by_name-block_1 a.active{
+	background-color:#870606;
+	color:#FFFFFF;
+}
+.duihuan span.price{
+	color:#FFFFFF;
+	font-size:22px;
+	font-weight:blod;
+	margin-left:15px;
+	line-height:40px;
+}
+.duihuan span.price_unit{
+	color:#FFFFFF;
+	margin-left:3px;
+}
+.ebook_ad_top span.miaoshu{
+	color:#959595;
+	display:block;
+	height:30px;
+	margin-top:32px;
+	border-bottom:1px dashed #CECECE;
+	margin-bottom:6px;
+}
+#content-area .node-inner .ebook_title_bg h1.title{
+	color:#A60C0C;
+	margin-top:10px;
+	margin-bottom:6px;
+}
+#content-area .author_tags .field_yuedu_author span.field_content{
+	font-size:14px;
+	font-weight:bold;
+}
+#content-area .author_tags .ebook_terms span.field_content a{
+	color:#96843E;
+}
+
+.field_yuedu_summary{
+	color:#797979;
+	margin-bottom:20px;
+}
+
+.author_tags .ebook_terms .field_content ul.links li{
+	padding:0 0.1em;
+}
+
+span.miaoshu span.login_miaoshu a.user_login{
+	color:#A60C0C;
+	font-weight:bold;
+	margin-left:2px;
+}
+
+#quanbu{
+	border-bottom:1px dashed #CECECE;
+	font-size:14px;
+	padding-bottom:6px;
+	margin-bottom:10px;
+}
+
+#points_free a{
+	background:url("images/free.gif") no-repeat scroll left center transparent;
+	width:145px;
+	height:42px;
+	display:block;
+}
+
+#points_free{
+	borderttom:10px;
+	margin-bottom:10px;
+}
+
+.relatebox .view-yuedu-taxonomy-term .view-header{
+	margin:10px 0 0 20px;
+}
+.relatebox .view-yuedu-taxonomy-term .view-content{
+	margin:0 0 0 20px;
+}
+.relatebox .view-yuedu-taxonomy-term .view-content .views-row{
+	width:117px;
 }

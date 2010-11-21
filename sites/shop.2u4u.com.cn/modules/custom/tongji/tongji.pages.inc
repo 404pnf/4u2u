@@ -86,8 +86,21 @@ function tongji_products_downloads_list(){
 			//array('data'=>$data->access_times,'valign'=>'top'),
 			//array('data'=>l('删除','invite/delete/'.$data->invite_id),'valign'=>'top'),
 		);
+		//总收入
+		if($data->price>0){			
+			$total_money += $data->price;			
+		}
+		//下载次数		
+		if($data->price>1){			
+			$paid_num += $data->total_buy;  //收费的下载次数
+		}else{
+			$free_num += $data->total_buy;	 //免费下载次数		
+		}
+
+
 	}
 
+	$trows[] = array("总收入：".$total_money."元","付费下载：".$paid_num,"免费下载：".$free_num); 
 	$output .= theme('table', $header, $trows, $ta);
 	$output .= theme('pager', NULL, 50, $pager_num);
  // global $pager_page_array, $pager_total;

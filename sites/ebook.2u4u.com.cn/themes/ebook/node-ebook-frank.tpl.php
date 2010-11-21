@@ -52,55 +52,50 @@
  <div class="node-inner">
 
   <div class="content clear">
-      <div class="ebook_title_bg"><h1 class="title"><?php print $title; ?></h1></div>
-	  <div class="ebook_top clearfix">
-		<div class="yuedu_permission fleft">
-			<?php print ebook_output_buy_button($node); ?>
+   <div class="ebook_ad_top clearfix">
+			<div class="ebook_title_bg"><h1 class="title"><?php print $title; ?></h1></div>
+				
+		<?php print ebook_output_buy_button($node); ?>
 
-			<?php 
-				$output = '';
-				$node_terms=taxonomy_node_get_terms($node , $key = 'tid'); 
-				foreach($node_terms as $tid => $tmp_term){
-					if($tid==10359) 
-						$output .= '<div class="pdfdl"><a href="http://shop.2u4u.com.cn/pdfdl">pdf文件下载</a></div>';
-				}
-				print $output;
-			?>
-		</div>
-		<div class="fivestar_votes fright">	
-				<?php // print fivestar_widget_form($node); ?>
-				<?php print $node->content[fivestar_widget]['#value']; ?>
-		</div>
-	  </div>
-	
-	
-	
-	<div class="author_tags clearfix">
-		<?php if(strlen($node->field_yuedu_author[0]['view'])>2):?>		  
-			<div class="field_yuedu_author fleft"> <span class="field_label">作者：</span>
-				<span class="field_content"><?php print $node->field_yuedu_author[0]['view'] ?></span>
+				<?php 
+					$output = '';
+					$node_terms=taxonomy_node_get_terms($node , $key = 'tid'); 
+					foreach($node_terms as $tid => $tmp_term){
+						if($tid==10359) 
+							$output .= '<div class="pdfdl"><a href="http://shop.2u4u.com.cn/pdfdl">pdf文件下载</a></div>';
+					}
+				?>		 
+				<?php print $output?>
+					
+			<div class="author_tags clearfix">
+				<?php if(strlen($node->field_yuedu_author[0]['view'])>2):?>		  
+					<div class="field_yuedu_author fleft"> <span class="field_label">作者：</span>
+						<span class="field_content"><?php print $node->field_yuedu_author[0]['view'] ?></span>
+					</div>
+				 <?php endif ?>
+				<?php if ($terms): ?>
+					<div class="ebook_terms terms terms-inline fright"><span class="field_label">标签：</span>
+						<span class="field_content"><?php print $terms; ?></span>
+					</div>
+				<?php endif; ?>
 			</div>
-		 <?php endif ?>
-		<?php if ($terms): ?>
-			<div class="ebook_terms terms terms-inline fright"><span class="field_label">标签：</span>
-				<span class="field_content"><?php print $terms; ?></span>
-			</div>
-		<?php endif; ?>
+		</div>
 	</div>
-			
+	
 	<?php if(strlen($node->field_yuedu_summary[0]['view'])>2):?>		  
 		<div class="field_yuedu_summary">
 			<span class="field_content"><?php print $node->field_yuedu_summary[0]['view'] ?></span>
 		</div>
     <?php endif ?>
-
+	<?php // print fivestar_widget_form($node); ?>
+	<?php print $node->content[fivestar_widget]['#value']; ?>
 		<?php if(strlen($node->field_yuedu_player[0]['view'])>2):?>		  
 			<div class="field_yuedu_player"> 
 				<a id="yuedu_player" name="yuedu_player"></a><span class="field_content"><?php print $node->field_yuedu_player[0]['view'] ?></span>
 			</div>
 		<?php endif ?>
      
-    </div>
+    
 
 
     

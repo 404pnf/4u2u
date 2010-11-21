@@ -891,22 +891,30 @@ width:100%;
 	margin-right:5px;
 	color:#868686;
 }
-
 .views-row-last .shugang{
 	color:#FFFFFF;
 }
-
-h3{
-	clear:both;
-	padding-top:15px;
-}
-
 #sidebar-second .block-inner .content .view-termid-by-name .view-content .field-content a:hover{
 	background-color:#870606;
 	text-decoration:none;
 	color:#FFFFFF;
 	
 }
+
+#block-views-termid_by_name-block_1 a.active{
+	background-color:#870606;
+	color:#FFFFFF;
+}
+#sidebar-second #block-views-termid_by_name-block_1 .views-row{
+	display:inline;
+}
+
+#sidebar-second h3{
+	clear:both;
+	padding-top:15px;
+}
+
+
 
 .term-detail .term-description{
 	line-height:18px;
@@ -1009,11 +1017,6 @@ h3{
 	font-weight:bold;
 }
 
-
-#sidebar-second #block-views-termid_by_name-block_1 .views-row{
-	display:inline;
-}
-
 #sidebar-second #block-views-whx_yuedu-block_6 li.views-row{
 	border-bottom:1px dashed #CECECE;
 	padding:2px 0 2px 0;
@@ -1100,10 +1103,7 @@ h3{
 	margin:10px 0 20px 0;
 }
 
-#block-views-termid_by_name-block_1 a.active{
-	background-color:#870606;
-	color:#FFFFFF;
-}
+
 .duihuan span.price{
 	color:#FFFFFF;
 	font-size:22px;
@@ -1115,13 +1115,13 @@ h3{
 	color:#FFFFFF;
 	margin-left:3px;
 }
-.ebook_ad_top span.miaoshu{
+.ebook_top span.miaoshu{
 	color:#959595;
 	display:block;
 	height:30px;
-	margin-top:32px;
-	border-bottom:1px dashed #CECECE;
+	margin-top:22px;
 	margin-bottom:6px;
+	float:left;
 }
 #content-area .node-inner .ebook_title_bg h1.title{
 	color:#A60C0C;
@@ -1152,10 +1152,8 @@ span.miaoshu span.login_miaoshu a.user_login{
 }
 
 #quanbu{
-	border-bottom:1px dashed #CECECE;
 	font-size:14px;
-	padding-bottom:6px;
-	margin-bottom:10px;
+	margin-top:20px;
 }
 
 #points_free a{
@@ -1180,4 +1178,86 @@ span.miaoshu span.login_miaoshu a.user_login{
 }
 .ebook_none_mrelate .view-yuedu-taxonomy-term .view-content .views-row{
 	width:117px;
+}
+
+.node-type-ebook #comments{
+	background-color:#F2F2F2;
+	border:0px;
+}
+
+.node-type-ebook .comments_title{
+	margin-bottom:0px;
+}
+
+#comments .box{
+	padding-top:0px;
+}
+html.js .resizable-textarea textarea{
+	width:680px;
+	height:100px;
+}
+
+#comments ul.tips{
+	display:none;
+}
+
+.node-type-ebook #comment-form #edit-submit{
+	margin-left:310px;
+}
+
+.section-ebook #comments .collapsible{
+	display:none;
+}
+#comments .comment-inner span.new{
+	display:none;
+}
+
+#comments .comment{
+	width:680px;
+	margin:10px 0 0 20px;
+}
+
+.node-type-ebook #comments .submitted{
+	background-color:#FAFAFA;
+	
+}
+/*---- 五星投票 -------*/
+.fivestar_votes{
+	position:relative;
+	width:220px;
+}
+div.fivestar-widget-static .star {
+  width: 34px;
+  height: 33px;
+}
+div.fivestar-widget,div.fivestar-widget-static {
+margin-right:50px;
+}
+form.fivestar-widget div.description .fivestar-summary {
+	visibility:hidden;
+}
+.user-rating,.average-rating,.total-votes{
+	visibility:visible;
+	float:left;
+}
+
+.average-rating {
+	color:red;
+	font:bold 3em "Helvetica Neue",helvetica,Arial,sans-serif;
+	position:absolute;
+	left:176px;
+	top:0;
+}
+.total-votes{
+    float:right;
+    margin-right:15px;
+}
+.front div.fivestar-widget-static {
+	float:right;
+}
+/*-------- end 投票 ---------*/
+
+.content .ebook_top{
+	border-bottom:1px dashed #CECECE;
+	margin-bottom:10px;
 }

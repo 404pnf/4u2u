@@ -451,4 +451,50 @@ function phptemplate_get_videoterms($view_name,$display_id){
 	//$output =substr($output,0,strlen($output)-1);
 	return $output;
 }
+/**
+ *用来输出购买按钮，这个根据各种条件进行判断，输出相应情况下的内容
+ *
+ */
+function ebook_output_buy_button($node) {
+  global $user;
+  $output ="";
+	$flag_yuedu_freebie = flag_get_flag('yuedu_freebie'); 
+	$flag_limit_read_percentage = flag_get_flag('limit_read_percentage');
+	//标记为免费阅读的图书，不显示购买按钮
+	if($flag_yuedu_freebie && $flag_yuedu_freebie->is_flagged($node->nid)){
+		$output .= "<div id='points_free'><a href='#yuedu_player'></a></div>";
+	}
+	//标记为限制全书原文的图书，不显示购买按钮
+	elseif($flag_limit_read_percentage && $flag_limit_read_percentage->is_flagged($node->nid)){
+		$output .= "<div id='limit_read_percentage'><a href='#yuedu_player'>此书只提供样张阅读</a></div>";
+	}else{
+	  //如果为登录用户
+		if ($user->uid){
+			//用户不具有访问权限，此时显示购买按钮
+			if(!yuedu_check_access($node->nid)){
+				$output .="<div id='points' class='fleft'>";
+				$output .="<a title='购买本图书' href = '/yuedu/buy/".$node->nid."' class='duihuan'>";
+				$output .="<span class='price'>".$node->field_yuedu_pricebypoints[0]['value']."</span><span class='price_unit'>积分</span>";
+				$output .="</a></div>";
+				$output .="<span class='miaoshu unaccess_miaoshu'>（未兑换只能阅读30%）</span>";			
+			}
+			//用户具有访问权限，此时提示用户可以阅读全部内容
+			else{
+				$output .="<div id='quanbu'>您已兑换本书，可以阅读全部内容</div>";
+			}
+		}
+		// 如果为匿名用户，提示购买图书，以及推荐用户登录
+		else{
+			$output .= "<div id='points' class='fleft'>";
+			$output .= "<a title='购买本图书' href = 'http://2u4u.com.cn/user?destination=http://ebook.2u4u.com.cn/yuedu/buy/".$node->nid."' class='duihuan'>";
+			$output .= "<span class='price'>".$node->field_yuedu_pricebypoints[0]['value']."</span><span class='price_unit'>积分</span>";
+			$output .= "</a></div>";
+			$output .= "<span class='miaoshu'>";
+			$output .= "<span class='login_miaoshu'>兑换此书，请先<a class='user_login' href='http://2u4u.com.cn/user?destination=http://ebook.2u4u.com.cn/ebook/".$node->nid."'>登录</a></span>";
+			$output .= "<span class='unlogin_miaoshu'>（未登录只能阅读10%）</span>";
+			$output .= "</span>";		 			    
+		}
+	}
+	return  $output;
+}
 

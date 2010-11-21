@@ -210,23 +210,33 @@ text-decoration:none;
 	height:43px;
 }
 .views-field-field-shipin-upload-fid {
-background-color:#DDDDDD;
-height:275px;
-padding:0 13px;
-width:321px;
+	background-color:#DDDDDD;
+	height:275px;
+	padding:0 13px;
+	width:321px;
 }
 .views-row-1 .views-field-title-1{
 	background-image:url("shipin_images/images-05.gif");
 	width:347px;
 	height:60px;
 }
-.view-display-id-attachment_7 .views-field-nothing{
-	background-image:url("shipin_images/images-09.gif");
-	width:711px;
-	height:160px;
-	margin:6px 0 0 6px;
+#zhongdiantuijian {
+	background-color:#EEEEEE;
+	border:1px solid #CECECE;
+	height:200px;
+	width:725px;
+	clear:both;
 }
-
+#zhongdiantuijian .zhongdian-title {
+	background:url("shipin_images/images-19.gif") no-repeat scroll left center transparent;
+	font-size:14px;
+	font-weight:bold;
+	margin:5px 0 0 10px;
+	text-indent:20px;
+}
+#coin-slider{
+	margin-left:10px;
+}
 .view-display-id-attachment_2 .views-field-field-shipin-cover-fid {
 background-image:url("shipin_images/images-08.gif");
 float:left;
@@ -281,26 +291,6 @@ height:17px;
 margin:18px 0 0 10px;
 }
 
-.view-display-id-attachment_7{
-	width:725px;
-	background-color:#EEEEEE;
-	height:200px;
-	border:1px solid #CECECE;
-}
-.view-display-id-attachment_7 .view-header{
-	background:url("shipin_images/images-19.gif") no-repeat scroll left center transparent;
-	font-size:14px;
-	font-weight:bold;
-	margin:5px 0 0 10px;
-	text-indent:20px;
-}
-
-
-a#disney{
-	display:block;
-	width:711px;
-	height:160px;
-}
 .attachment-after .imagecache-vedio_125_94{
 	width:136px;
 	height:116px;
@@ -457,7 +447,7 @@ clear:both;
 	overflow:hidden;
 	width:100px;
 }
-.view-display-id-page_3 .views-field-title .field-content a, .view-display-id-page_2 .views-field-title .field-content a, .view-display-id-page_4 .views-field-title .field-content a, .section-mtag .view-media-taxonomy-term .views-field-title .field-content a, .section-taxonomy .view-taxonomy-term .views-field-title .field-content a{
+.view-display-id-page_3 .views-field-title .field-content a, .view-display-id-page_2 .views-field-title .field-content a, .view-display-id-page_4 .views-field-title .field-content a, .section-mtag .view-media-taxonomy-term .views-field-title .field-content a, .section-mtag .view-taxonomy-term .views-field-title .field-content a, .section-taxonomy .view-taxonomy-term .views-field-title .field-content a{
 	font-size:16px;
 	font-weight:bold;
 	color:#515151;
@@ -472,9 +462,6 @@ clear:both;
 .view-display-id-attachment_2 .views-field-field-shipin-neirong-value{
 	color:#666666;
 	margin-top:10px;
-}
-.view-display-id-attachment_7{
-	background-color:
 }
 
 .view-footer a img{
@@ -741,6 +728,7 @@ display:none;
 
 
 
+
 /*情景百科右边栏 quick tab*/
 #block-quicktabs-1 ul.quicktabs_tabs.quicktabs-style-bullets li{
  	background:none;
@@ -931,3 +919,38 @@ display:none;
 	width:100px;
 	height:75px;
 }
+/*---------- //end quicktabs 情景百科 ------------*/
+
+/*--------- 视频分类区块 -----------*/
+.shugang{
+	margin-left:5px;
+	margin-right:5px;
+	color:#868686;
+}
+.views-row-last .shugang{
+	color:#FFFFFF;
+}
+#sidebar-second .block-inner .content .view-termid-by-name .view-content .field-content a:hover{
+	background-color:#870606;
+	text-decoration:none;
+	color:#FFFFFF;
+	
+}
+
+#block-views-termid_by_name-block_1 a.active{
+	background-color:#870606;
+	color:#FFFFFF;
+}
+#sidebar-second #block-views-termid_by_name-block_1 .views-row{
+	display:inline;
+}
+#sidebar-second  #block-views-termid_by_name-block_1 .block-inner .view-content {
+	margin-left:8px;
+	margin-top:-10px;
+	padding:0px;
+}
+#sidebar-second h3{
+	clear:both;
+	padding-top:15px;
+}
+/* end 视频分类 */

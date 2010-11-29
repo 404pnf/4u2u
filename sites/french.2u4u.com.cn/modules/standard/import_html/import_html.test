@@ -1,0 +1,206 @@
+<?php
+/**
+ * @file attempt to test some functions and stop things breaking
+ */
+
+class import_htmlTestCase extends DrupalWebTestCase {
+
+
+  /**
+   * Implementation of getInfo().
+   */
+  public static function getInfo() {
+    return array(
+      'name' => t('Import HTML'),
+      'description' => t('Test the importing of a known HTML source folder.'),
+      'group' => 'import_html',
+    );
+  }
+  
+  /**
+   * Implementation of setUp().
+   */
+  function setUp() {
+    // First to basic setup
+    parent::setUp('import_html', 'path');
+    // Now our own config tasks
+    // Create and log in our test user.
+    $user = $this->drupalCreateUser(array('administer site configuration', 'access import_html'));
+    $this->drupalLogin($user);    
+  }
+
+
+
+  /**
+   * Implementation of tearDown().
+   */
+  function tearDown() {
+    // Do tear down tasks...
+
+    // Delete created nodes
+    // Delete import temp files
+      
+    // Finally...
+#    parent::tearDown();
+  }
+  
+  /**
+   * Checks the default GUI profile screen submits OK
+   */
+  function testDefaultProfileSettings() {
+    
+    // Just post nothing to that form, see what happens
+    $edit = array();
+    $this->drupalPost('admin/build/import_html/settings', $edit, t('Save Settings'));
+
+    # assertTitle checks <title> not H1
+    #$this->assertTitle(t("Import HTML Settings"), "Settings page is available and accessible");
+
+    // Need to assert the settings are valid
+    // This particular check may be off-base, but it's a hint.
+    $this->assertEqual(
+      import_html_variable('translation_template'), // What our API returns
+      drupal_get_path('module', 'import_html') .'/templates/html2simplehtml.xsl', // What our API SHOULD return
+      "Seems the default settings are initialized OK",
+      "Seems the default settings (from import_html_variable) may not have been initialized as expected"
+    );
+
+
+  }
+
+  /**
+   * Checks submitting a "Select Files" form submission behaves as expected.
+   * 
+   */
+  function testImportSiteStep1() {
+    
+    // Just post nothing to that form, see what happens
+    $edit = array();
+    $this->drupalPost('admin/build/import_html/import_site', $edit, t("Next >>"));
+
+    // This SHOULD fail, as the source path is incorrect
+    $this->assertText(
+      "does not exist or is unreadable",
+      "Ensure submitting an invalid source path raises an error"
+    );
+    
+    // Now try a valid input
+    $edit['source_siteroot'] = drupal_get_path('module', 'import_html') . '/tests/example_pages';
+    $this->drupalPost('admin/build/import_html/import_site', $edit, t("Next >>"));
+    
+    // This SHOULD NOT fail, as the source path is incorrect
+    $this->assertNoText(
+      "does not exist or is unreadable",
+      "Ensure submitting an valid source path works"
+    );
+    $this->assertText(
+      "Step 2 of 3",
+      "Proceed successfully to step two"
+    );
+    
+    // See if the folder listing contains the right items
+    $search_for_file = "example_subfolder/find-me.htm";
+    $found_file = FALSE;
+    $this->parse();
+    $forms = $this->xpath('//form');
+    foreach ($forms as $form) {
+      $elements = $form->xpath('.//input|.//textarea|.//select');
+      foreach ($elements as $element) {
+        if ($element['value'] == $search_for_file) $found_file = TRUE;
+      }
+    }
+    $this->assertTrue($found_file, "Folder listing contains required files as checkbox items");
+
+  }
+  
+  /**
+   * Checks submitting the selected checkboxes listed actually works and
+   * imports the html as expected.
+   * 
+   */
+  function testImportSiteStep2() {
+    $edit = array();    
+    $edit['source_siteroot'] = drupal_get_path('module', 'import_html') . '/tests/example_pages';
+    $this->drupalPost('admin/build/import_html/import_site', $edit, t("Next >>"));
+    $this->assertText(
+      "Step 2 of 3",
+      "Choose valid input directory and proceed successfully to step two"
+    );
+    
+    // "Select" the checkboxes in this multi-step form.
+    $edit = $this->_select_all_files();
+
+    // Now submit that
+    $this->pass("Selected ". count($edit['file_rel_path][']) ." items to import");
+    $this->pass("Posting form ". var_dump($edit, 1) );
+    // Post to multistep
+    #$this->drupalPost(NULL, $edit, t("Batch Process Files"));
+    $this->drupalPost(NULL, $edit, t("Import Files"));
+
+    // There's not a lot we can do here, cross fingers!
+
+    $this->assertText(
+      "Step 3 of 3",
+      "Submitted and successfully processed all import files in one go. Got as far as the results page summary."
+    );
+
+$this->pass($this->drupalGetContent());
+  }
+
+
+  /**
+   * Run the import again - this time in batch mode
+   * 
+   */
+  function testImportSiteStep2Batch() {
+    $edit = array();    
+    $edit['source_siteroot'] = drupal_get_path('module', 'import_html') . '/tests/example_pages';
+    $this->drupalPost('admin/build/import_html/import_site', $edit, t("Next >>"));
+    $this->assertText(
+      "Step 2 of 3",
+      "Choose valid input directory and proceed successfully to step two"
+    );
+    
+    // "Select" the checkboxes in this multi-step form.
+    $edit = $this->_select_all_files();
+
+    // Now submit that
+    $this->pass("Selected ". count($edit['file_rel_path][']) ." items to import");
+    $this->pass("Posting form ". var_dump($edit, 1) );
+    // Post to multistep
+    $this->drupalPost(NULL, $edit, t("Batch Process Files"));
+    
+    // There's not a lot we can do here, cross fingers!
+
+    $this->assertText(
+      "Step 3 of 3",
+      "Submitted and successfully processed all import files in BATCH mode. Got as far as the results page summary."
+    );
+
+    $this->pass($this->drupalGetContent());
+
+  }
+
+
+  /**
+   * Helper to fill in the treeview form
+   * Returns an edit array with all the file_rel_path boxes filled in
+   */
+  function _select_all_files() {
+    // "Select" the checkboxes in this multi-step form.
+    $edit = array();
+    $this->parse();
+    $elements = $this->xpath('//input');
+    foreach ($elements as $element) {
+      if ($element['type'] == 'checkbox' && strstr($element['name'], 'file_rel_path')) {
+        #$this->pass("Found checkbox indicating file to import ". print_r($element, 1) );
+        // I need to figure out my own ][ brackets :(
+        $edit["file_rel_path[{$element['value']}]"] = ''. $element['value'];
+        // That was HACKY!
+      }
+    }
+    return $edit;
+  }
+    
+}
+

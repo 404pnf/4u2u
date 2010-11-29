@@ -1,0 +1,719 @@
+<?php
+// $Id: static.module,v 1.2.2.5 2009/10/06 14:09:03 dman Exp $
+/**
+ * @file
+ * Storage and retrieval of Drupal node content as plain HTML files
+ *
+ * Intent:
+ *
+ * Every time a Drupal node is saved, a corresponding file is updated. This
+ * means that content can be retained even somethime in the future when the
+ * database is unavailable.
+ * 
+ * @see static_help.htm for details
+ *
+ * @author Dan Morrison http://coders.co.nz/
+ *
+ */
+
+set_include_path( dirname(__FILE__) .'../coders_php_library'. PATH_SEPARATOR . get_include_path());
+
+/**
+ * @name Debug Flag
+ * Used for testing only
+ * @{
+ */
+if (! function_exists('debug')) {
+  module_load_include('inc', 'static', 'coders_php_library/debug');
+}
+/**
+ * @}
+ */
+
+module_load_include('inc', 'static', 'coders_php_library/xml-transform');
+module_load_include('inc', 'static', 'coders_php_library/file-routines');
+module_load_include('inc', 'static', 'coders_php_library/tidy-functions');
+
+
+/**
+ * Refresh behaviours.
+ * Access the filesystem on save, on load, or on date check
+ */
+define("STATIC_PASSIVE", 1);
+define("STATIC_AGGRESSIVE", 2);
+define("STATIC_INTELLIGENT", 4);
+
+
+/**
+ * Return help text describing this module
+ *
+ * @param $section string Context this help is being called from
+ * @return string
+ */
+function static_help($path, $arg) {
+
+  if (! extension_loaded( "dom" )) {
+    $message=t(" <em>Static serialization requires PHP DOM support (a PHP5 extension) . This is currently unavailable, and static writing will not work.</em>");
+  }
+  $description = t("Synchonizes all nodes with filesystem files. <b>experimental</b>") . $message;
+
+  switch ($path) {
+    case 'admin/modules#description' :
+      return $description;
+    case 'admin/modules/static' :
+      return $description;
+    case 'admin/settings/static' :
+      return $description;
+    case 'admin/help#static' :
+      return $message . file_get_contents(dirname(__FILE__) ."/static_help.htm");
+  }
+  return FALSE;
+}
+
+/**
+ * Implementation of hook_menu() .
+ */
+function static_menu() {
+  $items = array();
+  $items['admin/settings/static'] = array(
+    'title' => 'Static HTML Settings',
+    'description' => 'Configure where and how the static HTML pages are mirrored.',
+    'page callback' => 'drupal_get_form',
+    'weight' => 1,
+    'page arguments' => array('static_settings'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+
+/**
+ * Display the options and settings.
+ *
+ * @return FAPI Form
+ */
+function static_settings() {
+  $form = array(); 
+  
+  $form['static_file_storage_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Static file location'),
+    '#default_value' =>  ensure_trailing_slash( variable_get('static_file_storage_path', file_directory_path() .'/static/') ),
+    '#description' => t("
+      Where the static files are stored.
+    "),
+  );
+  
+  $form['static_synchronization_behaviour'] = array(
+    '#type' => 'select',
+    '#title' => t("Synchronization Behaviour"),
+    '#default_value' => variable_get('static_synchronization_behaviour', STATIC_PASSIVE),
+    '#options' => array(
+      STATIC_PASSIVE     => 'Write file on node save, never read' ,
+      STATIC_AGGRESSIVE  => 'Read file every node access, write when updating',
+      STATIC_INTELLIGENT => 'Write on save, Read only if file time has changed',
+     )  ,
+    '#description' => t("
+      How much reading and writing goes on. <ul>
+      <li>If 'never read' is chosen, static HTML just acts as a backup, retrieval system for when your database becomes unavailable. Very solid future-proofing for your content. It also means there is no danger of your data structures (custom node types and features) getting messed with.</li>
+      <li>If 'aggressive read/write' is chosen, you are using Drupal as an <em>interface</em> to what is effectively a filesystem-based website, as far as the node content is concerned.</li>
+      <li>If intelligent read/write is chosen (optimal) this works under Drupal as normal, saving useful backups, <em>and</em> allowing third-party apps to update content at the same time. This is the clever option.</li>
+      </ul>
+      Either of the options that read from disk <em>may</em> have a hard time reconstructing a node object back from a flat file if it is anything beyond a standard 'page'. Certain details may be lost in the round-trip process.
+    "),
+  );
+
+  $form['static_node_types'] = array(
+    '#type' => 'checkboxes',
+    '#title' => t('Node Types to apply to'),
+    '#default_value' => variable_get('static_node_types', array()),
+    '#options' => node_get_types('names'),
+    '#description' => t("
+          A list of node types you want to use with this module. 
+          All the selected types will be synchronized with static files.
+    "),
+  );
+
+  $form['static_show_link'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show link to archive file on page'),
+    '#default_value' => variable_get('static_show_link', FALSE),
+  );
+
+  $form['static_use_import_html_settings'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use import HTML processing'),
+    '#default_value' => variable_get('static_use_import_html_settings', FALSE),
+    '#description' => t("
+          Static HTML is designed to read and write its own 'pure' XHTML files
+          in a lowest-common-denominator, semantically tagged way. 
+          What comes in is expected to be the same as what goes out.
+          <br/>
+          However, it can also use the import_html translation pipeline on-the-fly.
+          This would be useful if uploading or editing raw HTML files behind Drupals back.
+          Doing so is likely to produce imperfect XHTML, so we must run the full import_html process each time such a file is read.
+          This is the same as running a full import_html process on that file, using the xsl template and all the preferences currently set
+          in the import_html settings.
+          <br/>
+          Enabling this may cause performance to suffer a bit, but the Synchronization Behaviour setting should cache the results for us.
+    "),
+    '#disabled' => (! module_exists('import_html')),
+  );
+ 
+ return system_settings_form($form);
+ 
+}
+
+
+function static_settings_form_validate($form, &$form_state) {
+  // Ensure file path exists and is writable.
+  if (!is_dir($form_state['values']['static_file_storage_path'])) {
+    mkdir($form_state['values']['static_file_storage_path'], NULL, TRUE);
+  }
+  if (!is_writable($form_state['values']['static_file_storage_path'])) {
+    form_set_error('static_file_storage_path', "Storage path is not writable");
+  }
+}
+
+function static_link($type, $node) {
+  if (static_node_applies($node)) {
+    $filepath = static_node_path($node);
+
+    if (file_create_path($filepath)) {
+      $links[] = array(
+        'title' => 'archive',
+        'href'  => file_create_url($filepath),
+      );  
+    }
+    // file_create_url() returns a fully-justified URL, which I don't like
+    // however, with clean_urls off, ?q=/files/static/filename.htm isn't supported either.
+
+  }
+  return $links;
+}
+
+
+/**
+ * Hook Implimentation
+ */
+function static_nodeapi(&$node, $op, $teaser, $page) {
+  if (! static_node_applies($node)) return;
+
+  // Catch recursion. Loading a page can trigger an update,
+  // with will in turn trigger a save. Which updates the timestamp to make a load neccessary... 
+  static $already_doing_this;
+  if ($already_doing_this[$node->nid .'-'. $op]) return;
+  $already_doing_this[$node->nid .'-'. $op] = TRUE;
+  
+  switch ($op) {
+    case 'insert' :
+    case 'update' :
+      static_node_save($node);
+      break;
+    case 'load' :
+      return (array)static_node_load($node);
+  }
+}
+
+/**
+ * Return true if the admin has selected this node as participating in this
+ * functionality.
+ * Choose by node-type, or by virtue of a taxonomy classification (TODO)
+ */
+function static_node_applies($node) {
+  $active_node_types = variable_get('static_node_types', array());
+  if ($active_node_types[$node->type]) return TRUE; 
+  return FALSE;
+}
+
+/**
+ * Return the path to save a node as.
+ * 
+ * However - should 'this/thing' end up as 'this/thing.htm'
+ * or 'this/thing/index.htm' - as would be needed sometimes? 
+ * 'this/thing/' will always imply 'index.htm' is expected
+ */
+function static_node_path($node) {
+  $base = variable_get('static_file_storage_path', 'files/static/');
+
+  $path = $node->path ? $node->path : 'node/'. $node->nid;
+
+  if (strrpos($path, '.') > strrpos($path, '/') ) { 
+    // path has no suffix
+    // check if it's looking like overwriting a directory
+    if (is_dir($base . $path)) {
+      return $base . $path .'/'. variable_get('import_html_default_document', "index.htm");
+    }
+  } 
+  else if (strrpos($path, '/') == strlen($path)-1) {
+    // ends with a slash
+    return $base . $path . variable_get('import_html_default_document', "index.htm");
+  }
+  return  $base . preg_replace('|\.[^\.\/]+$|', '', $path) .".htm";
+}
+
+function static_node_save(&$node) {
+  import_html_debug("Saving node as static HTML file ". $node->path);    
+
+  $html = static_node_to_html($node);
+  if (! is_string($html)) return FALSE;  // failure
+
+  $filepath = static_node_path($node);
+  import_html_debug("Saving node to file ". l($filepath, $filepath));
+   
+  $filedir = dirname($filepath);
+  if (!$filedir) {
+    trigger_error("static.module Trying to save a node with no path, this should never happen. Obviously the stars are mis-aligned.");
+    return;
+  }
+ 
+  if (!is_dir($filedir)) { 
+    mkdirs($filedir);
+  }
+  if (!is_dir($filedir)) { 
+    trigger_error("directory '$filedir' doesn't exist and couldn't be created. This is really horrible news.", E_USER_WARNING); 
+    return FALSE;
+  }
+  $success = file_put_contents($filepath, $html);
+  chmod($filepath, 0775); // add group write, it's annoying otherwise
+  
+  if ($success) {
+    drupal_set_message(t("A static version of this page has been archived as !archive_link. That's pretty cool.", array('!archive_link' => l($filepath, file_create_url($filepath)) )));
+  }
+  
+  return $success;
+}
+
+
+function static_node_load(&$node) {
+  import_html_debug("Possibly loading node from static! ". $node->path);    
+  $behaviour = variable_get('static_synchronization_behaviour', STATIC_PASSIVE);
+  if ($behaviour == STATIC_PASSIVE) {
+    import_html_debug("Static HTML in passive mode. Not doing anything.");
+    return;
+  }
+  $filepath = static_node_path($node);
+
+  if (! is_file($filepath)) {
+    import_html_debug("No static backup to retrieve");
+    return;
+  }
+
+  import_html_debug(t("Filesystem file was dated %fs_time while the database node is dated %db_time", array('%fs_time' => filectime( $filepath ), '%db_time' => $node->changed)));
+
+  if (($behaviour == STATIC_INTELLIGENT) && ($node->changed >= filectime( $filepath ))) {
+    // no recent change
+    import_html_debug("No recent change in $filepath . Node time: $node->changed >= File time: ". filectime( $filepath ));
+    return;
+  }
+
+  import_html_debug("Loading node statically from ". $filepath);    
+
+  if (! module_exists('import_html')) {
+    // Enable the library, even if the module is disabled.
+    module_load_include('module', 'static', 'mport_html');
+  }   
+
+
+  // We should trust these files to be pure, no more validating or translating needed
+  // HOWEVER
+  // If reading from a non XHTML source (like raw XML)
+  // extra processing (found in import_html) could be called here.
+
+  if (variable_get('static_use_import_html_settings', FALSE)) {
+    import_html_debug("Using import_html transformation to initialize node from raw HTML file ". $filepath);    
+    $nodes = _import_html_process_html_page($filepath, $node->path);
+    $scanned_node = array_pop($nodes);
+  } 
+  else { 
+    // trust the file is nice and tidy like we left it.
+    $xmldoc = parse_in_xml_file($filepath, FALSE);
+    if ($xmldoc) {
+      $scanned_node = import_html_xhtml_to_node($xmldoc);
+    }
+  }
+  
+  if ($scanned_node) {
+
+    // First do a rough over-write of all values
+    foreach ($scanned_node as $key => $val) {
+      $node->$key = $val;
+    }
+    
+    // Then possibly replace it with more advanced settings.
+    // import/export rules and callbacks are defined in a big reference array
+
+    $field_defs = static_def();
+
+    // merge defined fields back into node object
+    // Can't just replace it, as it's modified by ref.
+    
+    import_html_debug("Merging values loaded from file over the existing node.");
+    watchdog('static_html', "Updating node, Merging values loaded from recently modified file $filepath over the existing node $node->nid $node->path.", 2);
+    foreach ($field_defs as $key => $def) {
+      if ( ! element_child($key) ) continue ;
+
+      // Change the label if needed.
+      // Some of the properties need renaming back - 'identifier' in the doc is 'key' in the node
+      if ( isset($def['#identifier']) && isset($scanned_node->$def['#identifier'])) {
+        $node->$key = $scanned_node->$def['#identifier'];
+        import_html_debug("Replaced value of '". $key ."' with value of '". $def['#identifier'] ."' from file ");
+        continue;
+      }
+      // Or if it's indexed by #key in the source, copy straight across
+      if ( $def['#key'] && isset($scanned_node->$key)) {
+        $node->$key = $scanned_node->$key;
+        import_html_debug("Replaced value of '". $key ."' from file ");
+      }
+    }
+    # debug_pre($node);
+    // Now it's loaded, and different, save it back to the database
+    // so we don't have to read again. This will absorb changes and update the timestamp.
+    // ... which will in turn prompt a re-save to file etc :( recursive.
+    node_save($node);
+
+  }
+  else {
+    drupal_set_message(t("Failed to parse file from $filepath. It should contain info about this node.")); 
+  }
+  
+  return $node;
+}
+
+
+function static_node_to_html($node) {
+  //importexport api should be our friend here.
+  // but I really don't understand it yet
+
+  if (! extension_loaded( "dom" )) {
+    drupal_set_message("Static serialization requires PHP DOM support (a PHP5 extension)", 'error');
+    return;
+  }
+  
+  // Construct HTML page by XML
+  // Pretty tedious, but foolproof if I do it right.
+  // No support for non-XML compliant versions of PHP, sorry.
+  $doc = new domdocument('1.0', 'UTF-8');
+  $doc->formatoutput = TRUE;
+    
+  $html = $doc->createelementns('http://www.w3.org/1999/xhtml', 'html');
+  $doc->appendchild( $html );
+
+  $head = $doc->createelement('head');
+  $html->appendchild( $head );
+  
+  // Three-step process to ensure text in titles is escaped (no & problems)
+  // createtextnode is safer than  # $doc->createelement('title', $node->title)
+  $title = $doc->createelement('title');
+  $title->appendchild($doc->createtextnode($node->title));
+  $head->appendchild($title);
+
+  $body = $doc->createelement('body');
+  $html->appendchild( $body );
+
+  $body->appendchild( $doc->createtextnode("\n") ); // Just layout
+
+  $heading = $doc->createelement('h1');
+  $heading->appendchild($doc->createtextnode($node->title));
+  $body->appendchild($heading);
+  $body->appendchild( $doc->createtextnode("\n") ); // Just layout
+
+  // The import content is constructed in its own XML fragment
+  // before being inserted in the page. This is a temporary document variable.
+  $content_doc =  new domdocument();
+
+  // This runs the filters over the content, preparing the body for display.
+  // Also, inevitably, adding some theme cruft for CCK bits and things.
+  node_view($node);
+
+  #dpm($node);
+  // When serializing, we can either dump a screen-view, or try to 
+  // annotate it our way.
+  if (variable_get('static_save_semantically', TRUE)) {
+    // Avoid the preformatting as much as possible, 
+    // Try to place the respective data bits in their own divs, instead of blobbing it altogether.
+    // CCK now allows us to do that with the $node->content array.
+    // We will get less formatting and no labels, but more semantics
+
+    // Look up what we know about the Construction of this node, 
+    // so as to decide how to save/encode its bits.
+    $content_def=content_types($node->type);
+    # dpm($content_def);
+    
+    // Iterate the 'content' array looking for fields to add/render
+    foreach (element_children($node->content) as $element_type) {
+      $content_element = $node->content[$element_type];
+      import_html_debug("Need to add $element_type to the static HTML dump");
+
+      if (($node_values = $node->$element_type) && is_array($node_values)) {
+
+        // This appears to be shaped like a CCK field
+
+        // TODO May use the text_processing value here
+        # $field_def = $content_def['fields'][$element_type];
+        // currently don't care however
+
+        foreach ($node_values as $value_ix => $element_data) {
+          // Add a div with this data
+          $field = $doc->createelement('div');
+
+          // As we are being clean and semantic, 
+          // I can discard the redundant 'field_' label from the classname.
+          // The import process will recognise it with or without.
+          if (strpos($element_type, 'field_') === 0) {
+            $field_label = substr($element_type, 6);
+          } 
+          else {
+            $field_label = $element_type;
+          }
+
+          $field->setattribute('class', $field_label);
+          
+          // Should I insert Raw or cooked value? See the field_def
+          $field->appendchild( $doc->createtextnode($element_data['view']) );
+          $body->appendchild($field);
+        } 
+      }
+      else {
+        // Not an array, may be older-style note annotations - body, image_attach or others
+        // Can't be clever, just tag and inline the cooked text.
+        // ... But tidy it first to be really paranoid
+        $tidied =  xml_tidy_fragment( '<div id="'. $element_type .'">'. $content_element['#value'] .'</div>');    
+        $content_doc->loadxml($tidied);
+        // Um, it seems firstchild not work for domdocuments in php5. Iterate to find the first node instead
+        foreach ($content_doc->childNodes as $childnode) {
+          $local_node = $doc->importnode($childnode, TRUE);
+          $body->appendchild($local_node);
+        }
+        // Done carefully importing the tidy content string
+      }
+      $body->appendchild( $doc->createtextnode("\n") ); // Just formatting
+    }
+  }
+  else {
+    // Save the Original, raw-content text version. Pretty much as rendered to the screen.
+    // This may not always be parseable next time!
+    
+    // Need to ensure that the text coming from Drupal is valid before serializing it.
+    $tidied =  xml_tidy_fragment( '<div id="content">'. $node->body .'</div>');    
+    $content_doc->loadxml($tidied);
+  
+    // Um, it seems firstchild not work for domdocuments in php5. Iterate to find the first node instead
+    foreach ($content_doc->childNodes as $childnode) {
+      $local_node = $doc->importnode($childnode, TRUE);
+      $body->appendchild($local_node);
+    }
+  }
+    
+  // We now have an extremely valid, vanilla HTML page.
+  // Add more info to its header!
+
+  // Use the Dublin Core Schema if I can
+  $meta = $doc->createelement('link');
+  $meta->setattribute('rel', 'schema.DC');
+  $meta->setattribute('href', 'http://purl.org/dc/elements/1.1/');
+  $head->appendchild($meta);
+
+  $field_defs = static_def();
+  foreach ($field_defs as $key => $def) {
+    if ($node->$key) {
+      
+      if ($def['#callback']) {
+        // If the data element has defined a special way to insert itself into the HTML
+        // version, allow it to do so. Call the function with a set of arguments.
+        // Doc is passed by ref, and may be manipulated by the callback.
+        $element = $def['#callback']($node, $doc); 
+
+        // No return means it inserted itself by reference. cool. Stop now.
+        // Returning a string means we are expectected to now add that string value.
+        // do that next.
+        if (! $element) {
+          next; // Skip the default addition step
+        }
+        else {
+          // Set the value as cooked, The next step will insert this value as a meta
+          $node->$key = $element;
+        }
+      }
+
+      if ($def['#format']) {
+        // Cook this value before saving it using the defined processing callback.
+        // The keyed element may even be an array or object, but the formatter callback must know how to deal with it.
+        // Use this to convert an ID reference to a real string, etc.
+        $node->$key = $def['#format']($node->$key); 
+      }
+
+      if ($def['#identifier']) {
+        $meta = $doc->createelement('meta');
+        $meta->setattribute('name', $def['#identifier']);
+        $meta->setattribute('content', $node->$key);
+        $head->appendchild($meta);
+      }
+
+    } 
+  }
+
+  $meta = $doc->createelement('meta');
+  $meta->setattribute('name', 'Generator');
+  $meta->setattribute('content', 'Drupal:static-archive');
+  $head->appendchild($meta);
+
+  $result = $doc->savexml();
+  // note, this is  pure XHTML, with the singleton <meta /> tags, not html with the open ones. 
+  // this is due to conflict with Drupal newline filter
+  // $result = xml_tidy_brs($result);
+
+  return $result;
+}
+
+/**
+ * Implementation of hook_def() .
+ * Try and do what importapi is doing.
+ * This is a mapping definition to translate node properties to property labels.
+ * '#alt_key_for'  is the drupal object key, (the definition key goes missing
+ * when using get_element_children) .
+ * Defs that have an 'identifier' get treated as meta-info
+ * Defs that are 'key' get copied 1:1
+ * 
+ * Defs that have #format set, call the named callback and save the resulting
+ * sring as a meta in the document head.
+ * 
+ * Defs that have #serialize set, call the named callback and are expected to
+ * append the appropriate value to the document object themselves.
+ * 
+ * Setting both a #serialize callback and a #format callback is not a good idea.
+ * They differ mainly in that #serialize takes both $node and $doc arguments and
+ * manipulates them, while #format takes a string and returns a nicer string.
+ * 
+ */
+function static_def() {
+  $def = array(
+    '#type' => 'entity',
+    '#title' => t('Drupal node'),
+  );
+
+  $def['body'] = array(
+    '#title' => t('Node Body'),
+    '#key' => TRUE
+  );
+  $def['title'] = array(
+    '#title' => t('Node Title'),
+    '#key' => TRUE
+  );
+  $def['nid'] = array(
+    '#type' => 'int',
+    '#title' => t('Node ID'),
+    '#identifier' => 'drupal:nid',
+  );
+  $def['path'] = array(
+    '#title' => t('Path'),
+    '#identifier' => 'drupal:path',
+  );
+  $def['type'] = array(
+    '#title' => t('Drupal Node Type'),
+    '#identifier' => 'drupal:type',
+  );
+
+  $def['name'] = array(
+    '#type' => 'string',
+    '#title' => t('Creator'),
+    '#identifier' => 'DC:creator',
+  );
+  $def['teaser'] = array(
+    '#type' => 'string',
+    '#title' => t('Description'),
+    '#identifier' => 'DC:description',
+    '#format' => 'static_format_description'
+  );
+
+  $def['created'] = array(
+    '#type' => 'int',
+    '#title' => t('Date Created'),
+    '#identifier' => 'DC:created',
+    '#format' => 'static_format_timestamp_as_date',
+  );
+  $def['changed'] = array(
+    '#type' => 'int',
+    '#title' => t('Date Modified'),
+    '#identifier' => 'DC:modified',
+    '#format' => 'static_format_timestamp_as_date',
+  );
+
+  $def['taxonomy'] = array(
+    '#identifier' => 'DC:subject',
+    '#format' => 'static_format_taxonomy_as_keywords',
+  );
+
+  // Additional defs added by various modules
+  // This list will have to be updated over time.
+  
+  // image_attach.module
+  $def['iid'] = array(
+    '#title' => t('Attached Image ID'),
+    '#type' => 'int',
+    '#identifier' => 'drupal:iid',
+  );
+
+
+  return $def;
+}
+
+/**
+ * Short callback function to serialize the node description (teaser) into
+ * something worth saving.
+ * 
+ * A static_html serialization callback.
+ * @param The Source Node Object
+ * @param The XHTML Document this value is to be inserted into. Modify by
+ * reference
+ * 
+ * @return If set, add the value as a META in the header of the document. If no
+ * return, assume the $doc has been updated as required, eg by adding an element
+ * to the body.
+ */
+function static_serialize_description($node=NULL, &$doc=NULL) {
+  return strip_tags($node->teaser);
+}
+function static_format_description($description) {
+  return strip_tags($description);
+}
+function static_format_timestamp_as_date($timestamp) {
+  return date('Y-m-d H:i:s', $timestamp);
+}
+
+function static_format_taxonomy_as_keywords($taxonomy_array) {
+  if (! is_array($taxonomy_array)) return;
+  
+  $keywords = array();
+  // Although the node object on load has a more structured shape,
+  // on SAVE, when we get to see it, it may be just the plain
+  // $node->taxonomy[tags] = array('1'=>'Drupal', '33'=>'Development');
+  //
+  // I need to absorb either method taxonomy has saved it.
+  //
+  if ($tagnames = $taxonomy_array['tags']) {
+    // Just a tid=>label array
+    foreach ((array)$tagnames as $tid => $term) {
+      $keywords[] = $term;
+    }
+  }
+  else { 
+    // Nice full term definitions
+    foreach ((array)$taxonomy_array as $term) {
+      $keywords[] = $term->name;
+    }
+  }
+  return join(', ', $keywords); 
+}
+
+/**
+ * Implementation of hook_install() .
+ */
+function static_install() {
+  // ensure this always runs AFTER core stuff has done its nodeapi;
+  // path_nodeapi('load') for example needs to have run before we call load
+  db_query("UPDATE {system} SET weight = 3 WHERE name = 'static'");
+  drupal_set_message(t("Static HTML has been enabled. This module will keep a plaintext, updated version of your nodes on the file system, once you have configured the storage policies in <a href='!static_settings_link'>the static settings page</a>>", array('!static_settings_link' => '/admin/settings/static') ));
+  
+}

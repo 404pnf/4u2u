@@ -1,0 +1,27 @@
+
+/*
+  DIV.tree-branch
+    LABEL
+      checkbox.tree-branch-label
+    DIV.tree-content
+      LABEL
+        checkbox.tree-leaf.image-item
+      LABEL
+        checkbox.tree-leaf.page-item 
+*/
+     
+.tree-branch{border:1px solid cyan; margin:2px; padding-top:0.2em; padding-bottom:0.2em; display:block;}
+.tree-content{padding-left:1em; display:block;}
+.tree-branch-label{ font-weight:bold}
+.tree-branch-toggle{ margin:0px; vertical-align:text-bottom;}
+
+.tree-branch label{ display:block;}
+
+.tree-root-label{ font-weight:bold;}
+
+.fileSelectedLabel{ display:block; background:pink; font-weight:bold}
+
+label.html-item{color:#000099;}
+label.image-item{color:#009900;}
+label.resource-item{color:#990000;}
+label.unknown-item{color:#999999;}

@@ -58,7 +58,6 @@
 
 		<?php $block = module_invoke('block', 'block', 'view', 81); ?>	
 		<?php print $block['subject'].$block['content']; ?>
-		
     </div>
   <?php endif; ?>
   

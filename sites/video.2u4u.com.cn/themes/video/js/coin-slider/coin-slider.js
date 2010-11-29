@@ -286,7 +286,7 @@
 			$("#cs-buttons-"+el.id).css({
 				//'left'			: '50%',
 				'margin-left' 	: -images[el.id].length*15/2-5,
-				//'position'		: 'relative'
+				'position'		: 'relative'
 				
 			});
 			

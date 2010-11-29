@@ -7,15 +7,9 @@
     <?php print $head; ?>
 	<link href="http://2u4u.com.cn/sites/2u4u.com.cn/themes/stable/css/common.css" media="all" rel="stylesheet" type="text/css">
     <?php print $styles; ?>
-	<?php print $scripts; ?>
     <!--[if lte IE 6]><style type="text/css" media="all">@import "<?php print $base_path . path_to_theme() ?>/css/ie6.css";</style><![endif]-->
     <!--[if IE 7]><style type="text/css" media="all">@import "<?php print $base_path . path_to_theme() ?>/css/ie7.css";</style><![endif]-->
-<?php $node_url=drupal_get_path_alias($_GET['q']);?>
-<?php $pos=strpos($node_url,'disney');?>
-<?php if($pos!== false ): ?>
-<script type="text/javascript" src="http://cdn1.2u4u.com.cn/disney/js/submit.js"></script>
-<?php endif;?>
-
+	<?php print $scripts; ?>
 
   </head>
 

@@ -2,7 +2,7 @@
 	Coin Slider jQuery plugin CSS styles
 	http://workshop.rs/projects/coin-slider
 */
-
+#coin-slider{overflow: hidden;}
 .coin-slider { overflow: hidden; zoom: 1; position: relative; clear:both;float:none;}
 .coin-slider a{ text-decoration: none; outline: none; border: none; }
 /* #coin-slider>a{display:none;} */

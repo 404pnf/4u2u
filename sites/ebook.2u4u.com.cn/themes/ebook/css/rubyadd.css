@@ -69,7 +69,10 @@ margin:30px 0px 20px 56px;
 
 /*view-duhougan-fenlie 分类显示 应该为fenlei*/
 .page-fenlei .view-duhougan-fenlie .view-content li,
-.section-yuedu .view-yuedu-taxonomy-term .view-content li{
+.section-yuedu .view-yuedu-taxonomy-term .view-content li,
+.page-taxonomy .view-yuedu-taxonomy-term .view-content li,
+.page-erelate .view-yuedu-taxonomy-term .view-content li,
+.page-mrelate .view-yuedu-taxonomy-term .view-content li{
 /* 	overflow:hidden;  这个也能去掉list的前面的样式 via ruby 令人费解啊*/ 
 	list-style:none;
 	height:170px;
@@ -82,14 +85,20 @@ margin:30px 0px 20px 56px;
 padding-left:10px;
 } 
 .page-fenlei .view-duhougan-fenlie .views-field-field-yuedu-cover-fid,
-.section-yuedu .view-yuedu-taxonomy-term .views-field-field-yuedu-cover-fid{
+.section-yuedu .view-yuedu-taxonomy-term .views-field-field-yuedu-cover-fid,
+.page-taxonomy .view-yuedu-taxonomy-term .views-field-field-yuedu-cover-fid,
+.page-erelate .view-yuedu-taxonomy-term .views-field-field-yuedu-cover-fid,
+.page-mrelate .view-yuedu-taxonomy-term .views-field-field-yuedu-cover-fid{
 	float:left;
 	width:120px;
 	display:inline;
 }
 /* whx 修改，增加text-indent，使读后感分类显示页面简介部分段落首行缩进2字符 */
 .page-fenlei .view-duhougan-fenlie .views-field-field-yuedu-summary-value,
-.section-yuedu .view-yuedu-taxonomy-term .views-field-field-yuedu-summary-value{
+.section-yuedu .view-yuedu-taxonomy-term .views-field-field-yuedu-summary-value,
+.page-taxonomy .view-yuedu-taxonomy-term .views-field-field-yuedu-summary-value,
+.page-erelate .view-yuedu-taxonomy-term .views-field-field-yuedu-summary-value,
+.page-mrelate .view-yuedu-taxonomy-term .views-field-field-yuedu-summary-value{
 	line-height:1.8;
 	text-indent:26px;
 }

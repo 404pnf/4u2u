@@ -1,0 +1,113 @@
+// $Id: CHANGELOG.txt,v 1.13.2.9.2.18 2010/11/18 15:21:58 longwave Exp $
+
+uc_views 6.x-3.x-dev
+====================
+ o Bugfixes
+   - Added patch from ktf fixing 'uc_order_load_invoice is deprecated'
+   - Remove LICENSE.txt from CVS
+
+
+uc_views 6.x-3.0
+================
+
+  THIS IS NEW MAJOR RELEASE PLEASE READ UPGRADE INSTUCTIONS BEFORE UPGRADING FROM THE 2.x VERSION
+
+ o Upgrade instructions
+   - Some popular views have been moved to the new submodule uc_views_marketing, in order to use these views again you must install this module (/admin/build/modules)
+ o Bugfixes
+   - Added dependency to uc_orders in info file
+   - Corrected bug related to how uc_orders are joined with nodes.
+   - Applied patch from jrust fixing order status display
+   - Disabled all views by default
+   - Added admin names for blocks
+   - Applied patch from intuited making uc_order_products a base table, which solves several issues with joins to that table
+   - Corrected filter to use views_handler_filter_float rather than views_handler_filter_numeric for decimal db fields
+   - Added temporary patch to solve api change to uc_product_handler_field_price
+   - Corrected join between product adjustments and stock
+   - Added dependency to uc_stock for uc_views_attributes
+   - Fixed missing initialisation of array $line_items
+   - Applied patch from Nick_vh to enable translation of buttons for bulk operations
+ o Features
+   - Added a conditional buy-it-now button for uc_products, similar to the buy-it-now button from uc_product, except the button can be hidden unless certain conditions are met
+   - Added a conditional add to cart form for uc_products, similar to the add to cart form from uc_product, except the form can be hidden unless certain conditions are met
+   - Added relationship to user roles for uc_orders to allow filtering
+   - Applied pathch from 'thill_' that adds the following
+     * Added support for Views Bulk Operations module through a new sub-module 'uc_views_bulk_operations'
+     * New view: Order management view for bulk operations on uc_orders
+   - Applied pathch from 'justindodge' (aka 'jd') that adds the following
+     * Added - uc_order_products : Product Title field
+     * Support for date_api views filter handler on order created and modified fields
+     * Views field for order action links
+     * Added field handler for order status to convert key to human readable title (one was already pressent - but this version is way sleeker
+     * Added cursory support for product attributes in the uc_order_products table
+     * Joined uc_order table with term_node so you can filter ordered products by their taxonomy terms
+   - Applied patch from 'intuited' to add a relationship between uc_order_products and node
+   - Applied patch from 'ultimike' to allow filtering for products not purchased by a customer
+   - Applied patch from 'openbook' to add schema definition for uc_order_comments
+   - Applied patch from 'makara' to add support for new uc_order field product_count.
+   - Applied patch from 'dandaman' that adds support for shipping and tax line items.
+   - Added new submodule to add support for uc_attributes based on the great work of hanoii
+   - Applied patch by hanoii to make list position available for uc_products 
+   - Applied patch by hanoii to make nice lists of invoices available 
+   - Added new submodule to add support for uc_addresses
+   - Added field handler to display product attributes for order products
+   - Added patch from 'psy' to display product weight for order products
+   - Added patch from 'psy' to add filter for order payment methods
+   - Added patch from 'psy' to Provide Bulk Operations support for 'Delete Order'
+   - Applied patch by hanoii to add better support for every order line items and better price handler
+   - Updated order product attribute filter to match new datamodel from ubercart 
+ o Views included
+   - Order management view for bulk operations on uc_orders
+ o Clean up
+   - New submodule uc_views_marketing, some of the popular marketing related default views have been moved to this sub module to remove the views_slideshow dependency from the core module.
+   - The database views are no longer needed by the core module and have been moved to the uc_views_marketing submodule 
+   - New submodule uc_views_bulk_operations, with a new view for order management, introduced to avoid dependecy to views_bulk_operations from the core module.
+   - Move modules to own group Ubercart - views (previously it was placed in Ubercart - extra). This seems more correct after introducing sub modules 
+
+
+uc_views 6.x-2.0
+================
+
+IMPORTANT:
+This release breaks backwards compatibility with uc_views 1.x. If you have any views containing Ubercart order fields
+they might not work after installing this version! The reason for this is that orders are now a base table and no longer joins
+with nodes through order products.
+
+ o Bugfixes
+ o Features
+   - Applied pathch from sammys that adds the following
+       * Adds orders to views as a base table. This means you can base your views on orders instead of on products.
+       * Allows orders to join up to the user that ordered.
+       * Displays all order fields from the uc_orders table.
+       * Can optionally link the order ID to the order admin screen.
+       * Can have order id as an argument.
+       * Can show all country and zone fields (e.g two letter country codes).
+       * Adds primary_email field and render it as a mailto: link
+       * Uses field descriptions from the schema subsystem to reduce developer efforts in future.
+ o Views included
+   - Applied pathch from sammys that adds a new view displaying all orders
+
+
+uc_views 6.x-1.1
+================
+ o Bugfixes
+   - Fixed bug concerning using views_handler_field_node in stead of views_handler_field for various fields.
+   - Fixed bug in install and unistall functions regarding missing curly brackets for table and view names
+ o Features
+   - Added handler for country code fields
+   - Added filter handler for countries
+   - Added handler for zone code fields
+   - Added filter handler for zones
+   - Extended the number of fields from the uc_orders table
+   - Added tabledefinition for uc_cart_product
+   - Added field handler for linking carts to users
+
+uc_views 6.x-0.1
+================
+ o First 0.1 beta release
+ o Views included
+   - new_products: Block view displaying the most recently added products
+   - popular_products: Block view displaying the products which has sold the highest quantity
+   - product_pairs_block: Block view providing 'Users who bought the selected product also bought these' list
+   - user_products: Block view displaying a list of the products which the user most often end up buying.
+ o Applied patch from river_t to include uc_orders

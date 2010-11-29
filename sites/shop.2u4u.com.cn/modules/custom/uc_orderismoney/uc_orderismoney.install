@@ -1,0 +1,55 @@
+<?php
+// $Id: uc_product.install,v 1.12.2.11 2009/09/23 15:45:56 islandusurper Exp $
+
+/**
+ * @file
+ * Database installation, uninstallation, and updates for the product module.
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function uc_orderismoney_schema() {
+	$schema = array();
+ 	$schema['uc_orderismoney'] = array(
+		'description' => t('Order money type information .'),
+		'fields' => array(
+		  'order_id' => array(
+		    'description' => t('Order id of the order.'),
+		    'type' => 'int',
+		    'unsigned' => TRUE,
+		    'not null' => TRUE,
+		    'default' => 0,
+		  ),
+		  'moneyable' => array(
+		    'description' => t('Boolean flag signifying that the order can be purchased by money or point.'),
+		    'type' => 'int',
+		    'size' => 'tiny',
+		    'unsigned' => TRUE,
+		    'not null' => TRUE,
+		    'default' => 0,
+		  ),
+		),
+		'indexes' => array(
+		  'order_id' => array('order_id'),
+		),
+		'primary key' => array('order_id'),
+	);
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function uc_orderismoney_install() {
+  drupal_install_schema('uc_orderismoney');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function uc_orderismoney_uninstall() {
+  drupal_uninstall_schema('uc_orderismoney');
+  db_query("DELETE FROM {variable} WHERE name LIKE 'uc_orderismoney_%%'");
+}

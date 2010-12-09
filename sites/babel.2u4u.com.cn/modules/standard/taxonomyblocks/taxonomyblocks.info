@@ -5,9 +5,9 @@ dependencies[] = jquerymenu
 dependencies[] = taxonomy
 package = Advanced Navigation Pack
 core = 6.x
-; Information added by drupal.org packaging script on 2010-05-12
-version = "6.x-3.3"
+; Information added by drupal.org packaging script on 2010-09-20
+version = "6.x-3.5"
 core = "6.x"
 project = "taxonomyblocks"
-datestamp = "1273679108"
+datestamp = "1284997861"
 

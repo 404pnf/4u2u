@@ -1,4 +1,21 @@
 <div id="block-<?php print $block->module .'-'. $block->delta ?>" class="<?php print $block_classes . ' ' . $block_zebra; ?>">
+  <script type="text/javascript" src="/<?php print path_to_theme(); ?>/js/json2.js"></script>
+  <script type="text/javascript" src="/<?php print path_to_theme(); ?>/js/jquery.js"></script>
+		
+		<script type="text/javascript">
+			$(function(){	
+				//试卷题型
+				alert('123');
+				$.getJSON('http://test.2u4u.com.cn/html/egs/index.php?op=item_type',function(data){	
+					alert('abc');	
+					var ques_type='...';
+					alert(ques_type);
+					$.each(data,function(itmeindex,item){
+						ques_type += itmeindex +'>'+ item;
+					});
+				});
+			});
+		</script>
   <div class="block-inner">
 
     <?php if (!empty($block->subject)): ?>

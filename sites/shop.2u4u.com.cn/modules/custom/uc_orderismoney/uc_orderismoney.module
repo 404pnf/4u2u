@@ -8,17 +8,31 @@ function uc_orderismoney_order($op, &$order, $arg2) {
 	switch ($op) {
 		case 'load' : 
 			$moneyable_obj = db_fetch_object(db_query("SELECT * FROM {uc_orderismoney}  WHERE order_id = %d",$order->order_id));
+			//drupal_set_message('123:');
+			//drupal_set_message('<pre>'.print_r($order).'</pre>');
 			if(empty($moneyable_obj)){
-				$moneyable = uc_orderismoney_get_product_moneyable($order->order_id);
+				$first_product = $order->products[0];
+				$first_node = node_load($first_product->nid);
+				$moneyable = $first_node->moneyable;
+				//$moneyable = uc_orderismoney_get_product_moneyable($order->order_id);
 				db_query("INSERT INTO {uc_orderismoney} (order_id, moneyable) VALUES (%d, %d)",
 					$order->order_id, $moneyable
 				);
+				//drupal_set_message('1234:');
+			}else{
+				//drupal_set_message('12345:');
+				$moneyable = $moneyable_obj->moneyable;
 			}
-			$order->moneyable = $moneyable_obj->moneyable;
+			//drupal_set_message('123456:'.$moneyable);
+			$order->moneyable = $moneyable;
 			//$order->delivery_evening_phone = (string) $order->data['delivery_evening_phone'];
 			break;
-		case 'new' :
-			$moneyable = uc_orderismoney_get_product_moneyable($order->order_id);
+		case 'save' :
+			//drupal_set_message('<pre>'.print_r($order).'</pre>');
+			$first_product = $order->products[0];
+			$first_node = node_load($first_product->nid);
+			$moneyable = $first_node->moneyable;
+			//$moneyable = uc_orderismoney_get_product_moneyable($order->order_id);
 			db_query("INSERT INTO {uc_orderismoney} (order_id, moneyable) VALUES (%d, %d)",
 				$order->order_id, $moneyable
 			);
@@ -35,7 +49,7 @@ function uc_orderismoney_get_product_moneyable($order_id){
 		return NULL;
 	}
 	*/
-	$first_nid = db_result(db_query("SELECT nid FROM {uc_order_products} c WHERE c.order_id = '%s'", $order_id));
+	$first_nid = db_result(db_query("SELECT nid FROM {uc_order_products} c WHERE c.order_id = %d" , $order_id));
 	if(empty($first_nid)){
 		return NULL;
 	}
@@ -69,7 +83,8 @@ function uc_orderismoney_menu() {
   );
 
   return $items;
-}*/
+}
+*/
 function uc_orderismoney_form(){
 	$form['test'] = array(
 		//'#type' =>'submit',

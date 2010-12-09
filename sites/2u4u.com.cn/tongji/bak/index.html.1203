@@ -1,0 +1,40 @@
+<!doctype html><html><head><meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<div>
+<h2>图书充值统计信息</h2>
+
+<ul>
+<li><a href="book_info_list-new.php?info=recent">最近一个月的图书充值排行榜</a></li>
+<li><a href="book_info_last_7days-new.php">过去7天充值记录列表</a></li>
+<li><a href="book_num_info_last_7days-new.php">过去7天充值记录排行榜－按图书名</a></li>
+<li><a href="book_info-new.php">迄今为止所有充值记录列表</a></li>
+<li><a href="book_num_info-new.php">迄今为止所有充值记录排行榜－按图书名</a></li>
+<li><a href="all_points.php">图书充值的信息统计</a></li>
+</ul>
+
+
+<h2>大礼包统计信息</h2>
+<ul>
+<li><a href="user_orders.php">兑换过大礼包用户的信息</a></li>
+<li><a href="dalibao_user_topup-new.php">大礼包已兑换用户充值使用的图书统计</a></li>
+</ul>
+
+<h2>积分消费情况统计</h2>
+ <ul>
+ <li><a href="library_stat.php">电子图书馆积分消费统计</a></li>
+ <li><a href="duomeiti_stat.php">多媒体课堂积分消费统计</a></li>
+ <li><a href="riyu_points_new.php">日语mp3的下载信息统计</a></li>
+<li><a href="dalibao_points_new.php">大礼包兑换的信息统计</a></li>
+
+</ul>
+
+<h2>注册用户统计</h2>
+<ul>
+	<li><a href='users_stat.php'>网站注册用户数统计</a></li>	
+        <li><a href='user_stat_per_month.php'>网站每月新增注册用户数统计</a></li>
+</ul>
+
+<h2>用户积分来源统计</h2>
+<ul>
+        <li><a href='userpoints_resource.php'>网站用户积分来源统计</a></li>
+</ul>
+</div>

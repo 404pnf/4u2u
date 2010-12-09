@@ -32,17 +32,22 @@ function color_theme() {
 function color_form_alter(&$form, $form_state, $form_id) {
   // Insert the color changer into the theme settings page.
   if ($form_id == 'system_theme_settings' && color_get_info(arg(4)) && function_exists('gd_info')) {
-    // core patch #572516(case 3)
-    // same old code, but without taking care of download method
-    $form['color'] = array(
-      '#type' => 'fieldset',
-      '#title' => t('Color scheme'),
-      '#weight' => -1,
-      '#attributes' => array('id' => 'color_scheme_form'),
-      '#theme' => 'color_scheme_form',
-    );
-    $form['color'] += color_scheme_form($form_state, arg(4));
-    $form['#submit'][] = 'color_scheme_form_submit';
+    if (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) != FILE_DOWNLOADS_PUBLIC) {
+      // Disables the color changer when the private download method is used.
+      // TODO: This should be solved in a different way. See issue #181003.
+      drupal_set_message(t('The color picker only works if the <a href="@url">download method</a> is set to public.', array('@url' => url('admin/settings/file-system'))), 'warning');
+    }
+    else {
+      $form['color'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Color scheme'),
+        '#weight' => -1,
+        '#attributes' => array('id' => 'color_scheme_form'),
+        '#theme' => 'color_scheme_form',
+      );
+      $form['color'] += color_scheme_form($form_state, arg(4));
+      $form['#submit'][] = 'color_scheme_form_submit';
+    }
   }
 
   // Use the generated screenshot in the theme list.
@@ -289,7 +294,7 @@ function color_scheme_form_submit($form, &$form_state) {
 
   // Prepare target locations for generated files.
   $id = $theme .'-'. substr(md5(serialize($palette) . microtime()), 0, 8);
-  $paths['color'] = file_directory_path(TRUE) .'/color'; // core patch #572516(case 3)
+  $paths['color'] = file_directory_path() .'/color';
   $paths['target'] = $paths['color'] .'/'. $id;
   foreach ($paths as $path) {
     file_check_directory($path, FILE_CREATE_DIRECTORY);
@@ -307,7 +312,7 @@ function color_scheme_form_submit($form, &$form_state) {
   foreach ($info['copy'] as $file) {
     $base = basename($file);
     $source = $paths['source'] . $file;
-    file_copy($source, $paths['target'] . $base, FILE_EXISTS_REPLACE, TRUE); // core patch #572516(case 3)
+    file_copy($source, $paths['target'] . $base);
     $paths['map'][$file] = $base;
     $paths['files'][] = $paths['target'] . $base;
   }
@@ -437,7 +442,7 @@ function _color_rewrite_stylesheet($theme, &$info, &$paths, $palette, $style) {
 function _color_save_stylesheet($file, $style, &$paths) {
 
   // Write new stylesheet.
-  file_save_data($style, $file, FILE_EXISTS_REPLACE, TRUE); // core patch #572516(case 3)
+  file_save_data($style, $file, FILE_EXISTS_REPLACE);
   $paths['files'][] = $file;
 
   // Set standard file permissions for webserver-generated files.

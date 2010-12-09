@@ -1319,11 +1319,11 @@ function system_performance_settings() {
   $form['bandwidth_optimizations'] = array(
     '#type' => 'fieldset',
     '#title' => t('Bandwidth optimizations'),
-    '#description' => t('<p>Drupal can automatically optimize external resources like CSS and JavaScript, which can reduce both the size and number of requests made to your website. CSS files can be aggregated and compressed into a single file, while JavaScript files are aggregated (but not compressed). These optional optimizations may reduce server load, bandwidth requirements, and page loading times.</p><p>These options are disabled if you have not set up your files directory, or if your download method is set to private and directory %public_misc does not exists or isn\'t writable.</p>', array('%public_misc' => variable_get('file_directory_path:public_misc', 'misc/dynamic'))) // core patch #572516(case 1)
+    '#description' => t('<p>Drupal can automatically optimize external resources like CSS and JavaScript, which can reduce both the size and number of requests made to your website. CSS files can be aggregated and compressed into a single file, while JavaScript files are aggregated (but not compressed). These optional optimizations may reduce server load, bandwidth requirements, and page loading times.</p><p>These options are disabled if you have not set up your files directory, or if your download method is set to private.</p>')
   );
 
-  $directory = file_directory_path(0, TRUE); // core patch #572516(case 1)
-  $is_writable = is_dir($directory) && is_writable($directory); // core patch #572516(case 1)
+  $directory = file_directory_path();
+  $is_writable = is_dir($directory) && is_writable($directory) && (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC) == FILE_DOWNLOADS_PUBLIC);
   $form['bandwidth_optimizations']['preprocess_css'] = array(
     '#type' => 'radios',
     '#title' => t('Optimize CSS files'),

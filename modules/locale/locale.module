@@ -497,7 +497,7 @@ function locale_system_update($components) {
 function locale_update_js_files() {
   global $language;
 
-  $dir = file_create_path(variable_get('locale_js_directory', 'languages'), TRUE); // core patch #572516(case 2)
+  $dir = file_create_path(variable_get('locale_js_directory', 'languages'));
   $parsed = variable_get('javascript_parsed', array());
 
   // The first three parameters are NULL in order to get an array with all

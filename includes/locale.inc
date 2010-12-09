@@ -1,5 +1,5 @@
 <?php
-// $Id: locale.inc,v 1.174.2.13 2010/05/28 13:07:27 goba Exp $
+// $Id: locale.inc,v 1.174.2.14 2010/08/11 19:42:26 goba Exp $
 
 /**
  * @file
@@ -1145,7 +1145,7 @@ function _locale_import_read_po($op, $file, $mode = NULL, $lang = NULL, $group =
       $context = "MSGID_PLURAL";
     }
     elseif (!strncmp("msgid", $line, 5)) {
-      if ($context == "MSGSTR") {   // End current entry, start a new one
+      if (($context == "MSGSTR") || ($context == "MSGSTR_ARR")) { // End current entry, start a new one
         _locale_import_one_string($op, $current, $mode, $lang, $file, $group);
         $current = array();
       }
@@ -1290,7 +1290,7 @@ function _locale_import_one_string($op, $value = NULL, $mode = NULL, $lang = NUL
         $languages = language_list();
         if (($mode != LOCALE_IMPORT_KEEP) || empty($languages[$lang]->plurals)) {
           // Since we only need to parse the header if we ought to update the
-          // plural formula, only run this if we don't need to keep existing 
+          // plural formula, only run this if we don't need to keep existing
           // data untouched or if we don't have an existing plural formula.
           $header = _locale_import_parse_header($value['msgstr']);
 
@@ -2207,7 +2207,7 @@ function _locale_rebuild_js($langcode = NULL) {
 
   // Construct the filepath where JS translation files are stored.
   // There is (on purpose) no front end to edit that variable.
-  $dir = file_create_path(variable_get('locale_js_directory', 'languages'), TRUE); // core patch #572516(case 2)
+  $dir = file_create_path(variable_get('locale_js_directory', 'languages'));
 
   // Delete old file, if we have no translations anymore, or a different file to be saved.
   $changed_hash = $language->javascript != $data_hash;
@@ -2225,7 +2225,7 @@ function _locale_rebuild_js($langcode = NULL) {
     file_check_directory($dir, TRUE);
 
     // Save the file.
-    if (file_save_data($data, $dest, FILE_EXISTS_REPLACE, TRUE)) { // core patch #572516(case 2)
+    if (file_save_data($data, $dest)) {
       $language->javascript = $data_hash;
       // If we deleted a previous version of the file and we replace it with a
       // new one we have an update.

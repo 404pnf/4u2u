@@ -218,9 +218,9 @@ function template_preprocess_maintenance_page(&$variables) {
 
   // Get all region content set with drupal_set_content().
   foreach (array_keys($regions) as $region) {
-   //  Assign region to a region variable.
+    // Assign region to a region variable.
     $region_content = drupal_get_content($region);
-   isset($variables[$region]) ? $variables[$region] .= $region_content : $variables[$region] = $region_content;
+    isset($variables[$region]) ? $variables[$region] .= $region_content : $variables[$region] = $region_content;
   }
 
   // Setup layout variable.

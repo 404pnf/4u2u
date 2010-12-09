@@ -19,8 +19,6 @@
 
 User-agent: *
 Crawl-delay: 10
-
-Disallow: /boost_stats.php
 # Directories
 Disallow: /includes/
 Disallow: /misc/

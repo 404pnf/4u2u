@@ -1,5 +1,5 @@
 <?php
-// $Id: file.inc,v 1.121.2.12 2010/05/11 09:49:58 goba Exp $
+// $Id: file.inc,v 1.121.2.13 2010/08/11 17:40:55 goba Exp $
 
 /**
  * @file
@@ -61,8 +61,8 @@ function file_create_url($path) {
  *   appended if necessary, or FALSE if the path is invalid (i.e. outside the
  *   configured 'files' or temp directories).
  */
-function file_create_path($dest = 0, $public_misc = FALSE) { // core patch #572516(base)
-  $file_path = file_directory_path($public_misc); // core patch #572516(base)
+function file_create_path($dest = 0) {
+  $file_path = file_directory_path();
   if (!$dest) {
     return $file_path;
   }
@@ -123,7 +123,7 @@ function file_check_directory(&$directory, $mode = 0, $form_item = NULL) {
       return FALSE;
     }
   }
-  
+
   if ((file_directory_path() == $directory || file_directory_temp() == $directory) && !is_file("$directory/.htaccess")) {
     $htaccess_lines = "SetHandler Drupal_Security_Do_Not_Remove_See_SA_2006_006\nOptions None\nOptions +FollowSymLinks";
     if (($fp = fopen("$directory/.htaccess", 'w')) && fputs($fp, $htaccess_lines)) {
@@ -139,7 +139,7 @@ function file_check_directory(&$directory, $mode = 0, $form_item = NULL) {
 
   return TRUE;
 }
-  
+
 /**
  * Checks path to see if it is a directory, or a dir/file.
  *
@@ -221,8 +221,8 @@ function file_check_location($source, $directory = '') {
  * @return
  *   TRUE for success, FALSE for failure.
  */
-function file_copy(&$source, $dest = 0, $replace = FILE_EXISTS_RENAME, $public_misc = FALSE) { // core patch #572516(base)
-  $dest = file_create_path($dest, $public_misc); // core patch #572516(base)
+function file_copy(&$source, $dest = 0, $replace = FILE_EXISTS_RENAME) {
+  $dest = file_create_path($dest);
 
   $directory = $dest;
   $basename = file_check_path($directory);
@@ -342,10 +342,10 @@ function file_destination($destination, $replace) {
  * @return
  *   TRUE for success, FALSE for failure.
  */
-function file_move(&$source, $dest = 0, $replace = FILE_EXISTS_RENAME, $public_misc = FALSE) { // core patch #572516(base)
+function file_move(&$source, $dest = 0, $replace = FILE_EXISTS_RENAME) {
   $path_original = is_object($source) ? $source->filepath : $source;
 
-  if (file_copy($source, $dest, $replace, $public_misc)) { // core patch #572516(base)
+  if (file_copy($source, $dest, $replace)) {
     $path_current = is_object($source) ? $source->filepath : $source;
 
     if ($path_original == $path_current || file_delete($path_original)) {
@@ -359,11 +359,23 @@ function file_move(&$source, $dest = 0, $replace = FILE_EXISTS_RENAME, $public_m
 /**
  * Modify a filename as needed for security purposes.
  *
- * Dangerous file names will be altered; for instance, the file name
- * "exploit.php.pps" will become "exploit.php_.pps". All extensions that are
+ * Munging a file name prevents unknown file extensions from masking exploit
+ * files. When web servers such as Apache decide how to process a URL request,
+ * they use the file extension. If the extension is not recognized, Apache
+ * skips that extension and uses the previous file extension. For example, if
+ * the file being requested is exploit.php.pps, and Apache does not recognize
+ * the '.pps' extension, it treats the file as PHP and executes it. To make
+ * this file name safe for Apache and prevent it from executing as PHP, the
+ * .php extension is "munged" into .php_, making the safe file name
+ * exploit.php_.pps.
+ *
+ * Specifically, this function adds an underscore to all extensions that are
  * between 2 and 5 characters in length, internal to the file name, and not
- * included in $extensions will be altered by adding an underscore. If variable
- * 'allow_insecure_uploads' evaluates to TRUE, no alterations will be made.
+ * included in $extensions.
+ *
+ * Function behavior is also controlled by the Drupal variable
+ * 'allow_insecure_uploads'. If 'allow_insecure_uploads' evaluates to TRUE, no
+ * alterations will be made, if it evaluates to FALSE, the filename is 'munged'.
  *
  * @param $filename
  *   File name to modify.
@@ -781,7 +793,7 @@ function file_validate_image_resolution(&$file, $maximum_dimensions = 0, $minimu
  *
  * @return A string containing the resulting filename or 0 on error
  */
-function file_save_data($data, $dest, $replace = FILE_EXISTS_RENAME, $public_misc = FALSE) { // core patch #572516(base)
+function file_save_data($data, $dest, $replace = FILE_EXISTS_RENAME) {
   $temp = file_directory_temp();
   // On Windows, tempnam() requires an absolute path, so we use realpath().
   $file = tempnam(realpath($temp), 'file');
@@ -792,7 +804,7 @@ function file_save_data($data, $dest, $replace = FILE_EXISTS_RENAME, $public_mis
   fwrite($fp, $data);
   fclose($fp);
 
-  if (!file_move($file, $dest, $replace, $public_misc)) { // core patch #572516(base)
+  if (!file_move($file, $dest, $replace)) {
     return 0;
   }
 
@@ -991,8 +1003,7 @@ function file_directory_temp() {
  *
  * @return A string containing the path to Drupal's 'files' directory.
  */
-function file_directory_path($public_misc = FALSE) { // core patch #572516(base)
-  if ($public_misc) return variable_get('file_directory_path:public_misc', 'misc/dynamic'); // core patch #572516(base)
+function file_directory_path() {
   return variable_get('file_directory_path', conf_path() .'/files');
 }
 

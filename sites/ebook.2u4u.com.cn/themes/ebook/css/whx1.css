@@ -340,14 +340,6 @@ top:243px;
 }
 
 
-.node-type-ebook #comments .submitted{
-	background-color:#F0F0F0;
-	height:30px;
-	border-top:1px solid #CECECE;
-	color:#AEAEAE;
-	padding:6px 0 0 20px;
-}
-
 .node-type-ebook .comments_title{
 	background:url("images/images-19.gif") no-repeat scroll left center transparent;
 	font-weight:bold;
@@ -386,7 +378,7 @@ display:none;
 .node-type-ebook #comment-form #edit-submit{
 	background:url("images/save.jpg") no-repeat scroll left center transparent;
 	border:0px none;
-	width:80px;
+	width:64px;
 	height:31px;
 	font-size:0px;
 	cursor:pointer;

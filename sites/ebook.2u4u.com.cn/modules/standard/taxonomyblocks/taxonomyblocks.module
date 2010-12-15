@@ -1,5 +1,5 @@
 <?php
-// $Id: taxonomyblocks.module,v 1.20 2010/05/11 16:52:16 aaronhawkins Exp $
+// $Id: taxonomyblocks.module,v 1.21 2010/09/15 17:10:59 aaronhawkins Exp $
 /**
  * @file
  * Taxonomyblocks module creates an interface for creating customized blocks for linking to taxonomy terms, views or callback functions.
@@ -53,15 +53,16 @@ function taxonomyblocks_menu() {
 function taxonomy_blocks_list() {
   $header = array(t('Block title'), t('Actions'));
   $rows    = array();
+  $token = drupal_get_token('tb_del');
   $result = db_query("SELECT tb_id, block_title, custom FROM {tb_added_list}");
   while ($tb_block = db_fetch_object($result)) {
     $row     = array();
     $links   = array();
     $row[]   = $tb_block->block_title;
     $links[] = l(t('Configure'), 'admin/settings/taxonomyblocks/configure/'. $tb_block->tb_id);
-    $links[] = l(t('Reset'), 'admin/settings/taxonomyblocks/reset/'. $tb_block->tb_id);
+    $links[] = l(t('Reset'), 'admin/settings/taxonomyblocks/reset/'. $tb_block->tb_id .'-'. $token);
     if ($tb_block->tb_id != 0 && $tb_block->tb_id != 1) {
-      $links[] = l(t('Delete'), 'admin/settings/taxonomyblocks/delete/'. $tb_block->tb_id);
+      $links[] = l(t('Delete'), 'admin/settings/taxonomyblocks/delete/'. $tb_block->tb_id .'-'. $token);
     }
     $row[]   = implode('&nbsp;&nbsp;&nbsp;&nbsp;', $links);
     $rows[]  = $row;
@@ -100,29 +101,47 @@ function taxonomy_blocks_add_submit($form, &$formstate) {
   drupal_set_message(t('Your block has been added'), $type = 'status', $repeat = FALSE);
   drupal_goto('admin/settings/taxonomyblocks/configure/'. $tb_id);
 }
-function taxonomy_blocks_reset($tb_id) {
-  db_query("DELETE FROM {tb_customized} WHERE tb_id = %d", $tb_id);
-  db_query("UPDATE {tb_added_list} SET custom = 0 WHERE tb_id = %d", $tb_id);
-  if ($tb_id == 0) {
-    db_query("UPDATE {tb_added_list} SET block_title = 'Categories' WHERE tb_id = 0");
-  }
-  if ($tb_id == 1) {
-    db_query("UPDATE {tb_added_list} SET block_title = 'Forums' WHERE tb_id = 1");
-  }
-  drupal_set_message(t('The block has been reset'), $type = 'status', $repeat = FALSE);
-  drupal_goto('admin/settings/taxonomyblocks');
-}
-function taxonomy_blocks_delete($tb_id) {
-  if ($tb_id != 0 && $tb_id != 1) {
+function taxonomy_blocks_reset($tb_id_token) {
+  $tb_id_token = explode('-', $tb_id_token);
+  $tb_id = $tb_id_token[0];
+  $token = $tb_id_token[1];
+  $valid = drupal_valid_token($token, 'tb_del');
+  if ($valid != FALSE) {
     db_query("DELETE FROM {tb_customized} WHERE tb_id = %d", $tb_id);
-    db_query("DELETE FROM {tb_added_list} WHERE tb_id = %d", $tb_id);
-    db_query("DELETE FROM {blocks} WHERE module = 'taxonomyblocks' AND delta = %d", $tb_id);
-    drupal_set_message(t('The block has been deleted'), $type = 'status', $repeat = FALSE);
+    db_query("UPDATE {tb_added_list} SET custom = 0 WHERE tb_id = %d", $tb_id);
+    if ($tb_id == 0) {
+      db_query("UPDATE {tb_added_list} SET block_title = 'Categories' WHERE tb_id = 0");
+    }
+    if ($tb_id == 1) {
+      db_query("UPDATE {tb_added_list} SET block_title = 'Forums' WHERE tb_id = 1");
+    }
+    drupal_set_message(t('The block has been reset'), $type = 'status', $repeat = FALSE);
     drupal_goto('admin/settings/taxonomyblocks');
   }
-  else{
-    drupal_set_message(t('You cannot delete default blocks'), $type = 'error', $repeat = FALSE);
-    drupal_goto('admin/settings/taxonomyblocks');
+  else {
+    drupal_access_denied();
+  }
+}
+function taxonomy_blocks_delete($tb_id_token) {
+  $tb_id_token = explode('-', $tb_id_token);
+  $tb_id = $tb_id_token[0];
+  $token = $tb_id_token[1];
+  $valid = drupal_valid_token($token, 'tb_del');
+  if ($valid != FALSE) {
+    if ($tb_id != 0 && $tb_id != 1) {
+      db_query("DELETE FROM {tb_customized} WHERE tb_id = %d", $tb_id);
+      db_query("DELETE FROM {tb_added_list} WHERE tb_id = %d", $tb_id);
+      db_query("DELETE FROM {blocks} WHERE module = 'taxonomyblocks' AND delta = %d", $tb_id);
+      drupal_set_message(t('The block has been deleted'), $type = 'status', $repeat = FALSE);
+      drupal_goto('admin/settings/taxonomyblocks');
+    }
+    else{
+      drupal_set_message(t('You cannot delete default blocks'), $type = 'error', $repeat = FALSE);
+      drupal_goto('admin/settings/taxonomyblocks');
+    }
+  }
+  else {
+    drupal_access_denied();
   }
 }
 function taxonomy_blocks_config() {
@@ -175,7 +194,7 @@ function taxonomy_blocks_config() {
         $custom_title_def = $custom_title_set;
       }
       else {
-        $custom_title_def = $vocab->name;
+        $custom_title_def = check_plain($vocab->name);
       }
       if (!empty($counter_set)) {
         $node_count_def = $counter_set;
@@ -221,7 +240,7 @@ function taxonomy_blocks_config() {
         $node_count_def = 'forum';
       }
       $enabled_def = TRUE;
-      $custom_title_def = $vocab->name;
+      $custom_title_def = check_plain($vocab->name);
       $weight_def = 0;
     }
     $tb_id_omit_def = db_result(db_query("SELECT omit_tids FROM {tb_added_list} WHERE tb_id = %d", $tb_id));
@@ -251,7 +270,7 @@ function taxonomy_blocks_config() {
   
     $form['tb_config_form']['vocab'][$vocab->vid] = array (
       '#type' => 'fieldset',
-      '#title' => $vocab->name,
+      '#title' => check_plain($vocab->name),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       '#tree' => TRUE,
@@ -309,7 +328,7 @@ function taxonomy_blocks_config() {
     );
     $form['tb_config_form']['vocab_options']['vocab'][$vocab->vid]= array(
       '#type' => 'fieldset',
-      '#title' => $vocab->name,
+      '#title' => check_plain($vocab->name),
       '#collapsible' => TRUE,
       '#collapsed' => TRUE,
       '#tree' => TRUE,

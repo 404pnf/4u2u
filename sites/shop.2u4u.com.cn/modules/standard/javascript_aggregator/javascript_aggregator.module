@@ -1,5 +1,5 @@
 <?php
-// $Id: javascript_aggregator.module,v 1.17.2.16 2010/04/12 15:33:53 derjochenmeyer Exp $
+// $Id: javascript_aggregator.module,v 1.17.2.21 2010/04/14 08:31:42 derjochenmeyer Exp $
 
 /**
  * Implementation of hook_help().
@@ -28,6 +28,13 @@ function javascript_aggregator_form_alter(&$form, $form_state, $form_id) {
       '#default_value' => variable_get('javascript_aggregator_gzip', FALSE),
       '#weight' => 3,
     );
+    $form['bandwidth_optimizations']['javascript_aggregator_no_htaccess'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Do not auto generate .htaccess file (experts only)'),
+      '#description' => t("If you want to use GZipping and your host doesn't like multiple .htaccess files check this option, together with the option above to bypass htaccess file generation and follow directions in the README.txt."),
+      '#default_value' => variable_get('javascript_aggregator_no_htaccess', FALSE),
+      '#weight' => 5,
+    );
     $form['bandwidth_optimizations']['javascript_aggregator_jsminplus'] = array(
       '#type' => 'checkbox',
       '#title' => t('Use JSMin+ instead of JSMin'),
@@ -35,7 +42,6 @@ function javascript_aggregator_form_alter(&$form, $form_state, $form_id) {
       '#default_value' => variable_get('javascript_aggregator_jsminplus', FALSE),
       '#weight' => 4,
     );
-
   }
 }
 
@@ -47,7 +53,7 @@ function javascript_aggregator_form_alter(&$form, $form_state, $form_id) {
 function javascript_aggregator_theme_registry_alter(&$theme_registry) {
   if (isset($theme_registry['page'])) {
     // If javascript_aggregator's preprocess function is there already, remove it.
-    if ($key = array_search('javascript_aggregator_preprocess_page', $theme_registry['page']['preprocess functions'])) {
+    if (is_array($theme_registry['page']['preprocess functions']) && $key = array_search('javascript_aggregator_preprocess_page', $theme_registry['page']['preprocess functions'])) {
       unset($theme_registry['page']['preprocess functions'][$key]);
     }
     // Now tack it on at the end so it runs after everything else.
@@ -90,9 +96,10 @@ function _javascript_aggregator_minify($scripts) {
   if (variable_get('preprocess_js', 0)) {
     // Strip out the aggregated JavaScript file.
     $path_to_files_directory = base_path() . file_directory_path();
-    $pattern = "!(<script type=\"text\/javascript\" src=\"$path_to_files_directory)(.*?)(\"(.*?)><\/script>)!";
+
+    $pattern = "!(<script type=\"text\/javascript\" src=\"(.*?)$path_to_files_directory)(.*?)(\"(.*?)><\/script>)!";
     if (preg_match_all($pattern, $scripts, $matches) > 0) {
-      $aggregated_file_name = $matches[2][0];
+      $aggregated_file_name = $matches[3][0];
       $jsmin_file_name = $aggregated_file_name .'min.js';
 
       // Construct the final JSMin file path.
@@ -104,7 +111,9 @@ function _javascript_aggregator_minify($scripts) {
         if (variable_get('javascript_aggregator_jsminplus', FALSE)) {
           // JSMin+ the contents of the aggregated file.
           require_once(drupal_get_path('module', 'javascript_aggregator') .'/jsminplus.php');
-          $contents = JSMinPlus::minify(file_get_contents(file_directory_path() . $aggregated_file_name));
+          // Strip Byte Order Marks (BOM's) from the file, JSMin+ cannot parse these.
+          $file = str_replace(pack("CCC",0xef,0xbb,0xbf), "", file_get_contents(file_directory_path() . $aggregated_file_name));
+          $contents = JSMinPlus::minify($file);
         }
         else {
           // JSMin the contents of the aggregated file.
@@ -128,7 +137,7 @@ function _javascript_aggregator_minify($scripts) {
           }
 
           // Make sure the .htaccess file is active to handle GZipped JavaScript files.
-          if (!file_exists($htaccess)) {
+          if (!variable_get('javascript_aggregator_no_htaccess', FALSE) && !file_exists($htaccess)) {
             $htaccess_contents = <<<EOT
 <Files *.js.gz>
 AddEncoding x-gzip .gz

@@ -1,5 +1,5 @@
 <?php
-// $Id: hs_taxonomy.install,v 1.3 2010/02/28 20:26:41 wimleers Exp $
+// $Id: hs_taxonomy.install,v 1.4 2010/09/08 12:16:55 wimleers Exp $
 
 /**
  * @file
@@ -20,6 +20,14 @@ function hs_taxonomy_install() {
   return $ret;
 }
 
+/**
+ * Implementation of hook_uninstall().
+ */
+function hs_taxonomy_uninstall() {
+  // Remove any saved variables.
+  db_query("DELETE FROM {variable} WHERE name = 'taxonomy_override_selector'");
+  db_query("DELETE FROM {variable} WHERE name LIKE 'taxonomy_hierarchical_select_%'");
+}
 
 /**
  * Implementation of hook_enable().

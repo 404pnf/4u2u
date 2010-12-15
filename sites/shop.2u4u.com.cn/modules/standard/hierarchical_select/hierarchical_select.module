@@ -1,5 +1,5 @@
 <?php
-// $Id: hierarchical_select.module,v 1.188 2010/07/07 12:08:02 wimleers Exp $
+// $Id: hierarchical_select.module,v 1.195 2010/09/19 12:18:58 wimleers Exp $
 
 /**
  * @file
@@ -218,6 +218,10 @@ function hierarchical_select_requirements($phase) {
  */
 function hierarchical_select_theme() {
   return array(
+    'hierarchical_select_form_element' => array(
+      'file'      => 'includes/theme.inc',
+      'arguments' => array('element' => NULL, 'value' => NULL),
+    ),
     'hierarchical_select' => array(
       'file'      => 'includes/theme.inc',
       'arguments' => array('element' => NULL),
@@ -298,7 +302,7 @@ function hierarchical_select_json() {
   }
 
   // Collect all necessary variables.
-  $cached = cache_get($hs_form_build_id, 'cache');
+  $cached = cache_get($hs_form_build_id, 'cache_hierarchical_select');
   $storage = $cached->data;
 
   // Ensure that the form id in the POST array is the same as the one of the
@@ -739,7 +743,7 @@ function hierarchical_select_after_build($form, &$form_state) {
     // we can retrieve this in our JSON callbacks (to be able to rebuild and
     // render part of the form).
     $hs_form_build_id = 'hs_form_'. md5(mt_rand());
-    cache_set($hs_form_build_id, $storage, 'cache', time() + $expire);
+    cache_set($hs_form_build_id, $storage, 'cache_hierarchical_select', time() + $expire);
   }
   elseif (isset($_POST['hs_form_build_id'])) {
     // Don't generate a new hs_form_build_id if this is a re-rendering of the
@@ -840,7 +844,7 @@ function _hierarchical_select_submit($form, &$form_state) {
   // immediately upon finishing use of the form, but that's acceptable in the
   // end because the cache will be cleared anyway at some point.
   if (isset($form_state['hs_form_build_id']) && !isset($form_state['view'])) {
-    cache_clear_all($form_state['hs_form_build_id'], 'cache');
+    cache_clear_all($form_state['hs_form_build_id'], 'cache_hierarchical_select');
   }
 }
 
@@ -1006,7 +1010,7 @@ function _hierarchical_select_process_calculate_selections(&$element) {
       // TODO: http://drupal.org/node/253869
 
       $label = trim($element['#value']['hierarchical_select']['create_new_item']['input']);
-      $selects = $element['#value']['hierarchical_select']['selects'];
+      $selects = isset($element['#value']['hierarchical_select']['selects']) ? $element['#value']['hierarchical_select']['selects'] : array();
       $depth = count($selects);
       $parent = ($depth > 0) ? end($selects) : 0;
 
@@ -1341,6 +1345,11 @@ function _hierarchical_select_setup_js(&$form_state = NULL) {
     $negotiation = variable_get('language_negotiation', LANGUAGE_NEGOTIATION_NONE);
     if (module_exists('i18n') && ($language->prefix != '') && ($negotiation == LANGUAGE_NEGOTIATION_PATH_DEFAULT || $negotiation == LANGUAGE_NEGOTIATION_PATH)) {
        $url .= $language->prefix . '/';
+    }
+    if (module_exists('purl')) {
+      $options = array();
+      purl_url_outbound_alter($url, $options, '');
+      $url = str_replace('//', '/', '/' . $url);
     }
 
     _hierarchical_select_add_js_settings(array('HierarchicalSelect' => array('basePath' => $url, 'getArguments' => drupal_query_string_encode($_GET, array('q')))), $form_state);
@@ -1755,7 +1764,7 @@ function _hierarchical_select_hierarchy_generate($config, $selection, $required,
       && module_hook($config['module'], 'hierarchical_select_create_item')
       && _hierarchical_select_create_new_item_is_allowed($config, 0)
   ) {
-    $item_type = t($config['editability']['item_types'][0]);
+    $item_type = isset($config['editability']['item_types'][0]) ? t($config['editability']['item_types'][0]) : '';
     $item_type = (!empty($item_type)) ? $item_type : t('item');
     $option = theme('hierarchical_select_special_option', t('create new !item_type', array('!item_type' => $item_type)));
     $hierarchy->levels[0] = array('create_new_item' => $option) + $hierarchy->levels[0];
@@ -2321,13 +2330,34 @@ function _hierarchical_select_special_item_none($item) {
  *   A form state array.
  */
 function _hierarchical_select_add_js_settings($settings, &$form_state) {
+  global $views_ajax_form_js_settings;
+
   // If we're on a Views-powered form, we must use $form_state['js settings'].
-  if (isset($form_state['view']) && !empty($form_state['ajax'])) {
-    $form_state['js settings'] = (!is_array($form_state['js settings'])) ? array() : $form_state['js settings'];
+  if (isset($form_state['view']) && isset($form_state['ajax']) && !empty($form_state['ajax'])) {
+    $form_state['js settings'] = (!isset($form_state['js settings']) || !is_array($form_state['js settings'])) ? array() : $form_state['js settings'];
     $form_state['js settings'] = array_merge_recursive($form_state['js settings'], $settings);
   }
   // Otherwise, use drupal_add_js().
   else {
     drupal_add_js($settings, 'setting');
+
+    // Necessary for Views AJAX pager support.
+    // Also see hierarchical_select_ajax_data_alter().
+    if (isset($settings['HierarchicalSelect']['settings'])) {
+      $views_ajax_form_js_settings = $settings['HierarchicalSelect']['settings'];
+    }
+  }
+}
+
+
+/**
+ * Implementation of hook_ajax_data_alter().
+ * (Necessary for Views AJAX pager support.)
+ */
+function hierarchical_select_ajax_data_alter(&$object, $module, $view) {
+  global $views_ajax_form_js_settings;
+  if (!empty($views_ajax_form_js_settings)) {
+    $object->hs_drupal_js_settings = $views_ajax_form_js_settings;
+    $object->__callbacks = array_merge(array('Drupal.HierarchicalSelect.ajaxViewPagerSettingsUpdate'), $object->__callbacks);
   }
 }

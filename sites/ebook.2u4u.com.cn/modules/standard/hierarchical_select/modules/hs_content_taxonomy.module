@@ -1,5 +1,5 @@
 <?php
-// $Id: hs_content_taxonomy.module,v 1.38 2010/02/28 18:03:00 wimleers Exp $
+// $Id: hs_content_taxonomy.module,v 1.39 2010/08/26 09:01:14 wimleers Exp $
 
 /**
  * @file
@@ -37,7 +37,7 @@ function hs_content_taxonomy_menu() {
  * Implementation of hook_form_alter().
  */
 function hs_content_taxonomy_form_alter(&$form, &$form_state, $form_id) {
-  if (isset($form['type']) && $form['type']['#value'] .'_node_form' == $form_id) {
+  if (isset($form['type']) && isset($form['type']['#value']) && $form['type']['#value'] .'_node_form' == $form_id) {
     if (isset($form['#field_info']) && count($form['#field_info']) > 0) {
       foreach ($form['#field_info'] as $field_name => &$field_info) {
         if ($field_info['widget']['type'] == 'content_taxonomy_hs') {

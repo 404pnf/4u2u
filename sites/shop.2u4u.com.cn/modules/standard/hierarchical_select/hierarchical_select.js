@@ -1,4 +1,4 @@
-// $Id: hierarchical_select.js,v 1.101 2010/03/01 00:39:07 wimleers Exp $
+// $Id: hierarchical_select.js,v 1.104 2010/08/26 15:28:58 wimleers Exp $
 
 (function($) {
 
@@ -44,7 +44,9 @@ Drupal.HierarchicalSelect.initialize = function(hsid) {
   }
 
   Drupal.settings.HierarchicalSelect.settings[hsid]['updatesEnabled'] = true;
-  Drupal.HierarchicalSelect.state[hsid] = {};
+  if (undefined == Drupal.HierarchicalSelect.state[hsid]) {
+    Drupal.HierarchicalSelect.state[hsid] = {};
+  }
 
   this.transform(hsid);
   if (Drupal.settings.HierarchicalSelect.settings[hsid].resizable) {
@@ -499,7 +501,6 @@ Drupal.HierarchicalSelect.update = function(hsid, updateType, settings) {
           // The selection of this hierarchical select has changed!
           Drupal.HierarchicalSelect.triggerEvents(hsid, 'change-hierarchical-select', settings);
         });
-        return;
       }
       break;
     
@@ -601,6 +602,11 @@ Drupal.HierarchicalSelect.update = function(hsid, updateType, settings) {
       $.ajax(ajaxOptions);
     });
   }
+};
+
+Drupal.HierarchicalSelect.ajaxViewPagerSettingsUpdate = function(target, response) {
+  $.extend(Drupal.settings.HierarchicalSelect.settings, response.hs_drupal_js_settings);
+  Drupal.attachBehaviors($(target));
 };
 
 })(jQuery);

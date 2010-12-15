@@ -1,4 +1,4 @@
-// $Id: jquerymenu.js,v 1.6 2009/11/16 08:44:48 aaronhawkins Exp $
+// $Id: jquerymenu.js,v 1.7 2010/05/05 07:50:55 aaronhawkins Exp $
 Drupal.behaviors.jquerymenu = function(context) {
   jqm_showit = function() {
     $(this).children('.jqm_link_edit').fadeIn();

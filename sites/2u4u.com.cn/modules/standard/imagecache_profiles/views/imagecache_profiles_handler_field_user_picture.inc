@@ -1,10 +1,13 @@
 <?php
-// $Id: imagecache_profiles_handler_field_user_picture.inc,v 1.1.2.6 2010/02/21 04:52:33 andypost Exp $
+// $Id: imagecache_profiles_handler_field_user_picture.inc,v 1.1.2.7 2010/03/24 15:28:43 andypost Exp $
 
 class imagecache_profiles_handler_field_user_picture extends views_handler_field_user_picture {
   function option_definition() {
     $options = parent::option_definition();
-    $options['imagecache_preset'] = variable_get('user_picture_imagecache_profiles_default', '');
+    $options['imagecache_preset'] = array(
+      'default' => variable_get('user_picture_imagecache_profiles_default', ''),
+      'translatable' => FALSE
+    );
     return $options;
   }
 

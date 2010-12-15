@@ -1,4 +1,4 @@
-$Id: API.txt,v 1.60 2010/02/28 19:10:18 wimleers Exp $
+$Id: API.txt,v 1.61 2010/08/25 19:10:45 wimleers Exp $
 
 Terminology
 -----------
@@ -88,6 +88,8 @@ element type:
 Now, let's explain what we see here:
 1) We've set the #type property to "hierarchical_select" instead of "select".
 2) The #size property is inherited by the selects of the hierarchical select.
+   You can use it to change a vertical size of the select (i.e. change how many
+   items are displayed in the select, similar to a form select multiple).
 3) There's a new property: #config. This must be an
 array. These are the items it can contain:
  - module (required)
@@ -125,7 +127,7 @@ array. These are the items it can contain:
    Whether level labels should be enabled or not. When save_lineage is
    enabled, this will result in *empty* level labels.
 
- - level_labels['labels] (optional)
+ - level_labels['labels'] (optional)
    An array of labels, one per level. The label for the first level should be
    the value of key 0.
    When enforce_deepest is set to:

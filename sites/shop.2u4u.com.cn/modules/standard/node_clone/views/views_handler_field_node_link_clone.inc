@@ -1,5 +1,5 @@
 <?php
-// $Id: views_handler_field_node_link_clone.inc,v 1.1 2008/10/14 23:16:56 pwolanin Exp $
+// $Id: views_handler_field_node_link_clone.inc,v 1.1.4.1 2010/08/10 14:55:58 pwolanin Exp $
 
 /**
 * Field handler to present a clone node link.
@@ -22,7 +22,7 @@ class views_handler_field_node_link_clone extends views_handler_field_node_link 
     $node->type = $values->{$this->aliases['type']};
     $node->format = $values->{$this->aliases['format']};
     $node->status = 1; // unpublished nodes ignore access control
-    if (!clone_access($node)) {
+    if (!clone_access_cloning($node)) {
       return;
     }
 

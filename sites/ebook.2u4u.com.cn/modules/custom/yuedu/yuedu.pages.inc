@@ -8,7 +8,7 @@ function yuedu_transfer_page($nid, $page) {
 	//匿名用户能够看到的内容页码的限制
 	// 暂时取消这个限制。因为答应的期刊要求匿名用户看全本
 	// 最好的方法是免费阅读的时候如果是匿名用户，提示他登录看全本
-	$anonymous_limit = 15000;
+	$anonymous_limit = 15;
   $node = node_load($nid);
   $preview_page = $node->field_yuedu_preview[0]['value'];
 	

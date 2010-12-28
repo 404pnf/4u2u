@@ -48,18 +48,16 @@ while($row = mysql_fetch_array($result))
 { 
 
 	$query = "SELECT nid FROM ebook.`content_type_erp` WHERE field_erp_wuliaohao_value=".$row[emno];
-		
 	$res = @mysql_query($query) or die(mysql_error());
     $count = mysql_num_rows($res);
 	if($count>0){	
       $arr = mysql_fetch_array($res);
 
-      $sqlx = "SELECT td.name FROM `term_data` td LEFT JOIN `term_node` tn ON td.tid= tn.tid WHERE tn.nid=".$arr['nid'];
-
-  $term_name = mysql_fetch_array(mysql_query($sqlx));
+      $sqlx = "SELECT td.name FROM ebook.`term_data` td LEFT JOIN ebook.`term_node` tn ON td.tid= tn.tid WHERE tn.nid=".$arr['nid'];
+ $term_name = mysql_fetch_array(mysql_query($sqlx));
       $fenlei = $term_name['name'];
-	  $name = $arr['name'];
-	  $price = $arr['price'];
+	  $name = $row['name'];
+	  $price = $row['price'];
     }else{
           $fenlei = '';
 	  $name = '';

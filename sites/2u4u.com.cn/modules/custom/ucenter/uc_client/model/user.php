@@ -35,8 +35,11 @@ class usermodel {
 
 	function check_username($username) {
 		$guestexp = '\xA1\xA1|\xAC\xA3|^Guest|^\xD3\xCE\xBF\xCD|\xB9\x43\xAB\xC8';
+		// 404 baixy: 这里必须把$len增大一点，ucente人中一个中文
+		// 算3个字符，因为很多用户都用中文名字，而且诶5、6个字
+		// 默认的15太小了
 		$len = strlen($username);
-		if($len > 15 || $len < 3 || preg_match("/\s+|^c:\\con\\con|[%,\*\"\s\<\>\&]|$guestexp/is", $username)) {
+		if($len > 60 || $len < 3 || preg_match("/\s+|^c:\\con\\con|[%,\*\"\s\<\>\&]|$guestexp/is", $username)) {
 			return FALSE;
 		} else {
 			return TRUE;

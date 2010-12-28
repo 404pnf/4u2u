@@ -287,9 +287,9 @@
 		  <!--“通栏广告”的占位符-->		  
 		  <div id="guanggao" class=" clearfix">
 		  <div class="ad-kuang"><img src=" /sites/2u4u.com.cn/themes/stable/css/fp_images/BANNER.jpg" width="960" height="108" border="0" usemap="#Map" />
-<map name="Map" id="Map"><area shape="rect" coords="185,14,351,95" href=" http://2u4u.com.cn/duhougan" target="_blank" />
-<area shape="rect" coords="373,14,540,95" href=" http://2u4u.com.cn/fanyishouye" target="_blank" />
-<area shape="rect" coords="563,15,728,94" href=" http://2u4u.com.cn/disney" target="_blank" /><area shape="rect" coords="754,15,920,95" href=" http://dict.2u4u.com.cn/" target="_blank" />
+<map name="Map" id="Map"><area shape="rect" coords="185,14,351,95" href="http://ebook.2u4u.com.cn/duhougan" target="_blank" />
+<area shape="rect" coords="373,14,540,95" href="http://babel.2u4u.com.cn" target="_blank" />
+<area shape="rect" coords="563,15,728,94" href="http://2u4u.com.cn/disney" target="_blank" /><area shape="rect" coords="754,15,920,95" href="http://dict.2u4u.com.cn/" target="_blank" />
 </map></div>
 		  </div>
 		  
@@ -380,7 +380,7 @@
 			</div>
    
 			<div class="qz-ywyd"><!--有问有答-->		
-				<div class="qz-zy-title"><a href="/wenda" target="_blank" class="h">有问有答</a> </div>
+				<div class="qz-zy-title"><a href="http://answer.2u4u.com.cn" target="_blank" class="h">有问有答</a> </div>
 				<div class="qz-ywyd-text"> 
 					<? print phptemplate_get_answer('whx_frontpage','attachment_9');?>	
 				</div>

@@ -10,10 +10,19 @@
     <?php endif; ?>
 
     <?php print $picture; ?>
+ 
+   <div class="comment-title" >
+     <div class="submitted">
+       <?php print $submitted; ?>
+     </div>
 
-    <div class="submitted">
-      <?php print $submitted; ?>
-    </div>
+     <?php if ($links): ?>
+       <div class="links">
+          <?php print $links; ?>
+       </div>
+     <?php endif; ?>
+   </div>
+
 
     <div class="content">
       <?php print $content ?>
@@ -24,11 +33,7 @@
       <?php endif; ?>
     </div>
 
-    <?php if ($links): ?>
-      <div class="links">
-        <?php print $links; ?>
-      </div>
-    <?php endif; ?>  
 
   </div> <!-- /comment-inner -->
 </div> <!-- /comment -->
+

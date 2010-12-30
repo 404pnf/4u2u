@@ -1,0 +1,41 @@
+@charset "utf-8"; /* CSS Document */
+
+.sidebar-right .center{
+	margin-right:235px;
+	padding:0 10px;
+}
+
+.section-node #content-area .node-inner .content {
+        font-size:14px;
+
+}
+
+
+        
+
+/* #block-block-53 .view-content .views-row{
+	padding:2px 0px;
+	height:25px;
+}
+
+#block-block-53 .view-content .views-row-odd{
+	float:left;
+}
+#block-block-53 .view-content .views-row a{
+	padding:0px 8px;
+}
+#block-block-53 .block-inner .view-content{
+	padding:8px 8px 0 16px;
+	 width:200px; 
+	display:block;
+}
+
+#block-block-53 .view-id-quiz_taxonomy .view-header{
+	background-image:none;
+	height:20px;
+} */
+#content .node-type-frenchfriend_article .content p
+{
+	margin:0px;
+	text-indent:26px;
+}

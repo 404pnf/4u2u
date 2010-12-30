@@ -1,0 +1,12 @@
+; $Id: import_html.info,v 1.6.4.2 2009/05/09 14:16:30 dman Exp $
+name = Import HTML
+description = Import/Export an entire site to/from static HTML
+package = "Import/Export"
+core = 6.x
+php = 5.0
+; Information added by drupal.org packaging script on 2009-10-06
+version = "6.x-1.0"
+core = "6.x"
+project = "import_html"
+datestamp = "1254838570"
+

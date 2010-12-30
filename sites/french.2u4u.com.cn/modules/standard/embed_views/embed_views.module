@@ -1,0 +1,35 @@
+<?php
+// $Id: embed_views.module,v 1.1.2.1 2009/06/01 11:11:30 grndlvl Exp $
+/**
+ * @file
+ * Integration with the views module to create the new embed views display.
+ */
+
+/**
+ * Advertise the current views api version
+ */
+function embed_views_api_version() {
+  return 2.0;
+}
+
+/**
+ * Implementation of hook_views_plugins
+ */
+function embed_views_views_plugins() {
+  return array(
+    'display' => array(
+      'embed' => array(
+        'title' => t('Embed'),
+        'help' => t('Creates a display specifically for embed.'),
+        'handler' => 'embed_views_plugin_display_embed',
+        'theme' => 'views_view',
+        'theme path' => drupal_get_path('module', 'views') . '/theme',
+        'use ajax' => TRUE,
+        'use pager' => TRUE,
+        'use more' => TRUE,
+        'accept attachments' => TRUE,
+        'help topic' => 'display-default',
+      ),
+    ),
+  );
+}

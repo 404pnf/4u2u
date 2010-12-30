@@ -1,0 +1,682 @@
+<?php
+// $Id: import_html.module,v 1.71.2.16 2009/10/06 14:09:02 dman Exp $
+
+/**
+ * @file Main drupal interface to import_html.
+ *
+ * This file contains Drupal hooks
+ * and some config/preferences. Actual processing functions are in
+ * import_html_process.inc
+ *
+ * Synopsis:
+ *
+ * Facility to import an existing, static HTML site structure into the Drupal
+ * CMS as structured nodes.
+ *
+ * Intent:
+ *
+ * Allow an admin to define a source directory of an existing
+ * traditional static HTML website, and import (as much as possible)
+ * the content and structure into a drupal site.
+ * Source files will be stripped of exisiting chrome and navigation
+ * elements before being inserted as nodes.
+ *
+ * See import_html_help.htm for more
+ *
+ * Main data extraction routines are in import_html_process.inc. Module-specific
+ * data extraction methods have been shifted into import_html_modules.inc UI
+ * forms and themes have been shifted to import_html_ui.inc.
+ * Drupal hooks and some configs remain in this module file.
+ *
+ * import_html libraries can be used by external modules, specifically wrapper.
+ * module (private development) and static.module (experimental)
+ *
+ * CODE:
+ * Internally, there are a lot of filepath fragments being passed around.
+ * Any filepath known to represent a folder (eg $source_siteroot) will end with
+ * a /. Path fragments or filenames do NOT begin with a /. This makes
+ * concatenation pretty reliable, even with empty strings and not worrying about
+ * dividers. However, many times, small functions like 'ensure_trailing_slash()'
+ * may be called. Not all of them are needed, but most of them were put in due
+ * to some wierd filesystem vagery or filename encountered.
+ *
+ *
+ * @ingroup import_html Import HTML
+ *
+ * @author Dan Morrison http://coders.co.nz/
+ *
+ */
+
+$import_html_library_path = drupal_get_path('module', 'import_html') .'/coders_php_library';
+set_include_path($import_html_library_path . PATH_SEPARATOR . get_include_path());
+
+/**
+ * @name Debug Flag
+ * Used for testing only
+ * @{
+ */
+if (! function_exists('debug')) {
+  module_load_include('inc', 'import_html', 'coders_php_library/debug');
+#  define('DEBUGLEVEL', 0);
+}
+#debug_set_level(3);
+
+/**
+ * @}
+ */
+
+// Split into libraries in prep for D6
+module_load_include('inc', 'import_html', 'import_html_ui');
+
+
+/**
+ * @name $_import_html_file_classes
+ * poor-mans mime-list
+ */
+
+global $_import_html_file_classes;
+$_import_html_file_classes = array(
+  "htm"   => 'html',
+  "html"  => 'html',
+  "shtml" => 'html',
+  "php"   => 'html',
+  "asp"   => 'html',
+  "aspx"  => 'html',
+  "jsp"   => 'html',
+
+  "gif"   => "image",
+  "jpg"   => "image",
+  "png"   => "image",
+
+  "css"   => "resource",
+  "js"    => "resource",
+  "swf"   => "resource",
+
+  "pdf"   => "document",
+  "txt"   => "document",
+  "rtf"   => "document"
+);
+
+// How to handle duplicates and other problems when importing
+define("IMPORT_HTML_SKIP", 0);
+define("IMPORT_HTML_MERGE", 1);
+define("IMPORT_HTML_GUESS", 2);
+define("IMPORT_HTML_DEFAULT", 4);
+
+define("IMPORT_HTML_MAX_LABEL_LENGTH", 24);
+
+define('IMPORT_HTML_ADMIN_PATH', 'admin/build/import_html');
+
+
+define('IMPORT_HTML_GLOB_BEFORE', 'glob before');
+define('IMPORT_HTML_RECURSE_AFTER', 'recurse after ');
+
+/**
+ * To avoid overloading the treeview display, directory listing depth recursion
+ * will be truncated if the number of found files is greater than this.
+ */
+define('IMPORT_HTML_MAX_FILE_LISTING_COUNT', 500);
+
+/**
+ * If the database max_allowed_packet size is limited, then huge batch jobs
+ * cannot be queued - the list of instructions is too long!
+ * 16M is a common default, but shared hosts may have something useless like
+ * 1M . Here is the recommended minimum, in Mb.
+ * You should be able to process 4000 pages in one go with 4M
+ */
+define('IMPORT_HTML_REQUIRED_MAX_ALLOWED_PACKET', 11); // Megs
+
+/**
+ * Implementation of hook_menu() .
+ *
+ * Declares all the menu items relating to this module
+ * And all the public functions it supplies
+ */
+function import_html_menu() {
+  $items[IMPORT_HTML_ADMIN_PATH] = array(
+    'title' => 'Import HTML',
+    'description' => "Import/Export an entire site or directory to/from static HTML",
+
+    // Use the built-in Overview menu thing
+    'page callback' => 'system_admin_menu_block_page',
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+
+    'access arguments' => array('access import_html'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items[IMPORT_HTML_ADMIN_PATH .'/settings'] = array(
+    'title' => 'Import HTML Settings',
+    'description' => 'Adjust the import_html options and settings.',
+    'page callback' => 'drupal_get_form',
+    'file' => 'import_html_ui.inc',
+    'weight' => 1,
+    'page arguments' => array('import_html_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items[IMPORT_HTML_ADMIN_PATH .'/profile'] = array(
+    'title' => 'Import profiles',
+    'description' => 'Edit multiple import profiles.',
+    'page callback' => 'import_html_profiles_page',
+    'file' => 'import_html_ui.inc',
+    'weight' => 2,
+    'access arguments' => array('administer site configuration'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items[IMPORT_HTML_ADMIN_PATH .'/import_site'] = array(
+    'title' => 'Import HTML Site',
+    'description' => "Import/Export an entire site to/from static HTML",
+    'weight' => -1,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('import_html_process_form'),
+    'file' => 'import_html_ui.inc',
+    'access arguments' => array('access import_html'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items[IMPORT_HTML_ADMIN_PATH .'/demo'] = array(
+    'title' => 'Demo',
+    'weight' => 3,
+    'description' => 'Demonstrate or test HTML Import on one file.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('import_html_demo_form'),
+    'file' => 'import_html_ui.inc',
+    'access arguments' => array('access import_html'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  $items[IMPORT_HTML_ADMIN_PATH .'/results'] = array(
+    'title' => 'Import Results Summary',
+    'weight' => 5,
+    'description' => "View log of recent import messages",
+    'page callback' => 'import_html_results',
+    'file' => 'import_html_ui.inc',
+    'access arguments' => array('access import_html'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items ? $items : array();
+}
+
+/**
+ * Hook Implementation
+ */
+function import_html_perm() {
+  return array(
+    'access import_html'
+  );
+}
+
+/**
+ * Return help text describing this module
+ *
+ * @param $section string Context this help is being called from
+ * @return string
+ */
+function import_html_help($path, $arg) {
+  switch ($path) {
+    case 'admin/build/modules#description' :
+      return t("Import/Export an entire site to/from static HTML");
+    case 'admin/build/modules/import_html' :
+      return t("Import/Export an entire site to/from static HTML");
+    case 'admin/help#import_html' :
+      return file_get_contents(drupal_get_path("module", "import_html") ."/help/import_html_help.html");
+    case IMPORT_HTML_ADMIN_PATH :
+      return l("DO check the help page, this is a complex process", 'admin/help/import_html');
+    case 'admin/settings/import_html' :
+      return l("DO check the help page, this is a complex process", 'admin/help/import_html');
+    case 'admin/build/import_html/import_site' :
+      $output = t("<p>
+          For background, remember to read <a href='!help_link'>the Import Html help page</a>.
+          The <a href='!settings_link'>settings page</a> contains the config options.
+        </p>",
+        array(
+          '!help_link' => url('admin/help/import_html'),
+          '!settings_link' => url(IMPORT_HTML_ADMIN_PATH .'/settings'),
+        )
+      );
+      return $output;
+
+    case 'admin/build/import_html/demo' :
+      return t("<p>
+        Enter one HTML filepath or URL to process as an import.
+        The retrieved data <em>will not</em> automatically become part of the
+        site unless you confirm it, it's just a demo of what data would be
+        extracted on a simple import.
+      </p><p>
+        The given file will be passed through the currently configured import process
+        and shown as a node-edit form, displaying all the deduced content in the appropriate fields.
+      </p><p>
+        If you see <em>too much</em> of the page in the 'body' area (nested navbars and layout)
+        then the XSL import template or selector needs to be made more specific.
+        If you see none, or not enough content in the body area, the template or
+        selector needs to be adjusted to encompass the text correctly.
+      </p><p>
+        If you get an error or no result, the input HTML is probably too invalid to work with.
+      </p><p>
+        Single demo imports do not have the full context information to work with,
+        so the menu or URL alias (and internal relinking) shown may not be representative of the real result.
+      </p>");
+
+  }
+  return FALSE;
+}
+
+
+
+/**
+ * Implementation of hook_form_alter() .
+ */
+function import_html_form_alter(&$form, &$form_state, $form_id) {
+  // I need to pretend the demo page is a submit page
+  if (($form_id == 'page_node_form') && ($form['#action'] == url(IMPORT_HTML_ADMIN_PATH .'/import_files')) ) {
+    $form['#action'] = url('node/add/page');
+  }
+}
+
+////////////////////////////////////////////
+// End of Drupal core hooks.
+// Module utilities below.
+
+
+
+
+/**
+ * A wrapper to variable_set, variable_get to encapsulate multiple import 'profiles'
+ *
+ * This natively just returns the settings from the current 'default' profile,
+ * but also allows the settings forms to be extended to other sets.
+ *
+ * Use INSTEAD OF variable_get() and it will return the 'default' or 'active' profile vars.
+ *
+ * @param $var Name of the variable within the currently active profile to retrieve.
+ * @param $val If set, sets this variable within the profile and saves it.
+ * @see import_html_current_profile();
+ */
+function import_html_variable($var, $val = NULL) {
+
+  static $import_html_profiles;
+  if (! $import_html_profiles ) {
+    $import_html_profiles = variable_get('import_html_profiles', array());
+  }
+
+  $import_html_current_profile_id = import_html_current_profile_id();
+
+  if (empty($import_html_profiles[$import_html_current_profile_id])) {
+    // Fill in defaults (should only be needed first time, if that
+    drupal_set_message('import_html_variable initing profile from nowhere - should this ever happen?');
+    $import_html_profiles[$import_html_current_profile_id] = import_html_profile_defaults();
+  }
+
+  $import_html_profile = &$import_html_profiles[$import_html_current_profile_id];
+
+  if (isset($val)) {
+    $import_html_profile[$var] = $val;
+    #$import_html_profiles[$import_html_current_profile_id] = $import_html_profile;
+    variable_set('import_html_profiles', $import_html_profiles);
+  }
+
+  return $import_html_profile[$var];
+}
+
+/**
+ * Accessor for the current profile data
+ *
+ * Returns the data in a named import_html_profile.
+ * The currently active one if not explicitly defined.
+ * Profile will be padded with expected default fields if not explicitly set (to
+ * assist upgrades)
+ *
+ * @param $profile If set, saves this data back to the saved settings. Pass FALSE to delete it.
+ */
+function import_html_profile($profile_id = NULL, $profile = NULL) {
+  $import_html_profile_id = import_html_current_profile_id($profile_id);
+  static $import_html_profiles;
+  if (! $import_html_profiles ) {
+    $import_html_profiles = variable_get('import_html_profiles', array());
+  }
+  if (isset($profile)) {
+    $import_html_profiles[$import_html_profile_id] = $profile;
+    // Allow a quiet delete
+    if (!$profile) {
+      unset($import_html_profiles[$import_html_profile_id]);
+    }
+    variable_set('import_html_profiles', $import_html_profiles);
+  }
+  return @array_merge(import_html_profile_defaults(), $import_html_profiles[$import_html_profile_id]);
+}
+
+
+/**
+ * Accessor for a persistant profile switcher.
+ *
+ * @param $profile_id If set, this becomes the active profile for the duration of the request.
+ * @returns the current set profile id. 'default' by default.
+ */
+function import_html_current_profile_id($profile_id = NULL) {
+  static $import_html_current_profile_id;
+  if (! $import_html_current_profile_id) {
+    $import_html_current_profile_id = variable_get('import_html_current_profile', 'default');
+  }
+  if ($profile_id) {
+    $import_html_current_profile_id = $profile_id;
+  }
+  return $import_html_current_profile_id;
+}
+
+/**
+ * Return an array containing the set of import_html settings to use as a template
+ */
+function import_html_profile_defaults() {
+  global $user;
+  return array(
+    'profile_id' => 'default', // required to be filled in by the system
+
+    # extraction prefs
+    'translation_template' => drupal_get_path('module', 'import_html') .'/templates/html2simplehtml.xsl',
+    'content_tag_id' => 'main',
+    'content_type' => 'page',
+    'preferred_filter' => import_html_get_preferred_filter(),
+    'default_document' => 'index.htm',
+    'file_exclusions' => "^_\n/_\nCVS\n^\.\n/\.",
+    'strip_tables' => FALSE,
+    'strip_scripts' => FALSE,
+    'force_tidy' => TRUE,
+
+    #replication options
+    'trim_suffixes' => TRUE,
+    'legacy_aliases' => TRUE,
+    'relink_files' => FALSE,
+    'allow_bad_urls' => FALSE,
+    'file_storage_path' => file_directory_path() ."/imported/",
+    'rewrite_links' => TRUE,
+    'import_site_prefix' => '',
+    'freetag_vocab' => 0,
+
+    #subsettings
+    'import_category' => array(),
+    'import_status' => TRUE,
+    'import_promote' => "",
+    'import_user' => $user->name,
+    'create_menus' => TRUE,
+    'menu_parent_id' => 'primary-links:0',
+
+    #advanced
+    'handle_duplicates' => IMPORT_HTML_MERGE,
+    'handle_no_title' => IMPORT_HTML_GUESS,
+    'recursion_behaviour' => IMPORT_HTML_GLOB_BEFORE,
+    'debug_level' => 0,
+    'keep_temp_files' => FALSE,
+
+  );
+}
+
+/**
+ * Retrieve a default value for the 'input filter' which applies to nodes even after import.
+ *
+ * This is needed otherwise the edit page defaults to 'filtered' and existing
+ * formatting gets badly stripped.
+ * Normally this is available in the variable import_html_preferred_filter
+ * but the very first time this module is called, the setting may not be
+ * initialized yet. Scan the available filters here and return the appropriate
+ * named filter id.
+ *
+ * @param $as_list bool set this to just get an option list of available filters
+ */
+function import_html_get_preferred_filter($as_list = FALSE) {
+  static $fid;
+  if ($fid) return $fid;
+
+  if (($preferred_filter = variable_get('import_html_preferred_filter', 0)) && (!$as_list)) {
+    return $preferred_filter;
+  }
+  // As we are importing existing html, we don't even need line breaks done for us,
+  // so the preferred filter is NONE AT ALL - Unfiltered HTML
+
+  // Detect the ID of 'Unfiltered HTML' format, if available
+  // it's almost always 3, but I guess we must look it up.
+  $ff = filter_formats();
+
+  $formats = array();
+  foreach ($ff as $f) {
+    $formats[$f->format] = $f->name;
+    if ($f->name == 'Unfiltered HTML') {
+      $fid = $f->format;
+    }
+  }
+
+  if ($as_list) {
+    return $formats;
+  }
+
+  if (!$fid) {
+    // No unfiltered HTML option available... but I need it!;
+    drupal_set_message("Creating new filter option - Unfiltered HTML");
+
+    // can't use filter_admin_add(); as it rewrites the whole page
+    // sorry, direct SQL
+    db_query("INSERT INTO {filter_formats} (name) VALUES ('%s')", 'Unfiltered HTML');
+    $fid = db_result(db_query("SELECT format from {filter_formats} where name='%s'", 'Unfiltered HTML'));
+  }
+  variable_set('import_html_preferred_filter', $fid);
+  return $fid;
+}
+
+
+/**
+ * Returns what general 'type' a file probably is, based on suffix or mime if
+ * available.
+ *
+ * @returns one of the defined 'file_classes' : page|image|resource|document ... or null if unknown
+ *
+ * This is mainly used for UI coloring, so is not totally cannonic. HTML-or-not
+ * is all that really counts.
+ *
+ * @see $_import_html_file_classes
+ */
+function import_html_guess_file_class($filename) {
+  global $_import_html_file_classes;
+
+  // First try mime
+  if ( function_exists ('mime_content_type') ) {
+    $mime = mime_content_type($filename);
+    list($mime_type, $mime_subtype) = split('/', $mime);
+    if ($mime == 'text/html') return $mime_subtype;
+    if ($mime_type == 'image') return $mime_type;
+    if ($mime == 'text/css') return 'resource';
+    if ($mime == 'application/x-shockwave-flash') return 'resource';
+    if ($mime == 'application/x-javascript') return 'resource';
+    if ($mime_type == 'application') return 'document'; // gross generalization
+    # return 'resource';
+  }
+
+  // Some file mirrors (wget or myself) may have produced odd filenames
+  // strip URL args like # and ? off it
+  $filename = preg_replace('|[\?\#].*$|', '', $filename);
+
+  if (count(explode('.', basename($filename))) == 1) {
+    // assume no suffix at all is a html page
+    return 'html';
+  }
+  $extension = pathinfo($filename, PATHINFO_EXTENSION);
+
+  return @$_import_html_file_classes[strtolower($extension)];
+}
+
+/**
+ * Declare themable stuff.
+ */
+function import_html_theme() {
+  return array(
+    'import_html_list_filesystem_tree' => array(
+      'arguments' => array('form' => NULL)
+    ),
+    'tree_branch' => array(
+      'arguments' => array('element' => NULL)
+    ),
+    'import_html_filesystem_tree_item' => array(
+      'arguments' => array('element' => NULL)
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_elements().
+ *
+ * Declare our custom pseudo for item
+ */
+function import_html_elements() {
+  $type['tree_branch'] = array(
+    '#theme' => 'tree_branch',
+  );
+  return $type;
+}
+
+
+
+///////////////////////////////////////////////////////
+// Batch operations are really part of import_html_process, but
+// need to be in this module file so the batch runner can FIND the jobs
+// Batch ops do not allow inc file inclusions AFAIK.
+
+/**
+ * Return a batch set containing the instructions to run over many files.
+ *
+ * A batch set is a queue consisting of multiple batch jobs.
+ *
+ * @see import_html_import_file_batch_job()
+ *
+ * @param $file_list
+ * @param $profile context settings.
+ */
+function import_html_import_files_batch_instructions($file_list, $context, $funcname = 'import_html_import_file_batch_job') {
+  // Prepare a batch config
+  $batch_settings = array(
+    'finished'         => 'import_html_batch_import_finished',
+    'title'            => t('Processing all queued import requests. %count tasks.', array('%count' => count($file_list))),
+    'init_message'     => t('Starting Batch HTML Import.'),
+    'progress_message' => t('Processed @current out of @total.', array()),
+    'error_message'    => t('Batch HTML Import has encountered an error.'),
+    'operations'       => array(),
+  );
+  asort($file_list);
+  foreach ($file_list as $rel_path) {
+    if ($rel_path) {
+      $batch_settings['operations'][] = array($funcname, array($rel_path, $context) );
+    }
+  }
+  return $batch_settings;
+}
+
+/**
+ * Called by the batch queue, invoke import_html_import_file() and update the
+ * batch context with the status
+ */
+function import_html_import_file_batch_job($rel_path, $profile, &$batch_context) {
+  $results = import_html_import_file($rel_path, $profile);
+  if (! $results) {
+    import_html_debug(
+      'Failed to get any results from the attempted analysis of %rel_path.
+        The source file path was probably unavailable, invalid or incorrect.',
+      array('%rel_path' => $rel_path),
+      WATCHDOG_ERROR
+    );
+    return FALSE;
+  }
+
+  foreach ($results as $summary) {
+    // Almost useless loop, usually just one node per file
+    if (! empty($summary['node'])) {
+      $batch_context['message'] = "Processed <span class='rel-path'>$rel_path</span> : <span class='node-title'>" . $summary['node']->title ."</span>";
+      #$batch_context['results'][$rel_path] = $summary['node']->title;
+      # The system will link to this - things may have been renamed away from that original filename
+      $batch_context['results']['node/' . $summary['node']->nid] = $summary['node']->title;
+    }
+    else {
+      // May have been a file! That's not a failure
+      if ($summary['type'] == 'resource') {
+        $batch_context['message'] = "Imported the file <span class='rel-path'>$rel_path</span> as a resource";
+        $batch_context['results'][$summary['path']] = $rel_path;
+      }
+      else {
+        $batch_context['message'] = "FAILED to process <span class='rel-path'>$rel_path</span>";
+        $batch_context['results'][$rel_path] = "FAILED to process <span class='rel-path'>$rel_path</span>";
+      }
+    }
+  }
+
+  #return $node; // I don;t think this return value goes anywhere?
+}
+
+/**
+ * Called by the batch queue, invoke import_html_import_directory() and update
+ * the batch context with the status
+ *
+ * @param $rel_path
+ * @param $profile
+ */
+function import_html_import_directory_batch_job($rel_path, $profile, &$batch_context) {
+  // Processing a directory when in batch context means adding batch jobs to the end of the current process
+  // - that in turn may add more jobs.
+  // List the files we can, and add them as jobs.
+
+  import_html_debug("Starting batch import dir job '$rel_path' ", array('%rel_path' => $rel_path), WATCHDOG_DEBUG );
+
+  $working_path = $profile['source_siteroot'] . $rel_path;
+
+  // Scan the given directory (NOT deep), add the files, and the subdirectories.
+  // Processing the subdir will do the recursion itself
+  $dir_structure = import_html_file_scan_directory($working_path, ".*", array('.', '..', 'CVS'), 0, FALSE, 'filename', 0, NULL, 1);
+  // sort into file & folder
+  $selected_files = array();
+  $selected_dirs = array();
+  foreach ($dir_structure as $filepath => $file_info) {
+    $new_filepath = str_replace($profile['source_siteroot'], '', $filepath);
+    if (is_dir($filepath)) {
+      $selected_dirs[] = $new_filepath;
+    }
+    else {
+      $selected_files[] = $new_filepath;
+    }
+  }
+  if (empty($selected_files) && empty($selected_dirs)) {
+    drupal_set_message("No files or directories selected. Not setting any batch jobs");
+    return;
+  }
+
+  if (! empty($selected_files)) {
+    $file_batch_instructions = import_html_import_files_batch_instructions($selected_files, $profile, 'import_html_import_file_batch_job');
+    batch_set($file_batch_instructions);
+  }
+  if (! empty($selected_dirs)) {
+    $dir_batch_instructions = import_html_import_files_batch_instructions($selected_dirs, $profile, 'import_html_import_directory_batch_job');
+    batch_set($dir_batch_instructions);
+  }
+
+  import_html_debug("Batch import_dir queued %count_files files and %count_dirs dirs.", array('%count_files' => count($selected_files), '%count_dirs' => count($selected_dirs)), WATCHDOG_INFO  );
+}
+
+/**
+ * Callback function to run at the end of the batch process
+ */
+function import_html_batch_import_finished($success, $results, $operations) {
+  $duration = time() - variable_get('import_html_last_import_timestamp', time());
+
+  // results returns a list of node path -titles . Convert to something we can theme
+  array_walk(
+    $results,
+    create_function('&$title, $link', '$title = array("href" => $link, "title" => url($link) ." : ". $title);')
+  );
+
+
+  import_html_debug(
+    '<strong>Batch import completed</strong> in %duration. %count items processed (%average) : !links',
+    array(
+      '%duration' => format_interval($duration),
+      '%count' => count($results),
+      '%average' => count($results) ? format_interval($duration / count($results)) .' per item' : "no time details",
+      '!links' => theme('links', array_values($results), 'tree'),
+    ),
+    WATCHDOG_NOTICE
+  );
+  #dpm($results);
+}

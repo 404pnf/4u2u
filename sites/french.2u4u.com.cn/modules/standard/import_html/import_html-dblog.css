@@ -1,0 +1,10 @@
+/**
+ * Theming for the log results table
+ */
+ 
+ #import-html-dblog .dblog-info {
+   font-size:0.7em;
+}
+#import-html-dblog .dblog-info .message{
+   padding-left: 4em;
+}

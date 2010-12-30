@@ -1,0 +1,9 @@
+/* $Id: taxonomyblocks.css,v 1.2 2010/05/05 08:36:35 aaronhawkins Exp $ */
+.vocab_edit_link {
+  font-size:10px;
+  position:absolute;
+  padding:5px;
+  background-color:#fff;
+  display:none;
+  border:1px solid #666;
+}

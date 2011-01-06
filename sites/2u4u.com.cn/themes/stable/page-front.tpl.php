@@ -101,7 +101,7 @@
                               <!--未登录-->
                               <!--不能使用module_invoke_all来调登录框，会出现ucenter module无法hook到登录的情况-->
 <?php /* $block = module_invoke('user', 'block', 'view', 0); print $block['content']; */ ?>
-<!--使用drupal_get_form一段时间后又出现上面提到的问题，就改用老葛教的另外一招加载把区块放在特殊region里，加载本region-->
+<!--使用drupal_get_form一段时间后又出现上面提到的问题，就改用老葛教的另外一招把区块放在特殊region里，加载本region-->
 				<?php /* if(user_is_anonymous()){print drupal_get_form('user_login_block');}  */?>
 		<?php if ($user_login): ?>
               <?php print $user_login; ?>
@@ -337,11 +337,27 @@
 				</div>
 			</div>
 		  </div>
+		  
+		  
 		  <!--通栏广告2-->
-		  <div class="tonglan_gg">
-				<?php $block = module_invoke('block', 'block', 'view', 78); ?>
+               <div class=tonglanall>
+	            <div id="tonglan_gg" class="tonglan_gg">
+		 		<?php $block = module_invoke('block', 'block', 'view', 78); ?>
 				<?php print $block['content']; ?>
-		   </div>	
+		<!--上线时把此内容放在上面的区块里
+		<div class="ad_row ad_row1"><a target="_black" href="http://www.fltrp.com/scrp/bookdetail.cfm?iBookNo=49867&sYc=1-1"><img border="0" src="/zhuanti/link_img/cidian-1.jpg"></a></div>
+		
+		<div class="ad_row ad_row2"><a target="_black" href="http://www.fltrp.com/scrp/bookdetail.cfm?iBookNo=31281&sYc=1"><img  border="0" src="/zhuanti/link_img/cidian-2.jpg"></a></div>
+		
+		<div class="ad_row ad_row3"><a target="_black" href="http://www.fltrp.com/scrp/bookdetail.cfm?iBookNo=50058&sYc=1-1"><img border="0" src="/zhuanti/link_img/cidian-3.jpg"></a></div>
+		-->
+		    </div>	
+		    <div class="tonglan2">
+                         <?php $block = module_invoke('block', 'block', 'view', 81); ?>
+                         <?php print $block['content']; ?>
+
+                    </div>       
+                </div>
 		<div class="qz">
 			
 			<div class="qz-head"> 
@@ -534,19 +550,19 @@ $(function(){
         return false;
     },function() {});  
 	
-					
-					$('a:[href^=http://test.]').attr('target','_blank');
-					$('a:[href^=http://u.]').attr('target','_blank');
-					$('a:[href^=http://frenchfriend.]').attr('target','_blank');
-			
-			$('#ad').innerfade({
-						//animationtype: 'slide',
-						speed: 1000,
-						timeout: 3000,
-						type: 'sequence',
-						containerheight: '90px'
-			});
+	
+	$('a:[href^=http://test.]').attr('target','_blank');
+	$('a:[href^=http://u.]').attr('target','_blank');
+	$('a:[href^=http://frenchfriend.]').attr('target','_blank');
 
+			
+	$('#tonglan_gg').innerfade({
+		animationtype: 'slide',
+		speed: 1000,
+		timeout: 5000,
+		type: 'sequence',
+		containerheight: '110px'
+	});					
 	
 	tabs_click("#tabs0");
 	tabs_click("#tabs1");

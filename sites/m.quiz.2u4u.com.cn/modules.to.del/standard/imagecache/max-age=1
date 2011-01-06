@@ -1,0 +1,10 @@
+imagecache.module:    // $headers[] = 'Cache-Control: max-age=1209600, private, must-revalidate';
+imagecache.module:    $headers[] = 'Cache-Control: max-age=1209600, private, ';
+imagecache.module-    _imagecache_cache_set_cache_headers($fileinfo, $headers);
+imagecache.module-  }
+imagecache.module-  file_transfer($path, $headers);
+--
+imagecache.module:  $headers[] = 'Cache-Control: max-age=172800, public, ';
+imagecache.module-  $headers[] = 'Last-Modified: '. $last_modified;
+imagecache.module-  $headers[] = 'ETag: '. $etag;
+imagecache.module-}

@@ -843,3 +843,15 @@ html.js .resizable-textarea textarea{
 	border:0px;
 	padding:0px;
 }
+
+
+.tonglanall .tonglan_gg{
+        float:left;
+}
+
+.tonglan2{
+
+}
+.tonglanall{
+	clear:both;
+}

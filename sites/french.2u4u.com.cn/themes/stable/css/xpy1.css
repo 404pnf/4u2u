@@ -8,6 +8,7 @@
 	width:350px;
 	border-right:1px dashed #CECECE;
 	padding-right:5px;
+	margin-top:5px;
 }
 
 #zhongdianfenlei{
@@ -38,6 +39,9 @@
 	line-height:2px;
 	padding-left:20px;
 	color:#8B0700;
+	display:block;
+	height:10px;
+	padding-top:10px;
 }
 
 #sildeshow{
@@ -97,6 +101,7 @@
 #zuixinwenzhang .view-content .views-row .views-field-tid a{
 	float:left;
 	color:#8B0700;
+	*padding-top:17px;
 }
 #zuixinwenzhang .view-content .views-row .views-field-title{
 	margin-top:15px;
@@ -124,6 +129,7 @@
 	color:#FFFFFF;
 	margin:0;
 	padding:1px 5px;
+	*margin-left:3px;
 }
 
 .pager-current{
@@ -179,7 +185,7 @@ border:1px solid #CECECE;
 
 
 .section-node #content-header .title_bg h1{
-	font-size:26px;
+	font-size:28px;
 	font-weight:bold;
 	text-align:center;
 	margin-top:10px;
@@ -243,4 +249,55 @@ border:1px solid #CECECE;
 }
 .content .field-field-frenchzuozhe .field-label{
 	float:left;
+}
+
+
+#sidebar-second #block-views-page_front-block_1 .block-inner .block-title-bg h3 {
+    background-image: url("images/paihangbang.gif");
+    background-repeat: no-repeat;
+    border: 0 none;
+    height: 33px;
+    text-indent: 30px;
+}
+
+#sidebar-second .block-inner .block-title-bg {
+    background-image: url("fp_images/gracy-right-bg.gif");
+    background-repeat: repeat-x;
+    border-left: 1px solid #CECECE;
+    border-right: 1px solid #CECECE;
+    color: #961F1F;
+    font-weight: normal;
+    height: 33px;
+    width: 218px;
+}
+
+#sidebar-second #block-views-page_front-block_1 li.views-row-first .field-content a, #sidebar-second #block-views-page_front-block_1 li.views-row-first {
+    color: #841616;
+    font-size: 14px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+#sidebar-second-inner .block-title-bg h3.title{
+	border-left:0px;
+	border-right:0px;
+}
+
+.content .view-content .views-row-last span.shugang{
+	display:none;
+}
+.content .view-content .item-list li{
+	border-bottom:1px dashed #CECECE;
+	margin-bottom:3px;
+	padding-bottom:5px;
+}
+.content .view-content .item-list li.views-row-last{
+	border-bottom:none;
+}
+
+.coin-slider{
+	height:165px;
+}
+
+#zhongdianfenlei .view-content .views-row{
+	line-height:23px;
 }

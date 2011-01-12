@@ -855,3 +855,22 @@ html.js .resizable-textarea textarea{
 .tonglanall{
 	clear:both;
 }
+
+#ad2container{
+        margin:15px 0 0 0;
+        height:79px;
+}
+
+.ad2container_left{
+        float:left;
+	width:473px;
+	border:1px solid #9F9D9D;
+	height:77px;
+}
+
+.ad2container_right{
+	width:473px;
+	float:right;
+	border:1px solid #9F9D9D;
+	height:77px;
+}

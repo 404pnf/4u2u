@@ -1,0 +1,15 @@
+<?php
+// $Id: compass.install,v 1.1 2009/08/13 07:37:16 bangpound Exp $ 
+
+/**
+ * @file 
+ */
+
+/**
+ * Implementation of hook_uninstall() 
+ */
+function compass_uninstall() {
+  variable_del('compass_path');
+  variable_del('compass_cron');
+  variable_del('compass_debugging');
+}

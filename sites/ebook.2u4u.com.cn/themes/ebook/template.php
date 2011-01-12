@@ -462,7 +462,15 @@ function ebook_output_buy_button($node) {
 	$flag_limit_read_percentage = flag_get_flag('limit_read_percentage');
 	//标记为免费阅读的图书，不显示购买按钮
 	if($flag_yuedu_freebie && $flag_yuedu_freebie->is_flagged($node->nid)){
-		$output .= "<div id='points_free'><a href='#yuedu_player'></a></div>";
+		//$output .= "<div id='points_free'>".l(t('登录'),'http://2u4u.com.cn/user/login').t("网站看全本。").l(t('创建帐号'),'http://2u4u.com.cn/user/register').t("免费")."<a href='#yuedu_player'></a></div>";
+		$output .= "<div id='points_free'><a href='#yuedu_player'></a>";
+		//如果为匿名用户,提示其登录才能查看全文
+		if (!$user->uid){
+			$output .= "<div>";
+			$output .= t('匿名用户登录网站才能查看全本。创建帐号免费');
+			$output .= "</div>";
+		}
+		$output .= "</div>";
 	}
 	//标记为限制全书原文的图书，不显示购买按钮
 	elseif($flag_limit_read_percentage && $flag_limit_read_percentage->is_flagged($node->nid)){

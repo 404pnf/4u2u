@@ -671,3 +671,206 @@ width:100%;
 	width:725px;
 	padding:0;
 }
+
+/* -----------------------------------文章页 -----------------------------*/
+.title_bg{
+	background-image:none;
+	height:auto;
+	
+}
+#content-header h1{
+	background-image:none;
+}
+
+.section-node #content .block-inner .content{
+	padding:0px;
+}
+
+.section-node #content-header{
+	border-top:3px solid #7f0802;
+	border-left:1px solid #e7bdbd;
+	border-right:1px solid #e7bdbd;
+}
+.section-node #main #content-area .node{
+	border-left:1px solid #e7bdbd;
+	border-right:1px solid #e7bdbd;
+	border-bottom:1px solid #e7bdbd;
+}
+
+.section-node #content-header .title_bg h1.title{
+	font-size:28px;
+	color:#000000;
+	text-align:center;
+	margin-left:0px;
+	margin-top:30px;
+	padding:0 0 25px;
+	height:auto;
+}
+.section-node #content-area .node-inner .content{
+	width:650px;
+	margin-left:35px;
+	line-height:30px;
+	font-size:14px;
+	border-top:1px dashed #CECECE;
+	border-bottom:1px dashed #CECECE;
+	padding-top:20px;
+	margin-top:10px;
+	padding-bottom:15px;
+}
+.section-node #content-area .node-inner .submitted{
+	margin-left:35px;
+	color:#a88e41;
+} 
+.section-node #content-area .node-inner .taxonomy{
+	margin-right:30px;
+}
+.section-node #content-area .node-inner .taxonomy a{
+	color:#a88e41;
+}
+.section-node #content-area .node-inner .backfp a{
+	background-image: url(images/home.gif);
+	height:25px;
+	width:92px;
+	display:block;
+	font-size:1px;
+	color:#FFFFFF;
+}
+.section-node #content-area .node-inner .backfp{
+	width:95px;
+	float:right;
+	margin:15px 35px 20px 0;
+}
+.links a.flag{
+	background-image: url(images/doc.gif);
+	width:92px;
+	display:block;
+	height:25px;
+	font-size:1px;
+	color:#FFFFFF;
+}
+
+.2u4u-shareto{
+	width:92px;
+	float:right;
+}
+
+.section-node #comments .box h2{
+	display:none;
+}
+.section-node #edit-comment-wrapper{
+	background-color:#F2F2F2;
+}
+.section-node #sidebar-second .content .item-list ul{
+	padding:5px 0 0 10px;
+}
+
+.node-type-news .home-shareto {
+    	float: right;
+	margin:15px;
+}
+.node-type-news .home-links {
+    float: right;
+	margin:15px 0 0;
+}
+.node-type-news .home-links ul.links li{
+	padding:0px;
+}
+
+.section-node .box form#comment-form > div > div.form-item > label, .section-node .box form#comment-form > div > div.form-item > a{
+	display:none;
+}
+
+.section-node #content-area #comments{
+	background-color:#F2F2F2;
+	margin-top:20px;
+	padding:10px 20px 10px 20px;
+}
+
+.section-node #content-area #comments .comments_title{
+	background:url("http://ebook.2u4u.com.cn/sites/ebook.2u4u.com.cn/themes/ebook/css/images/images-19.gif") no-repeat scroll left center transparent;
+	color:#901616;
+	font-size:14px;
+	font-weight:bold;
+	text-indent:20px;
+}
+.section-node #comments .comment-inner .comment-title{
+	background-color:#FFFFFF;
+	border-top:1px solid #CECECE;
+	color:#AEAEAE;
+	height:30px;
+	padding:6px 0 0 20px;
+	margin-top:10px;
+}
+.section-node #comments .submitted{
+	float:left;
+	width:400px;
+}
+.section-node #comments .links{
+	float:right;
+	margin-right:5px;
+}
+.section-node .comment-inner .content{
+	margin:10px 20px 0;
+}
+
+html.js .resizable-textarea textarea{
+	height:100px;
+	width:680px;
+}
+.section-node .box #comment-form .tips{
+	display:none;
+}
+
+.section-node #comment-form #edit-preview{
+	display:none;
+}
+.section-node #comment-form #edit-submit{
+	margin-left:310px;
+	background:url("http://ebook.2u4u.com.cn/sites/ebook.2u4u.com.cn/themes/ebook/css/images/save.jpg") no-repeat scroll left center transparent;
+	border:0 none;
+	cursor:pointer;
+	font-size:0px;
+	height:31px;
+	text-indent:-5000px;
+	width:64px;
+}
+
+.section-node .content #comment-form p{
+	margin:0px;
+	display:none;
+}
+.section-node #sidebar-second-inner .block-block .block-inner .content{
+	border:0px;
+	padding:0px;
+}
+
+
+.tonglanall .tonglan_gg{
+        float:left;
+}
+
+.tonglan2{
+
+}
+.tonglanall{
+	clear:both;
+}
+
+#ad2container{
+        margin:15px 0 0 0;
+        height:79px;
+}
+
+.ad2container_left{
+        float:left;
+	width:473px;
+	border:1px solid #9F9D9D;
+	height:77px;
+}
+
+.ad2container_right{
+	width:473px;
+	float:right;
+	border:1px solid #9F9D9D;
+	height:77px;
+}

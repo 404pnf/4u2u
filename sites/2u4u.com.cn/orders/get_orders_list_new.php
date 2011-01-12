@@ -36,7 +36,7 @@ if(date('w')==5){
 			FROM `content_type_product` 
 			WHERE nid = up.nid
 			AND vid > cp.vid
-			)  AND uo.uid<>1";
+			)  AND uo.uid<>1 ORDER BY uo.uid,uo.order_id";
 
 	//echo $sql;
 	$re = mysql_query($sql);
@@ -184,7 +184,7 @@ if(date('w')==5){
 		 <td align="center" >联系电话</td>
 	</tr>'; 
 	
-	$table2 = "<tr><td>共计".$i."个大礼包,消费积分".$total_points."分，兑换码洋".$total_mayang."元</td></tr>";
+//	$table2 = "<tr><td>共计".$i."个大礼包,消费积分".$total_points."分，兑换码洋".$total_mayang."元</td></tr>";
 	
 	
 	echo $table1.$table.$table2;

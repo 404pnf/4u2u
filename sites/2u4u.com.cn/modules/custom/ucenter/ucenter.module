@@ -226,7 +226,8 @@ function ucenter_form_alter(&$form, $form_state, $form_id) {
 function ucenter_register_validate($form, &$form_state) {	
 	// check the name with ucenter's function
 	$name_result = uc_user_checkname($form_state['values']['name']);
-	if ($name_result == -1) {
+	// 404: 暂时注释掉，否则ucenter总是注册不上
+	 if ($name_result == -1) {
 		form_set_error('name', t('用户名不合法'));
 	}
 	else if ($name_result == -2) {
@@ -235,6 +236,7 @@ function ucenter_register_validate($form, &$form_state) {
 	else if ($name_result == -3) {
 		form_set_error('name', t('用户名已经存在'));
 	}
+	
 	// check the email with ucenter's function
 	$email_result = uc_user_checkemail($form_state['values']['mail']);
 	if ($email_result == -4) {

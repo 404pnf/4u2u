@@ -1,0 +1,32 @@
+<?php
+ 
+/*
+ * EGS系统，用户购买收费试卷，需要扣除相应积分
+ * 
+ * by @wzs 101110
+ * 
+ */
+
+function api_egs_menu(){
+	$items = array();
+	$items['egs/buy'] = array(
+		'title'=>t(''),
+		'access callback'=>true,
+		'page callback'=>'egs_buy',	    
+		'type'=>MENU_CALLBACK,
+	    'file' => 'api_egs.pages.inc'
+	);
+	
+	$items['query/user'] = array(
+		'title'=>t(''),
+		'access callback'=>true,
+		'page callback'=>'query_user_info',
+		'type'=>MENU_CALLBACK,
+		'file' => 'api_egs.pages.inc'
+	);
+	
+	return $items;	
+	
+}
+
+

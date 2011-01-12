@@ -1271,13 +1271,21 @@ width:180px;
 #block_hezuo .fltrpgroup a{	font-weight: normal;color: #560000;}
 #block_hezuo .fltrpgroup a:hover{font-weight: normal;color: #FFFF00;background-color: #666666;}
 
-#ad .ad_row{
+.tonglanall{
+	margin-top:10px;
+	position:relative;
+	height:95px;
+}
+#tonglan_gg .ad_row{
 display:none;
 }
-#ad .ad_row1{
+#tonglan_gg .ad_row1{
 display:block;
 }
-
+.tonglan2 {
+ 	left: 655px;
+    position: absolute;
+}
 .ad-kuang{
 height:108px;
 border:1px solid #9F9D9D;

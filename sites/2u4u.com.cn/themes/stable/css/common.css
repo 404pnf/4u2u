@@ -423,16 +423,16 @@ text-decoration:none;
 /* ----------------header -----------------*/
 /* logo 左飘*/
 #logo-title {
-	height: 50px;
-	width: 160px;
+	height: 60px;
+	width: 340px;
 	float: left;
-	margin-top: 5px;
+	/* margin-top: 5px; */
 }
 /* logo右侧的区域 */
-#header-region{
-float:right;
-width:800px;
-padding-top: 20px;
+#header-region {
+    float: right;
+    padding-top: 20px;
+    width: 620px;
 }
 /* 具体内容 */
 #block-block-73,#block-block-77{

@@ -1015,6 +1015,7 @@ width:100%;
 	margin-top:13px;
 	font-size:1.4em;
 	font-weight:bold;
+	display:block;
 }
 
 #sidebar-second #block-views-whx_yuedu-block_6 li.views-row{
@@ -1213,10 +1214,7 @@ html.js .resizable-textarea textarea{
 	margin:10px 0 0 20px;
 }
 
-.node-type-ebook #comments .submitted{
-	background-color:#FAFAFA;
-	
-}
+
 /*---- 五星投票 -------*/
 .fivestar_votes{
 	position:relative;
@@ -1256,4 +1254,20 @@ form.fivestar-widget div.description .fivestar-summary {
 .content .ebook_top{
 	border-bottom:1px dashed #CECECE;
 	margin-bottom:10px;
+}
+
+.section-ebook #comments .comment-inner .comment-title{
+	background-color:#FFFFFF;
+	border-top:1px solid #CECECE;
+	color:#AEAEAE;
+	height:30px;
+	padding:6px 0 0 20px;
+}
+
+.node-type-ebook #comments .submitted{
+	float:left;
+	width:400px;
+}
+.node-type-ebook #comments .links{
+	float:right;
 }

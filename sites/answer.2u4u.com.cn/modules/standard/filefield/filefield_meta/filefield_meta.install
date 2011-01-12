@@ -1,5 +1,5 @@
 <?php
-// $Id: filefield_meta.install,v 1.9 2010/06/16 22:06:44 quicksketch Exp $
+// $Id: filefield_meta.install,v 1.10 2010/06/17 19:37:17 pwolanin Exp $
 /**
  * @file
  * FileField Meta: Add Video Support to File Field.
@@ -147,8 +147,13 @@ function filefield_meta_update_6100(&$context) {
     $context['sandbox']['progress'] = 0;
     $context['sandbox']['total'] = db_result(db_query("SELECT COUNT(*) FROM {files} f INNER JOIN {filefield_meta} fm ON f.fid = fm.fid WHERE fm.audio_format <> ''"));
     $context['sandbox']['current_fid'] = 0;
-
-    db_add_field($ret, 'filefield_meta', 'tags', array('type' => 'text'));
+    if (!db_column_exists('filefield_meta', 'tags')) {
+      db_add_field($ret, 'filefield_meta', 'tags', array('type' => 'text'));
+    }
+    // We are done if there are none to update.
+    if ($context['sandbox']['total'] == 0) {
+      return $ret;
+    }
   }
 
   // Select and process 200 files at a time.

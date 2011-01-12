@@ -1,0 +1,91 @@
+<?php
+// $Id: import_html.install,v 1.3.4.2 2009/04/15 17:09:46 dman Exp $
+/**
+ * @file install (and remove) settings for import_html
+ *
+ * @author Dan Morrison dman http://coders.co.nz 
+ */
+ 
+/**
+ * Implementation of hook_schema().
+ */
+function import_html_schema() {
+  $schema['import_html_queue'] = array(
+    'description' => t('TODO'),
+    'fields' => array(
+      'DROP' => array(
+        'description' => t('TODO'),
+        'type' => 'unknown',
+        'not null' => FALSE,
+      ),
+    ),
+  );
+
+  $schema['import_html_queue'] = array(
+    'description' => t('TODO'),
+    'fields' => array(
+      'command' => array(
+        'description' => t('TODO'),
+        'type' => 'varchar',
+        'length' => 25,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'subject' => array(
+        'description' => t('TODO'),
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'context' => array(
+        'description' => t('TODO'),
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => FALSE,
+      ),
+      'date' => array(
+        'description' => t('TODO'),
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+#    'indexes' => array(
+#      'command, subject' => array('command', 'subject'),
+#    ),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function import_html_install() {
+  // Create tables.
+  drupal_install_schema('import_html');
+  include_once(dirname(__FILE__) ."/import_html.module");
+  
+  // Initialize the default profile - to avoid unset settings
+  $import_html_profiles = variable_get('import_html_profiles', array());
+  $import_html_profiles['default'] = import_html_profile_defaults();
+  variable_set('import_html_profiles', $import_html_profiles);
+  
+  drupal_set_message(t("Import HTML settings are found at !settings_url", array('!settings_url' => l(IMPORT_HTML_ADMIN_PATH, IMPORT_HTML_ADMIN_PATH))));
+
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function import_html_uninstall() {
+  // Remove tables.
+  drupal_uninstall_schema('import_html');
+
+  variable_del('import_html_profiles');
+  variable_del('import_html_preferred_filter');
+  variable_del('import_html_siteroot');
+  variable_del('import_html_current_subsection');
+  drupal_set_message('All import_html settings have been cleared.');
+}

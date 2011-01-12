@@ -1,0 +1,12 @@
+; $Id: static.info,v 1.2.2.2 2009/05/13 04:38:39 dman Exp $
+name = Static HTML
+description = Keep static HTML files synchonised with database nodes EXPERIMENTAL -DO NOT USE
+package = "Import/Export"
+dependencies[] = import_html
+core = 6.x
+; Information added by drupal.org packaging script on 2009-10-06
+version = "6.x-1.0"
+core = "6.x"
+project = "import_html"
+datestamp = "1254838570"
+

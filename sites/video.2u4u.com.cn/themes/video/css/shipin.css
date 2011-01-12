@@ -53,6 +53,7 @@ overflow:hidden;
 position:relative; 
 display:block;
 clear:both;
+margin-bottom:10px;
 }
 
 /* attachment-after */

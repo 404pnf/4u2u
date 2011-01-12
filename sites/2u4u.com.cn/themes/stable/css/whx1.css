@@ -1073,39 +1073,6 @@ text-decoration:none;
 }
 
 
-/* ----------------header -----------------*/
-/* logo 左飘*/
-#logo-title {
-	height: 50px;
-	width: 160px;
-	float: left;
-	margin-top: 5px;
-}
-/* logo右侧的区域 */
-#header-region{
-float:right;
-width:800px;
-padding-top: 20px;
-}
-/* 具体内容 */
-#block-block-73{
-	float: right;
-/* 	height: 20px; */
-}
-/* 联系方式 */
-.head-tel {
-background:url("fp_images/tel.gif") no-repeat scroll left center transparent;
-color:#E9742E;
-font-weight:bold;
-margin-left:20px;
-padding-left:20px;
-}
-/* 用户登录以及用户名和积分的颜色设置 */
-.user_log,.user_log a,.user_log a:link,.user_log a:visited,.user_log a:hover {
-color:#9E254A;
-}
-
-
 /*----------------------------------- 首页flash 幻灯片---------------------------------*/
 #huandengpian{	/* 幻灯片总体设置 */
 position:relative;

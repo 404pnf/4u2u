@@ -1,4 +1,4 @@
-// $Id: jquerymenu_no_animation.js,v 1.3 2009/11/16 08:44:48 aaronhawkins Exp $
+// $Id: jquerymenu_no_animation.js,v 1.4 2010/05/05 07:50:55 aaronhawkins Exp $
 Drupal.behaviors.jquerymenu = function(context) {
   $('ul.jquerymenu:not(.jquerymenu-processed)', context).addClass('jquerymenu-processed').each(function(){
     $(this).find("li.parent span.parent").click(function(){

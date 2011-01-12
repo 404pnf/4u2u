@@ -1,0 +1,15 @@
+<?php
+// $Id: htmLawed.install,v 1.3.4.1 2009/05/20 03:12:59 patnaik Exp $
+
+/*
+ * Delete all htmLawed settings when module is 'uninstalled' (not 'disabled')
+ * Also see htmLawed_cron() and htmLawed_node_type() in htmLawed.module
+ */
+function htmLawed_uninstall() {
+  $setting_rows = db_query("SELECT name AS name FROM {variable} WHERE name LIKE 'htmLawed_format_%'");
+  while($row = db_fetch_object($setting_rows)) {
+    $format = substr($row->name, 16);
+    variable_del('htmLawed_format_'. $format);
+    drupal_set_message(t('Variable <em>htmLawed_format_!format</em> storing input format-specific htmLawed settings was deleted from the database.', array('!format' => $format)));
+  }
+}

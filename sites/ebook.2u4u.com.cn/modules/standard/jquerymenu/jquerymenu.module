@@ -1,5 +1,5 @@
 <?php
-// $Id: jquerymenu.module,v 1.13 2009/11/16 08:44:48 aaronhawkins Exp $
+// $Id: jquerymenu.module,v 1.15 2010/05/08 17:47:51 aaronhawkins Exp $
 /**
  * @file
  * The JQuerymenu module parses hierarchical link arrays and renders them as click and expand menu blocks.
@@ -11,7 +11,6 @@
 function jquerymenu_init() {
   drupal_add_css(drupal_get_path('module', 'jquerymenu') .'/jquerymenu.css');
   if (variable_get('jq_menu_animate', 0) == 0) {
-    drupal_add_js(drupal_get_path('module', 'jquerymenu') .'/jquery.tools.min.js');
     drupal_add_js(drupal_get_path('module', 'jquerymenu') .'/jquerymenu.js');
   }
   if (variable_get('jq_menu_animate', 0) == 1) {
@@ -205,95 +204,100 @@ function jqmenu_trail_creator() {
 function recursive_link_creator($items = array(), $trail) {
   $url_array = $trail;
   $i = 0;
-  foreach ($items as $item) {
-    $classes = array();
-    $state = 'closed';
-    // If there are submenu items we assign the parent a class.
-    if (!empty($item['link']['has_children'])) {
-      $nextlevel = '';
-      $nextlevel = recursive_link_creator($item['below'],$url_array);
-      if (!empty($nextlevel)) {
-        $classes[] = 'parent';
-      }
-    }
-    
-    // If the menu item is expanded or in the active trail and if has children add the "open" class.
-    if (!empty($item['link']['expanded']) || ((in_array($item['link']['href'], $url_array) || ($_GET['q'] == $item['link']['href'])) && !empty($item['link']['has_children']) && !empty($nextlevel))) {
-      $classes[] = 'open';
-      $state = 'open';
-    }
-    elseif (!empty($item['below']) && !empty($nextlevel)) {
-      $classes[] = 'closed';
-    }
-
-    if (in_array($item['link']['href'], $url_array)) {
-      $classes[] = 'active-trail';
-    }
-    
-    if ($_GET['q'] == $item['link']['href']) {
-      $classes[] = 'active';
-    }
-    $options = array();
-    if (isset($item['link']['options'])) {
-      $options = $item['link']['options'];
-    }
-    if (variable_get('jq_edit_link', 1) == 1) {
-      if (empty($item['link']['editpath'] )) {
-        if (!empty($item['link']['mlid'])) {
-          $editpath = 'admin/build/menu/item/'.$item['link']['mlid'].'/edit';
-        }
-      }
-      else {
-        $editpath = $item['link']['editpath'];
-      }
-    }
-    if (empty($item['link']['editaccess'])) {
-      $editaccess = 'administer menu';
-    }
-    else {
-      $editaccess = $item['link']['editaccess'];
-    }
-    if (empty($item['link']['edit_text'])) {
-      $edit_text = t('Edit this link');
-    }
-    if (!empty($item['link']['to_arg_functions'])) {
-      $toarg_array = array();
-      $patharray = explode('/', $item['link']['href']);
-      foreach ($patharray as $chunk) {
-        if ($chunk != '%') {
-          $toarg_array[] = $chunk;
-        }
-        else {
-          $function = $item['link']['to_arg_functions'];
-          $function = explode('"', $function);
-          $function = $function[1];
-          $toarg_array[] = $function('%');
+  if (!empty($items)) {
+    foreach ($items as $item) {
+      $classes = array();
+      $state = 'closed';
+      // If there are submenu items we assign the parent a class.
+      if (!empty($item['link']['has_children'])) {
+        $nextlevel = '';
+        $nextlevel = recursive_link_creator($item['below'],$url_array);
+        if (!empty($nextlevel)) {
+          $classes[] = 'parent';
         }
       }
       
-    $path = implode('/', $toarg_array);  
-    }
-    else {
-      $path = $item['link']['href'];
-    }
-    if ($item['link']['hidden'] == 1 && !empty($item['link']['has_children'])) {
-      $output .= recursive_link_creator($item['below'], $url_array);
-    }
-    if ($item['link']['hidden'] != 1 && $item['link']['hidden'] != -1) {
-      $output .= '<li'. (empty($classes) ? '>' : ' class="'. implode(' ', $classes) .'">');
-      $output .= theme('jqmenu_links', $item['link']['title'], $path, $options, $state, $classes, $item['link']['has_children'], $editpath, $edit_text, $edit_access);
-        if (!empty($item['link']['has_children'])) {
-          if (!empty($nextlevel)) {
-            $output .= '<ul>';
-            // If the link has children call the function on itself.
-            $output .= $nextlevel;
-            $output .= '</ul>';
+      // If the menu item is expanded or in the active trail and if has children add the "open" class.
+      if (!empty($item['link']['expanded']) || ((in_array($item['link']['href'], $url_array) || ($_GET['q'] == $item['link']['href'])) && !empty($item['link']['has_children']) && !empty($nextlevel))) {
+        $classes[] = 'open';
+        $state = 'open';
+      }
+      elseif (!empty($item['below']) && !empty($nextlevel)) {
+        $classes[] = 'closed';
+      }
+  
+      if (in_array($item['link']['href'], $url_array)) {
+        $classes[] = 'active-trail';
+      }
+      
+      if ($_GET['q'] == $item['link']['href']) {
+        $classes[] = 'active';
+      }
+      $options = array();
+      if (isset($item['link']['options'])) {
+        $options = $item['link']['options'];
+      }
+      if (variable_get('jq_edit_link', 1) == 1) {
+        if (empty($item['link']['editpath'] )) {
+          if (!empty($item['link']['mlid'])) {
+            $editpath = 'admin/build/menu/item/'.$item['link']['mlid'].'/edit';
           }
         }
-      $output .= '</li>';
+        else {
+          $editpath = $item['link']['editpath'];
+        }
+      }
+      if (empty($item['link']['editaccess'])) {
+        $editaccess = 'administer menu';
+      }
+      else {
+        $editaccess = $item['link']['editaccess'];
+      }
+      if (empty($item['link']['edit_text'])) {
+        $edit_text = t('Edit this link');
+      }
+      else {
+        $edit_text = $item['link']['edit_text'];
+      }
+      if (!empty($item['link']['to_arg_functions'])) {
+        $toarg_array = array();
+        $patharray = explode('/', $item['link']['href']);
+        foreach ($patharray as $chunk) {
+          if ($chunk != '%') {
+            $toarg_array[] = $chunk;
+          }
+          else {
+            $function = $item['link']['to_arg_functions'];
+            $function = explode('"', $function);
+            $function = $function[1];
+            $toarg_array[] = $function('%');
+          }
+        }
+        
+      $path = implode('/', $toarg_array);  
+      }
+      else {
+        $path = $item['link']['href'];
+      }
+      if ($item['link']['hidden'] == 1 && !empty($item['link']['has_children'])) {
+        $output .= recursive_link_creator($item['below'], $url_array);
+      }
+      if ($item['link']['hidden'] != 1 && $item['link']['hidden'] != -1) {
+        $output .= '<li'. (empty($classes) ? '>' : ' class="'. implode(' ', $classes) .'">');
+        $output .= theme('jqmenu_links', $item['link']['title'], $path, $options, $state, $classes, $item['link']['has_children'], $editpath, $edit_text, $edit_access);
+          if (!empty($item['link']['has_children'])) {
+            if (!empty($nextlevel)) {
+              $output .= '<ul>';
+              // If the link has children call the function on itself.
+              $output .= $nextlevel;
+              $output .= '</ul>';
+            }
+          }
+        $output .= '</li>';
+      }
     }
   }
-    return $output;
+  return $output;
 }
 function jquerymenu_theme() {
   return array(

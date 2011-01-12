@@ -324,10 +324,26 @@
 		  
 
 		  
-		  <!--“通栏广告”的占位符-->		  
-		  <div id="guanggao" class=" clearfix">
-		  </div>
+		<!--如果上jQuery，去掉上面的，改成以下内容即可
+				积分换礼图片
+			<div class="ad"><a href="http://shop.2u4u.com.cn/libao">
+				<img src="/sites/2u4u.com.cn/themes/stable/css/fp_images/jifenhuanli.gif" width="478" height="90" border="0" />
+			</a></div>
+			-->
+		  
+		 <!--通栏广告2-->
+<div id="tonglan_gg" class="tonglan_gg">
+				
+		<div class="ad_row ad_row1"><a target="_black" href="#"><img width="960" height="99" border="0" src="/zhuanti/link_img/cidian-1.jpg"></a></div>
+		
+		<div class="ad_row ad_row2"><a target="_black" href="#"><img width="960" height="99" border="0" src="/zhuanti/link_img/cidian-2.jpg"></a></div>
+		
+		<div class="ad_row ad_row3"><a target="_black" href="#"><img width="960" height="99" border="0" src="/zhuanti/link_img/cidian-3.jpg"></a></div>
 			
+
+</div>
+		  
+		   
 			  <div class="qz-head"> 
     <div class="qz-title">·<a href="http://group.2u4u.com.cn/xiaozuwhx" target="_blank"  class="h">互动圈子</a>·</div>
 </div>
@@ -520,19 +536,22 @@ $(function(){
 		huandengpian_next('mouseover','#huandengpian .views-row-',5);		
         return false;
     },function() {});  
-	
+		
+// 	$('#tonglan_gg').innerfade({
+// 		animationtype: 'slide',
+// 		speed: 1000,
+// 		timeout: 5000,
+// 		type: 'sequence'
+// 		containerheight: '90px'
+// 	});
 			
-	$('a:[href^=http][href*=2u4u.com.cn]').attr('target','_blank');
-	
-			$('#ad').innerfade({
-						//animationtype: 'slide',
-						speed: 1000,
-						timeout: 5000,
-						type: 'sequence',
-						containerheight: '90px'
-			});
-			
-						
+	$('#tonglan_gg').innerfade({
+		animationtype: 'slide',
+		speed: 1000,
+		timeout: 5000,
+		type: 'sequence',
+		containerheight: '220px'
+	});					
 	
 		
 		
@@ -544,8 +563,7 @@ $(function(){
 
 	element_shipin_hover(e_addhover1,e_hidden1,e_neirong1);
 	element_shipin_hover(e_addhover2,e_hidden2,e_neirong2);
-}
-);
+});
 </script>
 
 	

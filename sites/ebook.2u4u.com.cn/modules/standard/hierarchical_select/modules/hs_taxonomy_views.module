@@ -1,5 +1,5 @@
 <?php
-// $Id: hs_taxonomy_views.module,v 1.22 2009/10/30 18:50:37 wimleers Exp $
+// $Id: hs_taxonomy_views.module,v 1.25 2010/08/26 11:16:19 wimleers Exp $
 
 /**
  * @file
@@ -378,7 +378,8 @@ function hs_taxonomy_views_hierarchical_select_params() {
  * Implementation of hook_hierarchical_select_root_level().
  */
 function hs_taxonomy_views_hierarchical_select_root_level($params) {
-  $root_level =  ($params['optional']) ? array(HS_TAXONOMY_VIEWS_ANY_OPTION => '<'. t('Any') .'>') : array();
+  $any_label = variable_get('views_exposed_filter_any_label', 'old_any') === 'old_any' ? '<'. t('Any') .'>' : '- '. t('Any') .' -';
+  $root_level =  ($params['optional']) ? array(HS_TAXONOMY_VIEWS_ANY_OPTION => $any_label) : array();
   $root_level += hs_taxonomy_hierarchical_select_root_level($params);
   return $root_level;
 }
@@ -432,7 +433,12 @@ function hs_taxonomy_views_hierarchical_select_entity_count($item, $params) {
     $temp_view->set_display($display_id);
 
     // Disable the pager to get *all* results.
-    $temp_view->set_use_pager(FALSE);
+    if (method_exists($temp_view, 'set_use_pager')) {
+      $temp_view->set_use_pager(FALSE);
+    }
+    else {
+      $temp_view->set_use_pager = FALSE;
+    }
 
     // Pretend nothing is exposed, otherwise an exposed filters form will also
     // be rendered and thereby cause endless recursion.
@@ -659,6 +665,6 @@ function _hs_taxonomy_views_config_path($view_name, $display_id, $filter_id) {
  */
 function _hs_taxonomy_views_get_display_id_for_filter($view, $filter_id) {
   $current_display = $view->current_display;
-  $current_display_filters = $view->display[$current_display]->display_options['filters'];
+  $current_display_filters = (isset($view->display[$current_display]->display_options['filters'])) ? $view->display[$current_display]->display_options['filters'] : array();
   return (isset($current_display_filters[$filter_id])) ? $current_display : 'default';
 }

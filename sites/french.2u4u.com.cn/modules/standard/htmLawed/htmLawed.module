@@ -1,0 +1,597 @@
+<?php
+// $Id: htmLawed.module,v 1.3.2.3.2.5 2009/05/20 03:13:06 patnaik Exp $
+
+// Drupal 6 htmLawed module
+// GPL v3 license
+// Copyright Santosh Patnaik, MD, PhD
+// Since May 2008
+
+/*
+ * The module_comment hook is used for 'save' for 'Comment'
+ * Calls _htmLawed_process() to filter data before it is stored
+ * The module_filter hook is for 'show', and module_nodeapi hook for 'Body'  for'save', and 'show' for 'Teaser'
+ * As this is for 'save', we don't care that there will be no filtering if node's content-type-settings are unavailable
+ */
+function htmLawed_comment(&$comment, $op) {
+  if($op == 'insert' or $op == 'update') {
+    $node_format = $comment['format'];
+    $filters = array_keys(filter_list_format($node_format));
+    if(in_array('htmLawed/0', $filters) and !empty($comment['comment'])) {
+      // Check setting
+      $setting = variable_get('htmLawed_format_'. $node_format, 0);
+      if(!is_array($setting)) {
+        return;
+      }
+      $def_setting = isset($setting['htmLawedDef']['Comment']) ? $setting['htmLawedDef']['Comment'] : array('config'=>"'safe'=>1, 'elements'=>'a, em, strong, cite, code, ol, ul, li, dl, dt, dd', 'deny_attribute'=>'id, style'",'spec'=>'');
+      $node_object = db_fetch_object(db_query('SELECT type AS type FROM {node} WHERE nid = %d', $comment['nid']));
+      $node_type = $node_object->type;
+      $setting = isset($setting[$node_type]['Comment']) ? $setting[$node_type]['Comment'] : array();
+      if(!empty($setting['save'])) {
+        $setting = !empty($setting['default']) ? $def_setting : $setting;
+        eval('$config = array('. $setting['config']. ');');
+        // Filter & save this way as  hook_comment is unfortunately called AFTER database insertion
+        if(is_array($config)) {
+          // Preserve PHP code
+          $htmLawed_hook_parameter = (in_array('php/0', $filters) && strpos($comment['comment'], '<?') !== FALSE) ? 'save_php' : 0;
+          db_query("UPDATE {comments} SET comment = '%s' WHERE cid = %d", _htmLawed_process($comment['comment'], $config, $setting['spec'], $htmLawed_hook_parameter), $comment['cid']);
+        }
+      }
+    }
+  }
+}
+
+/*
+ * Delete settings for extinct input formats
+ * Also see htmLawed_uninstall() in htmLawed.install, and htmLawed_node_type()
+ * Alternative to the failing htmLawed_menu() and htmLawed_form_alter() functions (commented-out below)
+ */
+function htmLawed_cron() {
+  $setting_rows = db_query("SELECT name AS name FROM {variable} WHERE name LIKE 'htmLawed_format_%'");
+  while($row = db_fetch_object($setting_rows)) {
+    $format = substr($row->name, 16);
+    $object = db_fetch_object(db_query('SELECT COUNT(name) AS count FROM {filter_formats} WHERE format = %d', $format));
+    if($object->count < 1) {
+      variable_del('htmLawed_format_'. $format);
+      drupal_set_message(t('Variable %htmLawed_format_num storing htmLawed setting for a non-existing input format was deleted from the database.', array('%htmLawed_format_num' => "htmLawed_format_$format")));
+    }
+  }
+}
+
+/*
+ * The module_filter hook; for 'show' 
+ * htmLawed_comment() and htmLawed_nodeapi() used for 'save' for 'Comment' and 'Body' resp.
+ * Latter also for 'show' for 'Teaser'
+ */
+function htmLawed_filter($op, $delta = 0, $format = -1, $text = '') {
+  switch ($op) {
+    case 'list':
+      return array(0 => t('htmLawed (X)HTML filter/purifier'));
+    case 'no cache':
+      return FALSE;
+    case 'description':
+      return t('Restrict HTML markup and make content secure, and standard- and admin. policy-compliant.');
+    case 'prepare':
+      return $text;
+    case 'process':
+      // htmLawed_help() should use similar logic
+      $setting = variable_get('htmLawed_format_'. $format, 0);
+      if(!is_array($setting)){
+        return $text;
+      }
+
+      $node_id = $node_type = NULL;
+      $for = 'Other';
+      // Comment
+      if(arg(0) == 'comment') {
+        $for = 'Comment';
+        if(arg(1) == 'reply') {
+          $node_id = arg(2);
+        }
+        elseif(arg(1) == 'edit') {
+          $comment_id = arg(2);
+          $node_object = db_fetch_object(db_query('SELECT nid AS nid FROM {comments} WHERE cid = %d', $comment_id));
+          $node_id = $node_object->nid;
+        }
+      }
+      // Body, extra fields because of CCK, etc.
+      elseif(arg(0) == 'node') {
+        $for = 'Body';
+        if(arg(1) == 'add') {
+          $node_type = arg(2);
+        }
+        elseif(is_numeric(arg(1))) {
+          $node_id = arg(1);
+        }
+      }
+
+      // Content-type
+      if($node_id) {
+        $node_object = db_fetch_object(db_query('SELECT type AS type FROM {node} WHERE nid = %d', $node_id));
+        $node_type = $node_object->type;
+      }
+
+      // Right settings
+      $def_setting = isset($setting['htmLawedDef'][$for]) ? $setting['htmLawedDef'][$for] : array('show'=>1, 'config'=>"'safe'=>1, 'elements'=>'a, em, strong, cite, code, ol, ul, li, dl, dt, dd', 'deny_attribute'=>'id, style'",'spec'=>'');
+      if($node_type) {
+        $setting = isset($setting[$node_type][$for]) ? $setting[$node_type][$for] : $def_setting;
+      }
+      else {
+        $setting = $def_setting;
+      }
+
+      if(!empty($setting['show'])) {
+        $setting = !empty($setting['default']) ? $def_setting : $setting;
+        // Filter by calling _htmLawed_process
+        eval('$config = array('. $setting['config']. ');');
+        if(!is_array($config)) {
+          return $text;
+        }
+        return _htmLawed_process($text, $config, $setting['spec']);
+      }
+      
+      return $text;
+      break;
+    
+    // Shows sub-forms on the pages for configuring input formats; _htmLawed_store_setting() will save the submitted data
+    case 'settings':
+      if(!user_access('administer htmLawed (X)HTML filter/purifier')) {
+        break;
+      }
+      
+      // Default & content-type-specific settings to pre-fill sub-forms
+      $content_types = array();
+      $content_types['htmLawedDef'] = t('Default');
+      $content_types += node_get_types('names');
+
+      $help = l(t('(?)'), 'admin/help/htmLawed', array('title'=>t('help')));
+      $subform_count = 0;
+      
+      $setting = variable_get('htmLawed_format_'. $format, array());
+
+      $form['htmLawed'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('htmLawed (X)HTML filter/purifier'),
+        '#collapsible' => TRUE,
+      );
+
+      foreach($content_types as $k=>$v) {
+        // Default values
+        if(!isset($setting[$k]) or !is_array($setting[$k])) {
+          foreach(array('Body', 'Comment', 'Other', 'RSS') as $for) {
+            if($for == 'Other' and $k != 'htmLawedDef') {
+              continue;
+            }
+            $val[$for] = array('config'=>"'safe'=>1, 'elements'=>'a, em, strong, cite, code, ol, ul, li, dl, dt, dd". ($for == 'RSS' ? ', br, p' : ''). "', 'deny_attribute'=>'id, style'", 'spec'=>'', 'help'=>'Tags allowed: a, em, strong, cite, code, ol, ul, li, dl, dt, dd'. ($for == 'RSS' ? ', br, p' : ''));
+            if($k != 'htmLawedDef') {
+              if($for != 'RSS') {
+                $val[$for]['save'] = 0;
+                $val[$for]['show'] = 1;
+              }
+              else {
+                $val[$for]['show'] = 0;
+              }
+              $val[$for]['default'] = 1;
+            }
+            elseif($for == 'Other') {
+                $val[$for]['show'] = 1;
+            }
+          }
+          $setting[$k] = $val;
+        }
+        
+        $my_k = 'htmLawed_'. $k;
+
+        $form['htmLawed'][$my_k] = array(
+          '#type' => 'fieldset',
+          '#title' => $v,
+          '#collapsible' => TRUE,
+          '#collapsed' => !$subform_count ? FALSE : TRUE,
+          '#description' => !$subform_count ? t('Generic settings; content-type-specific values can be set <a href="!below">further below</a>.', array('!below'=>'#htmLawed_specific_point')). '<a id="htmLawed_default_point"></a> <small>'. "$help</small>" : NULL,
+        );
+
+        foreach(array('Body', 'Comment', 'Other', 'RSS') as $for) {
+          if($for == 'Other' and $k != 'htmLawedDef') {
+            continue;
+          }
+        
+          $my_for = $my_k. '_'. $for;
+        
+          $form['htmLawed'][$my_k][$my_for] = array(
+            '#type' => 'fieldset',
+            '#title' => t(($for == 'RSS' ? 'Teaser' : $for)),
+            '#collapsible' => TRUE,
+            '#collapsed' => TRUE,
+            '#theme' => 'htmLawed_tabled_subform',
+          );
+          
+          if($k != 'htmLawedDef') {
+            $form['htmLawed'][$my_k][$my_for][$my_for. '_guide'] = array(
+              '#type' => 'markup',
+              '#value' => '<p><small>'. t('For content-type %type, ', array('%type'=>$v)). ($for == 'Body' ? t('for main body') : ($for == 'RSS' ? t('for teasers and newsfeed items; the filtering will be in addition to any done for <em>Body</em>') : t('for any user comment'))). " $help</small></p>",
+              );
+            $form['htmLawed'][$my_k][$my_for][$my_for. '_show'] = array(
+              '#type' => 'checkbox',
+              '#title' => t('Enable'),
+              '#default_value' => $setting[$k][$for]['show'],
+              '#description' => t('Filter content during page-display'),
+            );
+            if($for != 'RSS') {
+              $form['htmLawed'][$my_k][$my_for][$my_for. '_save'] = array(
+                '#type' => 'checkbox',
+                '#title' => t('Enable for <em>save</em>'),
+                '#default_value' => $setting[$k][$for]['save'],
+                '#description' => t('Filter submitted content before saving'),
+              );
+            }
+            $form['htmLawed'][$my_k][$my_for][$my_for. '_default'] = array(
+              '#type' => 'checkbox',
+              '#title' => t('Use <a href="!default">default</a> values', array('!default'=>'#htmLawed_default_point')),
+              '#default_value' => $setting[$k][$for]['default'],
+              '#description' => t('For <em>Config.</em>, <em>Help</em> and <em>Spec.</em>'),
+            );
+          }
+          else {
+            $form['htmLawed'][$my_k][$my_for][$my_for. '_guide'] = array(
+              '#type' => 'markup',
+              '#value' => '<p><small>'. t('Default settings for <em>Config.</em>, <em>Help</em> and <em>Spec.</em> for use with ', array('%type'=>$v)). ($for == 'Body' ? t('main body') : ($for == 'RSS' ? t('teasers and newsfeed items; the filtering will be in addition to any done for <em>Body</em>') : ($for == 'Other' ? t('other cases not based on content-type (like a <em>header</em> field seen with the <em>Views</em> module. There are obviously no content-type-specific settings.') : t('any user comment')))). " $help</small></p>",
+            );
+            if($for == 'Other') {
+              $form['htmLawed'][$my_k][$my_for][$my_for. '_show'] = array(
+                '#type' => 'checkbox',
+                '#title' => t('Enable'),
+                '#default_value' => $setting[$k][$for]['show'],
+                '#description' => t('Filter content during page-display'),
+              );
+            }
+          }
+
+          $form['htmLawed'][$my_k][$my_for][$my_for. '_config'] = array(
+            '#type' => 'textarea',
+            '#rows' => '3',
+            '#title' => t('Config.'),
+            '#default_value' => $setting[$k][$for]['config'],
+            '#description' => t('Comma-separated, quoted key-value pairs'),
+          );
+          $form['htmLawed'][$my_k][$my_for][$my_for. '_spec'] = array(
+            '#type' => 'textarea',
+            '#rows' => '3',
+            '#title' => t('Spec.'),
+            '#default_value' => $setting[$k][$for]['spec'],
+            '#description' => t('Optional'),
+          );
+          $form['htmLawed'][$my_k][$my_for][$my_for. '_help'] = array(
+            '#type' => 'textarea',
+            '#rows' => '3',
+            '#title' => t('Help'),
+            '#default_value' => $setting[$k][$for]['help'],
+            '#description' => t('Tips seen by users'),
+          );
+        } // End inner foreach
+
+        if(!$subform_count) {
+          $form['htmLawed']['specific_point'] = array(
+            '#type' => 'markup',
+            '#value' => '<div class="description">'. t('Set values per content-type below. Generic default values are set <a href="!above">above</a>.', array('!above'=>'#htmLawed_default_point')). '<a id="htmLawed_specific_point"></a> <small>'. "$help</small></div>",
+          );
+        }
+        ++$subform_count;
+      } // End outer foreach
+
+      $form['#submit'][] = '_htmLawed_store_setting'; // Drupal 6 diff.
+      $form['#submit'] = array_reverse($form['#submit']);
+      return $form;
+      break;
+    
+    default:
+      return $text;
+      break;
+  }
+}
+
+/*
+ * Display tips indicating htmLawed settings (elements allowed, etc.)
+ */
+function htmLawed_filter_tips($delta, $format, $long = FALSE) {
+  // Content-type unknown
+  $basic_out = t('Information indicating specific htmLawed (X)HTML filter/purifier settings in effect, which may depend on the  content-type, will be shown where appropriate.');
+  $setting = variable_get('htmLawed_format_'. $format, 0);
+  if(arg(2) == 'filters') {
+    if($setting) {
+      return $basic_out. t(' You can view the full htmLawed <a href="!conf" title="!tip">configuration here</a>.', array('!conf'=>url('admin/settings/filters/'. arg(3). '/configure'), '!tip'=>'current htmLawed configuration'));;
+    }
+    return t('For htmLawed to be active with this input format, it needs to be configured and the configuration <em>saved</em>. <a href="!conf" title="!tip">Configure now?</a>', array('!conf'=>url('admin/settings/filters/'. arg(3). '/configure'), '!tip'=>'proceed to configuration form'));
+  }
+  if(!$setting) {
+    return $basic_out;
+  }
+
+  if(!$long) {
+    $node_id = $node_type = NULL;
+    $for = 'Other';
+    // Comment
+    if(arg(0) == 'comment') {
+      $for = 'Comment';
+      if(arg(1) == 'reply') {
+        $node_id = arg(2);
+      }
+      elseif(arg(1) == 'edit') {
+        $comment_id = arg(2);
+        $node_object = db_fetch_object(db_query('SELECT nid AS nid FROM {comments} WHERE cid = %d', $comment_id));
+        $node_id = $node_object->nid;
+      }
+    }
+    // Body, extra fields because of CCK, etc.
+    elseif(arg(0) == 'node') {
+      $for = 'Body';
+      if(arg(1) == 'add') {
+        $node_type = arg(2);
+      }
+      elseif(is_numeric(arg(1))) {
+        $node_id = arg(1);
+      }
+    }
+    // Admin configuring an extra field, because of modules like CCK
+    elseif(arg(0) == 'admin' and arg(1) == 'content' and arg(2) == 'types') {
+      $for = 'Body';
+      $node_type = arg(3);
+    }
+
+    // Content-type
+    if($node_id) {
+      $node_object = db_fetch_object(db_query('SELECT type AS type FROM {node} WHERE nid = %d', $node_id));
+      $node_type = $node_object->type;
+    }
+
+    // Right settings
+    $def_setting = isset($setting['htmLawedDef'][$for]) ? $setting['htmLawedDef'][$for] : array('show'=>1, 'save'=>0, 'help'=>'Tags allowed: a, em, strong, cite, code, ol, ul, li, dl, dt, dd');
+    if($node_type) {
+      $setting = isset($setting[$node_type][$for]) ? $setting[$node_type][$for] : $def_setting;
+    }
+    else {
+      $setting = $def_setting;
+    }
+
+    if(!empty($setting['show']) or !empty($setting['save'])) {
+      $setting = !empty($setting['default']) ? $def_setting : $setting;
+      return $setting['help'];
+    }
+
+    return;
+  }
+
+  // Long tips: Content-type always unknown
+  return t('HTML markup is restricted using the <a href="http://www.bioinformatics.org/phplabware/internal_utilities/htmLawed/index.php">htmLawed</a> filter to make input text more secure, and standard- and admin. policy-compliant. More details about the restrictions in effect (that may vary from one content-type to another) may be available elsewhere, such as in the text of the input format filter-tips and on the input format configuration forms.') .
+  (!user_access('administer htmLawed (X)HTML filter/purifier') ? '' : ' ' . t('For information on configuring htmLawed, visit the htmLawed !help section.', array('!help' =>  l(t('help'), 'admin/help/htmLawed'))));
+}
+
+/*
+ * Help page on module usage
+ */
+function htmLawed_help($path, $arg) { // Drupal 6 diff.
+  switch ($path) {
+    case 'admin/help#htmLawed':
+    case 'admin/content/htmLawed':
+      $module_path = drupal_get_path('module', 'htmLawed');
+      include_once "$module_path/htmLawed/htmLawed.php"; // For version number
+      return '<div>'. t('The htmLawed (X)HTML filter/purifier module restricts HTML markup in content and makes it more secure, and standard- and admin. policy-compliant using the <a href="http://www.bioinformatics.org/phplabware/internal_utilities/htmLawed/index.php">htmLawed</a> (version !version) PHP software. Copies of the htmLawed <a href="!doc">documentation</a> and the module <a href="!readme">readme</a> files should be available on your site. A <a href="!handbook">handbook</a> detailing htmLawed module usage may be available on the Drupal website.', array('!doc' => drupal_get_path('module', 'htmLawed') . '/htmLawed/htmLawed_README.htm', '!readme' => drupal_get_path('module', 'htmLawed') . '/readme.txt', '!handbook'=>'http://drupal.org/search/apachesolr_search/htmlawed?filters=type%3abook', '!version' => hl_version())) . '<br /><br />' .
+
+      t('This module can be used to have the htmLawed-filtering configured differently for different input formats and content-types as well as for comments, teasers (like RSS newsfeed items), and other special content. ') . '<br /><br /><hr /><br />' .
+
+      t('To <strong>enable</strong> htmLawed per input format, visit the <em>!input_formats</em> section and choose to <em>configure</em> an input format that needs to include htmLawed-filtering. In the subsequently-displayed form, enable the htmLawed filter.', array('!input_formats' => l(t('Input formats'), 'admin/settings/filters'))) . '<blockquote><div>' . t('Because htmLawed does the task of the Drupal <em>HTML filter</em>, that filter can be disabled. Filters like <em>HTML corrector</em> that are used to balance or properly nest HTML tags can also be disabled. Unlike the Drupal filter, htmLawed can also be used to restrict HTML attributes and URL protocols, balance tags, etc., and that too in a content-type- and case-specific manner. Depending on the types of filters the input format uses, you may need to re-arrange the filters using the <em>rearrange</em> link on the form -- htmLawed would usually be the last filter to be run.') . '<br /><br />' .
+
+      t('If a filter that relies on the &lt;, &gt; or &amp; character (such as Drupal <em>PHP evaluator</em>) is being used with the input format, then that filter should run before htmLawed. Further, if that filter generates HTML markup, then htmLawed should be configured appropriately to permit such markup.'). '</div></blockquote>' .
+
+      t('The <strong>customization</strong> of htmLawed is dictated by two parameters, <em>Config.</em> and <em>Spec.</em>. Setting specific htmLawed filter settings involves providing values for the two parameters in the htmLawed settings form. To get to the settings form, use the <em>Configure</em> link for an input format for which htmLawed has been enabled. On the settings form, a sub-form, <em>Default</em>, can be used to set the default values to be used for any content-type. Content (node)-type-specific sub-forms allow you to over-ride the default values as well as to choose to use (or disable) htmLawed.') . '<br /><br />' .
+
+      t('The <em>Config.</em> form-field is filled with comma-separated, quoted, key-value pairs like <code>"safe"=>1, "element"=>"a, em, strong"</code> (these are interpreted as PHP array elements). The <em>Spec.</em> field is an optional string of text... see htmLawed <a href="!doc">documentation</a> for more. Content of the <em>Help</em> field will be used to inform users about the filter, such as what tags are allowed.', array('!doc' => drupal_get_path('module', 'htmLawed') . '/htmLawed/htmLawed_README.htm')) . '<blockquote><div>' .
+
+      t('The form-fields are pre-filled the first time htmLawed is being configured for an input format. The values allow the <em>a, em, strong, cite, code, ol, ul, li, dl, dt</em> and <em>dd</em> HTML tags, deny the <em>id</em> and <em>style</em> attributes, and any unsafe markup (such as the scriptable <em>onclick</em> attribute). These same values may be used during the filtering process if the specific or default settings cannot be found. Note that emptying a <em>Config.</em> field does not mean that the default setting will be used.') . '</div></blockquote>' .
+
+      t('Individualized settings can be applied for <em>Body</em>, <em>Comment</em> and <em>Teaser</em>: the first refers to the main content; the second to user comments for the main content; and, the third, to the teasers (like RSS newsfeed items) generated from the main content. You may have a need for a fourth case, <em>Other</em>, if you use modules like <em>Views</em> that create extra input fields (like <em>Header</em>) that are not content (node)-type-specific. Content-type-specific settings for <em>Other</em> are obviously not possible') . '<br /><br />' .
+
+      t('For <em>Body</em> and <em>Comment</em>, enabling the filter for <em>save</em> can be used to filter input before storage in the database (core Drupal does not filter submissions; filtering is done dynamically when content is displayed on as web-pages), but you have to check if that affects the functioning of filters (other than the Drupal <em>PHP evaluator</em>) that rely on the &lt;, &gt; or &amp; character. For <em>Teaser</em>, the htmLawed filtering is done at the end of all other filtering, including any prior htmLawed filtering because of <em>Body</em>, and the default settings will allow the <em>br</em> and <em>p</em> tags as well.') . '<br /><br /><hr /><br />' .
+
+      t('To control user <strong>permissions</strong> for editing of the htmLawed settings, <a href="!perm">click here</a>.', array('!perm'=>'http://localhost/d5/?q=admin/user/access#module-htmLawed')) . ' Usually, only the main administrator would have the permission.<br /><br />' .
+
+      t('Content-type-specific htmLawed settings are <strong>deleted</strong> when a type is deleted. However, input-format-specific htmLawed settings are not automatically deleted when a format is deleted; you have to <em>!run_cron_manually</em> to get rid of the no-more-needed settings. Disabling htmLawed for an input format will not delete the associated settings. <em>!Uninstalling</em> the htmLawed module will delete all htmLawed-related settings, but disabling will not result in any deletion.', array('!run_cron_manually' => l(t('run cron manually'), 'admin/reports/status'), '!Uninstalling' => l(t('Uninstalling'), 'admin/build/modules/uninstall'))) . '<br /><br />' . // Drupal 6 diff
+
+      t('It is important to understand the security implications of the htmLawed settings in use and the limitations of htmLawed. To keep the htmLawed script included with the module updated, replace the <em>htmLawed.php</em> and <em>htmLawed_README.htm</em> files inside the <em>htmLawed</em> sub-folder of the module folder with newer versions downloaded from the <a href="http://www.bioinformatics.org/phplabware/internal_utilities/htmLawed/index.php">htmLawed</a>.') . '<br /><br /></div>';
+      break;
+    case 'admin/settings/filters/%/configure': // Drupal6 diff
+      $setting = variable_get('htmLawed_format_'. arg(3), 0);
+      if(!is_array($setting)) {
+        return '<p>'. t('Though the htmLawed filter settings are pre-filled below, you <em>must save</em> the configuration for the filter to be activated.') .'</p>';
+      }
+      break;
+  }
+}
+
+/*
+ * The module_nodeapi hook is used for 'save' for 'Body' (also, effectively, for 'save' for 'Teaser') and for 'show' for 'Teaser'
+ * Calls _htmLawed_process() to filter data before it is stored
+ * The module_filter hook is for the 'show', and module_comment hook for 'Comment' for'save'
+ * No default filtering for 'save' if content-type-settings are unavailable as hook_filter will always be run later
+ */
+function htmLawed_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
+  $config = 0;
+  switch($op) {
+    // 'Body' 'save'; 'Teaser' 'save' too as teaser is generated from body
+    case 'presave': // Drupal 6 diff
+      $filters = array_keys(filter_list_format($node->format));
+      if(in_array('htmLawed/0', $filters)) {
+        $setting = variable_get('htmLawed_format_'. $node->format, 0);
+        if(!is_array($setting)) {
+          return;
+        }
+        $def_setting = isset($setting['htmLawedDef']['Body']) ? $setting['htmLawedDef']['Body'] : array('config'=>"'safe'=>1, 'elements'=>'a, em, strong, cite, code, ol, ul, li, dl, dt, dd', 'deny_attribute'=>'id, style'",'spec'=>'');
+        $setting = isset($setting[$node->type]['Body']) ? $setting[$node->type]['Body'] : array();
+        if(!empty($setting['save'])) {
+          $setting = !empty($setting['default']) ? $def_setting : $setting;
+          eval('$config = array('. $setting['config']. ');');
+          if(is_array($config)) {
+            if(isset($node->body)) {
+              // Leave any PHP code & Drupal's teaser mark intact
+              $htmLawed_hook_parameter = (in_array('php/0', $filters) && strpos($node->body, '<?') !== FALSE) ? 'save_php' : 0;
+              $node->body = _htmLawed_process($node->body, $config, $setting['spec'], $htmLawed_hook_parameter);
+              $node->body = str_replace('&lt;!--break--&gt;', '<!--break-->', $node->body);
+            }
+            if(isset($node->teaser)) {
+              $htmLawed_hook_parameter = (in_array('php/0', $filters) && strpos($node->teaser, '<?') !== FALSE) ? 'save_php' : 0;
+              $node->teaser = _htmLawed_process($node->teaser, $config, $setting['spec'], $htmLawed_hook_parameter);
+            }
+          }
+        }
+      }
+      break;
+    // 'Teaser' 'show'; content already filtered, incl. by htmLawed_filter based on 'Body' 'show'
+    case 'rss item':
+      $filters = array_keys(filter_list_format($node->format));
+      if(in_array('htmLawed/0', $filters) and isset($node->teaser)) {
+        $setting = variable_get('htmLawed_format_'. $node->format, 0);
+        if(!is_array($setting)) {
+          return;
+        }
+        $def_setting = isset($setting['htmLawedDef']['RSS']) ? $setting['htmLawedDef']['RSS'] : array('show'=>1, 'config'=>"'safe'=>1, 'elements'=>'a, em, strong, cite, code, ol, ul, li, dl, dt, dd, br, p', 'deny_attribute'=>'id, style'",'spec'=>'');
+        $setting = isset($setting[$node->type]['RSS']) ? $setting[$node->type]['RSS'] : $def_setting;
+        if(!empty($setting['show'])) {
+          $setting = !empty($setting['default']) ? $def_setting : $setting;
+          eval('$config = array('. $setting['config']. ');');
+          if(is_array($config)) {
+            $node->teaser = _htmLawed_process($node->teaser, $config, $setting['spec']);
+          }
+        }
+      }
+      break;
+    // 'Teaser' 'show' for non-feed teaser; content already filtered, incl. by htmLawed_filter based on 'Body' 'show'
+    case 'alter':
+      $filters = array_keys(filter_list_format($node->format));
+      if(in_array('htmLawed/0', $filters) and isset($node->teaser)) {
+        $setting = variable_get('htmLawed_format_'. $node->format, 0);
+        if(!is_array($setting)) {
+          return;
+        }
+        $def_setting = isset($setting['htmLawedDef']['RSS']) ? $setting['htmLawedDef']['RSS'] : array('show'=>1, 'config'=>"'safe'=>1, 'elements'=>'a, em, strong, cite, code, ol, ul, li, dl, dt, dd, br, p', 'deny_attribute'=>'id, style'",'spec'=>'');
+        $setting = isset($setting[$node->type]['RSS']) ? $setting[$node->type]['RSS'] : $def_setting;
+        if(!empty($setting['show'])) {
+          $setting = !empty($setting['default']) ? $def_setting : $setting;
+          eval('$config = array('. $setting['config']. ');');
+          if(is_array($config)) {
+            $node->teaser = _htmLawed_process($node->teaser, $config, $setting['spec']);
+          }
+        }
+      }
+      break;
+  }
+}
+
+/*
+ * Delete content-type htmLawed settings when the content-type is deleted
+ * Also see htmLawed_cron() and htmLawed_uninstall() in htmLawed.install
+ */
+function htmLawed_node_type($op, $info) {
+  switch($op) {
+    case 'delete':
+      $result = db_query('SELECT format AS format FROM {filter_formats}');
+      while($format = db_fetch_object($result)) {
+        $format = $format->format;
+        $setting = variable_get('htmLawed_format_'. $format, NULL);
+        if(isset($setting[$info->type]) and is_array($setting[$info->type])) {
+          unset($setting[$info->type]);
+          variable_set('htmLawed_format_'. $format, $setting);
+        }
+      }
+      break;
+  }
+}
+
+/*
+ * This also helps display the htmLawed section on the administration-by-module page
+ */
+function htmLawed_perm() {
+  return array('administer htmLawed (X)HTML filter/purifier');
+}
+
+function htmLawed_theme() { // Drupal 6 new
+  return array(
+    'htmLawed_tabled_subform' => array(
+      'arguments' => array('subform' => NULL)
+    )
+  );
+}
+
+/*
+ * Render sub-forms for htmLawed settings in tabular format
+ */
+function theme_htmLawed_tabled_subform($subform = NULL) {
+  $output = '';
+  $my = array();
+  foreach($subform as $k=>$v) {
+    $my[substr(strrchr($k, '_'), 1)] = $v;
+  }
+  $rows[0][0] = array('data'=>drupal_render($my['guide']). (isset($my['default']) ? drupal_render($my['default']) : ''). (isset($my['show']) ? drupal_render($my['show']) : ''). (isset($my['save']) ? drupal_render($my['save']) : ''), 'style'=>'width: 50%');
+  $rows[0][1] = array('data'=>drupal_render($my['help']), 'style'=>'width: 50%');
+  $rows[1][0] = array('data'=>drupal_render($my['config']), 'style'=>'width: 50%');
+  $rows[1][1] = array('data'=>drupal_render($my['spec']), 'style'=>'width: 50%');
+
+  $output = theme('table', array(), $rows);
+  return $output;
+}
+
+/*
+ * Using htmLawed's hook function to preserve PHP code before 'save'
+ */
+function _htmLawed_save_php($text) {
+  return preg_replace(array('`<\?php(.+?)\?>`sme', '`<\?php(.*)$`sme'), array("\"\x83?php\". str_replace(array('<', '>', '&'), array('&lt;', '&gt;', '&amp;'), '$1'). \"?\x84\"", "\"\x83?php\". str_replace(array('<', '>', '&'), array('&lt;', '&gt;', '&amp;'), '$1')"), $text);
+}
+
+/*
+ * The htmLawed filtering process
+ */
+function _htmLawed_process($text = '', $config = NULL, $spec = NULL, $hook_parameter = 0) {
+  $module_path = drupal_get_path('module', 'htmLawed');
+  include_once "$module_path/htmLawed/htmLawed.php";
+  if($hook_parameter == 'save_php'){
+    $config['hook'] = '_htmLawed_save_php';
+  }
+  $text = htmLawed($text, $config, $spec);
+  if($hook_parameter == 'save_php'){
+    $text = preg_replace(array('`\x83\?php(.+?)\?\x84`sme', '`\x83\?php(.*)$`sme'), array("'<?php'. str_replace(array('&amp;', '&lt;', '&gt;'), array('&', '<', '>'), '$1'). '?>'", "'<?php'. str_replace(array('&amp;', '&lt;', '&gt;'), array('&', '<', '>'), '$1')"), $text);
+  }
+  return $text;
+}
+
+/*
+ * Content-type-specific and default htmLawed settings are stored in variable table in input-format specific fields: htmLawed_format_1, _2, etc.
+ * E.g., as array('story'=>array('Body'=>array('show'=>1, 'save'=>1,...), 'Comment'=>array('show'=>1...)), 'page'=>array('show'=>1...
+ * There is no 'save' key for 'RSS'.
+ * There are no 'save' or 'default' keys in the arrays of 'htmLawedDef'; also, 'show' is only for 'Other'
+ * 'Other' key is only for 'htmLawedDef'.
+ */
+function _htmLawed_store_setting($form_id = NULL, &$form) { // Many Drupal 6 diff
+  // Content-specific values
+  $content_types = node_get_types('names');
+  foreach($content_types as $k=>$v) {
+    foreach(array('Body', 'Comment', 'RSS') as $for) {
+      $val[$for] = array('default'=>$form['values']['htmLawed_'. $k. '_'. $for. '_default'], 'show'=>$form['values']['htmLawed_'. $k. '_'. $for. '_show'], 'config'=>$form['values']['htmLawed_'. $k. '_'. $for. '_config'], 'spec'=>$form['values']['htmLawed_'. $k. '_'. $for. '_spec'], 'help'=>$form['values']['htmLawed_'. $k. '_'. $for. '_help']);
+      unset($form['values']['htmLawed_'. $k. '_'. $for. '_default'], $form['values']['htmLawed_'. $k. '_'. $for. '_show'], $form['values']['htmLawed_'. $k. '_'. $for. '_config'], $form['values']['htmLawed_'. $k. '_'. $for. '_spec'], $form['values']['htmLawed_'. $k. '_'. $for. '_help']);
+      if($for != 'RSS') {
+        $val[$for]['save'] = $form['values']['htmLawed_'. $k. '_'. $for. '_save'];
+        unset($form['values']['htmLawed_'. $k. '_'. $for. '_save']);
+      }
+    }
+    $setting[$k] = $val;
+  }
+
+  // Default values
+  foreach(array('Body', 'Comment', 'Other', 'RSS') as $for) {
+    $def[$for] = array('config'=>$form['values']['htmLawed_htmLawedDef_'. $for. '_config'], 'spec'=>$form['values']['htmLawed_htmLawedDef_'. $for. '_spec'], 'help'=>$form['values']['htmLawed_htmLawedDef_'. $for. '_help']);
+    unset($form['values']['htmLawed_htmLawedDef_'. $for. '_config'], $form['values']['htmLawed_htmLawedDef_'. $for. '_spec'], $form['values']['htmLawed_htmLawedDef_'. $for. '_help']);
+    if($for == 'Other') {
+      $def[$for]['show'] = $form['values']['htmLawed_htmLawedDef_'. $for. '_show'];
+      unset($form['values']['htmLawed_htmLawedDef_'. $for. '_show']);
+    }
+  }
+  $setting['htmLawedDef'] = $def;
+
+  variable_set('htmLawed_format_'. $form['values']['format'], $setting);
+}

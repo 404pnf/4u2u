@@ -1,0 +1,3 @@
+name = API For EGS
+description = "为EGS查询用户信息、积分扣除"
+core = 6.x

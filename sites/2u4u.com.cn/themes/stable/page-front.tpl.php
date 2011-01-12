@@ -204,7 +204,11 @@
 		</div> 
 	</div>
 	
-	
+                  <div id="ad2container">
+				   <?php $block_search = module_invoke('block', 'block', 'view', 82); ?>
+				   <?php print $block_search['content'];?> 
+
+                  </div>	
 	
 		  <div id= "view_yuedu" class="clearfix library-bg">
 			<div id="yuedu_title" class="redline-title"><a href="http://ebook.2u4u.com.cn/" target="_blank" class="h">电子图书馆</a></div>

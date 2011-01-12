@@ -1,5 +1,9 @@
 <?php
 
+// 需要inlcude一下这个文件，因为里面有函数convert_pdf
+// 如果不include这个文件，直接通过后台界面上传pdf就报错
+include_once "yuedu.admin.inc";
+
 function yuedu_menu() {
   $items = array ();
   $items ['yuedu/doc'] = array (
@@ -48,16 +52,16 @@ function yuedu_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     switch ($op) {
       case 'presave':
         if (isset($node->field_yuedu_pdf)) {
-          //convert_pdf($node);
+	  convert_pdf($node);
           $node->field_yuedu_player [0] ['format'] = 2;
         }
         break;
       case 'insert':
-        //if (isset($node->field_yuedu_pdf)) {
-          //convert_pdf($node);
-          //$node->field_yuedu_player [0] ['format'] = 2;
-          //node_save($node);
-        //}
+        if (isset($node->field_yuedu_pdf)) {
+          convert_pdf($node);
+          $node->field_yuedu_player [0] ['format'] = 2;
+          node_save($node);
+        }
          break;
       case 'view':
         $mpath = drupal_get_path('module', 'yuedu');

@@ -1,0 +1,328 @@
+<?php
+// $Id: compass.module,v 1.1.2.6 2010/02/04 02:29:49 bangpound Exp $
+
+/**
+ * @file
+ * Compass module compiles Sass stylesheets for themes.
+ *
+ * The shell execution functions were taken from ImageAPI module ImageMagick
+ * toolkit
+ */
+
+/**
+ * Implementation of hook_help()
+ */
+function compass_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#compass':
+      $output = '<p>'. t('Compass module supports the !compass_link framework tool in your Drupal theme development workflow. Compass stylesheets are optionally compiled at cron runs or on demand. You must configure your theme\'s info file for the module to work.', array('!compass_link' => l('Compass', 'http://wiki.github.com/chriseppstein/compass'))) .'</p>';
+      $output .= '<h2>'. t('Configuration'). '</h2>';
+      $output .= '<p>'. t('Add this line to your theme\'s .info file') .'</p>';
+      $output .= '<pre><code>compass[status] = 1</code></pre>';
+      $output .= '<p>'. t('Other command line options can be specified using their long argument names with underscores ( %underscore ) instead of hyphens ( %hyphen ).', array('%underscore' => '_', '%hyphen' => '-')) .'</p>';
+      $output .= '<pre><code>compass[sass_dir] = "src"</code></pre>';
+      $output .= '<p>'. t('If you have used compass to create your theme stylesheets, you can rely on the config.rb in the theme\'s directory'). '</p>';
+      return $output;
+    default:
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_menu()
+ */
+function compass_menu() {
+  $items = array();
+  $items['devel/compass'] = array(
+    'title' => 'Run Compass',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('compass_process'),
+    'access arguments' => array('access devel information'),
+    'menu_name' => 'devel',
+  );
+  $items['admin/settings/compass'] = array(
+    'title' => 'Compass',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('compass_settings_form'),
+    'access arguments' => array('administer site configuration'),
+  );
+  return $items;
+}
+
+/**
+ * An implementation of hook_menu_link_alter(). Flag this link as needing alter at display time.
+ * This is more robust that setting alter in hook_menu(). See compass_translated_menu_link_alter().
+ *
+ **/
+function compass_menu_link_alter(&$item, &$menu) {
+  if ($item['link_path'] == 'devel/compass') {
+    $item['options']['alter'] = TRUE;
+  }
+}
+
+/**
+ * An implementation of hook_translated_menu_item_alter(). Append dynamic
+ * querystring 'destination' to several of our own menu items.
+ *
+ **/
+function compass_translated_menu_link_alter(&$item) {
+  if ($item['href'] == 'devel/compass') {
+    $item['localized_options']['query'] = drupal_get_destination();
+  }
+}
+
+/**
+ * Implementation of hook_cron().
+ */
+function compass_cron() {
+  if (variable_get('compass_cron', TRUE)) {
+    $themes = list_themes();
+    foreach ($themes as $theme) {
+      if ($theme->status && isset($theme->info['compass']['status'])) {
+        _compass_update($theme->name, $output, $errors);
+        watchdog('compass', 'Compass run on %theme', array('%theme' => $theme->info['name']));
+      }
+    }
+  }
+}
+
+/**
+ * Page callback shows compass output through a form for easy redirect
+ */
+function compass_process($form_state) {
+  global $theme;
+
+  init_theme();
+  $themes = list_themes();
+
+  $sass_theme = isset($form_state['values']['theme']) ? $form_state['values']['theme'] : $theme;
+
+  $options = array();
+  foreach ($themes as $key => $value) {
+    if (isset($value->info['compass']) && $value->info['compass']['status']) {
+      $options[$key] = $value->info['name'];
+    }
+  }
+  drupal_set_title('Compass');
+  if (isset($themes[$sass_theme]->info['compass']) && $themes[$sass_theme]->info['compass']['status']) {
+    _compass_update($sass_theme, $output, $errors);
+  }
+  else {
+    $output = 'Compass is not enabled for this theme.';
+  }
+  $form['#attributes'] = array(
+    'class' => 'container-inline',
+  );
+  $form['theme'] = array(
+    '#title' => 'Theme',
+    '#type' => 'select',
+    '#options' => $options,
+    '#default_value' => $sass_theme,
+  );
+  $form['compile'] = array(
+    '#type' => 'submit',
+    '#value' => t('Compile'),
+  );
+  $form['return'] = array(
+    '#type' => 'submit',
+    '#value' => t('Return'),
+  );
+  $form['compass_output'] = array(
+    '#prefix' => '<pre>',
+    '#value' => $output,
+    '#suffix' => '</pre>',
+  );
+  return $form;
+}
+
+/**
+ * Submit function
+ */
+function compass_process_submit($form, &$form_state) {
+  if ($form_state['clicked_button']['#value'] == t('Compile')) {
+    $form_state['rebuild'] = TRUE;
+  }
+}
+
+/**
+ * Settings form for the toolkit.
+ */
+function compass_settings_form() {
+  $form = array();
+  $form['compass_binary'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Compass Binary'),
+    '#collapsible' => FALSE,
+    '#description' => t('Compass is a standalone Ruby script used to compile CSS from Sass stylesheets. To use it, it must be installed on your server and you need to know where it is located. If you are unsure of the exact path consult your ISP or server administrator.'),
+  );
+  $form['compass_binary']['version'] = array('#weight' => -1);
+  $form['compass_binary']['#after_build'] = array('_compass_build_version');
+  $form['compass_binary']['compass_path'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Path of "compass" executable'),
+    '#default_value' => variable_get('compass_path', '/usr/bin/compass'),
+    '#required' => TRUE,
+    '#description' => t('Specify the complete path to the Compass binary. For example: <kbd>/usr/bin/compass</kbd>'),
+    '#element_validate' => array('compass_validate_path'),
+  );
+  $form['compass_binary']['compass_debugging'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Display debugging information'),
+    '#default_value' => variable_get('compass_debugging', 0),
+    '#description' => t('Checking this option will display the Compass commands and output to users with the <em>administer site configuration</em> permission.'),
+    '#weight' => 2,
+  );
+  $form['compass_output_style'] = array(
+    '#type' => 'radios',
+    '#title' => 'Output Style',
+    '#options' => array(
+      'nested' => 'Nested',
+      'expanded' => 'Expanded',
+      'compact' => 'Compact',
+      'compressed' => 'Compressed',
+    ),
+    '#default_value' => variable_get('compass_output_style', 'nested'),
+  );
+  $form['compass_environment'] = array(
+    '#type' => 'radios',
+    '#title' => 'Output Style',
+    '#options' => array(
+      'development' => 'Development',
+      'production' => 'Production',
+    ),
+    '#description' => 'Use sensible defaults for your current environment.',
+    '#default_value' => variable_get('compass_environment', 'production'),
+  );
+  $form['compass_relative_assets'] = array(
+    '#type' => 'checkbox',
+    '#title' => 'Relative Assets',
+    '#description' => 'Indicates whether the compass helper functions should generate relative urls from the generated css to assets, or absolute urls using the http path for that asset type.',
+    '#default_value' => variable_get('compass_relative_assets', FALSE)
+  );
+  $form['compass_cron'] = array(
+    '#title' => 'Run <em>compass</em> during cron tasks',
+    '#type' => 'checkbox',
+    '#default_value' => variable_get('compass_cron', TRUE),
+  );
+  return system_settings_form($form);
+}
+
+function _compass_build_version($form_element, $form_state) {
+  // make sure path is set and valid before running after build.
+  if ($path_errors = _compass_check_path($form_state['values']['compass_path'])) {
+    // check here is primarily for pre-existing bad settings...
+    // the #validate should prevent users from adding bad paths.
+    $form_element['compass_binary'] = array(
+      '#value' => '<p class="error">'. implode('<br />', $path_errors) .'</p>',
+    );
+  }
+  else {
+    _compass_exec('--version', $output, $errors);
+    $form_element['compass_binary']['version'] = array(
+      '#title' => t('Version information'),
+      '#value' => '<pre>'. check_plain(trim($output)) .'</pre>',
+      '#description' => t('The <kbd>compass</kbd> binary was located and return this version information.'),
+    );
+  }
+  $form_element['compass_binary']['version']['#type'] = 'item';
+  $form_element['compass_binary']['version']['#weight'] = -1;
+  return $form_element;
+}
+
+function compass_validate_path($element, &$form_state) {
+  $errors = _compass_check_path($element['#value']);
+  if ($errors) {
+    form_set_error($element['#parents'][0], implode('<br />', $errors));
+  }
+}
+
+function _compass_check_path($path) {
+  $errors = array();
+  if (!is_file($path)) {
+    $errors[] = t('The specified Compass path %file does not exist.', array('%file' => $path));
+  }
+  if (!$errors && !is_executable($path)) {
+    $errors[] = t('The specified Compass path %file is not executable.', array('%file' => $path));
+  }
+  if ($errors && $open_basedir = ini_get('open_basedir')) {
+    $errors[] = t('PHP\'s <a href="!open-basedir">open_basedir</a> security restriction is set to %open-basedir, which may be interfering with attempts to locate Compass.', array('%file' => $path, '%open-basedir' => $open_basedir, '!info-link' => url('http://php.net/features.safe-mode#ini.open-basedir')));
+  }
+  return $errors;
+}
+
+function _compass_update($theme, &$output, &$errors) {
+  $themes = list_themes();
+  $theme = $themes[$theme];
+  $args = array();
+  $args = $theme->info['compass'];
+  unset($args['status']);
+  $args['update'] = getcwd() .'/'. dirname($theme->filename);
+  $args['output_style'] = variable_get('compass_output_style', 'nested');
+  $args['environment'] = variable_get('compass_environment', 'production');
+  if (variable_get('compass_relative_assets', FALSE) === TRUE) {
+    $args['relative_assets'] = variable_get('compass_relative_assets', FALSE);
+  }
+  $command_args = '';
+  foreach ($args as $key => $value) {
+    $command_args .= '--'. str_replace('_', '-', $key) .' '. $value .' ';
+  }
+  _compass_exec($command_args, $output, $errors);
+}
+
+// http://wiki.github.com/chriseppstein/compass/command-line-tool
+
+function _compass_exec($command_args = '', &$output, &$errors) {
+  $command_args .= ' --boring';
+  $compass_path = variable_get('compass_path', '/usr/bin/compass');
+  $errors = _compass_check_path($compass_path);
+  if ($errors) {
+    watchdog('compass', '!errors', array('!errors' => implode('<br />', $errors)), WATCHDOG_ERROR);
+    return FALSE;
+  }
+
+  // TODO determine whether this module has any hope of ever working on Windows
+  if (strstr($_SERVER['SERVER_SOFTWARE'], 'Win32') || strstr($_SERVER['SERVER_SOFTWARE'], 'IIS')) {
+    // Use Window's start command to avoid the "black window" from showing up:
+    // http://us3.php.net/manual/en/function.exec.php#56599
+    // Use /D to run the command from PHP's current working directory so the
+    // file paths don't have to be absolute.
+    $compass_path = 'start "window title" /D'. escapeshellarg(getcwd()) .' /B '. escapeshellarg($compass_path);
+  }
+
+  $descriptors = array(
+    0 => array('pipe', 'r'), // stdin
+    1 => array('pipe', 'w'), // stdout
+    2 => array('pipe', 'w')  // stderr
+  );
+  if ($h = proc_open($compass_path .' '. $command_args, $descriptors, $pipes, $_SERVER['DOCUMENT_ROOT'])) {
+    fclose($pipes[0]);
+    stream_set_blocking($pipes[1], 0);
+    stream_set_blocking($pipes[2], 0);
+
+    $output = '';
+    $errors = '';
+    while (!feof($pipes[1]) || !feof($pipes[2])) {
+      if (!feof($pipes[1])) {
+        $output .= stream_get_contents($pipes[1]);
+      }
+      if (!feof($pipes[2])) {
+        $errors .= stream_get_contents($pipes[2]);
+      }
+    }
+
+    // Display debugging information to authorized users.
+    if (variable_get('compass_debugging', FALSE) && user_access('administer site configuration')) {
+      drupal_set_message(t('Compass command: @command', array('@command' => $compass_path .' '. $command_args)));
+      drupal_set_message(t('Compass output: !output', array('!output' => '<pre>'. $output .'</pre>')));
+    }
+
+    if ($errors) {
+      drupal_set_message(t('Compass reported an error: !error', array('!error' => '<pre>'. $errors .'</pre>')), 'error');
+    }
+
+    fclose($pipes[1]);
+    fclose($pipes[2]);
+    return proc_close($h);
+  }
+  return FALSE;
+}

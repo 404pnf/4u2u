@@ -1,5 +1,5 @@
 <?php
-// $Id: multichoice.install,v 1.2.2.12 2010/06/22 10:29:18 falcon Exp $
+// $Id: multichoice.install,v 1.2.2.16 2010/11/15 08:12:29 falcon Exp $
 
 /**
  * Sponsored by: Norwegian Centre for Telemedicine
@@ -73,6 +73,9 @@ function multichoice_schema() {
     ),
     'primary key' => array(
       'user_answer_id', 'answer_id'
+    ),
+    'indexes' => array(
+      'answer_id' => array('user_answer_id'),
     ),
   );
 
@@ -279,7 +282,7 @@ function multichoice_update_6402() {
 
 /**
  * Implementation of hood_update_N
- * 
+ *
  * Allow negative score values.
  */
 function multichoice_update_6403() {
@@ -292,6 +295,28 @@ function multichoice_update_6403() {
       'default' => 0,
     ));
   }
+  return $results;
+}
+
+/**
+ * Implementation of hood_update_N
+ *
+ * Make sure that the quiz_question module is used to show the multichoice questions.
+ */
+function multichoice_update_6404() {
+  $results = array();
+  $results[] = update_sql("UPDATE {node_type} SET module = 'quiz_question' WHERE type = 'multichoice'");
+  return $results;
+}
+
+/**
+ * Implementation of hook_update_N().
+ *
+ * Add index to improve performance
+ */
+function multichoice_update_6405() {
+  $results = array();
+  db_add_index($results, 'quiz_multichoice_user_answer_multi', 'answer_id', array('user_answer_id'));
   return $results;
 }
 

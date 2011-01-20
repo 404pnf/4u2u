@@ -1,5 +1,5 @@
 <?php
-// $Id: long_answer.admin.inc,v 1.2.2.9 2010/03/02 10:19:27 falcon Exp $
+// $Id: long_answer.admin.inc,v 1.2.2.10 2010/11/05 16:14:47 falcon Exp $
 
 /**
  * Administration pages for the long answer questions module.
@@ -29,9 +29,9 @@ function long_answer_view_unscored() {
  *  Text to display.
  */
 function long_answer_edit_score($vid, $rid) {
-  
+
   // We have to do the vid -> nid lookup ourselves because node_load uses only node.vid,
-  // and we need to be able to access old nodes in node_revisions.vid. 
+  // and we need to be able to access old nodes in node_revisions.vid.
   $nid = db_result(db_query("SELECT nid FROM {node_revisions} WHERE vid = %d", $vid));
   if (!$nid) {
     drupal_not_found();
@@ -54,7 +54,7 @@ function long_answer_edit_score($vid, $rid) {
   }
   else {
     $answer->rel_score = 0;
-  } 
+  }
   drupal_set_title(t('Score answer to "@title"', array('@title' => $node->title)));
   return drupal_get_form('long_answer_score_form', $node, $answer);
 }
@@ -74,7 +74,7 @@ function long_answer_score_form($form_state, $node, $answer) {
     drupal_not_found();
     return;
   }
-  
+
   // Set up the form
   $form['question'] = array(
     '#type' => 'item',

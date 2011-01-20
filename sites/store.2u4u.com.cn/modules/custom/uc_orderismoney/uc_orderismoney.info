@@ -1,0 +1,7 @@
+; $Id$
+name = Order Is Money
+description =用来判断定单是用现金结帐还是用积分结帐.
+dependencies[] = uc_ismoney
+package = Ubercart - extra
+core = 6.x
+php = 5.0

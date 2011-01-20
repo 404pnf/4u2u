@@ -1,0 +1,9 @@
+/* $Id: style.css,v 1.38.2.4 2009/09/14 13:10:47 goba Exp $ */
+
+
+#uc-payease-ec-form{
+	border:1px solid #BBBBBB;
+	margin:0.5em 0em;
+	text-align:right;
+	width:100%;
+}

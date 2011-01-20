@@ -1,0 +1,261 @@
+<?php
+
+//$Id: uc_userpoints_discount.module,v 1.4.2.2 2009/05/14 04:18:27 smokris Exp $
+
+define('USERPOINTS_UC_DISC',   'userpoints_ubercart_payment');
+define('USERPOINTS_DISCOUNT',     'userpoints_discount');
+define('UC_USERPOINTS_DISCOUNT_MODERATE',      'uc_userpoints_discount_moderate');
+define('UC_USERPOINTS_DISCOUNT_MAXP',      'uc_userpoints_discount_maxp');
+define('USERPOINTS_DISCOUNT_CATEGORY',	'userpoints_discount_category');
+
+function uc_userpoints_discount_help($path, $arg) {
+  switch ($path) {
+    case 'admin/modules#description':
+      $output = t('<strong>Userpoints Discounts:</strong> Interfaces userpoints with Ubercart, so users can use points as a discount.');
+      break;
+  }
+  return $output;
+}
+
+function uc_userpoints_discount_userpoints($op, $points = 0, $uid = 0, $event = '') {
+  switch($op) {
+    case 'setting':
+      if (module_exists('uc_cart') && module_exists('uc_payment')) {
+        $group = 'uc_userpoints_discount';
+        $form[$group] = array(
+          '#type' => 'fieldset',
+          '#collapsible' => TRUE,
+          '#collapsed' => TRUE,
+          '#title' => t('Ubercart Discount Options'),
+        );    
+        $form[$group][USERPOINTS_UC_DISC] = array(
+          '#type' => 'textfield',
+          '#title' => t('!Points used in discount (for every dollar)', userpoints_translation()),
+          '#default_value' => variable_get(USERPOINTS_UC_DISC, 1),
+          '#size' => 5,
+          '#maxlength' => 5,
+        );
+        $form[$group][UC_USERPOINTS_DISCOUNT_MAXP] = array(
+          '#type' => 'textfield',
+          '#title' => t('Enter the maximum percentage of the order total that can be discounted using points. Please do not include a % sign'),
+          '#default_value' => variable_get(UC_USERPOINTS_DISCOUNT_MAXP, 100),
+          '#size' => 5,
+          '#maxlength' => 5,
+        );
+        $form[$group][USERPOINTS_DISCOUNT] = array(
+          '#type' => 'radios',
+          '#title' => t('Enable !Points as a discount method', userpoints_translation()),
+          '#default_value' =>  variable_get(USERPOINTS_DISCOUNT,1),
+          '#options' => array(t('No'), t('Yes')),
+        );
+		$form[$group][USERPOINTS_DISCOUNT_CATEGORY] = array(
+		  '#type' => 'select',
+		  '#title' => t('Discount Category'),
+		  '#description' => t('Category to assign awarded !points.', userpoints_translation()),
+		  '#default_value' => variable_get(USERPOINTS_DISCOUNT_CATEGORY, NULL),
+		  '#options' => userpoints_get_categories(),
+		);
+        $form[$group][UC_USERPOINTS_DISCOUNT_MODERATE] = array(
+          '#type' => 'radios',
+          '#title' => t('Moderate userpoints transaction'),
+          '#default_value' => variable_get(UC_USERPOINTS_DISCOUNT_MODERATE, 0),
+		  '#options' => array(t('No'), t('Yes')),
+        );
+      }
+      return $form;
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_checkout_pane
+ */
+function uc_userpoints_discount_checkout_pane() {
+  global $user;
+  $curUserId	 = $user->uid;
+//  $curUserPoints = intval(userpoints_get_current_points($uid = $curUserId, $tid = NULL));
+
+  $curUserPoints = intval(userpoints_get_current_points($uid = $curUserId, 'all'));
+
+  $discMethod	 = variable_get(USERPOINTS_DISCOUNT,1);
+    
+  if ($discMethod != 0 && ($curUserPoints > 0 || request_uri() != '/cart/checkout')) {
+    $panes[] = array(
+      'id' => 'up_uc_discounts',
+      'title' => t('!Points Discounts', userpoints_translation()),
+      'desc' => t('Show !Points discounts for the order', userpoints_translation()),
+      'callback' => 'uc_checkout_pane_uc_userpoints_discount',
+      'weight' => 7,
+    );
+    return $panes;
+  }
+}
+
+
+function uc_checkout_pane_uc_userpoints_discount($op, &$arg1, $arg2) {
+  // get point discounts to apply to this order
+  global $user;
+  $curUserId	 = $user->uid;
+
+  switch ($op) {
+    case 'view':
+		//	$curUserPoints = intval(userpoints_get_current_points($uid = $curUserId, $tid = NULL));
+
+	$curUserPoints = intval(userpoints_get_current_points($uid = $curUserId, 'all'));
+
+			$maxdisc = ($curUserPoints / intval(variable_get(USERPOINTS_UC_DISC, 1)));
+			$maxpt = variable_get(UC_USERPOINTS_DISCOUNT_MAXP, 100);
+			$description = t('Enter the amount to discount this order with !Points by.  You cannot discount more than ' . $maxpt . '% of this order.  You have a total of ' . uc_currency_format($maxdisc) . ' available via !Points. This field will be ignored if paying with !Points.', userpoints_translation());
+			$contents['ptamt'] = array(
+				'#type' => 'textfield',
+				'#title' => t('Discount Amount'),
+				'#description' => t(''),
+				'#default_value' => $arg1->ptamt,
+			);
+			return array('description' => $description, 'contents' => $contents);
+			break;	
+    case 'process':
+			$ptamt = $arg2['ptamt'];
+			if (!empty($ptamt) || $ptamt != '') {
+				$arg1->ptamt = $ptamt;
+			}
+			else {
+				$arg1->ptamt = 0;
+			}
+			return TRUE;
+			break;
+  }
+}
+
+/**
+ * Implementation of hook_order().
+ * This is where all the important stuff happens like taking the points...
+ */
+ 
+function uc_userpoints_discount_order($op, &$arg1, $arg2) {
+  $order 	 = $arg1;
+  $paymethod = strtolower($order->payment_method);
+  switch ($op) {
+    case 'total':
+			/**
+			 * If there is a discount apply it to the order total
+			 */
+			if (variable_get(USERPOINTS_DISCOUNT,1) != 0 && strtolower($order->payment_method) != 'points') {
+				$result = db_query("SELECT * FROM {uc_updiscounts} WHERE oid = %d", $arg1->order_id);
+				if ($data = db_fetch_object($result)) {
+					return -$data->ptamt;
+				}
+			}
+			break;
+    case 'save':
+			db_query("DELETE FROM {uc_updiscounts} WHERE oid=%d", $arg1->order_id);
+			db_query("DELETE FROM {uc_order_line_items} WHERE order_id=%d AND type='ptdiscount'", $arg1->order_id);
+			uc_line_items_calculate($arg1->order_id);	
+			global $user;
+			$curUserId = $user->uid;
+			$pagepath = str_replace('destination=','',urldecode(drupal_get_destination()));
+			$multiplier 	= (variable_get(USERPOINTS_UC_DISC, 0));
+			$maxdisc = variable_get(UC_USERPOINTS_DISCOUNT_MAXP, 100)/100;
+
+			#money value of order
+			$orderamt = $arg1->order_total + $arg1->quote['rate'];
+			
+			#discount value
+			$ptamt = $arg1->ptamt;
+			#discount value in points
+			$points = -(($ptamt) * $multiplier);
+			$ptdisc = (($ptamt) * $multiplier);
+			
+			#max discount on order total
+			$ptmaxd = $maxdisc * $orderamt;			
+			
+			if (variable_get(USERPOINTS_DISCOUNT,1) != 0 && strtolower($order->payment_method) != 'points') {
+				if ((!empty($ptamt) || $ptamt != '') && $ptamt < $orderamt && $ptamt <= $ptmaxd) {
+					db_query("DELETE FROM {uc_order_line_items} WHERE order_id=%d AND type='ptdiscount'", $arg1->order_id);
+					db_query('INSERT INTO {uc_updiscounts} (uid, oid, ptamt, points) VALUES (%d, %d, \'%f\', %d)', $curUserId, $arg1->order_id, $ptamt, $points);
+					uc_order_line_item_add($arg1->order_id, 'ptdiscount', t('Discount order using !Points',userpoints_translation()), -$ptamt, 1);
+				}
+				elseif ($ptdisc <= $orderamt && (!empty($ptamt) || $ptamt != '')) {
+					#this should be to check it greater than order total
+					drupal_set_message('You cannot discount an order for more than the order total.', 'error');
+					drupal_goto($pagepath);
+				}
+				elseif ($ptdisc > $ptmaxd && (!empty($ptamt) || $ptamt != '')) {
+					#this should be to check if discount greater than max
+					drupal_set_message(t('The maximum you can discount this order by using points is $' . $ptmaxd . '.  You need to decrease the size of the discount.', userpoints_translation()), 'error');
+					drupal_goto($pagepath);
+				}
+			}
+			elseif (strtolower($order->payment_method) == 'points' && (!empty($ptamt) || $ptamt != '')) {
+					drupal_set_message(t('You cannot use !Points to pay for a product and use !Points as a discount method.', userpoints_translation()), 'error');
+					drupal_goto($pagepath);
+			}
+			break;
+		case 'submit':
+			// fires when the order is submitted and adds/subtracts thier points
+			if ($paymethod != 'points') {
+				if (variable_get(USERPOINTS_DISCOUNT,1) != 0) {
+					global $user;
+					$curUserId = $user->uid;
+					$ptamt = $arg1->ptamt;
+					$multiplier 	= intval(variable_get(USERPOINTS_UC_DISC, 0));
+				
+					// Payment completed
+					if ($curUserId != 0) {
+					// User id from the transaction
+						$points = intval(($ptamt) * $multiplier);
+						$points = -$points;
+						$params = array (
+						'tid' => variable_get(USERPOINTS_DISCOUNT_CATEGORY, 0),
+						'uid' => $curUserId,
+						'points' => $points,
+						'operation' => 'delete',
+						'description' => 'User Discount, taking poings (Ubercart Order ID ' . $order->order_id . ')',
+						'entity_id' => $order->order_id,
+						'entity_type' => 'Ubercart Transaction',
+						'moderate' => variable_get(UC_USERPOINTS_DISCOUNT_MODERATE, 0),
+						);
+						userpoints_userpointsapi($params);
+					db_query('INSERT INTO {uc_updiscounts} (uid, oid, ptamt, points) VALUES (%d, %d, \'%f\', %d)', $curUserId, $arg1->order_id, $ptamt, $points);
+					}
+
+				}
+			}
+			break;
+		case 'load':
+			$arg1->ptamt = '';
+			$result = db_query("SELECT * FROM {uc_updiscounts} WHERE oid = %d", $arg1->order_id);
+			if ($data = db_fetch_object($result)) {
+				$arg1->ptamt = $data->ptamt;
+			}
+			break;
+		case 'delete':	
+			if (variable_get(USERPOINTS_DISCOUNT,1) != 0 && strtolower($order->payment_method) != 'points') {
+				global $user;
+				$curUserId	= $user->uid;
+				$oid			= $order->order_id;
+				$result 		= db_query("select updlog_id, points from {uc_updiscounts} where oid = %d and uid = %d and referrer = 0 and discount =1", $oid, $curUserId);
+
+				if ($result != FALSE && $pointinfo = db_fetch_object($result) != FALSE) {
+					$points = intval(($pointinfo->points) * (-1));
+					$description = 'User Discount (Ubercart Order ' . $oid . ') that has been deleted.';
+					
+					$params = array (
+						'tid' => variable_get(USERPOINTS_DISCOUNT_CATEGORY, 0),
+						'uid' => $curUserId,
+						'points' => $points,
+						'operation' => 'delete',
+						'description' => $description,
+						'entity_id' => $oid,
+						'entity_type' => 'Ubercart Transaction',
+						'moderate' => variable_get(UC_USERPOINTS_DISCOUNT_MODERATE, 0),
+					);
+					
+					userpoints_userpointsapi($params);
+					db_query("delete from {uc_updiscounts} where uplog_id = %d", $pointinfo->uplog_id);
+					db_query("DELETE FROM {uc_order_line_items} WHERE order_id=%d AND type='ptdiscount'", $arg1->order_id);
+				}
+			}
+			break;
+  }
+}

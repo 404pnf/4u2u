@@ -1,6 +1,6 @@
 <?php
 
-// $Id: truefalse.classes.inc,v 1.1.2.50 2010/07/08 19:09:41 falcon Exp $
+// $Id: truefalse.classes.inc,v 1.1.2.51 2010/11/05 16:14:48 falcon Exp $
 
 /**
  * Defines the classes necessary for a True/False quiz.
@@ -34,7 +34,7 @@ class TrueFalseQuestion extends QuizQuestion {
   }
 
   /**
-   * Implementation of validateNode 
+   * Implementation of validateNode
    *
    * @see QuizQuestion#validateNode($form)
    */
@@ -85,7 +85,7 @@ class TrueFalseQuestion extends QuizQuestion {
   }
 
   /**
-   * Implementation of getNodeView 
+   * Implementation of getNodeView
    *
    * @see QuizQuestion#getNodeView()
    */
@@ -125,7 +125,7 @@ class TrueFalseQuestion extends QuizQuestion {
         0 => t('False')
       ),
     );
-    
+
     if (isset($rid)) {
       $response = new TrueFalseResponse($rid, $this->node);
       $form['tries']['#default_value'] = $response->getResponse();
@@ -134,7 +134,7 @@ class TrueFalseQuestion extends QuizQuestion {
   }
 
   /**
-   * Implementation of getBodyFieldTitle 
+   * Implementation of getBodyFieldTitle
    *
    * @see QuizQuestion#getBodyFieldTitle()
    */
@@ -143,7 +143,7 @@ class TrueFalseQuestion extends QuizQuestion {
   }
 
   /**
-   * Implementation of getCreationForm 
+   * Implementation of getCreationForm
    *
    * @see QuizQuestion#getCreationForm($form_state)
    */
@@ -181,7 +181,7 @@ class TrueFalseQuestion extends QuizQuestion {
   }
 
   /**
-   * Implementation of getMaximumScore 
+   * Implementation of getMaximumScore
    *
    * @see QuizQuestion#getMaximumScore()
    */
@@ -224,7 +224,7 @@ class TrueFalseResponse extends QuizQuestionResponse {
   }
 
   /**
-   * Implementation of isValid 
+   * Implementation of isValid
    *
    * @see QuizQuestionResponse#isValid()
    */
@@ -234,7 +234,7 @@ class TrueFalseResponse extends QuizQuestionResponse {
   }
 
   /**
-   * Implementation of save 
+   * Implementation of save
    *
    * @see QuizQuestionResponse#save()
    */
@@ -244,7 +244,7 @@ class TrueFalseResponse extends QuizQuestionResponse {
   }
 
   /**
-   * Implementation of delete 
+   * Implementation of delete
    *
    * @see QuizQuestionResponse#delete()
    */
@@ -285,7 +285,7 @@ class TrueFalseResponse extends QuizQuestionResponse {
   }
 
   /**
-   * Implementation of getReportFormResponse 
+   * Implementation of getReportFormResponse
    *
    * @see QuizQuestionResponse#getReportFormResponse($showpoints, $showfeedback, $allow_scoring)
    */

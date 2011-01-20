@@ -1,6 +1,6 @@
 <?php
 
-// $Id: short_answer.classes.inc,v 1.2.2.79 2010/07/08 19:09:41 falcon Exp $
+// $Id: short_answer.classes.inc,v 1.2.2.81 2010/11/05 16:14:48 falcon Exp $
 
 /**
  * The main classes for the short answer question type.
@@ -29,7 +29,7 @@ class ShortAnswerQuestion extends QuizQuestion {
   const ANSWER_MANUAL = 3;
 
   /**
-   * Implementation of saveNodeProperties 
+   * Implementation of saveNodeProperties
    *
    * @see QuizQuestion#saveNodeProperties($is_new)
    */
@@ -49,7 +49,7 @@ class ShortAnswerQuestion extends QuizQuestion {
   }
 
   /**
-   * Implementation of validateNode 
+   * Implementation of validateNode
    *
    * @see QuizQuestion#validateNode($form)
    */
@@ -60,7 +60,7 @@ class ShortAnswerQuestion extends QuizQuestion {
   }
 
   /**
-   * Implementation of delete 
+   * Implementation of delete
    *
    * @see QuizQuestion#delete($only_this_version)
    */
@@ -77,7 +77,7 @@ class ShortAnswerQuestion extends QuizQuestion {
   }
 
   /**
-   * Implementation of getNodeProperties 
+   * Implementation of getNodeProperties
    *
    * @see QuizQuestion#getNodeProperties()
    */
@@ -97,7 +97,7 @@ class ShortAnswerQuestion extends QuizQuestion {
   }
 
   /**
-   * Implementation of getNodeView 
+   * Implementation of getNodeView
    *
    * @see QuizQuestion#getNodeView()
    */
@@ -122,7 +122,7 @@ class ShortAnswerQuestion extends QuizQuestion {
   }
 
   /**
-   * Implementation of getAnsweringForm 
+   * Implementation of getAnsweringForm
    *
    * @see QuizQuestion#getAnsweringForm($form_state, $rid)
    */
@@ -149,7 +149,7 @@ class ShortAnswerQuestion extends QuizQuestion {
   }
 
   /**
-   * Implementation of getCreationForm 
+   * Implementation of getCreationForm
    *
    * @see QuizQuestion#getCreationForm($form_state)
    */
@@ -162,7 +162,7 @@ class ShortAnswerQuestion extends QuizQuestion {
       '#collapsed' => FALSE,
       '#weight' => -4,
     );
-    
+
     $options = array(
       self::ANSWER_MATCH => t('Automatic and case sensitive'),
       self::ANSWER_INSENSITIVE_MATCH => t('Automatic. Not case sensitive'),
@@ -209,9 +209,9 @@ class ShortAnswerQuestion extends QuizQuestion {
     );
     return $form;
   }
-  
+
   /**
-   * Implementation of getMaximumScore 
+   * Implementation of getMaximumScore
    *
    * @see QuizQuestion#getMaximumScore()
    */
@@ -281,7 +281,7 @@ class ShortAnswerResponse extends QuizQuestionResponse {
     }
     return $unscored;
   }
-  
+
   /**
    * Given a question, return a list of all of the unscored answers.
    *
@@ -341,17 +341,17 @@ class ShortAnswerResponse extends QuizQuestionResponse {
   }
 
   /**
-   * Implementation of isValid 
+   * Implementation of isValid
    *
    * @see QuizQuestionResponse#isValid()
    */
   public function isValid() {
-    if (empty($this->answer)) return t('You must provide an answer');
+    if (trim($this->answer) == '') return t('You must provide an answer');
     return TRUE;
   }
 
   /**
-   * Implementation of save 
+   * Implementation of save
    *
    * @see QuizQuestionResponse#save()
    */
@@ -365,9 +365,9 @@ class ShortAnswerResponse extends QuizQuestionResponse {
     db_query($sql, $this->answer, $this->question->nid, $this->question->vid, $this->rid, $this->getScore(FALSE), $this->is_evaluated);
     $this->answer_id = db_last_insert_id('quiz_long_answer_user_answers', 'answer_id');
   }
-  
+
   /**
-   * Implementation of delete 
+   * Implementation of delete
    *
    * @see QuizQuestionResponse#delete()
    */
@@ -375,9 +375,9 @@ class ShortAnswerResponse extends QuizQuestionResponse {
     $sql = 'DELETE FROM {quiz_short_answer_user_answers} WHERE question_nid = %d AND question_vid = %d AND result_id = %d';
     db_query($sql, $this->question->nid, $this->question->vid, $this->rid);
   }
-  
+
   /**
-   * Implementation of score 
+   * Implementation of score
    *
    * @see QuizQuestionResponse#score()
    */
@@ -396,7 +396,7 @@ class ShortAnswerResponse extends QuizQuestionResponse {
   }
 
   /**
-   * Implementation of getResponse 
+   * Implementation of getResponse
    *
    * @see QuizQuestionResponse#getResponse()
    */
@@ -405,7 +405,7 @@ class ShortAnswerResponse extends QuizQuestionResponse {
   }
 
   /**
-   * Implementation of getReportFormResponse 
+   * Implementation of getReportFormResponse
    *
    * @see QuizQuestionResponse#getReportFormResponse($showpoints, $showfeedback, $allow_scoring)
    */
@@ -445,7 +445,7 @@ class ShortAnswerResponse extends QuizQuestionResponse {
   }
 
   /**
-   * Implementation of getReportFormScore 
+   * Implementation of getReportFormScore
    *
    * @see QuizQuestionResponse#getReportFormScore($showpoints, $showfeedback, $allow_scoring)
    */
@@ -469,7 +469,7 @@ class ShortAnswerResponse extends QuizQuestionResponse {
   }
 
   /**
-   * Implementation of getReportFormSubmit 
+   * Implementation of getReportFormSubmit
    *
    * @see QuizQuestionResponse#getReportFormSubmit($showfeedback, $showpoints, $allow_scoring)
    */

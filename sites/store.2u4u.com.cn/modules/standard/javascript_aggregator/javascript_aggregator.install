@@ -1,0 +1,41 @@
+<?php
+// $Id:$
+
+/**
+ * Implementation of hook_install().
+ */
+function javascript_aggregator_install() {
+  // Set the module's weight high so that it runs after other modules.
+  db_query("UPDATE {system} SET weight = 109 WHERE name = 'javascript_aggregator' AND type = 'module'");
+  cache_clear_all();
+}
+
+/**
+ * Set module's weight high so that it runs after other modules.
+ */
+function javascript_aggregator_update_6120() {
+  $ret = array();
+  $ret[] = update_sql("UPDATE {system} SET weight = 9999 WHERE name = 'javascript_aggregator' AND type = 'module'");
+  
+  cache_clear_all();
+  return $ret;
+}
+
+/**
+ * Set module's weight high so that it runs after other modules.
+ */
+function javascript_aggregator_update_6150() {
+  $ret = array();
+  $ret[] = update_sql("UPDATE {system} SET weight = 109 WHERE name = 'javascript_aggregator' AND type = 'module'");
+  
+  cache_clear_all();
+  return $ret;
+}
+
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function javascript_aggregator_uninstall() {
+  variable_del('javascript_aggregator_gzip');
+}

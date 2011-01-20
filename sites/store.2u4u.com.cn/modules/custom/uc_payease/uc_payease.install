@@ -1,0 +1,12 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * uc_payease.module的安装文件.
+ */
+
+function uc_payease_uninstall() {
+  db_query("DELETE FROM {variable} WHERE name LIKE 'uc_payease_%%'");
+}
+

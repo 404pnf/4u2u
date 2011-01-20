@@ -1,5 +1,5 @@
 <?php
-// $Id: matching.classes.inc,v 1.2.2.82 2010/07/08 19:09:41 falcon Exp $
+// $Id: matching.classes.inc,v 1.2.2.84 2010/11/05 16:14:47 falcon Exp $
 /**
  * matching.classes
  *
@@ -77,7 +77,7 @@ class MatchingQuestion extends QuizQuestion {
     parent::delete($only_this_version);
 
     if ($only_this_version) {
-      $sql = 'DELETE FROM {quiz_matching_user_answers} 
+      $sql = 'DELETE FROM {quiz_matching_user_answers}
               WHERE match_id IN(
                 SELECT match_id
                 FROM {quiz_matching_node}
@@ -89,7 +89,7 @@ class MatchingQuestion extends QuizQuestion {
     }
     // Delete all versions of this question.
     else {
-      $sql = 'DELETE FROM {quiz_matching_user_answers} 
+      $sql = 'DELETE FROM {quiz_matching_user_answers}
               WHERE match_id IN(
                 SELECT match_id
                 FROM {quiz_matching_node}
@@ -137,8 +137,8 @@ class MatchingQuestion extends QuizQuestion {
     if ($this->viewCanRevealCorrect()) {
       foreach ($matches as $match) {
         $subquestions[] = array(
-          'question' =>$match['question'], 
-          'correct' => $match['answer'], 
+          'question' =>$match['question'],
+          'correct' => $match['answer'],
           'feedback' => $match['feedback']
         );
       }
@@ -152,7 +152,7 @@ class MatchingQuestion extends QuizQuestion {
       shuffle($sub_as);
       foreach ($sub_qs as $i => $sub_q) {
         $subquestions[] = array(
-          'question' => $sub_q, 
+          'question' => $sub_q,
           'random' => $sub_as[$i],
         );
       }
@@ -172,7 +172,7 @@ class MatchingQuestion extends QuizQuestion {
   public function getAnsweringForm(array $form_state = NULL, $rid) {
     $form = parent::getAnsweringForm($form_state, $rid);
     $form['#theme'] = 'matching_answering_form';
-    
+
     if (isset($rid)) {
       // The question has already been answered. We load the answers
       $response = new MatchingResponse($rid, $this->node);
@@ -194,7 +194,7 @@ class MatchingQuestion extends QuizQuestion {
     }
     $form['scoring_info'] = array(
       '#type' => 'markup',
-      '#value' => '<p><em>'. t('You lose points by selecting incorrect options. You may leave an option blank to avoid loosing points.') .'</em></p>',
+      '#value' => '<p><em>'. t('You lose points by selecting incorrect options. You may leave an option blank to avoid losing points.') .'</em></p>',
     );
     if (variable_get('quiz_matching_shuffle_options', TRUE)) {
       $form['subquestions'] = $this->customShuffle($form['subquestions']);
@@ -473,8 +473,8 @@ class MatchingResponse extends QuizQuestionResponse {
         $answer_data['is_correct'] = $correct;
       }
       $data[] = $answer_data;
-    }   
-    
+    }
+
     return array(
       '#type' => 'markup',
       '#value' => theme('matching_response', $metadata, $data),

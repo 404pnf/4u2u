@@ -1,0 +1,1 @@
+<a href="http://shop.2u4u.com.cn/cart">购物车</a>(<?php print count(uc_cart_get_contents($user->uid)); ?>)

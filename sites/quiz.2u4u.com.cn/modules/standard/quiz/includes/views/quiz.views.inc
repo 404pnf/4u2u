@@ -1,5 +1,5 @@
 <?php
-// $Id: quiz.views.inc,v 1.2.2.7 2010/06/25 11:56:36 falcon Exp $
+// $Id: quiz.views.inc,v 1.2.2.8 2010/11/05 16:14:47 falcon Exp $
 
 /**
  * @file
@@ -200,7 +200,7 @@ function quiz_views_data() {
       ),
     'sort' => array('handler' => 'views_handler_sort'),
     ),
-    
+
     'feedback_time' => array(
       'title' => t('Feedback Time'),
       'help' => t('Indicates whether quiz takers will get feedback after every question.'),

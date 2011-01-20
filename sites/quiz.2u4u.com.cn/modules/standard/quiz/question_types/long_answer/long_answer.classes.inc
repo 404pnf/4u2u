@@ -1,5 +1,5 @@
 <?php
-// $Id: long_answer.classes.inc,v 1.2.2.60 2010/07/08 19:09:41 falcon Exp $
+// $Id: long_answer.classes.inc,v 1.2.2.62 2010/11/05 16:14:47 falcon Exp $
 
 /**
  * Long answer classes.
@@ -117,7 +117,7 @@ class LongAnswerQuestion extends QuizQuestion{
   public function getAnsweringForm(array $form_state = NULL, $rid) {
     $form = parent::getAnsweringForm($form_state, $rid);
     $form['#theme'] = 'long_answer_answering_form';
-    
+
     $form['tries'] = array(
       '#type' => 'textarea',
       '#title' => t('Answer'),
@@ -262,7 +262,7 @@ class LongAnswerResponse extends QuizQuestionResponse {
    * @see QuizQuestionResponse#isValid()
    */
   public function isValid() {
-    if (empty($this->answer)) return t('You must provide an answer');
+    if (trim($this->answer) == '') return t('You must provide an answer');
     return TRUE;
   }
 

@@ -1,6 +1,6 @@
 <?php
 
-// $Id: quiz_directions.classes.inc,v 1.2.2.29 2010/07/08 19:09:41 falcon Exp $
+// $Id: quiz_directions.classes.inc,v 1.2.2.30 2010/11/05 16:14:47 falcon Exp $
 /**
  * quiz_directions.classes
  *
@@ -32,11 +32,11 @@ class QuizDirectionsQuestion extends QuizQuestion {
 
   /**
    * Implementation of validateNode
-   * 
+   *
    * @see QuizQuestion#validateNode($form)
    */
   public function validateNode(array &$form) {}
-  
+
   /**
    * Implementation of saveNodeProperties
    *
@@ -45,14 +45,14 @@ class QuizDirectionsQuestion extends QuizQuestion {
   public function saveNodeProperties($is_new = FALSE) {}
 
   /**
-   * Implementation of getAnsweringForm 
+   * Implementation of getAnsweringForm
    *
    * @see QuizQuestion#getAnsweringForm($form_state, $rid)
    */
   public function getAnsweringForm(array $form_state = NULL, $rid) {
     $form = parent::getAnsweringForm($form_state, $rid);
     $form['#theme'] = 'quiz_directions_answering_form';
-    
+
     $form['tries'] = array(
       '#type' => 'hidden',
       '#value' => 0,
@@ -63,16 +63,16 @@ class QuizDirectionsQuestion extends QuizQuestion {
     );
     return $form;
   }
-  
+
   /**
-   * Implementation of getBodyFieldTitle 
+   * Implementation of getBodyFieldTitle
    *
    * @see QuizQuestion#getBodyFieldTitle()
    */
   public function getBodyFieldTitle() {
     return t('Direction');
   }
-  
+
   /**
    * Implementation of getCreationForm
    *
@@ -81,9 +81,9 @@ class QuizDirectionsQuestion extends QuizQuestion {
   public function getCreationForm(array $form_state = NULL) {
     return array();
   }
-  
+
   /**
-   * Implementation of getMaximumScore 
+   * Implementation of getMaximumScore
    *
    * @see QuizQuestion#getMaximumScore()
    */
@@ -98,19 +98,19 @@ class QuizDirectionsQuestion extends QuizQuestion {
 class QuizDirectionsResponse extends QuizQuestionResponse {
 
   /**
-   * Implementation of save 
+   * Implementation of save
    *
    * @see QuizQuestionResponse#save()
    */
   public function save() {}
-  
+
   /**
    * Implementation of delete
    *
    * @see QuizQuestionResponse#delete()
    */
   public function delete() {}
-  
+
   /**
    * Implementation of score
    *
@@ -131,7 +131,7 @@ class QuizDirectionsResponse extends QuizQuestionResponse {
     $this->score = 0;
     return 0;
   }
-  
+
   /**
    * Implementation of isCorrect
    *
@@ -140,7 +140,7 @@ class QuizDirectionsResponse extends QuizQuestionResponse {
   public function isCorrect() {
     return TRUE;
   }
-  
+
   /**
    * Implementation of getResponse
    *
@@ -149,7 +149,7 @@ class QuizDirectionsResponse extends QuizQuestionResponse {
   public function getResponse() {
     return $this->answer;
   }
-  
+
   /**
    * Implementation of getReportForm
    *

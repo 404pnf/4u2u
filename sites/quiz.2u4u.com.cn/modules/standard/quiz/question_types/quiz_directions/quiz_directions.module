@@ -1,5 +1,5 @@
 <?php
-// $Id: quiz_directions.module,v 1.2.2.4 2010/04/30 12:49:22 falcon Exp $
+// $Id: quiz_directions.module,v 1.2.2.5 2010/11/05 16:14:47 falcon Exp $
 
 /**
  * The main file for quiz_directions.
@@ -20,7 +20,7 @@ function quiz_directions_help($path, $args) {
 /**
  * Implementation of hook_quiz_question_info().
  */
-function quiz_directions_quiz_question_info() { 
+function quiz_directions_quiz_question_info() {
   return array(
     'quiz_directions' => array(
       'name' => t('Quiz directions'),

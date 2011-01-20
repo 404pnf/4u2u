@@ -1,11 +1,11 @@
-// $Id: multichoice.js,v 1.1.2.3 2010/06/16 14:50:10 falcon Exp $
+// $Id: multichoice.js,v 1.1.2.4 2010/11/05 16:14:47 falcon Exp $
 /**
  * @file
  * Javascript functions for the multichoice question type.
  */
 /**
  * Refreshes scores when the checkbox named correct is toggled.
- * 
+ *
  * @param checkbox
  *  The checkbox that was clicked
  */
@@ -20,7 +20,7 @@ function refreshScores(checkbox, scoring) {
       $(prefix + 'score-if-not-chosen').val('0');
       if ($('#edit-choice-multi').attr('checked')) {
         $(prefix + 'score-if-chosen').val('-1');
-      } 
+      }
       else {
         $(prefix + 'score-if-chosen').val('0');
       }
@@ -29,7 +29,7 @@ function refreshScores(checkbox, scoring) {
 	    $(prefix + 'score-if-chosen').val('0');
 	    if ($('#edit-choice-multi').attr('checked')) {
 	      $(prefix + 'score-if-not-chosen').val('1');
-	    } 
+	    }
 	    else {
 	      $(prefix + 'score-if-not-chosen').val('0');
 	    }
@@ -39,7 +39,7 @@ function refreshScores(checkbox, scoring) {
 
 /**
  * Updates correct checkboxes according to changes of the score values for an alternative
- * 
+ *
  * @param textfield
  *  The textfield(score) that is beeing updated
  */
@@ -47,7 +47,7 @@ function refreshCorrect(textfield) {
   var prefix = '#' + getCorrectIdPrefix(textfield.id);
   var chosenScore;
   var notChosenScore;
-  
+
   // Fetch the score if chosen and score if not chosen values for the active alternative
   if (isChosen(textfield.id)) {
     chosenScore = new Number(textfield.value);
@@ -57,7 +57,7 @@ function refreshCorrect(textfield) {
     chosenScore = new Number($(prefix + 'score-if-chosen').val());
     notChosenScore = new Number(textfield.value);
   }
-  
+
   // Set the checked status for the checkbox in the active alternative
   if(notChosenScore < chosenScore) {
     $(prefix + 'correct').attr('checked', true);
@@ -69,10 +69,10 @@ function refreshCorrect(textfield) {
 
 /**
  * Helper function fetching the id prefix for a html id attribute
- * 
+ *
  * @param string
  *  Html id attribute
- * @return 
+ * @return
  *  The common prefix for all the alternatives in this alternative fieldset
  */
 function getCorrectIdPrefix(string) {
@@ -84,7 +84,7 @@ function getCorrectIdPrefix(string) {
 
 /**
  * Checks if the id belongs to the score if chosen textfield
- * 
+ *
  * @param string
  *  html id attribute of one of the score text fields
  * @return

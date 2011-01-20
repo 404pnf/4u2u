@@ -1,0 +1,101 @@
+<?php
+// $Id$
+
+/**
+ * Implementation of hook_schema().
+ */
+function uc_orderismoney_order($op, &$order, $arg2) {
+	switch ($op) {
+		case 'load' : 
+			$moneyable_obj = db_fetch_object(db_query("SELECT * FROM {uc_orderismoney}  WHERE order_id = %d",$order->order_id));
+			//drupal_set_message('123:');
+			//drupal_set_message('<pre>'.print_r($order).'</pre>');
+			if(empty($moneyable_obj)){
+				$first_product = $order->products[0];
+				$first_node = node_load($first_product->nid);
+				$moneyable = $first_node->moneyable;
+				//$moneyable = uc_orderismoney_get_product_moneyable($order->order_id);
+				db_query("INSERT INTO {uc_orderismoney} (order_id, moneyable) VALUES (%d, %d)",
+					$order->order_id, $moneyable
+				);
+				//drupal_set_message('1234:');
+			}else{
+				//drupal_set_message('12345:');
+				$moneyable = $moneyable_obj->moneyable;
+			}
+			//drupal_set_message('123456:'.$moneyable);
+			$order->moneyable = $moneyable;
+			//$order->delivery_evening_phone = (string) $order->data['delivery_evening_phone'];
+			break;
+		case 'save' :
+			//drupal_set_message('<pre>'.print_r($order).'</pre>');
+			$first_product = $order->products[0];
+			$first_node = node_load($first_product->nid);
+			$moneyable = $first_node->moneyable;
+			//$moneyable = uc_orderismoney_get_product_moneyable($order->order_id);
+			db_query("INSERT INTO {uc_orderismoney} (order_id, moneyable) VALUES (%d, %d)",
+				$order->order_id, $moneyable
+			);
+			//$order->data['delivery_evening_phone'] = $order->delivery_evening_phone;
+			break;
+  }
+
+}
+function uc_orderismoney_get_product_moneyable($order_id){
+	//$cart_id = uc_cart_get_id();
+	/*
+	$total_records = db_result(db_query("SELECT count(*) FROM {uc_order_products} c WHERE c.order_id = '%s'", $order_id));
+	if($total_records ==0){
+		return NULL;
+	}
+	*/
+	$first_nid = db_result(db_query("SELECT nid FROM {uc_order_products} c WHERE c.order_id = %d" , $order_id));
+	if(empty($first_nid)){
+		return NULL;
+	}
+  $first_node =  node_load($first_nid);
+	return $first_node->moneyable;
+}
+/**
+ * Implementation of hook_views_api().
+ */
+function uc_orderismoney_views_api() {
+  return array(
+    'api' => '2.0',
+    'path' => drupal_get_path('module', 'uc_orderismoney') .'/views',
+  );
+}
+
+/**
+ * 实现钩
+*/ 
+/*
+function uc_orderismoney_menu() {
+
+  $items['admin/settings/orderismoney'] = array(
+    'title'            => '为已有定单,批量生成现金记录',
+    'page callback'    => 'drupal_get_form',
+	'page arguments'    =>  array('uc_orderismoney_form'),
+    'access arguments' => array('administer site configuration'),
+    'weight'           => 1,
+    'type'             => MENU_NORMAL_ITEM,
+   
+  );
+
+  return $items;
+}
+*/
+function uc_orderismoney_form(){
+	$form['test'] = array(
+		//'#type' =>'submit',
+		'#value' => t('批量'),
+	);
+	return $form;
+}
+function uc_orderismoney_form_submit(){
+	$sql = "SELECT order_id FROM uc_orders ";
+	$result = db_query($sql);
+	while($order = db_fetch_object($result)){
+	  uc_order_load($order->order_id); 
+	}
+}

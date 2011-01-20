@@ -1,5 +1,5 @@
 <?php
-// $Id: quiz_question.module,v 1.2.2.136 2010/07/05 13:00:22 falcon Exp $
+// $Id: quiz_question.module,v 1.2.2.146 2010/12/16 17:56:09 falcon Exp $
 
 /**
  * Quiz Question module.
@@ -105,12 +105,7 @@ function quiz_question_node_info() {
 function quiz_question_access($op, $node, $account) {
   switch ($op) {
     case 'view':
-      if (user_access('view quiz question outside of a quiz', $account)){
-        return true;
-      }
-      elseif ($node->uid == $account->uid) {
-        return true;
-      }
+      return user_access('view quiz question outside of a quiz');
     case 'create':
       return user_access('create quiz', $account);
     case 'update':
@@ -126,7 +121,7 @@ function quiz_question_access($op, $node, $account) {
 
 /**
  * Figure out if a user has access to score a certain result
- * 
+ *
  * @param $vid
  *  Question version id
  * @param $rid
@@ -136,8 +131,8 @@ function quiz_question_access($op, $node, $account) {
  */
 function quiz_question_access_to_score($vid, $rid) {
   global $user;
-  $sql = 'SELECT * 
-          FROM {quiz_node_results_answers} 
+  $sql = 'SELECT *
+          FROM {quiz_node_results_answers}
           WHERE result_id = %d AND question_vid = %d';
   if (!db_fetch_object(db_query($sql, $rid, $vid)))
     return FALSE;
@@ -148,7 +143,7 @@ function quiz_question_access_to_score($vid, $rid) {
     $sql = 'SELECT r.uid
             FROM {node_revisions} r
             WHERE r.nid = (
-              SELECT nid 
+              SELECT nid
               FROM {quiz_node_results}
               WHERE result_id = %d
             )';
@@ -177,24 +172,15 @@ function quiz_question_validate($node, &$form) {
 }
 
 /**
- * Implementation of the cck hook hook_content_extra_fields_alter
- */
-function quiz_question_content_extra_fields_alter(&$extra, $type_name) {
-  $q_types = _quiz_question_get_implementations();
-  if (isset($q_types[$type_name]))
-    unset($extra['body_field'], $extra['title']);
-}
-
-/**
  * Get the form to show to the quiz taker.
  */
-function quiz_question_answering_form($form_state, $node, $incluce_nid_in_id = FALSE) {
+function quiz_question_answering_form($form_state, $node, $include_nid_in_id = FALSE) {
   $question = _quiz_question_get_instance($node);
   $form = $question->getAnsweringForm($form_state, isset($node->rid) ? $node->rid : NULL);
   $quiz = quiz_type_access_load(arg(1));
-  
+
   $form['#attributes']['class'] = 'answering-form';
-  
+
   $is_last = _quiz_is_last_question();
   $form['navigation']['#theme'] = 'quiz_question_navigation_form';
   if (!empty($quiz->backwards_navigation) && !empty($node->question_number)) {
@@ -207,7 +193,7 @@ function quiz_question_answering_form($form_state, $node, $incluce_nid_in_id = F
       drupal_set_message(t('This is the last question. If you would like to go back and check some of your answers, click "Back", otherwise click the "Finish" button.'), 'status', FALSE);
     }
   }
-  
+
   // Add navigation at the bottom:
   $form['navigation']['submit'] = array(
     '#type' => 'submit',
@@ -219,16 +205,22 @@ function quiz_question_answering_form($form_state, $node, $incluce_nid_in_id = F
       '#value' => $is_last ? t('Skip and finish') : t('Skip'),
       '#attributes' => array('class' => 'q-skip-button'),
     );
+    if ($quiz->allow_jumping) {
+      $form['jump_to_question'] = array(
+        '#type' => 'hidden',
+        '#default_value' => 0,
+      );
+    }
   }
   return $form;
 }
 
 /**
  * Form for teaser display
- * 
+ *
  * @param $node
  *  The question node
- * @return 
+ * @return
  *  Content array
  */
 function _quiz_question_teaser_content($node) {
@@ -262,7 +254,7 @@ function _quiz_question_teaser_content($node) {
 function quiz_question_evaluate_question($question, $result_id, $answer = NULL) {
   if (empty($answer)) {
     // FIXME this use of POST array is hacky. We will try to use FAPI mor accurately in Quiz 5.x
-    $answer = $_POST['tries']; 
+    $answer = $_POST['tries'];
   }
   unset($_POST['tries']);
   $response = _quiz_question_response_get_instance($result_id, $question, $answer);
@@ -361,17 +353,16 @@ function quiz_question_quiz_question_score($quiz, $question_nid, $question_vid =
   if (!isset($quiz) && !isset($rid)) {
     return quiz_question_get_max_score($question_nid, $question_vid);
   }
-  
+
   // We avoid using node_load to increase performance...
   $dummy_node = new stdClass();
   $dummy_node->nid = $question_nid;
   $dummy_node->vid = $question_vid;
-  
-  $question = _quiz_question_get_instance($dummy_node, TRUE);
 
+  $question = _quiz_question_get_instance($dummy_node, TRUE);
   if (!$question)
     return FALSE;
-  
+
   $score = new stdClass();
   $score->possible = $question->getMaximumScore();
   $score->question_nid = $question->node->nid;
@@ -388,7 +379,7 @@ function quiz_question_quiz_question_score($quiz, $question_nid, $question_vid =
 
 /**
  * Implementation of hook_delete_result
- * 
+ *
  * @param $rid
  *  Result id
  * @param $nid
@@ -487,17 +478,24 @@ function quiz_question_insert(stdClass $node) {
  * Implementation of hook_view()
  */
 function quiz_question_view($node, $teaser = FALSE, $page = FALSE) {
+  if ($node->build_mode == NODE_BUILD_SEARCH_INDEX && !variable_get('quiz_index_questions', 1)) {
+    $node->body = '';
+    $node->content = array();
+    $node->title = '';
+    $node->taxonomy = array();
+    return $node;
+  }
   $content = '';
   if ($teaser) {
     $content = _quiz_question_teaser_content($node);
-  } 
+  }
   elseif (_quiz_is_taking_context()) {
     /*
      * @todo: I see no reason why this should be a part of view anymore.
      * In quiz 5 we should stop using hook_view to view the answering form
      */
     $form_markup = drupal_get_form('quiz_question_answering_form', $node);
-  } 
+  }
   else {
     // normal node view
     $question = _quiz_question_get_instance($node, TRUE);
@@ -508,7 +506,7 @@ function quiz_question_view($node, $teaser = FALSE, $page = FALSE) {
   if (!empty($content)) {
     if (isset($node->content)) {
       $node->content += $content;
-    } 
+    }
     else {
       $node->content = $content;
     }
@@ -555,7 +553,7 @@ function _quiz_delete_question(&$node, $only_this_version) {
   $select_sql = "SELECT parent_vid FROM {quiz_node_relationship}";
   if ($only_this_version) {
     $filter_sql = ' WHERE child_nid = %d AND child_vid = %d';
-  } 
+  }
   else {
     $filter_sql = ' WHERE child_nid = %d';
   }
@@ -577,21 +575,21 @@ function quiz_question_load($node) {
 
 /**
  * Get an instance of a quiz question.
- * 
+ *
  * Get information about the class and use it to construct a new
  * object of the appropriate type.
- * 
+ *
  * @param $node
  *  Question node
  * @param $use_cached
  *  Can we use a cached version of the node?
- * @return 
+ * @return
  *  The appropriate QuizQuestion extension instance
  */
 function _quiz_question_get_instance(&$node, $use_cached = FALSE) {
   // We use static caching to improve performance
   static $question_instances = array();
-  
+
   $using_dummy_node = FALSE;
   if (is_object($node)) {
     $vid = isset($node->vid) ? $node->vid : 0;
@@ -603,7 +601,7 @@ function _quiz_question_get_instance(&$node, $use_cached = FALSE) {
     if (!isset($node->type)) {
       // To substanitally improve performance(especially on the result page) we avoid node_load()...
       $sql = 'SELECT n.type, r.nid, r.vid, r.title, r.body, p.max_score, r.format
-              FROM {node_revisions} r 
+              FROM {node_revisions} r
               JOIN {node} n
               ON r.nid = n.nid
               JOIN {quiz_question_properties} p
@@ -627,9 +625,9 @@ function _quiz_question_get_instance(&$node, $use_cached = FALSE) {
   $info = _quiz_question_get_implementations();
   $constructor = $info[$name]['question provider'];
   if (empty($constructor)) {
-    return FALSE; 
+    return FALSE;
   }
-  
+
   // We create a new instance of QuizQuestion
   $to_return = new $constructor($node);
   if (!($to_return instanceof QuizQuestion)) {
@@ -645,16 +643,16 @@ function _quiz_question_get_instance(&$node, $use_cached = FALSE) {
   }
   // Cache the node
   $question_instances[$vid] = $to_return;
-  
+
   return $to_return;
 }
 
 /**
  * Get an instance of a quiz question responce.
- * 
+ *
  * Get information about the class and use it to construct a new
  * object of the appropriate type.
- * 
+ *
  * @param $rid
  *  Result id
  * @param $question
@@ -704,7 +702,7 @@ function _quiz_question_response_get_instance($rid, $question, $answer = NULL, $
   }
   // Cache the responce instance
   $quiz_responses[$rid][$question->vid] = $to_return;
-  
+
   return $to_return;
 }
 
@@ -734,7 +732,7 @@ function _quiz_question_get_implementations($name = NULL, $reset = FALSE) {
 
 /**
  * Refreshes the quiz_question_latest_quizzes table when a user has modified a new quiz.
- * 
+ *
  * The latest quizzes table is used to know what quizzes the user has been using lately.
  *
  * @param $nid
@@ -779,7 +777,7 @@ function quiz_question_remove_latest_quizzes($nid) {
 
 /**
  * Get the max score for a question
- * 
+ *
  * @param $nid
  *  Question node id
  * @param $vid
@@ -795,11 +793,37 @@ function quiz_question_get_max_score($nid, $vid) {
 }
 
 /**
+ * Implementation of hook_content_extra_fields(cck)
+ */
+function quiz_question_content_extra_fields($type_name) {
+  $extra = array();
+  $question_types = array_keys(_quiz_question_get_implementations());
+  if (in_array($type_name, $question_types)) {
+    $extra['add_directly'] = array(
+      'label' => t('Add directly'),
+      'description' => t('Fieldset for adding a question directly into quizzes'),
+      'weight' => -3,
+    );
+  }
+  return $extra;
+}
+
+/**
+ * Implementation of hook_content_extra_fields_alter(cck)
+ */
+function quiz_question_content_extra_fields_alter(&$extras, $type_name) {
+  $question_types = array_keys(_quiz_question_get_implementations());
+  if (in_array($type_name, $question_types)) {
+    $extras['body_field']['weight'] = -15;
+  }
+}
+
+/**
  * Returns a result report for a question response.
- * 
+ *
  * The retaurned value is a form array because in some contexts the scores in the form
  * is editable
- * 
+ *
  * @param $question
  *  The question node
  * @param $showpoints
@@ -813,11 +837,11 @@ function quiz_question_report_form($question, $showpoints, $showfeedback, $allow
   $response_instance = _quiz_question_response_get_instance($answer['result_id'], $question, $answer);
   // If need to specify the score weight if it isn't already specified.
   if (!isset($response_instance->question->score_weight)) {
-    $sql = 'SELECT qnr.max_score 
+    $sql = 'SELECT qnr.max_score
             FROM {quiz_node_relationship} qnr
             WHERE qnr.child_vid = %d
             AND qnr.parent_vid = (
-              SELECT vid 
+              SELECT vid
               FROM {quiz_node_results}
               WHERE result_id = %d
             )';
@@ -826,6 +850,6 @@ function quiz_question_report_form($question, $showpoints, $showfeedback, $allow
     else $weight = $qnr_max_score / $response_instance->question->max_score;
     $response_instance->question->score_weight = $weight;
   }
-  
+
   return $response_instance->getReportForm($showpoints, $showfeedback, $allow_scoring);
 }

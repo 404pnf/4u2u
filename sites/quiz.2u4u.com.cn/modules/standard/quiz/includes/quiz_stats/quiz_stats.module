@@ -1,5 +1,5 @@
 <?php
-// $Id: quiz_stats.module,v 1.1.2.4 2010/04/26 11:40:48 falcon Exp $
+// $Id: quiz_stats.module,v 1.1.2.7 2010/11/13 17:00:54 falcon Exp $
 
 /**
  * @file
@@ -11,7 +11,6 @@
 /**
  * Implementation of hook_help().
  */
-
 function quiz_stats_help($path, $arg) {
   if ($path == 'admin/help#quiz_stats') {
     return '<p>' . t('Module creates a report to analyse and compare the results of quiz attendees. The reports will be displayed visually using goolge chart API.') . '</p>';
@@ -24,7 +23,6 @@ function quiz_stats_help($path, $arg) {
 function quiz_stats_perm() {
   $permission = array('access user stats', 'access author stats');
   return $permission;
-
 }
 
 /**
@@ -83,7 +81,6 @@ function quiz_stats_menu() {
   return $items;
 }
 
-
 /**
  * Implementation of hook_theme().
  */
@@ -111,12 +108,12 @@ function quiz_stats_theme() {
     ),
     'quiz_stats_revision_selector' => array(
       'arguments' => array('content' => NULL),
-      'path' => drupal_get_path('module', 'quiz_stats') .'/theme',
+      'path' => drupal_get_path('module', 'quiz_stats') . '/theme',
       'template' => 'quiz_stats_revision_selector',
     ),
     'quiz_stats_charts' => array(
       'arguments' => array('charts' => NULL),
-      'path' => drupal_get_path('module', 'quiz_stats') .'/theme',
+      'path' => drupal_get_path('module', 'quiz_stats') . '/theme',
       'template' => 'quiz_stats_charts',
     ),
   );
@@ -124,12 +121,12 @@ function quiz_stats_theme() {
 
 /**
  * Validate that a node is of type quiz, and that the user has access to it, and that the vid is a vid of that quiz
- * 
+ *
  * @param $quiz
  *  The quiz node
  * @param $vid
  *  The version id
- * @return 
+ * @return
  *  TRUE if user has access
  */
 function quiz_stats_validate_vid($quiz, $vid) {
@@ -140,14 +137,14 @@ function quiz_stats_validate_vid($quiz, $vid) {
     return FALSE;
   }
   $sql = db_rewrite_sql(
-    'SELECT n.nid 
+    'SELECT n.nid
      FROM {node} n
      WHERE n.nid = (
        SELECT nr.nid
-       FROM {node_revisions} nr 
+       FROM {node_revisions} nr
        WHERE nr.vid = %d
      )'
   );
   $nid = db_result(db_query($sql, $vid));
-  return $quiz->nid == $nid;  
+  return $quiz->nid == $nid;
 }

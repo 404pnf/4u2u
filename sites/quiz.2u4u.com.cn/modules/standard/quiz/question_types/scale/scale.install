@@ -1,5 +1,5 @@
 <?php
-// $Id: scale.install,v 1.1.2.9 2010/04/14 11:19:51 sivaji Exp $
+// $Id: scale.install,v 1.1.2.10 2010/11/14 16:00:33 falcon Exp $
 
 /**
  * Sponsored by: Norwegian Centre for Telemedicine
@@ -18,7 +18,7 @@ function scale_install() {
   _scale_insert_collection(array('Always', 'Very often', 'Some times', 'Rarely', 'Very rarely', 'Never'));
   _scale_insert_collection(array('Excellent', 'Very good', 'Good', 'Ok', 'Poor', 'Very poor'));
   _scale_insert_collection(array('Totally agree', 'Agree', 'Not sure', 'Disagree', 'Totally disagree'));
-  _scale_insert_collection(array('Very important', 'Important', 'Moderately important', 'Less important' , 'unimportant'));
+  _scale_insert_collection(array('Very important', 'Important', 'Moderately important', 'Less important' , 'Least important'));
   variable_set('node_options_scale', array('status'));
   cache_clear_all('autoload:', 'cache');
 }

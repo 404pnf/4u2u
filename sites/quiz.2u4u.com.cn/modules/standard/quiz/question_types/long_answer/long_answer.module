@@ -1,5 +1,5 @@
 <?php
-// $Id: long_answer.module,v 1.2.2.27 2010/05/08 11:34:38 falcon Exp $
+// $Id: long_answer.module,v 1.2.2.28 2010/11/05 16:14:47 falcon Exp $
 
 /**
  * This module defines a long answer question type for quizzes.
@@ -135,14 +135,14 @@ function long_answer_theme() {
 function long_answer_score_an_answer($quiz, $nid, $vid, $rid, $score, $update_total = TRUE) {
   // Quiz scoring information is spread out across three tables:
   // 1. The module should retain its own scoring information in any case where scoring is non-trivial.
-  // 2. The Quiz moduleretains a limited amount of scoring information. 
+  // 2. The Quiz moduleretains a limited amount of scoring information.
   // 3. The Quiz module retains an overall score for a quiz. This is the percentage score for the combination of all
   //    questions on the quiz.
   //
   // We update all three.
 
   // First, we update the long answer table
-  db_query("UPDATE {quiz_long_answer_user_answers} 
+  db_query("UPDATE {quiz_long_answer_user_answers}
             SET score = %d * (
               SELECT max_score
               FROM {quiz_question_properties}
@@ -153,10 +153,10 @@ function long_answer_score_an_answer($quiz, $nid, $vid, $rid, $score, $update_to
               FROM {quiz_node_relationship}
               WHERE parent_vid = %d
               AND child_vid = %d
-            ), is_evaluated = 1 
-            WHERE question_nid = %d 
-            AND question_vid = %d 
-            AND result_id = %d", 
+            ), is_evaluated = 1
+            WHERE question_nid = %d
+            AND question_vid = %d
+            AND result_id = %d",
            $score, $nid, $vid, $quiz->vid, $vid, $nid, $vid, $rid);
   $changed = db_affected_rows();
 
@@ -168,7 +168,7 @@ function long_answer_score_an_answer($quiz, $nid, $vid, $rid, $score, $update_to
     $max = db_result(db_query('SELECT max_score FROM {quiz_question_properties} WHERE vid = %d', $vid));
     if ($max <= 0) {
       $is_correct = 0;
-      $points_awarded = 0; 
+      $points_awarded = 0;
     }
     else {
       $is_correct = $score == $max ? 1 : 0;
@@ -215,7 +215,7 @@ function long_answer_get_answer($question_nid, $question_vid, $result_id) {
   $sql = "SELECT answer_id, answer, la.is_evaluated, la.score, question_vid, question_nid, la.result_id, rel.max_score AS rel_max_score
     FROM {quiz_long_answer_user_answers} la
     JOIN {quiz_node_results} qnr ON (la.result_id = qnr.result_id)
-    JOIN {quiz_node_relationship} rel ON (qnr.vid = rel.parent_vid AND rel.child_vid = la.question_vid)  
+    JOIN {quiz_node_relationship} rel ON (qnr.vid = rel.parent_vid AND rel.child_vid = la.question_vid)
     WHERE question_nid = %d AND question_vid = %d AND la.result_id = %d";
   $results = db_query($sql, $question_nid, $question_vid, $result_id);
 
@@ -242,9 +242,9 @@ function long_answer_get_answer($question_nid, $question_vid, $result_id) {
  *  Indexed array of result IDs that need to be scored.
  */
 function long_answer_get_unscored_answers_by_question($nid, $vid, $count = 50, $offset = 0) {
-  $results = db_query_range('SELECT result_id 
-    FROM {quiz_long_answer_user_answers} 
-    WHERE is_evaluated = 0 AND question_nid = %d AND question_vid = %d', 
+  $results = db_query_range('SELECT result_id
+    FROM {quiz_long_answer_user_answers}
+    WHERE is_evaluated = 0 AND question_nid = %d AND question_vid = %d',
     $nid, $vid, $offset, $count);
   $unscored = array();
   foreach (db_fetch_object($results) as $row) {
@@ -289,7 +289,7 @@ function long_answer_get_all_unscored_answers($count = 50, $offset = 0) {
 
 /**
  * Generate a list of long answer questions
- * 
+ *
  * @return
  *  array containing nid as key and title as value
  */
@@ -306,7 +306,7 @@ function long_answer_questions_list() {
 
 /**
  * Submit function for the report form
- * 
+ *
  * @param $values
  *   The FAPI $form_state['values']
  */
@@ -316,7 +316,7 @@ function long_answer_report_submit($values) {
 
 /**
  * Validation function for the report form
- * 
+ *
  * @param $values
  *  The FAPI $form_state['values']
  * @param $form_key

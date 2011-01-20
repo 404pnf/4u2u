@@ -1,5 +1,5 @@
 <?php
-// $Id: short_answer.theme.inc,v 1.1.2.9 2010/05/07 09:19:31 falcon Exp $
+// $Id: short_answer.theme.inc,v 1.1.2.10 2010/11/05 16:14:48 falcon Exp $
 
 /**
  * @file
@@ -48,7 +48,7 @@ function theme_short_answer_user_answer($answer, $correct) {
 
 /**
  * Theme the short_answer response form
- * 
+ *
  * @param $form
  *  The response form
  */

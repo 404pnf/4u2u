@@ -1,5 +1,5 @@
 <?php
-// $Id: matching.module,v 1.2.2.14 2010/05/07 07:52:46 falcon Exp $
+// $Id: matching.module,v 1.2.2.15 2010/11/05 16:14:47 falcon Exp $
 
 /**
  * @file
@@ -41,7 +41,7 @@ function matching_quiz_question_info() {
 
 /**
  * hook_config
- * 
+ *
  * @return FAPI array
  */
 function matching_config() {
@@ -65,7 +65,7 @@ function matching_config() {
  * Validate the matching config form values
  */
 function matching_config_validate($form, $form_state) {
-  if (!_quiz_is_int($form_state['values']['quiz_matching_form_size'], 2, 50)) 
+  if (!_quiz_is_int($form_state['values']['quiz_matching_form_size'], 2, 50))
     form_set_error('quiz_matching_form_size', t('The number of questions must be between 2 and 50'));
 }
 
@@ -111,6 +111,6 @@ function matching_theme() {
       'path' => drupal_get_path('module', 'matching') .'/theme',
       'template' => 'matching-answering-form',
     ),
-    
+
   );
 }

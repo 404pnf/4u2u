@@ -1,9 +1,9 @@
-<?php 
-// $Id: multichoice.theme.inc,v 1.1.2.7 2010/07/08 09:20:25 falcon Exp $
+<?php
+// $Id: multichoice.theme.inc,v 1.1.2.9 2010/11/05 16:14:47 falcon Exp $
 
 /**
  * The theme file for multichoice.
- * 
+ *
  * Sponsored by: Norwegian Centre for Telemedicine
  * Code: falcon
  *
@@ -14,13 +14,13 @@
 function theme_multichoice_creation_form($form) {
   $path = drupal_get_path('module', 'multichoice') .'/multichoice.js';
   drupal_add_js($path, 'module');
-  
+
   // We open the settings fieldset if there is errors involving the choice_multi setting
   $errors = form_get_errors();
   if (isset($errors['choice_multi'])) {
     $form['settings']['#collapsed'] = FALSE;
   }
-  
+
   // We open the alternative fieldsets if errors have been reported
   if ($errors) {
     for ($i = 0; is_array($form[$i]); $i++) {
@@ -34,7 +34,7 @@ function theme_multichoice_creation_form($form) {
 
 /**
  * Theme the answer part of the node view
- * 
+ *
  * @param $alternatives
  *  Array of alternatives. Each alternative is also an array with all the
  *  data for each alternative.
@@ -51,7 +51,7 @@ function theme_multichoice_answer_node_view($alternatives, $show_correct) {
     $p = drupal_get_path('module', 'multichoice');
     $image = $is_correct ? 'correct' : 'wrong';
     if (!$show_correct) $image = 'unknown';
-      
+
     $rows[] = array(
         array(
           'data' => theme('image',
@@ -62,7 +62,7 @@ function theme_multichoice_answer_node_view($alternatives, $show_correct) {
               '@sc' => $short['score_if_chosen'],
               '@nc' => $short['score_if_not_chosen'])
             ) :
-            t('You are not allowed to veiw the solution for this question')
+            t('You are not allowed to view the solution for this question')
           ),
           'width' => 35
         ),
@@ -74,7 +74,7 @@ function theme_multichoice_answer_node_view($alternatives, $show_correct) {
 
 /**
  * Theme function for the multichoice report
- * 
+ *
  * @param $data
  *  Array of data to be presented in the report
  */
@@ -89,23 +89,23 @@ function theme_multichoice_response($data) {
       switch ($alternative['is_correct']) {
         case 0:
           $cols[] = array(
-            'data' => theme('image', "$p/wrong.png", t('Wrong'), t('This answer is wrong'), array('class' => 'feedback-icon')), 
-            'width' => 35, 
+            'data' => theme('image', "$p/wrong.png", t('Wrong'), t('This answer is wrong'), array('class' => 'feedback-icon')),
+            'width' => 35,
             'rowspan' => $rowspan,
             'class' => 'selector-td',
           );
           break;
         case 1:
-          $cols[] = array('data' => theme('image', "$p/almost.png", t('Almost correct'), t('This answer is correct, but there is an answer that gives a higher score'), array('class' => 'feedback-icon')), 
-            'width' => 35, 
+          $cols[] = array('data' => theme('image', "$p/almost.png", t('Almost correct'), t('This answer is correct, but there is an answer that gives a higher score'), array('class' => 'feedback-icon')),
+            'width' => 35,
             'rowspan' => $rowspan,
             'class' => 'selector-td',
           );
           break;
         case 2:
           $cols[] = array(
-            'data' => theme('image', "$p/correct.png", t('Correct'), t('This answer is correct'), array('class' => 'feedback-icon')), 
-            'width' => 35, 
+            'data' => theme('image', "$p/correct.png", t('Correct'), t('This answer is correct'), array('class' => 'feedback-icon')),
+            'width' => 35,
             'rowspan' => $rowspan,
             'class' => 'selector-td',
           );
@@ -115,16 +115,16 @@ function theme_multichoice_response($data) {
     else {
       if ($alternative['is_correct'] == 2) {
         $cols[] = array(
-          'data' => theme('image', "$p/should.png", t('Should have chosen'), t("This answer is correct, but you didn't choose it"), array('class' => 'feedback-icon')), 
-          'width' => 35, 
+          'data' => theme('image', "$p/should.png", t('Should have chosen'), t("This answer is correct, but you didn't choose it"), array('class' => 'feedback-icon')),
+          'width' => 35,
           'rowspan' => $rowspan,
           'class' => 'selector-td',
         );
       }
       else {
         $cols[] = array(
-          'data' => '', 
-          'width' => 35, 
+          'data' => '',
+          'width' => 35,
           'rowspan' => $rowspan,
           'class' => 'selector-td',
         );

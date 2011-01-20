@@ -1,5 +1,5 @@
 <?php
-// $Id: truefalse.module,v 1.1.2.9 2010/05/11 07:43:27 falcon Exp $
+// $Id: truefalse.module,v 1.1.2.10 2010/11/05 16:14:48 falcon Exp $
 
 /**
  * @file
@@ -79,7 +79,7 @@ function truefalse_theme() {
 
 /**
  * Theme the response part of the response report
- * 
+ *
  * @param $metadata
  *  Can be used as a table header
  * @param $data

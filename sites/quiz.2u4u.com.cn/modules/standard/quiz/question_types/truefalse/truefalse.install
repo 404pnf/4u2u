@@ -1,6 +1,6 @@
 <?php
 
-// $Id: truefalse.install,v 1.1.2.10 2010/06/27 19:16:40 falcon Exp $
+// $Id: truefalse.install,v 1.1.2.11 2010/11/05 16:14:48 falcon Exp $
 
 /**
  * @file
@@ -9,17 +9,17 @@
 
 /**
  * Implementation of hook_update_N
- * 
+ *
  * truefalse has actually changed its name from true_false. We try to fix any problems this might result in here...
  */
 function truefalse_update_6400() {
   $results = array();
-  
+
   $results[] = update_sql("UPDATE {system} SET name = 'truefalse' WHERE name = 'true_false'");
   $results[] = update_sql("UPDATE {node} SET type = 'truefalse' WHERE type = 'true_false'");
   $results[] = update_sql("UPDATE {system} SET type = 'truefalse' WHERE type = 'true_false'");
   $results[] = update_sql("UPDATE {vocabulary_node_types} SET type = 'truefalse' WHERE type = 'true_false'");
-  
+
   return $results;
 }
 

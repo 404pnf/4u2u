@@ -1,0 +1,16 @@
+<?php
+// $Id: uc_views_bulk_operations.install,v 1.1.2.1 2009/06/22 10:37:55 madsph Exp $
+
+/**
+ * Implentation of the hook_install().
+ */
+ function uc_views_bulk_operations_install() {
+ }
+
+/**
+ * Implentation of the hook_uninstall().
+ */
+ function uc_views_bulk_operations_uninstall() {
+ }
+
+?>

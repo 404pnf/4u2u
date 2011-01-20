@@ -1,0 +1,4 @@
+; $Id$
+name = 下载购买统计
+description = 下载类产品的销售统计，以及下载次数统计
+core = 6.x

@@ -1,4 +1,4 @@
-/* $Id: quiz.css,v 1.10.2.36 2010/06/23 20:27:34 falcon Exp $ */
+/* $Id: quiz.css,v 1.10.2.41 2010/12/17 14:44:57 falcon Exp $ */
 
 
 
@@ -71,12 +71,17 @@ td.quiz_summary_qcell table td {
   background-color: #666;
 }
 
-.quiz-question-browser-row.odd:not(.selected) td.active {
+.quiz-question-browser-row.odd td.active {
   background-color: #e2e2f9;
 }
 
-.quiz-question-browser-row.even:not(.selected) td.active {
+.quiz-question-browser-row.even td.active {
   background-color: #f8f8ff;
+}
+
+tr.selected.quiz-question-browser-row td, tr.selected.quiz-question-browser-row td.active {
+  background: none repeat scroll 0 0 #505050;
+  color: #FFF;
 }
 
 .browser-table th {
@@ -102,9 +107,7 @@ dl.quiz-report {
 dl.quiz-report dt {
   background: #eee;
   border-top: solid 1px gray;
-    float: left;
   padding-left: 5px;
-  width: 100%;
 }
 
 dl.quiz-report dt div.quiz-report-score-container {
@@ -115,26 +118,16 @@ dl.quiz-report dt div.quiz-report-score-container {
   padding: 4px 6px;
 }
 
-dl.quiz-report dt p {
-  clear: both ;
-  float: left;
-}
-
-dl.quiz-report dt p.quiz-report-question {
-  clear: none;
-}
-
 dl.quiz-report dt div.quiz-report-score-container span div.form-item {
   display: inline;
 }
 
 dl.quiz-report dd {
   margin: 10px 0 50px 0;
-  padding-left: 5px;
 }
 
 .quiz-report-skipped {
-  float: right;	
+  float: right;
 }
 
 .q-correct {
@@ -207,7 +200,7 @@ dl.quiz-report dd {
   line-height: 110%;
 }
 .quiz-view-table-title {
-  
+
 }
 .quiz-view-table-data {
 
@@ -248,4 +241,13 @@ dl.quiz-report dd {
 
 .quiz-answer-hidden {
   font-style: italic;
+}
+
+#quiz-jumper {
+  display: none;
+}
+
+#quiz-categorized-form #autocomplete {
+  overflow: auto;
+  max-height: 300px;
 }

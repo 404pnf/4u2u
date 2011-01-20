@@ -1,0 +1,171 @@
+<?php
+// $Id$
+
+function batchdelete_menu() {
+  $items['admin/settings/batchdelete'] = array(
+    'title'            => 'Batch delete node',
+    'page callback'    => 'drupal_get_form',
+	'page arguments'    =>  array('batchdelete_form'),
+    'access arguments' => array('administer site configuration'),
+    'weight'           => 1,
+    'type'             => MENU_NORMAL_ITEM,
+   
+  );
+  $items['admin/settings/batchdelete/node'] = array(
+    'title'            => 'Batch delete node',
+    'page callback'    => 'drupal_get_form',
+	'page arguments'    =>  array('batchdelete_form'),
+    'access arguments' => array('administer site configuration'),
+    'weight'           => 1,
+    'type'             => MENU_DEFAULT_LOCAL_TASK,
+   
+  );
+  $items['admin/settings/batchdelete/block'] = array(
+    'title'            => 'Batch delete block',
+    'page callback'    => 'drupal_get_form',
+	'page arguments'    =>  array('batchdelete_block_form'),
+    'access arguments' => array('administer site configuration'),
+    'weight'           => 2,
+    'type'             => MENU_LOCAL_TASK,
+   
+  );
+  $items['admin/settings/batchdelete/taxonomy'] = array(
+    'title'            => 'Batch delete taxonomy',
+    'page callback'    => 'drupal_get_form',
+	'page arguments'    =>  array('batchdelete_taxonomy_form'),
+    'access arguments' => array('administer site configuration'),
+    'weight'           => 3,
+    'type'             => MENU_LOCAL_TASK,
+   
+  );
+  return $items;
+}
+
+function batchdelete_form(){
+	/*
+	$options =array(
+		'story' => t('Story'),
+		'page' => t('Page'),
+	);
+	*/
+	$options = node_get_types('names');
+	$form['types'] = array(
+		'#title' => t('要删除的节点类型'),
+		'#type' =>'checkboxes',
+		'#description' =>t('请选择哪些节点类型要被删除。'),
+		'#options' => $options,
+	);
+	$form['submit'] = array(
+		'#type' =>'submit',
+		'#value' => t('Delete'),
+	);
+	return $form;
+}
+function batchdelete_form_submit($form,&$form_state){
+	$types = array_filter($form_state['values']['types']);
+	$batch =array(
+		'operations' => array(
+		  array('batchdelete_process', array($types)),
+		  ),
+		'finished' => 'batchdelete_finished',
+		'title' => t('删除节点'),
+		'init_message' => t('开始批量删除.'),
+		//'progress_message' => t('Reindexed @current out of @total.'),
+		'error_message' => t('批量删除遇到错误.'),
+	);
+	batch_set($batch);
+}
+function batchdelete_process($types,&$context){
+	$size =100;
+	//$types_str ='story,page';
+	$types_str = "'".implode("','", $types)."'";
+	if(!isset($context['sandbox']['progress'])){
+		$context['sandbox']['progress'] = 0;
+		$context['sandbox']['max'] =db_result(db_query("SELECT COUNT(nid) FROM {node} WHERE type in ($types_str)"));
+	}
+	$sql = "SELECT nid FROM {node} WHERE type in ($types_str)";
+	$result = db_query_range($sql,0,$size);
+	while($node = db_fetch_array($result)){
+		node_delete($node['nid']);
+		$context['sandbox']['progress']++;
+		$context['message'] = t('删除节点 %nid',array('%nid' => $node['nid']));
+	}
+	if($context['sandbox']['progress'] ==$context['sandbox']['max']){
+		$context['finished'] = 1;
+	}else{
+		$context['finished'] = $context['sandbox']['progress']/$context['sandbox']['max'];
+	}
+
+}
+
+function batchdelete_finished($success, $results, $operations){
+	if ($success) {
+		// Here we do something meaningful with the results.
+		$message = t('节点删除完成');
+		
+	}
+	else {
+		// An error occurred.
+		// $operations contains the operations that remained unprocessed.
+		$error_operation = reset($operations);
+		$message = '在删除节点时出现一个错误'. $error_operation[0] .' 其参数为 :'. print_r($error_operation[0], TRUE);
+	}
+	drupal_set_message($message);
+}
+function batchdelete_block_form(){
+	$result = db_query("SELECT * FROM {boxes} ");
+	$options =array();
+	while ($data = db_fetch_object($result)) {
+	$options[$data->bid] = $data->info; 
+	}
+	$form['bids'] = array(
+		'#title' => t('要删除的自定义区块'),
+		'#type' =>'checkboxes',
+		'#description' =>t('请选择哪些自定义区块要被删除。'),
+		'#options' => $options,
+	);
+	$form['submit'] = array(
+		'#type' =>'submit',
+		'#value' => t('Delete'),
+	);
+	return $form;
+
+
+}
+function batchdelete_block_form_submit($form,&$form_state){
+	$bids = array_filter($form_state['values']['bids']);
+	foreach($bids as $bid){
+		db_query('DELETE FROM {boxes} WHERE bid = %d', $bid);
+		db_query("DELETE FROM {blocks} WHERE module = 'block' AND delta = '%s'", $bid);
+		db_query("DELETE FROM {blocks_roles} WHERE module = 'block' AND delta = '%s'", $bid);
+	}
+	//db_query('DELETE FROM {boxes} WHERE bid = %d', $form_state['values']['bid']);
+  //db_query("DELETE FROM {blocks} WHERE module = 'block' AND delta = '%s'", $form_state['values']['bid']);
+  //drupal_set_message(t('The block %name has been removed.', array('%name' => $form_state['values']['info'])));
+
+}
+function batchdelete_taxonomy_form(){
+	$options=array();
+	$vocabs = taxonomy_get_vocabularies();
+	foreach($vocabs as $vocab){
+		$options[$vocab->vid] = $vocab->name; 
+	}
+	$form['vids'] = array(
+		'#title' => t('要删除的分类词汇表ID'),
+		'#type' =>'checkboxes',
+		'#description' =>t('请选择哪些分类词汇表要被删除。'),
+		'#options' => $options,
+	);
+	$form['submit'] = array(
+		'#type' =>'submit',
+		'#value' => t('Delete'),
+	);
+	return $form;
+}
+function batchdelete_taxonomy_form_submit($form,&$form_state){
+	$vids = array_filter($form_state['values']['vids']);
+	foreach($vids as $vid){
+		taxonomy_del_vocabulary($vid);
+	}
+	
+}

@@ -1,5 +1,5 @@
 <?php
-// $Id: short_answer.module,v 1.2.2.25 2010/05/07 07:26:23 falcon Exp $
+// $Id: short_answer.module,v 1.2.2.26 2010/11/05 16:14:48 falcon Exp $
 
 /**
  * The main file for short_answer.
@@ -141,7 +141,7 @@ function short_answer_theme() {
  */
 function short_answer_score_an_answer($quiz, $nid, $vid, $rid, $score, $update_total = TRUE) {
   // When we set the score we make sure that the max score in the quiz the question belongs to is considered
-  db_query("UPDATE {quiz_short_answer_user_answers} 
+  db_query("UPDATE {quiz_short_answer_user_answers}
             SET score = %d * (
               SELECT max_score
               FROM {quiz_question_properties}
@@ -151,10 +151,10 @@ function short_answer_score_an_answer($quiz, $nid, $vid, $rid, $score, $update_t
               FROM {quiz_node_relationship}
               WHERE parent_vid = %d
               AND child_vid = %d
-            ), is_evaluated = 1 
-            WHERE question_nid = %d 
-            AND question_vid = %d 
-            AND result_id = %d", 
+            ), is_evaluated = 1
+            WHERE question_nid = %d
+            AND question_vid = %d
+            AND result_id = %d",
            $score, $vid, $quiz->vid, $vid, $nid, $vid, $rid);
   $changed = db_affected_rows();
 
@@ -226,7 +226,7 @@ function short_answer_get_answer($question_nid, $question_vid, $result_id) {
   $sql = "SELECT sa.answer_id, sa.answer, sa.is_evaluated, sa.score, sa.question_vid, sa.question_nid, sa.result_id, rel.max_score AS rel_max_score
     FROM {quiz_short_answer_user_answers} sa
     JOIN {quiz_node_results} qnr ON (sa.result_id = qnr.result_id)
-    JOIN {quiz_node_relationship} rel ON (qnr.vid = rel.parent_vid AND rel.child_vid = sa.question_vid) 
+    JOIN {quiz_node_relationship} rel ON (qnr.vid = rel.parent_vid AND rel.child_vid = sa.question_vid)
     WHERE sa.question_nid = %d AND sa.question_vid = %d AND sa.result_id = %d";
   $results = db_query($sql, $question_nid, $question_vid, $result_id);
 

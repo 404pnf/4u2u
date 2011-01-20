@@ -1,5 +1,5 @@
 <?php
-// $Id: quiz_question.pages.inc,v 1.1.2.16 2010/05/09 09:54:23 falcon Exp $
+// $Id: quiz_question.pages.inc,v 1.1.2.17 2010/11/05 16:14:47 falcon Exp $
 
 /**
  * @file
@@ -8,10 +8,10 @@
 
 /**
  * Create the form for the revision actions page
- * 
+ *
  * Form for deciding what to do with the quizzes a question is member of when the question is
  * revised
- * 
+ *
  * @param $form_state
  * @param $nid
  *  Question node id
@@ -24,11 +24,11 @@ function quiz_question_revision_actions($form_state, $nid, $vid) {
   // If no questions were kept we shouldn't get here...
   if (!isset($_SESSION['quiz_question_kept']))
     drupal_goto('node/'. $nid);
-    
+
   $form = array();
   $form['q_nid'] = array('#type' => 'value', '#value' => intval($nid));
   $form['q_vid'] = array('#type' => 'value', '#value' => intval($vid));
-  
+
   // Fetch data for all the quizzes that was kept
   $quiz_nids = array();
   $quiz_vids = array();
@@ -49,7 +49,7 @@ function quiz_question_revision_actions($form_state, $nid, $vid) {
     $res_o->answered = quiz_has_been_answered($res_o);
     $quizzes[] = $res_o;
   }
-  
+
   $text = t('You have created a new revision of a question that belongs to %num quizzes. Choose what you want to do with the different quizzes.', array('%num' => count($quizzes)));
   $form['intro'] = array(
     '#type' => 'markup',
@@ -60,25 +60,25 @@ function quiz_question_revision_actions($form_state, $nid, $vid) {
   foreach ($quizzes as $quiz) {
     $published = $quiz->status == 1 ? t('published') : t('unpublished');
     $answered = $quiz->answered ? t('answered') : t('unanswered');
-    
+
     // We fetch the revision options from a helper function
     $options = _quiz_question_revision_options($quiz->status == 1, $quiz->answered);
-    
+
     $form['quizzes'][$quiz->nid .'-'. $quiz->vid .'-'. $quiz->status .'-'. ($quiz->answered ? '1' : '0')] = array(
       '#type' => 'radios',
       '#title' => check_plain($quiz->title) .' ('. $published .' '. t('and') .' '. $answered .')',
       '#default_value' => $options['default'],
-      '#options' => $options['options'], 
+      '#options' => $options['options'],
     );
     $form['quizzes'][$quiz->vid]['#quiz_title'] = $quiz->title;
   }
-  
+
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Submit'),
   );
   $form['#submit'] = array('quiz_question_revision_actions_submit');
-  
+
   // Help texts
   $form['update_expl'] = array(
     '#type' => 'item',
@@ -96,10 +96,10 @@ function quiz_question_revision_actions($form_state, $nid, $vid) {
 
 /**
  * Get revision options for the revision actions page
- * 
+ *
  * Returns revision options and default option depending on the published and answered status
  * for a quiz
- * 
+ *
  * @param $published
  *  Publish status for a quiz
  * @param $answered
@@ -119,7 +119,7 @@ function _quiz_question_revision_options($published, $answered) {
           '101' => t('Update'),
           '001' => t('Do nothing'),
         ),
-        'default' => '111',   
+        'default' => '111',
       ),
       'unanswered' => array(
         'options' => array(
@@ -129,7 +129,7 @@ function _quiz_question_revision_options($published, $answered) {
         ),
         'default' => '101',
       ),
-      
+
     ),
     'unpublished' => array(
       'answered' => array(
@@ -150,7 +150,7 @@ function _quiz_question_revision_options($published, $answered) {
         ),
         'default' => '100',
       ),
-    ),    
+    ),
   );
   $published = $published ? 'published' : 'unpublished';
   $answered = $answered ? 'answered' : 'unanswered';
@@ -164,12 +164,12 @@ function quiz_question_revision_actions_submit($form, &$form_state) {
   // TODO: Add date check here?
   // We should't be able to revisit the revision actions page after this.
   unset($_SESSION['quiz_question_kept']);
-  
+
   foreach ($form_state['values'] as $key => $value) {
     if (!preg_match('/^[0-9]+-[0-9]+-[0,1]-[0,1]$/', $key)) continue;
     list($update, $revise, $publish) = str_split($value); //FORMAT: Update[0,1], revise[0,1] and publish[0,1]
     list($nid, $vid, $published, $answered) = explode('-', $key); //FORMAT: nid(int), vid(int), published[0,1] and answered[0,1]
-    
+
     //If we are to revise the quiz we need to do that first...
     if ($revise == '1') {
       $quiz_node = node_load((int)$nid, (int)$vid);
@@ -177,7 +177,7 @@ function quiz_question_revision_actions_submit($form, &$form_state) {
     }
     if (!isset($quiz_node) && $publish != $published)
       $quiz_node = node_load((int)$nid, (int)$vid);
-    
+
     // If the quiz node is to be revised and/or (un)published we save it now
     if (isset($quiz_node)) {
       $quiz_node->auto_created = TRUE;
@@ -190,24 +190,24 @@ function quiz_question_revision_actions_submit($form, &$form_state) {
       $quiz_nid = (int)$nid;
       $quiz_vid = (int)$vid;
     }
-    
+
     if ($update == '1') {
-      $sql = 'SELECT max_score 
-              FROM {quiz_node_relationship} 
+      $sql = 'SELECT max_score
+              FROM {quiz_node_relationship}
               WHERE parent_vid = %d
               AND child_nid = %d';
       $res = db_query($sql, $quiz_vid, $form_state['values']['q_nid']);
       if ($max_score = db_result($res));
       else {
-        $sql = 'SELECT max_score 
-                FROM {quiz_question_properties} 
+        $sql = 'SELECT max_score
+                FROM {quiz_question_properties}
                 WHERE vid = %d';
         $res = db_query($sql, $form_state['values']['q_vid']);
         $max_score = db_result($res);
       }
-      
-      
-      $sql = 'SELECT weight, question_status 
+
+
+      $sql = 'SELECT weight, question_status
               FROM {quiz_node_relationship}
               WHERE parent_nid = %d AND parent_vid = %d AND child_nid = %d';
       $res = db_query($sql, $quiz_nid, $quiz_vid, $form_state['values']['q_nid']);

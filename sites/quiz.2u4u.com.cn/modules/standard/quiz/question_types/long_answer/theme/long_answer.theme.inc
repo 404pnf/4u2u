@@ -1,5 +1,5 @@
 <?php
-// $Id: long_answer.theme.inc,v 1.1.2.8 2010/05/07 07:26:23 falcon Exp $
+// $Id: long_answer.theme.inc,v 1.1.2.9 2010/11/05 16:14:47 falcon Exp $
 
 /**
  * @file
@@ -37,7 +37,7 @@ function theme_long_answer_view_unscored($unscored) {
 
 /**
  * Theme the long_answer response form
- * 
+ *
  * @param $form
  *  The response form
  */

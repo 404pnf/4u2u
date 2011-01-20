@@ -1,6 +1,6 @@
 <?php
 
-// $Id: quiz_stats.admin.inc,v 1.1.2.10 2010/06/25 11:56:36 falcon Exp $
+// $Id: quiz_stats.admin.inc,v 1.1.2.13 2010/11/05 16:14:47 falcon Exp $
 
 /*
  * @file
@@ -10,11 +10,11 @@
 
 /**
  * Page for selecting between several quiz revisions
- * 
+ *
  * @param $nid
  *  Quiz node id
  * @return
- *  Themed html 
+ *  Themed html
  */
 function quiz_stats_revision_selector_page($quiz) {
   $sql = 'SELECT vid FROM {node_revisions} WHERE nid = %d ORDER BY vid';
@@ -25,11 +25,11 @@ function quiz_stats_revision_selector_page($quiz) {
     $vids[] = $res_o->vid;
     $count++;
   }
-  if ($count < 1) 
+  if ($count < 1)
     return t('Something went wrong. Please try again');
   elseif ($count == 1) {
     // If there is only one revision we jump directly to that revision
-    drupal_goto('admin/quiz/reports/stats/creator/'. $vids[0] .'/view');
+    drupal_goto("node/{$quiz->nid}/statistics/{$vids[0]}");
   }
   else {
     $content = array();
@@ -41,7 +41,7 @@ function quiz_stats_revision_selector_page($quiz) {
       $content['links'][] = 'node/' . $quiz->nid . '/statistics/' . $value;
     }
     return theme('quiz_stats_revision_selector', $content);
-  } 
+  }
 }
 
 /**
@@ -115,7 +115,7 @@ function _get_quiz_grade_range_chart($vid, $uid = 0) {
   $chart .= '</div>';
   // Return the chart with some meta data
   return array(
-    'chart' => $chart, 
+    'chart' => $chart,
     'title' => t('Distribution'),
     'explanation' => t('This chart shows the distribution of the scores on this quiz.'),
   );
@@ -152,7 +152,7 @@ function _get_quiz_top_scorers_chart($vid, $uid = 0) {
   $chart .= theme('quiz_top_scorers', $top_scorers);
   $chart .= '</div>';
   return array(
-    'chart' => $chart, 
+    'chart' => $chart,
     'title' => t('Top scorers'),
     'explanation' => t('This chart shows what question takers have the highest scores'),
   );
@@ -172,7 +172,10 @@ function _get_quiz_top_scorers_chart($vid, $uid = 0) {
  */
 function _get_quiz_status_chart($vid, $uid = 0) {
   // get the pass rate of the given quiz by vid
-  $pass_rate = db_result(db_query("SELECT pass_rate FROM {quiz_node_properties} WHERE vid = %d", intval($vid)));
+  $pass_rate = db_result(db_query("SELECT pass_rate FROM {quiz_node_properties} WHERE vid = %d", $vid));
+  if (!$pass_rate) {
+    return;
+  }
   // get the count value of results row above and below pass rate
   $sql = "SELECT SUM(score > $pass_rate) AS no_pass, SUM(score < $pass_rate) AS no_fail, SUM(score = 0) AS no_incomplete FROM {quiz_node_results} WHERE vid = %d";
   $quiz = db_fetch_array(db_query($sql, intval($vid)));
@@ -184,14 +187,14 @@ function _get_quiz_status_chart($vid, $uid = 0) {
   $chart .= theme('get_quiz_status_chart', $quiz);
   $chart .= '</div>';
   return array(
-    'chart' => $chart, 
+    'chart' => $chart,
     'title' => t('Status'),
     'explanation' => t('This chart shows the status for all attempts made to answer this revision of the quiz.'),
   );
 }
 
 /**
- * Generates chart showing how often the quiz has been taken the last days 
+ * Generates chart showing how often the quiz has been taken the last days
  *
  * @param $uid
  *   user id
@@ -231,7 +234,7 @@ function _get_date_vs_takeup_count_chart($vid, $uid = 0) {
   // generate date vs takeup count line chart
   $chart .= '</div>';
   return array(
-    'chart' => $chart, 
+    'chart' => $chart,
     'title' => t('Activity'),
     'explanation' => t('This chart shows how many times the quiz has been taken the last !days days.', array('!days' => $end)),
   );
@@ -285,7 +288,7 @@ function theme_quiz_grade_range($range) {
   $chart['#data'][][] = $range->fourty_to_sixty;
   $chart['#data'][][] = $range->twenty_to_fourty;
   $chart['#data'][][] = $range->zero_to_twenty;
-    
+
   $max = max($range->zero_to_twenty,
              $range->twenty_to_fourty,
              $range->fourty_to_sixty,
@@ -308,7 +311,7 @@ function theme_quiz_grade_range($range) {
   $chart['#legends'][] = t('40 to 60 % - ') . $range->fourty_to_sixty;
   $chart['#legends'][] = t('20 to 40 % - ') . $range->twenty_to_fourty;
   $chart['#legends'][] = t('0 to 20 % - ') . $range->zero_to_twenty;
-    
+
   return chart_render($chart);
 }
 
@@ -411,11 +414,11 @@ function theme_date_vs_takeup_count($days) {
     $max_count = ($max_count > $count) ? $max_count : $count;
   }
   $chart['#mixed_axis_labels'][CHART_AXIS_Y_LEFT][0][] = chart_mixed_axis_range_label(0, $max_count);
-  
+
   // The chart module has some bugs. If we have the time we should provide patches instead of tricking it to work...
   $chart['#mixed_axis_labels'][CHART_AXIS_Y_LEFT][1] = array('|', chart_mixed_axis_label(t('Attempts')));
   $chart['#mixed_axis_labels'][CHART_AXIS_X_BOTTOM][1] = array('|', chart_mixed_axis_label(t('Date')), '|');
-  
+
   return chart_render($chart);
 }
 
@@ -463,7 +466,7 @@ function theme_quiz_stats_get_basic_stats($results = array()) {
 
 /**
  * Get the timestamps for the last days
- * 
+ *
  * @param $num_days
  *  How many of the last days we need timestamps for
  * @return

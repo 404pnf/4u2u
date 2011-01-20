@@ -1,5 +1,5 @@
 <?php
-// $Id: short_answer.admin.inc,v 1.2.2.7 2010/03/02 11:26:54 falcon Exp $
+// $Id: short_answer.admin.inc,v 1.2.2.8 2010/11/05 16:14:48 falcon Exp $
 /**
  * short_answer.admin
  *
@@ -53,7 +53,7 @@ function short_answer_edit_score($vid, $rid) {
   else {
     $answer->rel_score = 0;
   }
-   
+
   drupal_set_title(t('Score answer to "@title"', array('@title' => $node->title)));
 
   return drupal_get_form('short_answer_score_form', $node, $answer);

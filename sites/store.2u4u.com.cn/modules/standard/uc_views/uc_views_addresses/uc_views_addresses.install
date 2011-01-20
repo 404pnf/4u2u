@@ -1,0 +1,21 @@
+<?php
+// $Id: uc_views_addresses.install,v 1.1.2.1 2009/10/07 11:43:21 madsph Exp $
+
+/**
+ * @file
+ * Created with http://drupal.org/project/code_gen
+ */
+
+/**
+ * Implentation of the hook_install().
+ */
+ function uc_views_addresses_install() {
+ }
+
+/**
+ * Implentation of the hook_uninstall().
+ */
+ function uc_views_addresses_uninstall() {
+ }
+
+?>

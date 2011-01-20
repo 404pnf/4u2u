@@ -1,5 +1,5 @@
 <?php
-// $Id: quiz_views_handler_argument_quiz_nid.inc,v 1.2.2.2 2010/04/22 12:17:05 falcon Exp $
+// $Id: quiz_views_handler_argument_quiz_nid.inc,v 1.2.2.3 2010/11/05 16:14:47 falcon Exp $
 
 /*
  * @file
@@ -156,7 +156,7 @@ class quiz_views_handler_argument_quiz_nid extends views_handler_argument_numeri
     }
 
     $this->nid_field = $this->vid_field;
-    
+
     $this->corresponding_vids = array();
     while ($item = db_fetch_object($result)) {
       $this->corresponding_vids[] = $item->vid;

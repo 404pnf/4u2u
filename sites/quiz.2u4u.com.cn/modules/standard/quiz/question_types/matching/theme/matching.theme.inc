@@ -1,6 +1,6 @@
 <?php
 
-// $Id: matching.theme.inc,v 1.1.2.3 2010/05/07 07:52:46 falcon Exp $
+// $Id: matching.theme.inc,v 1.1.2.4 2010/11/05 16:14:47 falcon Exp $
 
 /**
  * @file
@@ -49,7 +49,7 @@ function theme_matching_subquestion_form($form) {
 
 /**
  * Theme the answer part of the node view
- * 
+ *
  * @param $subquestions
  *  Array with all the data in the subquestions.
  */
@@ -67,10 +67,10 @@ function theme_matching_match_node_view($subquestions) {
 
 /**
  * Theme the contents of the matching response form
- * 
+ *
  * @param $metadata
  *  Can be used as a table header
- * @param $data 
+ * @param $data
  *  Can be used as table rows
  */
 function theme_matching_response($metadata, $data) {

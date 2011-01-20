@@ -1,0 +1,8 @@
+1,将模块文件放到sites\all\modules目录下面
+2,导航到模块列表页面(admin/build/modules),启用Payease模块
+3,导航到"管理>>网店管理>>配置>>支付设置"页面,
+4,编辑支付方法(admin/store/settings/payment/edit/methods),
+5,在上面的支付方法中启用首信易支付
+6,在"首信易支付设置"中,设置"商户编号","加密密钥",以及设置"MD5加密程序"
+
+注意事项,MD5加密程序必须带有完整路径的,Windows下形式通常为F:\\xampp\\MD5Win32,linux下面通常为/data/htdoc/MD5Linux,请确保该程序存在，并且可被执行.Payease模块自带了两个加密程序MD5Linux, MD5Win32,分别用于Linux系统和Windows系统.

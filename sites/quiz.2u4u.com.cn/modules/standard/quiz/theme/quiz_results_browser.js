@@ -1,9 +1,9 @@
-// $Id: quiz_results_browser.js,v 1.1.2.24 2010/06/30 12:42:28 falcon Exp $
+// $Id: quiz_results_browser.js,v 1.1.2.25 2010/11/05 16:14:48 falcon Exp $
 
 /**
  * Sponsored by: Norwegian Centre for Telemedicine
  * Code: falcon
- * 
+ *
  * @file
  * Javascript functions for the quizQuestionBrowser
  */
@@ -13,22 +13,22 @@ var Quiz = Quiz || {inputEnabled:true};
 
 /**
  * Adding behavior. Behaviors are called everytime a page is refreshed fully or through ahah.
- */ 
+ */
 Drupal.behaviors.quizResultsBrowserBehavior = function(context) {
-  
+
   // Using variables for readability and to ease change of names...
   var done = 'quizResultsBrowserBehavior-processed';
   var notDone = ':not(.'+ done +')';
-  
+
   // Result rows in the browser
   $('.quiz-results-browser-row'+ notDone)
   .addClass(done)
-  
+
   // Add selected class to already selected results
   .filter(':has(:checkbox:checked)')
   .addClass('selected')
   .end()
-  
+
   // When the browser row is clicked toggle the selected class
   .click(function(event) {
     if (typeof event.target.href == 'string') return;
@@ -51,7 +51,7 @@ Drupal.behaviors.quizResultsBrowserBehavior = function(context) {
       $('.quiz-hover-menu', this).css('opacity', 0);
     }
   );
-  
+
   $('.hover-del'+ notDone)
   .addClass(done)
   .click(function(event) {
@@ -63,13 +63,13 @@ Drupal.behaviors.quizResultsBrowserBehavior = function(context) {
     event.preventDefault();
   });
   // Filter row in the browser
-  
+
   // Mark all button
   $('#edit-table-filters-all'+ notDone)
   .addClass(done)
   .click(function(event) {
     var ch = $(this).attr('checked');
-    $('.quiz-results-browser-row').each(function() { 
+    $('.quiz-results-browser-row').each(function() {
       if (!ch) {
         $(this).filter(':has(:checkbox:checked)').each(function() {
           $(this).click();
@@ -82,7 +82,7 @@ Drupal.behaviors.quizResultsBrowserBehavior = function(context) {
       }
     });
   });
-  
+
   $('#edit-table-filters-best-results'+ notDone + ', #edit-table-filters-not-in-progress' + notDone)
   .addClass(done)
   .click(function(event) {
@@ -92,7 +92,7 @@ Drupal.behaviors.quizResultsBrowserBehavior = function(context) {
 	  $('#edit-table-filters-name').trigger('doneTyping');
 	  Quiz.setInputEnabled(false);
   });
-  
+
   // started, finished, duration and score filters
   this.selector = '#edit-table-filters-started'+ notDone;
   this.selector += ', #edit-table-filters-finished'+ notDone;
@@ -102,13 +102,13 @@ Drupal.behaviors.quizResultsBrowserBehavior = function(context) {
   $(this.selector)
   .addClass(done)
   .change(function(event) {
-    $('.quiz-results-browser-row').each(function() { 
+    $('.quiz-results-browser-row').each(function() {
       $(this).remove();
     });
     $('#browser-pager').remove();
     Quiz.setInputEnabled(false);
   });
-  
+
   //Username filters
   var quizRefreshId;
   this.selector = '#edit-table-filters-name'+ notDone;
@@ -119,7 +119,7 @@ Drupal.behaviors.quizResultsBrowserBehavior = function(context) {
 	  clearInterval(quizRefreshId);
 	  var quizClicked = this;
     quizRefreshId = setInterval(function(){
-      $('.quiz-results-browser-row').each(function() { 
+      $('.quiz-results-browser-row').each(function() {
         $(this).remove();
       });
       $('#browser-pager').remove();
@@ -129,9 +129,9 @@ Drupal.behaviors.quizResultsBrowserBehavior = function(context) {
       Quiz.setInputEnabled(false);
     }, 1000);
   });
-  
-  // Sorting 
-  
+
+  // Sorting
+
   // Making datastructure holding all sortable colums and the events that triggers sorting
   var toSort = [
     {
@@ -155,7 +155,7 @@ Drupal.behaviors.quizResultsBrowserBehavior = function(context) {
       event: 'change'
     }
   ];
-  
+
   for (i in toSort) {
     $('.quiz-browser-header-'+ toSort[i].name +' > a'+ notDone)
     .addClass(done)
@@ -178,7 +178,7 @@ Drupal.behaviors.quizResultsBrowserBehavior = function(context) {
       event.preventDefault();
     });
   }
-  
+
   // Pager
   $('.pager-item a'+ notDone +', .pager-first a'+ notDone +', .pager-next a'+ notDone +', .pager-previous a'+ notDone +', .pager-last a'+ notDone)
   .addClass(done)
@@ -201,7 +201,7 @@ Drupal.behaviors.quizResultsBrowserBehavior = function(context) {
 
 // This is only called once, not on ajax refreshes...
 $(document).ready(function () {
-  
+
   // There are some problems with table headers and ajax. We try to reduce those problems here...
   var oldTableHeader = Drupal.behaviors.tableHeader;
   Drupal.behaviors.tableHeader = function(context) {
@@ -210,12 +210,12 @@ $(document).ready(function () {
 	}
     oldTableHeader(context);
   };
-  
+
   // If a browser row is selected make sure it gets marked.
   $('.quiz_results_browser_row:has(:checkbox:checked)').each(function() {
     $(this).click();
   });
-  
+
   $('#edit-update').click(function(event){
     if ($('#edit-bulk-action').val() == 'del') {
       $('#quiz-results-update').css('display', 'none');
@@ -239,13 +239,13 @@ $(document).ready(function () {
 
 /**
  * Adds new rows to the browser. This function is called from a inline js added to the page using ahah.
- * 
+ *
  * @param rows
  *   Browser rows(html string)
  * @param newBuildId
  *   Id of the new form(string)
  * @param pager
- *   The browsers new pager(html string)  
+ *   The browsers new pager(html string)
  */
 Quiz.addBrowserRows = function(rows, newBuildId, pager) {
   // Add the new rows to the browser and replace the pager
@@ -255,14 +255,14 @@ Quiz.addBrowserRows = function(rows, newBuildId, pager) {
 
   // Change build id to the new id provided by the server(prevents validation error):
   $('[name="form_build_id"]').val(newBuildId);
-  
+
   Drupal.behaviors.quizResultsBrowserBehavior();
   Quiz.setInputEnabled(true);
 };
 
 /**
  * Replaces the entire browser. This function is called from a inline js added to the page using ahah.
- * 
+ *
  * @param renderedBrowser
  *   The entire browser(html string)
  * @param newBuildId
@@ -271,16 +271,16 @@ Quiz.addBrowserRows = function(rows, newBuildId, pager) {
 Quiz.replaceBrowser = function(renderedBrowser, newBuildId, hiddenRows) {
   // Change build id to the new id provided by the server:
   $('[name="form_build_id"]').val(newBuildId);
-  
-  var $this = $('#all-ahah-target'); 
-  var par = $this.parent(); 
-  var sib = $this.prev(); 
-  $this.remove(); 
 
-  if (sib[0]) 
-    sib.after(renderedBrowser); 
-  else 
-    par.prepend(renderedBrowser); 
+  var $this = $('#all-ahah-target');
+  var par = $this.parent();
+  var sib = $this.prev();
+  $this.remove();
+
+  if (sib[0])
+    sib.after(renderedBrowser);
+  else
+    par.prepend(renderedBrowser);
 
   Drupal.attachBehaviors($('#all-ahah-target'));
   Quiz.setInputEnabled(true);
@@ -288,7 +288,7 @@ Quiz.replaceBrowser = function(renderedBrowser, newBuildId, hiddenRows) {
 
 /**
  * Updates the page part of the query string in the add-to-get hidden field
- * 
+ *
  * @param myUrl
  *   The url in the links in the pager(string)
  */
@@ -298,7 +298,7 @@ Quiz.updatePageInUrl = function(myUrl) {
   var pattern = new RegExp('page=[0-9]+');
   pageQuery = pattern.exec(pageQuery);
   if (pageQuery == null) pageQuery = 'page=0';
-  
+
   //Replaces stored query strings page with our page
   var currentQuery = $('#edit-table-add-to-get').val() + '';
   currentQuery = currentQuery.replace(pattern, '');
@@ -308,7 +308,7 @@ Quiz.updatePageInUrl = function(myUrl) {
 
 /**
  * Finds and returns the part of a string holding the nid and vid
- * 
+ *
  * @param str
  *   A string that should have nid and vid inside it on this format: nid-vid, for instance 23-24
  */
@@ -319,7 +319,7 @@ Quiz.findNidRidString = function(str) {
 
 /**
  * Turn all input elements on or off
- * 
+ *
  * @param on
  *   Should the inputs be swithced on or off?
  */

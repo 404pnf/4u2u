@@ -1,0 +1,12 @@
+<?php
+// $Id: uc_alipay.install,v 1.1 2009/01/05 23:27:34 yangyicn Exp $
+
+/**
+ * @file
+ * uc_alipay.module的安装文件.
+ */
+
+function uc_alipay_uninstall() {
+  db_query("DELETE FROM {variable} WHERE name LIKE 'uc_alipay_%%'");
+}
+

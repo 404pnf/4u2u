@@ -1,4 +1,4 @@
-// $Id: scale.js,v 1.1.2.3 2010/03/01 09:42:18 falcon Exp $
+// $Id: scale.js,v 1.1.2.4 2010/11/05 16:14:48 falcon Exp $
 /**
  * @file
  * Javascript functions for the scale question type.
@@ -6,7 +6,7 @@
 
 /**
  * Refreshes alternatives when a preset is selected.
- * 
+ *
  * @param selection
  *  The select item used to select answer collection
  */

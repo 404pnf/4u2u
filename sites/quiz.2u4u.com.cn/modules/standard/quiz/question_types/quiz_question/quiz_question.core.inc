@@ -1,11 +1,11 @@
 <?php
 
-// $Id: quiz_question.core.inc,v 1.2.2.101 2010/07/08 19:09:41 falcon Exp $
+// $Id: quiz_question.core.inc,v 1.2.2.109 2010/12/19 19:55:28 falcon Exp $
 
 /**
  * Classes used in the Quiz Question module.
  *
- * The core of the Quiz Question module is a set of abstract classes that 
+ * The core of the Quiz Question module is a set of abstract classes that
  * can be used to quickly and efficiently create new question types.
  *
  * Why OO?
@@ -55,7 +55,7 @@ abstract class QuizQuestion {
 
   // Extra node properties
   public $nodeProperties = NULL;
-  
+
   /**
    * QuizQuestion constructor stores the node object.
    *
@@ -65,10 +65,10 @@ abstract class QuizQuestion {
   public function __construct(stdClass &$node) {
     $this->node = $node;
   }
-  
+
   /**
    * Allow question types to override the body field title
-   * 
+   *
    * @return
    *  The title for the body field
    */
@@ -78,22 +78,22 @@ abstract class QuizQuestion {
 
   /**
    * Returns a node form to quiz_question_form
-   * 
+   *
    * Adds default form elements, and fetches question type specific elements from their
    * implementation of getCreationForm
-   * 
+   *
    * @param array $form_state
    * @return unknown_type
    */
   public function getNodeForm(array $form_state = NULL) {
     global $user;
-    
+
     $form = array();
-    
+
     // mark this form to be processed by quiz_form_alter. quiz_form_alter will among other things
     // hide the revion fieldset if the user don't have permission to controll the revisioning manually.
     $form['#quiz_check_revision_access'] = TRUE;
-    
+
     $form['body_field']['body'] = array(
       '#type' => 'textarea',
       '#title' => $this->getBodyFieldTitle(),
@@ -127,11 +127,10 @@ abstract class QuizQuestion {
     }
 
     // Quiz id used here to tie creation of a question to a specific quiz
-    $quiz_id = arg(3);
-    if (is_numeric($quiz_id)) {
-      $vid = (is_numeric(arg(4) && arg(4) > 0)) ? arg(4) : NULL;
-      $quiz = node_load((int)$quiz_id, $vid);
-      
+    if (isset($_GET['quiz_nid']) && is_numeric($_GET['quiz_nid'])) {
+      $vid = (_quiz_is_int($_GET['quiz_vid'], 0)) ? $_GET['quiz_vid'] : NULL;
+      $quiz = node_load((int)$_GET['quiz_nid'], $vid);
+
       // Store quiz id in the form
       $form['quiz_nid'] = array(
         '#type' => 'value',
@@ -141,7 +140,7 @@ abstract class QuizQuestion {
         '#type' => 'value',
         '#value' => $quiz->vid,
       );
-      
+
       // Identify this node as a quiz question type so that it can be recognized by other modules effectively.
       $form['is_quiz_question'] = array(
         '#type' => 'value',
@@ -157,12 +156,12 @@ abstract class QuizQuestion {
 
     //Add question type specific content
     $form = array_merge($form, $this->getCreationForm($form_state));
-    
+
     // If access to edit quizzes we add the add to quiz fieldset
     $edit_access = quiz_access_multi_or('edit any quiz', 'edit own quiz', 'administer nodes');
     if ($edit_access) {
       $own_filter = quiz_access_multi_or('edit any quiz', 'administer nodes') ? '' : 'AND n.uid = '. intval($user->uid);
-      
+
       // Fieldset allowing question makers to add questions to multiple quizzes when creating or editing a question
       $already = array();
       $already_nids = array();
@@ -175,13 +174,13 @@ abstract class QuizQuestion {
                 WHERE r.child_vid = %d $own_filter
                 ORDER BY r.parent_vid DESC";
         $res = db_query(db_rewrite_sql($sql), $this->node->vid);
-        
+
         // Store the results
         while ($res_o = db_fetch_object($res)) {
           if (in_array($res_o->nid, $already_nids)) continue;
           // Store in simple array to use in later querries
           $already_nids[] = $res_o->nid;
-          
+
           // Store in array to use as #options
           $already[$res_o->nid .'-'. $res_o->vid] = $res_o->title;
         }
@@ -189,9 +188,9 @@ abstract class QuizQuestion {
       $found = implode(', ', $already_nids);
       $latest = array();
       $latest_nids = array();
-      
+
       // Finding the last quizzes the current user has been using
-      $sql = "SELECT quiz_nid, n.vid, title, lq.id
+      $sql = "SELECT lq.quiz_nid, n.vid, n.title, lq.id
               FROM {quiz_question_latest_quizzes} lq
               JOIN {node} n
               ON n.nid = lq.quiz_nid
@@ -199,14 +198,14 @@ abstract class QuizQuestion {
       if (drupal_strlen($found) > 0) $sql .= " AND quiz_nid NOT IN ($found)";
       $sql .= " ORDER BY lq.id DESC";
       $res = db_query(db_rewrite_sql($sql), $user->uid);
-      
+
       while ($res_o = db_fetch_object($res)) {
         // Array to use as #option in form element
         $latest[$res_o->quiz_nid .'-'. $res_o->vid] = $res_o->title;
         // Array to use in later queries
         $latest_nids[] = $res_o->quiz_nid;
       }
-      
+
       if (count($latest) < QUIZ_QUESTION_NUM_LATEST) {
         // Suplementing with other available quizzes...
         $found = implode(', ', array_merge($already_nids, $latest_nids));
@@ -223,7 +222,7 @@ abstract class QuizQuestion {
           $latest[$res_o->nid .'-'. $res_o->vid] = $res_o->title;
         }
       }
-      
+
       // If we came from the manage questions tab we need to mark the quiz we came from as selected.
       $latest_default = array();
       if (isset($quiz)) {
@@ -246,7 +245,7 @@ abstract class QuizQuestion {
     if ($edit_access || quiz_access_multi_or('create quiz', 'administer nodes')) {
       $form['add_directly'] = array(
         '#type' => 'fieldset',
-        '#title' => t('Add to quiz'),
+        '#title' => t('Add to @quiz', array('@quiz' => QUIZ_NAME)),
         '#collapsible' => TRUE,
         '#collapsed' => TRUE,
         '#weight' => -3,
@@ -257,18 +256,17 @@ abstract class QuizQuestion {
       if (count($already) > 0) {
         $form['add_directly']['already'] = array(
           '#type' => 'checkboxes',
-          '#title' => t('Quizzes this question already is a member of'),
-          '#description' => t('If you uncheck any of the checkboxes this question will be removed from the corresponding quiz. If the quiz has been answered a new revision of the quiz will be created automatically.'),
+          '#title' => t('This question is already a member of'),
+          '#description' => t('If you uncheck any of the checkboxes this question will be removed from the corresponding @quiz. If the @quiz has been answered a new revision of the @quiz will be created automatically.', array('@quiz' => QUIZ_NAME)),
           '#options' => $already,
           '#default_value' => array_keys($already),
         );
       }
       if (count($latest) > 0) {
-        $desc = t('If you check any of the checkboxes this question will be added to the corresponding quiz. If the quiz has been answered a new revision will be created automatically.');
         $form['add_directly']['latest'] = array(
           '#type' => 'checkboxes',
-          '#title' => t('The @latest latest quizzes this question isn\'t a member of', array('@latest' => count($latest))),
-          '#description' => $desc,
+          '#title' => t('The @latest latest @quiz nodes this question isn\'t a member of', array('@latest' => count($latest), '@quiz' => QUIZ_NAME)),
+          '#description' => t('If you check any of the checkboxes this question will be added to the corresponding @quiz. If the @quiz has been answered a new revision will be created automatically.', array('@quiz' => QUIZ_NAME)),
           '#options' => $latest,
           '#default_value' => $latest_default,
         );
@@ -277,8 +275,8 @@ abstract class QuizQuestion {
     if (quiz_access_multi_or('create quiz', 'administer nodes')) {
       $form['add_directly']['new'] = array(
         '#type' => 'textfield',
-        '#title' => t('Title for new quiz'),
-        '#description' => t('Write in the name of the new quiz you want to create and add this question to.'),
+        '#title' => t('Title for new @quiz', array('@quiz' => QUIZ_NAME)),
+        '#description' => t('Write in the name of the new @quiz you want to create and add this question to.', array('@quiz' => QUIZ_NAME)),
       );
     }
     if ($this->hasBeenAnswered()) {
@@ -288,7 +286,7 @@ abstract class QuizQuestion {
     }
     return $form;
   }
-  
+
   /**
    * Retrieve information relevant for viewing the node.
    *
@@ -352,9 +350,9 @@ abstract class QuizQuestion {
   public function save($is_new = FALSE) {
     // We call the abstract function saveNodeProperties to save type specific data
     $this->saveNodeProperties($is_new);
-    
+
     $is_new_node = $is_new || $this->node->revision == 1;
-    
+
     // Save general data
     if ($is_new_node) {
       $sql = 'INSERT INTO {quiz_question_properties}
@@ -368,7 +366,7 @@ abstract class QuizQuestion {
               WHERE nid = %d AND vid = %d';
       db_query($sql, $this->getMaximumScore(), $this->node->nid, $this->node->vid);
     }
-    
+
     // Save what quizzes this question belongs to.
     $quizzes_kept = $this->saveRelationships();
     if ($quizzes_kept && $this->node->revision) {
@@ -401,17 +399,17 @@ abstract class QuizQuestion {
    */
   public function delete($only_this_version = FALSE) {
     // Delete results
-    db_query('DELETE FROM quiz_node_results_answers
-              WHERE question_nid = %d' . ($only_this_version ? ' AND question_vid = %d' : ''), 
+    db_query('DELETE FROM {quiz_node_results_answers}
+              WHERE question_nid = %d' . ($only_this_version ? ' AND question_vid = %d' : ''),
               $this->node->nid, $this->node->vid);
-    
+
     // Delete properties
     $sql = 'DELETE FROM {quiz_question_properties}
             WHERE nid = %d';
     if ($only_this_version) $sql .= ' AND vid = %d';
     db_query($sql, $this->node->nid, $this->node->vid);
   }
-  
+
   /**
    * Provides validation for question before it is created.
    *
@@ -441,14 +439,14 @@ abstract class QuizQuestion {
       '#type' => 'hidden',
       '#value' => $this->node->nid,
     );
-    
+
     $form['question'] = array(
       '#type' => 'markup',
       '#value' => check_markup($this->node->body, $this->node->format, FALSE),
       '#prefix' => '<div class="quiz-question-body">',
       '#suffix' => '</div>',
     );
-    
+
     return $form;
   }
 
@@ -474,7 +472,7 @@ abstract class QuizQuestion {
 
   /**
    * Handle the add to quiz part of the quiz_question_form
-   * 
+   *
    * @return
    *  TRUE if at least one of the questions were kept.
    *  FALSE otherwise
@@ -501,7 +499,7 @@ abstract class QuizQuestion {
             $temp_quiz_node->auto_created = TRUE;
             node_save($temp_quiz_node);
             $nid_vid[1] = $temp_quiz_node->vid;
-            drupal_set_message(t('New revision has been created for the quiz %n', array('%n' => $temp_quiz_node->title)));
+            drupal_set_message(t('New revision has been created for the @quiz %n', array('%n' => $temp_quiz_node->title, '@quiz' => QUIZ_NAME)));
           }
           $quizzes_to_update[] = $nid_vid[1];
           $sql = 'DELETE FROM {quiz_node_relationship}
@@ -533,7 +531,7 @@ abstract class QuizQuestion {
             $temp_quiz_node->auto_created = TRUE;
             node_save($temp_quiz_node);
             $nid_vid[1] = $temp_quiz_node->vid;
-            drupal_set_message(t('New revision has been created for the quiz %n', array('%n' => $temp_quiz_node->title)));
+            drupal_set_message(t('New revision has been created for the @quiz %n', array('%n' => $temp_quiz_node->title, '@quiz' => QUIZ_NAME)));
           }
           $quizzes_to_update[] = $nid_vid[1];
           // We build one sql query to insert multiple rows into the relationship table
@@ -557,7 +555,7 @@ abstract class QuizQuestion {
               WHERE nid = %d AND vid = %d
             ', $nid_vid[0], $nid_vid[1]));
           $insert_values[] = $randomization == 2 ? QUESTION_RANDOM : QUESTION_ALWAYS;
-          
+
           // We also delete multiple rows from the table...
           $delete_values[] = $nid_vid[1];
           $delete_values[] = $this->node->nid;
@@ -588,7 +586,7 @@ abstract class QuizQuestion {
 
   /**
    * Finds out if a question has been answered or not
-   * 
+   *
    * This function also returns TRUE if a quiz that this question belongs to have been answered.
    * Even if the question itself haven't been answered. This is because the question might have
    * been rendered and a user is about to answer it...
@@ -635,17 +633,17 @@ abstract class QuizQuestion {
 abstract class QuizQuestionResponse {
   // Result id
   protected $rid = 0;
-  
+
   protected $is_correct = FALSE;
   protected $evaluated = TRUE;
-  
+
   // The question node(not a quiz question instance)
   public $question = NULL;
-  
+
   protected $answer = NULL;
   protected $score;
   public $is_skipped;
-  
+
   /**
    * Create a new user response.
    *
@@ -667,17 +665,17 @@ abstract class QuizQuestionResponse {
     $res = db_query($sql, $result_id, $question_node->nid, $question_node->vid);
     $this->is_skipped = db_result($res);
   }
-  
+
   /**
    * Used to refresh this instances question node in case drupal has changed it.
-   * 
+   *
    * @param $newNode
    *  Question node
    */
   public function refreshQuestionNode($newNode) {
     $this->question = $newNode;
   }
-  
+
   /**
    * Indicate whether the response has been evaluated (scored) yet.
    * Questions that require human scoring (e.g. essays) may need to manually
@@ -701,7 +699,7 @@ abstract class QuizQuestionResponse {
 
   /**
    * Returns stored score if it exists, if not the score is calculated and returned.
-   * 
+   *
    * @param $weight_adjusted
    *  If the returned score shall be adjusted according to the max_score the question has in a quiz
    * @return
@@ -717,7 +715,7 @@ abstract class QuizQuestionResponse {
 
   /**
    * Returns stored max score if it exists, if not the max score is calculated and returned.
-   * 
+   *
    * @param $weight_adjusted
    *  If the returned max score shall be adjusted according to the max_score the question has in a quiz
    * @return
@@ -729,7 +727,7 @@ abstract class QuizQuestionResponse {
       return round($this->question->max_score * $this->question->score_weight);
     return $this->question->max_score;
   }
-  
+
   /**
    * Represent the response as a stdClass object.
    *
@@ -755,7 +753,7 @@ abstract class QuizQuestionResponse {
 
   /**
    * Validates response from a quiz taker. If the response isn't valid the quiz taker won't be allowed to proceed.
-   * 
+   *
    * @return
    *  True if the response is valid.
    *  False otherwise
@@ -763,7 +761,7 @@ abstract class QuizQuestionResponse {
   public function isValid() {
     return TRUE;
   }
-  
+
   /**
    * Get data suitable for reporting a user's score on the question.
    * This expects an object with the following attributes:
@@ -795,9 +793,9 @@ abstract class QuizQuestionResponse {
 
   /**
    * Creates the report form for the admin pages, and for when a user gets feedback after answering questions.
-   * 
+   *
    * The report is a form to allow editing scores and the likes while viewing the report form
-   * 
+   *
    * @param $showpoints
    * @param $showfeedback
    * @param $allow_scoring
@@ -850,7 +848,7 @@ abstract class QuizQuestionResponse {
 
   /**
    * get the question part of the reportForm
-   * 
+   *
    * @param $showpoints
    * @param $showfeedback
    * @return
@@ -862,10 +860,10 @@ abstract class QuizQuestionResponse {
       '#value' => check_markup($this->question->body, $this->question->format, FALSE),
     );
   }
-  
+
   /**
    * Get the response part of the report form
-   * 
+   *
    * @param $showpoints
    * @param $showfeedback
    * @param $allow_scoring
@@ -881,7 +879,7 @@ abstract class QuizQuestionResponse {
 
   /**
    * Get the score part of the report form
-   * 
+   *
    * @param $showpoints
    * @param $showfeedback
    * @param $allow_scoring
@@ -897,7 +895,7 @@ abstract class QuizQuestionResponse {
 
   /**
    * Get the submit function for the reportForm
-   * 
+   *
    * @return
    *  Submit function as a string, or FALSE if no submit function
    */
@@ -907,7 +905,7 @@ abstract class QuizQuestionResponse {
 
   /**
    * Get the validate function for the reportForm
-   * 
+   *
    * @return
    *  Validate function as a string, or FALSE if no validate function
    */
@@ -917,14 +915,14 @@ abstract class QuizQuestionResponse {
 
   /**
    * Get the theme key for the reportForm
-   * 
+   *
    * @return
    *  Theme key as a string, or FALSE if no submit function
    */
   public function getReportFormTheme($showfeedback = TRUE, $showpoints = TRUE) {
     return FALSE;
   }
-  
+
   /**
    * Saves the quiz result. This is not used when a question is skipped!
    */
@@ -932,12 +930,12 @@ abstract class QuizQuestionResponse {
     $this->is_skipped = FALSE;
     $this->save();
   }
-  
+
   /**
    * Save the current response.
    */
   abstract public function save();
-  
+
   /**
    * Delete the response.
    */
@@ -947,7 +945,7 @@ abstract class QuizQuestionResponse {
    * Calculate the score for the response.
    */
   abstract public function score();
-  
+
    /**
    * Get the user's response.
    */

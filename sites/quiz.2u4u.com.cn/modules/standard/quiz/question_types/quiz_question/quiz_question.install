@@ -1,5 +1,5 @@
 <?php
-// $Id: quiz_question.install,v 1.2.2.9 2010/02/26 13:05:49 falcon Exp $
+// $Id: quiz_question.install,v 1.2.2.10 2010/11/05 16:14:47 falcon Exp $
 
 /**
  * The installer file for quiz_question.
@@ -24,17 +24,17 @@ function quiz_question_schema() {
       'nid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE,  
+        'not null' => TRUE,
       ),
       'vid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE, 
-      ), 
+        'not null' => TRUE,
+      ),
       'max_score' => array(
         'type' => 'int',
         'unsigned' => TRUE,
-        'default' => 0, 
+        'default' => 0,
       ),
     ),
     'primary key' => array(
@@ -47,17 +47,17 @@ function quiz_question_schema() {
       'quiz_nid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE,  
+        'not null' => TRUE,
       ),
       'uid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE,  
+        'not null' => TRUE,
       ),
       'id' => array(
         'type' => 'serial',
         'unsigned' => TRUE,
-        'not null' => TRUE, 
+        'not null' => TRUE,
       ),
     ),
     'primary key' => array(
@@ -77,7 +77,7 @@ function quiz_question_update_6400() {
 
 /**
  * Implementation of hook_update_N()
- * 
+ *
  * In 6.x-3.x truefalse was a part of quiz question. In 4.x it has been separated out into
  * its own module. We automatically installs this module to avoid issues with truefalse questions
  * that aren't working anymore because the module haven't been installed.
@@ -89,7 +89,7 @@ function quiz_question_update_6401() {
 
 /**
  * Implementation of hook_update_N
- * 
+ *
  * Add table for storing info on the latest quizzes each user has been involved in editing
  */
 function quiz_question_update_6402() {
@@ -99,17 +99,17 @@ function quiz_question_update_6402() {
       'quiz_nid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE,  
+        'not null' => TRUE,
       ),
       'uid' => array(
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE,  
+        'not null' => TRUE,
       ),
       'id' => array(
         'type' => 'serial',
         'unsigned' => TRUE,
-        'not null' => TRUE, 
+        'not null' => TRUE,
       ),
     ),
     'primary key' => array(

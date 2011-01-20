@@ -1,5 +1,5 @@
 <?php
-// $Id: multichoice.module,v 1.2.2.27 2010/06/16 14:50:10 falcon Exp $
+// $Id: multichoice.module,v 1.2.2.31 2010/11/05 16:14:47 falcon Exp $
 
 /**
  * The main file for multichoice.
@@ -20,18 +20,18 @@ function multichoice_help($path, $args) {
     return t("
       <p>This module provides a multiple choice question type for Quiz.</p>
 
-      <p>The module has three settings. 
+      <p>The module has three settings.
       <em>Multiple answers</em> allows the quiz taker to select more than one alternative
-      (it also allows for the possibility that none of the alternatives are correct). 
+      (it also allows for the possibility that none of the alternatives are correct).
       Alternatives are selected using checkboxes instead of radio buttons.
       <em>Random order</em> displays the alternatives in random order when quiz is beeing taken.
       <em>Simple scoring</em> gives max score if everything is correct. Zero points otherwise.</p>
-      
+
       <p>The scoring system in multichoice is a bit complex. With multiple answers each alternative adds a given number of points to
-      the total score if it is chosen, and another number of points is added if the alternative isn't chosen. Both <em>score if chosen</em> and 
+      the total score if it is chosen, and another number of points is added if the alternative isn't chosen. Both <em>score if chosen</em> and
       <em>score if not chosen</em> may be edited for each alternative by the question creator.
       If multiple answers isn't allowed the score will be set to the <em>score if chosen</em> of the alternative that has been chosen.
-      The question is considered correct if the quiz taker gets the maximum amount of points possible for the question.</p>      
+      The question is considered correct if the quiz taker gets the maximum amount of points possible for the question.</p>
     ");
   }
 }
@@ -76,7 +76,7 @@ function multichoice_config() {
  * Validate the multichoice config form values
  */
 function multichoice_config_validate($form, $form_state) {
-  if (!_quiz_is_int($form_state['values']['multichoice_def_num_of_alts'], 2, 50)) 
+  if (!_quiz_is_int($form_state['values']['multichoice_def_num_of_alts'], 2, 50))
     form_set_error('multichoice_def_num_of_alts', t('The default number of alternatives must be between 2 and 50'));
 }
 
@@ -86,8 +86,8 @@ function multichoice_config_validate($form, $form_state) {
 function multichoice_menu() {
   $dummy_node = new stdClass();
   $dummy_node->type = 'multichoice';
-  $items['multichoice/add_alternative_js'] = array(
-    'page callback' => 'multichoice_add_alternative_js',
+  $items['node/add/multichoice/add_alternative_ahah'] = array(
+    'page callback' => 'multichoice_add_alternative_ahah',
     'type' => MENU_CALLBACK,
     'access callback' => 'node_access',
     'access arguments' => array('create', $dummy_node),
@@ -159,25 +159,34 @@ function multichoice_theme($existing, $type, $theme, $path) {
 /**
  * ahah callback function used when adding alternatives to the node-form
  */
-function multichoice_add_alternative_js() {
+function multichoice_add_alternative_ahah() {
   include_once 'modules/node/node.pages.inc';
   $form_state = array('storage' => NULL, 'submitted' => FALSE);
   $form_build_id = $_POST['form_build_id'];
-  
+
   // Get the form from the cache.
   $form = form_get_cache($form_build_id, $form_state);
+
+  // Get values have been sent using the form cache
+  if (isset($form['get']['#value']) && is_array($form['get']['#value'])) {
+    $get = $form['get']['#value'];
+    foreach ($get as $key => $value) {
+      $_GET[$key] = $value;
+    }
+  }
+
   $args = $form['#parameters'];
   $form_id = array_shift($args);
-  
+
   // We will run some of the submit handlers so we need to disable redirecting.
   $form['#redirect'] = FALSE;
-  
+
   // We need to process the form, prepare for that by setting a few internals
   // variables.
   $form['#post'] = $_POST;
   $form['#programmed'] = FALSE;
   $form_state['post'] = $_POST;
-  
+
   // Build and submit the form.
   _multichoice_skip_validation($form);
   drupal_process_form($form_id, $form, $form_state);
@@ -192,7 +201,7 @@ function multichoice_add_alternative_js() {
     $i++;
   }
   $i--;
-  
+
   // Render the new output.
   $new_choice = $form['alternatives'][$i];
   $new_choice['#collapsed'] = FALSE;
@@ -207,17 +216,17 @@ function multichoice_add_alternative_js() {
 function multichoice_more_choices_submit($form, &$form_state) {
   // Set the form to rebuild and run submit handlers.
   node_form_submit_build_node($form, $form_state);
-  
+
   // Count the existing alternatives
   $exists = 0;
   while (isset($form['alternatives'][$exists])) {
     $exists++;
   }
-  
+
   // Make the changes we want to the form state.
   if ($form_state['values']['alternatives']['multichoice_add_alternative']) {
     // We add 3 if js is disabled. 1 if the adding is done using ahah
-    $n = $_GET['q'] == 'multichoice/add_alternative_js' ? 1 : 3;
+    $n = $_GET['q'] == 'node/add/multichoice/add_alternative_ahah' ? 1 : 3;
     $form_state['choice_count'] = $exists + $n;
   }
 }
@@ -245,4 +254,19 @@ function multichoice_user($op, &$edit, &$account, $category = NULL) {
       db_query($sql, $account->uid);
     break;
   }
+}
+
+/**
+ * Implementation of hook_content_extra_fields(cck)
+ */
+function multichoice_content_extra_fields($type_name) {
+  $extra = array();
+  if ($type_name == 'multichoice') {
+    $extra['alternatives'] = array(
+      'label' => t('Alternatives'),
+      'description' => t('Alternatives for multichoice'),
+      'weight' => -4,
+    );
+  }
+  return $extra;
 }

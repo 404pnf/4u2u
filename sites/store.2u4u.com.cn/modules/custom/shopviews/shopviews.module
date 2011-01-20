@@ -1,0 +1,11 @@
+<?PHP 
+/**
+ * Implementation of hook_views_api().
+ */
+function shopviews_views_api() {
+  return array(
+    'api' => 2,
+    'path' => drupal_get_path('module', 'shopviews'),
+    //'path' => drupal_get_path('module', 'shopviews') . '/includes',
+  );
+}

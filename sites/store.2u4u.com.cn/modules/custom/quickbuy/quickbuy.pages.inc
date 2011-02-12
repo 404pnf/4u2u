@@ -53,10 +53,10 @@ function quickbuy_checkout(){
   
   /**以下内容为我添加的，用来快速的完成结算*******************************************************/
   
-  $first_node =  node_load($items[0]->nid);
+  //$first_node =  node_load($items[0]->nid);
   //注意在系统中,moneyable为0的商品，是积分商品，moneyable为1的商品为现金商品，积分商品和现金商品不能同时添加到购物车
   //积分商品,使用积分支付
-  if($first_node->moneyable != 1){
+  //if($first_node->moneyable != 1){
 		$subtotal = 0;
 	  if (is_array($items) && count($items) > 0) {
       foreach ($items as $item) {
@@ -67,18 +67,18 @@ function quickbuy_checkout(){
       }
 	   }
 	  //获取用户当前积分
-	  $user_points = userpoints_get_current_points($user->uid);
-	  
+	  //$user_points = userpoints_get_current_points($user->uid);
+	  /*
 	  //用户当前积分不足
 	  if( $user_points <  $subtotal){
 	  	drupal_set_message(t('您的积分不足,请及时充值'));
 	  	drupal_goto('cart');
 	  }
-	  
+	   */
 	  $shippable = uc_cart_is_shippable();
-	  
+	 
 	  //产品都为电子图书
-		if(!$shippable){
+		if(!$shippable &&  $subtotal == 0){
 			// 生成订单
 			 if (empty($_SESSION['cart_order'])) {
 			   $order = uc_order_new($user->uid);
@@ -95,6 +95,7 @@ function quickbuy_checkout(){
 			 uc_order_save($order);
 			 
 			// 扣除积分
+			/*
 			$pointExch	= intval(variable_get(USERPOINTS_UC_PAYMENT, 1));
 			$points		= intval(((round($subtotal) * $pointExch) * (-1)));
 			$description	= 'User made a purchase and paid with points (Ubercart Order ' . $order->order_id . ')'; 
@@ -109,10 +110,10 @@ function quickbuy_checkout(){
 				'moderate' => variable_get(USERPOINTS_PAY_MODERATE, 0),
 			);
 			userpoints_userpointsapi($params);
-			
+			*/
 			//完成订单
-			uc_payment_enter($order->order_id, 'points', $subtotal, $user->uid, NULL, $description);
-			db_query("insert into {uc_up_payment_log} (uid, oid, points) values(%d, %d, %d)",$user->uid, $order->order_id, $points);
+			uc_payment_enter($order->order_id, 'quickbuy', 0, $user->uid, NULL,  t('使用快速购买0元支付完成结算.'));
+			//db_query("insert into {uc_up_payment_log} (uid, oid, points) values(%d, %d, %d)",$user->uid, $order->order_id, $points);
 			uc_order_update_status($order->order_id, 'payment_received');
 			uc_order_update_status($order->order_id, 'completed');
 			
@@ -120,7 +121,8 @@ function quickbuy_checkout(){
 			$_SESSION['do_complete'] = TRUE;
 			drupal_goto('quickbuy/checkout/complete');
 		}
-  }
+  //}
+	/*
   //现金商品,使用payease系统支付
   else{
   	$shippable = uc_cart_is_shippable();
@@ -156,7 +158,7 @@ function quickbuy_checkout(){
 		  //$order = uc_order_load($order->order_id);
 		}
   }
-  
+  */
   
 	  /**以上内容为我添加的，用来快速的完成结算*******************************************************/
  
@@ -183,7 +185,7 @@ function quickbuy_checkout_complete(){
   global $user;
   $url = 'user/'.$user->uid.'/purchased-files';
   $file_link = l("文件下载",$url);
-  $output .= '使用积分购物成功.您可以在'.$file_link.'页面点击下载';
+  $output .= '使用快速购买结算成功.您可以在'.$file_link.'页面点击下载';
 	//$output .= t('SUCess');
   return $output;
 	

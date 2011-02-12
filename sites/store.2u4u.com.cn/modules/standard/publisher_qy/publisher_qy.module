@@ -1,0 +1,649 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * 实现publisher字段的迁移.
+ */
+ 
+ /**
+ * 实现钩子hook_menu().
+ */
+function publisher_qy_menu() {
+
+	$items['admin/settings/fltrp'] = array(
+    'title'            => 'fltrp',
+    'page callback'    => 'drupal_get_form',
+	'page arguments'    =>  array('publisher_qy_fltrp_form'),
+    'access arguments' => array('administer site configuration'),
+    'weight'           => 1,
+		 'type'             => MENU_NORMAL_ITEM,
+   
+  );
+	
+	$items['admin/settings/fltrp/fltrp'] = array(
+    'title'            => 'fltrp',
+    'page callback'    => 'drupal_get_form',
+	'page arguments'    =>  array('publisher_qy_fltrp_form'),
+    'access arguments' => array('administer site configuration'),
+    'weight'           => 1,
+    'type'             => MENU_DEFAULT_LOCAL_TASK,
+   
+  );
+	
+	$items['admin/settings/fltrp/user'] = array(
+    'title'            => 'fltrp user',
+    'page callback'    => 'drupal_get_form',
+	'page arguments'    =>  array('publisher_qy_user_form'),
+    'access arguments' => array('administer site configuration'),
+    'weight'           => 1,
+    'type'             => MENU_LOCAL_TASK,
+  );
+	
+	$items['admin/settings/fltrp/order'] = array(
+    'title'            => 'fltrp order',
+    'page callback'    => 'drupal_get_form',
+	'page arguments'    =>  array('publisher_qy_order_form'),
+    'access arguments' => array('administer site configuration'),
+    'weight'           => 1,
+    'type'             => MENU_LOCAL_TASK,
+  );
+	
+	$items['admin/settings/fltrp/product'] = array(
+    'title'            => 'fltrp product',
+    'page callback'    => 'drupal_get_form',
+	'page arguments'    =>  array('publisher_qy_product_form'),
+    'access arguments' => array('administer site configuration'),
+    'weight'           => 1,
+    'type'             => MENU_LOCAL_TASK,
+  );
+	
+	$items['admin/settings/fltrp/pay'] = array(
+    'title'            => 'fltrp pay',
+    'page callback'    => 'drupal_get_form',
+	'page arguments'    =>  array('publisher_qy_pay_form'),
+    'access arguments' => array('administer site configuration'),
+    'weight'           => 1,
+    'type'             => MENU_LOCAL_TASK,
+  );
+	
+	$items['admin/settings/fltrp/address'] = array(
+    'title'            => 'fltrp address',
+    'page callback'    => 'drupal_get_form',
+	'page arguments'    =>  array('publisher_qy_address_form'),
+    'access arguments' => array('administer site configuration'),
+    'weight'           => 1,
+    'type'             => MENU_LOCAL_TASK,
+  );
+	
+  return $items;
+}
+
+
+
+function publisher_qy_fltrp_form(){
+	$form['submit'] = array(
+		'#type' =>'submit',
+		'#value' => t('导入图片'),
+	);
+	return $form;
+}
+
+function publisher_qy_fltrp_form_submit($form,&$form_state){
+	//$types = array_filter($form_state['values']['types']);
+	$batch =array(
+		'operations' => array(
+		  array('publisher_qy_fltrp_process',array()),
+		  ),
+		'finished' => 'publisher_qy_fltrp_finished',
+		'title' => t('导入图片'),
+		'init_message' => t('开始导入图片.'),
+		//'progress_message' => t('Reindexed @current out of @total.'),
+		'error_message' => t('导入图片遇到错误.'),
+	);
+	batch_set($batch);
+}
+function publisher_qy_fltrp_process(&$context){
+	$size =100;
+	if(!isset($context['sandbox']['progress'])){
+		$context['sandbox']['progress'] = 0;
+		$context['sandbox']['last_nid'] = 0;
+		$context['sandbox']['max'] =db_result(db_query("SELECT COUNT(nid) FROM {content_type_qikan} "));
+	}
+	$sql = "SELECT * FROM {content_type_qikan} WHERE nid > %d";
+	$result = db_query_range($sql, $context['sandbox']['last_nid'], 0, $size);
+	while($node = db_fetch_object($result)){
+		$node = node_load($node->nid);
+		$file_path  = 'sites/store.2u4u.com.cn/files/qikanimg/';
+		//$img = $file_path.$node->field_bsno_value.'.jpg';
+		$img = $file_path.$node->field_bsno[0][value].'.jpg';
+		
+		if(is_file($img)){
+		//插入图片信息到files表中
+			//$filename = $node->field_bsno_value.'.jpg';
+			$filename = $node->field_bsno[0][value].'.jpg';
+			$filepath = $img;
+			$img_info = getimagesize($img);
+			$filemime = $img_info[mime];
+			$filesize = filesize($img);
+			$status =1;
+      $timestamp = time();
+			$sql ="INSERT INTO {files} (uid, filename, filepath, filemime, filesize, status, timestamp) VALUES(%d, '%s', '%s', '%s', %d, %d, %d)";
+			db_query($sql, 1, $filename, $filepath, $filemime, $filesize, $status, $timestamp);
+			//获取file id
+			$fid = db_last_insert_id('files','fid');
+			//更新content_field_image_cache字段
+			$default_field_image_cache_data = 'a:2:{s:3:"alt";s:0:"";s:5:"title";s:0:"";}';
+			$sql ="UPDATE {content_field_image_cache} SET field_image_cache_fid = %d, field_image_cache_list =1, field_image_cache_data ='%s' WHERE nid = %d";
+			db_query($sql,$fid, $default_field_image_cache_data, $node->nid  );
+		}
+		
+		$context['sandbox']['progress']++;
+		$context['sandbox']['last_nid'] = $node->nid;
+		//$context['message'] = t('删除节点 %nid',array('%nid' => $node['nid']));
+	}
+	if($context['sandbox']['progress'] ==$context['sandbox']['max']){
+		$context['finished'] = 1;
+	}else{
+		$context['finished'] = $context['sandbox']['progress']/$context['sandbox']['max'];
+	}
+}
+
+function publisher_qy_fltrp_finished($success, $results, $operations){
+	if ($success) {
+		// Here we do something meaningful with the results.
+		$message = t('导入图片完成');
+		
+	}
+	else {
+		// An error occurred.
+		// $operations contains the operations that remained unprocessed.
+		$error_operation = reset($operations);
+		$message = '在导入图片时出现一个错误'. $error_operation[0] .' 其参数为 :'. print_r($error_operation[0], TRUE);
+	}
+	drupal_set_message($message);
+}
+
+function publisher_qy_user_form(){
+	$form['submit'] = array(
+		'#type' =>'submit',
+		'#value' => t('导入用户'),
+	);
+	return $form;
+}
+
+function publisher_qy_user_form_submit($form,&$form_state){
+	//$types = array_filter($form_state['values']['types']);
+	$batch =array(
+		'operations' => array(
+		  array('publisher_qy_user_process',array()),
+		  ),
+		'finished' => 'publisher_qy_user_finished',
+		'title' => t('导入用户'),
+		'init_message' => t('开始导入用户.'),
+		//'progress_message' => t('Reindexed @current out of @total.'),
+		'error_message' => t('导入shopex用户遇到错误.'),
+	);
+	batch_set($batch);
+}
+function publisher_qy_user_process(&$context){
+	$size =100;
+	if(!isset($context['sandbox']['progress'])){
+		$context['sandbox']['progress'] = 0;
+		$context['sandbox']['last_nid'] = 0;
+		$context['sandbox']['max'] =db_result(db_query("SELECT COUNT(nid) FROM {content_type_units}"));
+	}
+	$sql = "SELECT * FROM {content_type_units} WHERE nid > %d";
+	$result = db_query_range($sql, $context['sandbox']['last_nid'], 0, $size);
+	while($member = db_fetch_object($result)){
+	  //检查是否存在
+		$check_user_sql = "SELECT count(uid) FROM {users} WHERE name = '%s'";
+		$countnid = db_result(db_query($check_user_sql,$member->field_uno_value));
+		//exist
+		if($countnid){
+			drupal_set_message('field_uno_value:'.$member->field_uno_value);
+		}else{
+			$check_mail_sql = "SELECT count(uid) FROM {users} WHERE mail = '%s'";
+			$countnid1 = db_result(db_query($check_mail_sql,$member->field_email_value));
+			/*
+			if($countnid1){
+				$update_sql = "UPDATE {users} SET name = '%s', pass = '%s' WHERE mail = '%s'";
+				db_query($update_sql,$member->field_uno_value, strtolower($member->field_pwd_value), $member->field_email_value);
+				drupal_set_message(';uname:'.$member->field_uno_value.';email'.$member->field_email_value);
+			}else{
+				$time = strtotime($member->field_idate_value );
+				$insert_sql = "INSERT INTO {users} (name, pass, mail, created, access, login, status, init) VALUES('%s','%s','%s', %d,%d,%d, %d,'%s')";
+				db_query($insert_sql,$member->field_uno_value, strtolower($member->field_pwd_value), $member->field_email_value, $time,$time,$time,1,$member->field_email_value);
+			}
+			*/
+			if($countnid1){
+				drupal_set_message(';uname:'.$member->field_uno_value.';email'.$member->field_email_value);
+			}
+				$time = strtotime($member->field_idate_value );
+				$insert_sql = "INSERT INTO {users} (name, pass, mail, created, access, login, status, init) VALUES('%s','%s','%s', %d,%d,%d, %d,'%s')";
+				db_query($insert_sql,$member->field_uno_value, strtolower($member->field_pwd_value), $member->field_email_value, $time,$time,$time,1,$member->field_email_value);
+		}
+	
+		$context['sandbox']['progress']++;
+		$context['sandbox']['last_nid'] = $member->nid;
+	}
+	if($context['sandbox']['progress'] ==$context['sandbox']['max']){
+		$context['finished'] = 1;
+	}else{
+		$context['finished'] = $context['sandbox']['progress']/$context['sandbox']['max'];
+	}
+}
+
+function publisher_qy_user_finished($success, $results, $operations){
+	if ($success) {
+		// Here we do something meaningful with the results.
+		$message = t('导入用户完成');
+		
+	}
+	else {
+		// An error occurred.
+		// $operations contains the operations that remained unprocessed.
+		$error_operation = reset($operations);
+		$message = '在导入shopex用户时出现一个错误'. $error_operation[0] .' 其参数为 :'. print_r($error_operation[0], TRUE);
+	}
+	drupal_set_message($message);
+}
+
+
+function publisher_qy_order_form(){
+	$form['submit'] = array(
+		'#type' =>'submit',
+		'#value' => t('导入订单'),
+	);
+	return $form;
+}
+
+function publisher_qy_order_form_submit($form,&$form_state){
+	//$types = array_filter($form_state['values']['types']);
+	$batch =array(
+		'operations' => array(
+		  array('publisher_qy_order_process',array()),
+		  ),
+		'finished' => 'publisher_qy_order_finished',
+		'title' => t('导入订单'),
+		'init_message' => t('开始导入订单.'),
+		//'progress_message' => t('Reindexed @current out of @total.'),
+		'error_message' => t('导入订单遇到错误.'),
+	);
+	batch_set($batch);
+}
+function publisher_qy_order_process(&$context){
+	$size =100;
+	if(!isset($context['sandbox']['progress'])){
+		$context['sandbox']['progress'] = 0;
+		$context['sandbox']['last_nid'] = 0;
+		$context['sandbox']['max'] =db_result(db_query("SELECT COUNT(nid) FROM {content_type_fltrp_orders}"));
+	}
+	$sql = "SELECT nid FROM {content_type_fltrp_orders} WHERE nid > %d";
+	$result = db_query_range($sql, $context['sandbox']['last_nid'], 0, $size);
+	while($node_nid = db_fetch_object($result)){
+		$order_node = node_load($node_nid->nid);
+		
+		/*
+	  //检查是否存在
+		$check_user_sql = "SELECT count(uid) FROM {users} WHERE name = '%s'";
+		$countnid = db_result(db_query($check_user_sql,$member->field_uno_value));
+		//exist
+		if($countnid){
+			drupal_set_message('field_uno_value:'.$member->field_uno_value);
+		}else{
+			$check_mail_sql = "SELECT count(uid) FROM {users} WHERE mail = '%s'";
+			$countnid1 = db_result(db_query($check_mail_sql,$member->field_email_value));
+			if($countnid1){
+				$update_sql = "UPDATE {users} SET name = '%s', pass = '%s' WHERE mail = '%s'";
+				db_query($update_sql,$member->field_uno_value, strtolower($member->field_pwd_value), $member->field_email_value);
+				//drupal_set_message('member_id:'.$member->member_id.';uname:'.$member->uname.';email'.$member->email);
+			}else{
+				
+			}
+		}*/
+		$user = user_load(array('name'=>$order_node->field_loginname[0][value]));
+		if(!empty($user)){
+			$uid =$user->uid;
+			$order_status = 'completed';
+			$order_total = $order_node->field_adjusttotalprice[0][value];
+			$product_count = 1;
+			$primary_email = $user->mail;
+			$payment_method = 'payease';
+			$created = strtotime($order_node->field_orderdate[0][value]);
+			$modified = strtotime($order_node->field_orderdate[0][value]);
+			//$time = strtotime($member->field_idate_value );
+			$insert_sql = "INSERT INTO {uc_orders} (uid, order_status, order_total, product_count, primary_email, payment_method, created, modified) VALUES(%d,'%s',%f, %d,'%s','%s', %d,%d)";
+			db_query($insert_sql,$uid, $order_status, $order_total, $product_count,$primary_email,$payment_method,$created,$modified);
+			$order_id = db_last_insert_id('uc_orders','order_id');
+			$order_node->field_order_id[0][value] = $order_id; 
+			node_save($order_node);
+		}
+		$context['sandbox']['progress']++;
+		$context['sandbox']['last_nid'] = $order_node->nid;
+	}
+	if($context['sandbox']['progress'] ==$context['sandbox']['max']){
+		$context['finished'] = 1;
+	}else{
+		$context['finished'] = $context['sandbox']['progress']/$context['sandbox']['max'];
+	}
+}
+
+function publisher_qy_order_finished($success, $results, $operations){
+	if ($success) {
+		// Here we do something meaningful with the results.
+		$message = t('导入订单完成');
+		
+	}
+	else {
+		// An error occurred.
+		// $operations contains the operations that remained unprocessed.
+		$error_operation = reset($operations);
+		$message = '在导入订单时出现一个错误'. $error_operation[0] .' 其参数为 :'. print_r($error_operation[0], TRUE);
+	}
+	drupal_set_message($message);
+}
+
+
+
+
+function publisher_qy_product_form(){
+	$form['submit'] = array(
+		'#type' =>'submit',
+		'#value' => t('导入订单产品'),
+	);
+	return $form;
+}
+
+function publisher_qy_product_form_submit($form,&$form_state){
+	//$types = array_filter($form_state['values']['types']);
+	$batch =array(
+		'operations' => array(
+		  array('publisher_qy_product_process',array()),
+		  ),
+		'finished' => 'publisher_qy_product_finished',
+		'title' => t('导入订单'),
+		'init_message' => t('开始导入订单产品.'),
+		//'progress_message' => t('Reindexed @current out of @total.'),
+		'error_message' => t('导入订单产品遇到错误.'),
+	);
+	batch_set($batch);
+}
+function publisher_qy_product_process(&$context){
+	$size =100;
+	if(!isset($context['sandbox']['progress'])){
+		$context['sandbox']['progress'] = 0;
+		$context['sandbox']['last_nid'] = 0;
+		$context['sandbox']['max'] =db_result(db_query("SELECT COUNT(nid) FROM {content_type_fltrp_order_details}"));
+	}
+	$sql = "SELECT nid FROM {content_type_fltrp_order_details} WHERE nid > %d";
+	$result = db_query_range($sql, $context['sandbox']['last_nid'], 0, $size);
+	while($node_nid = db_fetch_object($result)){
+		$order_detail_node = node_load($node_nid->nid);
+		
+		/*
+	  //检查是否存在
+		$check_user_sql = "SELECT count(uid) FROM {users} WHERE name = '%s'";
+		$countnid = db_result(db_query($check_user_sql,$member->field_uno_value));
+		//exist
+		if($countnid){
+			drupal_set_message('field_uno_value:'.$member->field_uno_value);
+		}else{
+			$check_mail_sql = "SELECT count(uid) FROM {users} WHERE mail = '%s'";
+			$countnid1 = db_result(db_query($check_mail_sql,$member->field_email_value));
+			if($countnid1){
+				$update_sql = "UPDATE {users} SET name = '%s', pass = '%s' WHERE mail = '%s'";
+				db_query($update_sql,$member->field_uno_value, strtolower($member->field_pwd_value), $member->field_email_value);
+				//drupal_set_message('member_id:'.$member->member_id.';uname:'.$member->uname.';email'.$member->email);
+			}else{
+				
+			}
+		}*/
+		//$user = user_load(array('name'=>$order_node->field_loginname[0][value]));
+
+			//根据bsno获取产品节点
+			$bsno = $order_detail_node->field_bsno[0][value];
+			$select_sql = "select n.nid from {node} n left join {content_field_bsno} cfb on n.nid = cfb.nid WHERE n.type='qikan' AND cfb.field_bsno_value = '%s'";
+			$product_nid = db_result(db_query($select_sql,$bsno));
+			$product = node_load($product_nid);
+			
+			
+			//根据原始订单ID获取Drupal订单ID
+			//$select_sql = "select nid from {content_type_fltrp_orders} ctfo left join {content_field_orderid} cfo on ctfo.nid = cfo.nid WHERE  cfo.field_orderid_value  = '%s'";
+			$select_sql1 = "select n.nid from {node} n left join {content_field_orderid} cfo on n.nid = cfo.nid WHERE n.type='fltrp_orders' AND cfo.field_orderid_value = '%s'";
+			$order_nid = db_result(db_query($select_sql1,$order_detail_node->field_orderid[0][value]));
+			$order = node_load($order_nid);
+			
+			$order_id =$order->field_order_id[0][value];
+			$nid = $product->nid;
+			$title = $product->title;
+			$model = $product->model;
+			$qty = $order_detail_node->field_quantity[0][value];
+			$price = $product->sell_price;;
+			//$time = strtotime($member->field_idate_value );
+			$insert_sql = "INSERT INTO {uc_order_products} (order_id, nid, title, model, qty, price) VALUES(%d,%d,'%s', '%s',%d,%f)";
+			db_query($insert_sql,$order_id, $nid, $title, $model,$qty,$price);
+			$order_product_id = db_last_insert_id('uc_order_products','order_product_id');
+			$order_detail_node->field_order_product_id[0][value] = $order_product_id; 
+			node_save($order_detail_node);
+		
+		$context['sandbox']['progress']++;
+		$context['sandbox']['last_nid'] = $order_detail_node->nid;
+	}
+	if($context['sandbox']['progress'] ==$context['sandbox']['max']){
+		$context['finished'] = 1;
+	}else{
+		$context['finished'] = $context['sandbox']['progress']/$context['sandbox']['max'];
+	}
+}
+
+function publisher_qy_product_finished($success, $results, $operations){
+	if ($success) {
+		// Here we do something meaningful with the results.
+		$message = t('导入订单产品完成');
+		
+	}
+	else {
+		// An error occurred.
+		// $operations contains the operations that remained unprocessed.
+		$error_operation = reset($operations);
+		$message = '在导入订单产品时出现一个错误'. $error_operation[0] .' 其参数为 :'. print_r($error_operation[0], TRUE);
+	}
+	drupal_set_message($message);
+}
+
+
+
+function publisher_qy_pay_form(){
+	$form['submit'] = array(
+		'#type' =>'submit',
+		'#value' => t('导入订单支付信息'),
+	);
+	return $form;
+}
+
+function publisher_qy_pay_form_submit($form,&$form_state){
+	//$types = array_filter($form_state['values']['types']);
+	$batch =array(
+		'operations' => array(
+		  array('publisher_qy_pay_process',array()),
+		  ),
+		'finished' => 'publisher_qy_pay_finished',
+		'title' => t('导入订单支付信息'),
+		'init_message' => t('开始导入订单支付信息.'),
+		//'progress_message' => t('Reindexed @current out of @total.'),
+		'error_message' => t('导入订单支付信息遇到错误.'),
+	);
+	batch_set($batch);
+}
+function publisher_qy_pay_process(&$context){
+	$size =100;
+	if(!isset($context['sandbox']['progress'])){
+		$context['sandbox']['progress'] = 0;
+		$context['sandbox']['last_nid'] = 0;
+		$context['sandbox']['max'] =db_result(db_query("SELECT COUNT(nid) FROM {content_type_fltrp_pay_trace}"));
+	}
+	$sql = "SELECT nid FROM {content_type_fltrp_pay_trace} WHERE nid > %d";
+	$result = db_query_range($sql, $context['sandbox']['last_nid'], 0, $size);
+	
+	while($node_nid = db_fetch_object($result)){
+		$pay_trace_node = node_load($node_nid->nid);
+	
+				
+			//根据原始订单ID获取Drupal订单ID
+			//$select_sql = "select nid from {content_type_fltrp_orders} ctfo left join {content_field_orderid} cfo on ctfo.nid = cfo.nid WHERE  cfo.field_orderid_value  = '%s'";
+			$select_sql1 = "select n.nid from {node} n left join {content_field_orderid} cfo on n.nid = cfo.nid WHERE n.type='fltrp_orders' AND cfo.field_orderid_value = '%s'";
+			$order_nid = db_result(db_query($select_sql1,$pay_trace_node->field_orderid[0][value]));
+			$order_node = node_load($order_nid);
+			
+			//获取订单			
+			$order = uc_order_load($order_node->field_order_id[0][value]);
+			
+			//Drupal订单ID
+			$order_id = $order->order_id; 
+			//支付方法
+			$method = '首信易支付';
+			//支付金额,同时也是订单总额
+			$amount = $pay_trace_node->field_v_amount[0][value];
+			//用户ID
+			$uid = $order->uid;
+			//评论
+			$comment = '通过首信易支付付款成功.V_OID:'.$pay_trace_node->field_v_oid[0][value].'  ;V_PMODE:'.$pay_trace_node->field_v_pmode[0][value].';PAY_ID:'.$pay_trace_node->field_pay_id[0][value];
+			//时间
+			$received = strtotime($pay_trace_node->field_v_pdate[0][value]);
+			//$time = strtotime($member->field_idate_value );
+			$insert_sql = "INSERT INTO {uc_payment_receipts} (order_id, method , amount , uid, comment , received ) VALUES(%d,'%s',%f, %d,'%s',%d)";
+			db_query($insert_sql,$order_id, $method, $amount, $uid,$comment,$received);
+			
+			$receipt_id = db_last_insert_id('uc_payment_receipts','receipt_id');
+			$pay_trace_node->field_receipt_id[0][value] = $receipt_id; 
+			node_save($pay_trace_node);
+		
+		$context['sandbox']['progress']++;
+		$context['sandbox']['last_nid'] = $pay_trace_node->nid;
+	}
+	if($context['sandbox']['progress'] ==$context['sandbox']['max']){
+		$context['finished'] = 1;
+	}else{
+		$context['finished'] = $context['sandbox']['progress']/$context['sandbox']['max'];
+	}
+}
+
+function publisher_qy_pay_finished($success, $results, $operations){
+	if ($success) {
+		// Here we do something meaningful with the results.
+		$message = t('导入订单支付信息完成');
+		
+	}
+	else {
+		// An error occurred.
+		// $operations contains the operations that remained unprocessed.
+		$error_operation = reset($operations);
+		$message = '在导入订单支付信息时出现一个错误'. $error_operation[0] .' 其参数为 :'. print_r($error_operation[0], TRUE);
+	}
+	drupal_set_message($message);
+}
+
+
+
+
+
+function publisher_qy_address_form(){
+	$form['submit'] = array(
+		'#type' =>'submit',
+		'#value' => t('导入订单地址信息'),
+	);
+	return $form;
+}
+
+function publisher_qy_address_form_submit($form,&$form_state){
+	//$types = array_filter($form_state['values']['types']);
+	$batch =array(
+		'operations' => array(
+		  array('publisher_qy_address_process',array()),
+		  ),
+		'finished' => 'publisher_qy_address_finished',
+		'title' => t('导入订单地址信息'),
+		'init_message' => t('开始导入订单支付信息.'),
+		//'progress_message' => t('Reindexed @current out of @total.'),
+		'error_message' => t('导入订单地址信息遇到错误.'),
+	);
+	batch_set($batch);
+}
+function publisher_qy_address_process(&$context){
+	$size =100;
+	if(!isset($context['sandbox']['progress'])){
+		$context['sandbox']['progress'] = 0;
+		$context['sandbox']['last_order_id'] = 0;
+		$context['sandbox']['max'] = db_result(db_query("SELECT COUNT(order_id) FROM {uc_orders} WHERE order_id > 5500"));
+	}
+	$sql = "SELECT order_id FROM {uc_orders} WHERE order_id > 5500 AND  order_id > %d";
+	$result = db_query_range($sql, $context['sandbox']['last_order_id'], 0, $size);
+	
+	while($order_id_obj = db_fetch_object($result)){
+		 $order = uc_order_load($order_id_obj->order_id);
+		 $user = user_load($order->uid);
+		 /*
+		 //更新订单状态,
+		 $balance = uc_payment_balance($order); 
+		 //drupal_set_message('balance123:'.$balance);
+		 if($balance>0){
+		  drupal_set_message('balance:'.$balance);
+			$order->order_status = 'pending';
+			uc_order_save($order);
+		 }
+		 */
+		 //更新订单的创建日期
+		 /*
+		 $select_sql = "SELECT field_orderdate_value FROM content_type_fltrp_orders  WHERE field_order_id_value = %d ";
+		 db_set_active('store1');
+		 $field_orderdate_value = db_result(db_query($select_sql, $order_id_obj->order_id));
+		 db_set_active('default');
+		 $created = strtotime($field_orderdate_value);
+		 
+			//$modified = strtotime($order_node->field_orderdate[0][value]);
+     $order->created = $created;
+		 $update_sql = "UPDATE {uc_orders}  SET created = %d WHERE order_id = %d";
+		 db_query($update_sql, $created, $order_id_obj->order_id);
+			
+		 //uc_order_save($order);
+		 //drupal_set_message('field_orderdate_value:'.  $order->created);
+		 */
+		 //更新地址信息,
+		 /*
+		 $select_sql = " SELECT * FROM {content_type_units} WHERE field_uno_value = '%s'";
+		 $unit = db_fetch_object(db_query($select_sql,$user->name));
+		 
+	    $order->delivery_first_name  = $unit->field_unit_value;
+			$order->delivery_phone   = $unit->field_cellphone_value;
+      $order->delivery_street1   = $unit->field_address_value;	
+      $order->delivery_city  = $unit->field_city_value;	
+      $order->delivery_postal_code = $unit->field_zipcode_value;			
+		
+			uc_order_save($order);
+			*/
+		$context['sandbox']['progress']++;
+		$context['sandbox']['last_order_id'] = $order->order_id;
+	}
+	if($context['sandbox']['progress'] ==$context['sandbox']['max']){
+		$context['finished'] = 1;
+	}else{
+		$context['finished'] = $context['sandbox']['progress']/$context['sandbox']['max'];
+	}
+}
+
+function publisher_qy_address_finished($success, $results, $operations){
+	if ($success) {
+		// Here we do something meaningful with the results.
+		$message = t('导入订单地址信息完成');
+		
+	}
+	else {
+		// An error occurred.
+		// $operations contains the operations that remained unprocessed.
+		$error_operation = reset($operations);
+		$message = '在导入订单地址信息时出现一个错误'. $error_operation[0] .' 其参数为 :'. print_r($error_operation[0], TRUE);
+	}
+	drupal_set_message($message);
+}
+

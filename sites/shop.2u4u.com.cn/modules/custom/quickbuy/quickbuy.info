@@ -3,5 +3,4 @@ name = 快速购买
 description = 对于不用运送的产品,可以使用积分直接购买.
 core = 6.x
 php = 5.0
-dependencies[] = uc_payease
 dependencies[] = userpoints

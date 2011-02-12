@@ -1,0 +1,5 @@
+; $Id$
+name = publisher qianyi
+description = publisher qianyi
+core = 6.x
+php = 5.0

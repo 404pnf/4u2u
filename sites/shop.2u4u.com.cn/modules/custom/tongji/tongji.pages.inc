@@ -48,7 +48,7 @@ function tongji_products_downloads_list(){
 	}
 	$output = "";
 	//$sql = "SELECT uop.title,uop.nid, uop.price, sum(uop.qty) as total_buy, sum(ufu.accessed) as access_times ";
-	$sql = "SELECT uop.title, uop.nid, sum(uop.price) price, sum(uop.qty) as total_buy ";
+	$sql = "SELECT uop.title, uop.nid, uop.price, sum(uop.qty) as total_buy, sum(uop.qty * uop.price) as total_money ";
 	$sql .= "FROM {uc_order_products} uop ";
 	$sql .= "LEFT JOIN {node} n ON uop.nid = n.nid ";
 	$sql .= "LEFT JOIN {uc_orders} uo ON uo.order_id = uop.order_id ";
@@ -78,29 +78,31 @@ function tongji_products_downloads_list(){
 	$header = array("产品名称","总计","购买次数");
 	$ta = array('id' => 'tongji-products-downloads-table', 'align' => 'center');
 	$trows = array();
+	$total_money = 0;
+	$paid_num = 0;
+	$free_num = 0;
 	while($data = db_fetch_object($result)){
 		$trows[] = array(
 			array('data'=>l($data->title,'node/'.$data->nid),'valign'=>'top'),
-			array('data'=>number_format($data->price,2),'valign'=>'top'),
+			//array('data'=>number_format($data->price,2),'valign'=>'top'),
+			array('data'=>$data->total_money,'valign'=>'top'),
 			array('data'=>$data->total_buy,'valign'=>'top'),
 			//array('data'=>$data->access_times,'valign'=>'top'),
 			//array('data'=>l('删除','invite/delete/'.$data->invite_id),'valign'=>'top'),
 		);
-		//总收入
-		if($data->price>0){			
-			$total_money += $data->price;			
-		}
+				
+		$total_money += $data->total_money;			
+		
 		//下载次数		
-		if($data->price>1){			
+		if($data->price>0){			
 			$paid_num += $data->total_buy;  //收费的下载次数
 		}else{
 			$free_num += $data->total_buy;	 //免费下载次数		
 		}
-
-
 	}
-
-	$trows[] = array("总收入：".$total_money."元","付费下载：".$paid_num,"免费下载：".$free_num); 
+	$output .="<div id='sum-total'>";
+	$output .= "总收入：".$total_money."元"."付费下载：".$paid_num."免费下载：".$free_num; 
+	$output .="</div>";
 	$output .= theme('table', $header, $trows, $ta);
 	$output .= theme('pager', NULL, 50, $pager_num);
  // global $pager_page_array, $pager_total;

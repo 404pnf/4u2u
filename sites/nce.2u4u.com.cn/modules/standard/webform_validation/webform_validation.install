@@ -1,0 +1,97 @@
+<?php
+// $Id: webform_validation.install,v 1.2 2010/05/08 19:28:51 xeniox Exp $
+
+/**
+ * @file
+ * webform_validation installation file
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function webform_validation_install() {
+  drupal_install_schema('webform_validation');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function webform_validation_uninstall() {
+  drupal_uninstall_schema('webform_validation');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function webform_validation_schema() {
+  $schema['webform_validation_rule'] = array(
+    'description' => 'Stores rule definitions',
+    'fields' => array(
+      'ruleid' => array(
+        'type' => 'serial',
+        'description' => 'Unique identifier for a rule',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'rulename' => array(
+        'type' => 'varchar',
+        'description' => 'Name for the rule',
+        'not null' => TRUE,
+        'default' => '',
+        'length' => 255,
+      ),
+      'nid' => array(
+        'type' => 'int',
+        'description' => 'The webform {node}.nid',
+        'not null' => TRUE,
+        'default' => 0,
+        'unsigned' => TRUE,
+      ),
+      'validator' => array(
+        'type' => 'varchar',
+        'description' => 'The validator key',
+        'not null' => TRUE,
+        'default' => '',
+        'length' => 255,
+      ),
+      'data' => array(
+        'type' => 'varchar',
+        'description' => 'Additional rule data',
+        'not null' => FALSE,
+        'length' => 255,
+      ),
+      'error_message' => array(
+        'type' => 'varchar',
+        'description' => 'Rule error message',
+        'not null' => FALSE,
+        'length' => 255,
+      ),
+    ),
+   'primary key' => array('ruleid'),
+    'indexes' => array(
+      'nid' => array('nid'),
+    ),
+  );
+
+  $schema['webform_validation_rule_components'] = array(
+    'description' => 'Stores components linked to a rule',
+    'fields' => array(
+      'ruleid' => array(
+        'type' => 'int',
+        'description' => 'Unique identifier for a rule',
+        'not null' => TRUE,
+        'default' => 0,
+        'unsigned' => TRUE,
+      ),
+      'cid' => array(
+        'type' => 'int',
+        'description' => 'The webform component id',
+        'not null' => TRUE,
+        'default' => 0,
+        'unsigned' => TRUE,
+      ),
+    ),
+   'primary key' => array('ruleid', 'cid'),
+  );
+  return $schema;
+}

@@ -5,6 +5,7 @@
  *   $db_url = 'pgsql://username:password@localhost/databasename';
  */
 $db_url = 'mysql://woshiguanliyuan:ef5abfb553fab28a3d9@localhost/store';
+# $db_url['store1'] = 'mysql://woshiguanliyuan:ef5abfb553fab28a3d9@localhost/store1';
 $db_prefix = array(
    'default'   => '',
    'users'     => '2u4u.',

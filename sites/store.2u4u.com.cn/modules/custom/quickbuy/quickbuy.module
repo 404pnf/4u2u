@@ -134,5 +134,76 @@ function quickbuy_points_ec_form_submit($form, &$form_state){
 	
 }
 
+/**
+ * Implementation of hook_payment_method().
+ */
+function quickbuy_payment_method() {
+  $methods[] = array(
+    'id' => 'quickbuy',
+    'name' => t('Quick buy'),
+    'title' => t('快速购买- 0 元订单.'),
+    'desc' => t('允许用户购买0元订单产品.'),
+    'callback' => 'uc_payment_method_quickbuy',
+    'checkout' => TRUE,
+    'no_gateway' => TRUE,
+    'weight' => 10,
+  );
+
+  return $methods;
+}
+
+// Handles the free order payment method.
+function uc_payment_method_quickbuy($op, &$arg1, $silent = FALSE) {
+  if ($op == 'cart-details') {
+    return t('继续结算以完成你的0元订单.');
+  }
+}
+/**
+ * 实现钩子 hook_form_FORMID_alter().
+ */
+function quickbuy_form_uc_cart_checkout_form_alter(&$form, &$form_state) {
+  global $user;
+	$items = uc_cart_get_contents();
+	if (is_array($items) && count($items) > 0) {
+   // drupal_set_message(t('You do not have any items in your shopping cart.'));
+		$subtotal = 0;
+		foreach ($items as $item) {
+			$data = module_invoke($item->module, 'cart_display', $item);
+			if (!empty($data)) {
+				$subtotal += $data['#total'];
+			}
+		}
+  	
+  	//
+  	//如果是订单总额大于0,则不显示该支付方法
+  	if($subtotal > 0){
+  	 	foreach (_payment_method_list() as $method) {
+  	 	 	if($method['id'] =='quickbuy'){
+  	 	 		unset($form['panes']['payment']['payment_method']['#options'][$method['id']]);
+  	 	 	}
+  	 	}
+  	}
+  	//如果订单总额等于于0,则不显示其它支付方法
+  	else{
+  	 	foreach (_payment_method_list() as $method) {
+  	 	 	if($method['id'] !='quickbuy'){
+  	 	 		unset($form['panes']['payment']['payment_method']['#options'][$method['id']]);
+  	 	 	}
+  	 	 }
+  	 }
+	}
+}
+
+/**
+ * Implementation of hook_order().
+ */
+function quickbuy_order($op, &$arg1, $arg2) {
+  // During checkout, if the free order payment method is used, log a $0.00
+  // payment for the order to trigger any necessary predicates.
+  if ($op == 'submit' && $arg1->payment_method == 'quickbuy') {
+    uc_payment_enter($arg1->order_id, 'quickbuy', 0, 0, NULL, t('使用快速购买0元支付完成结算.'));
+  }
+}
+
 
 

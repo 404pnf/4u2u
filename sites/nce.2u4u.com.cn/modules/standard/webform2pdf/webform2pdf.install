@@ -1,0 +1,334 @@
+<?php
+// $Id: webform2pdf.install,v 1.2.2.3 2010/10/28 13:21:09 york Exp $
+
+/**
+ * @file
+ *   Webform2pdf module install/schema hooks.
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function webform2pdf_install() {
+  drupal_install_schema('webform2pdf');
+
+  variable_set('webform2pdf_default', array( 'pdf_lib' => 'sites/all/libraries/tcpdf',
+    'download' => 0, 'pdf_send_email' => 0,
+    'page_format' => 'A4', 'page_orientation' => 'P', 'h_left_logo' => 0,
+    'h_right_logo' => 0, 'f_left_logo' => 0, 'f_right_logo' => 0,
+    'h_font_size' => 10, 'p_font_size' => 12, 'f_font_size' => 10,
+    'h_txt_align' => 'L', 'h_font_family' => 'dejavuserif',
+    'p_txt_align' => 'L', 'p_font_family' => 'dejavuserif',
+    'f_txt_align' => 'L', 'f_font_family' => 'dejavuserif',
+    'h_txt' => '', 'f_txt' => '', 'p_body' => '', 'format' => 0,
+    'h_left_logo_size' => '270x205', 'h_right_logo_size' => '270x205',
+    'f_left_logo_size' => '270x56', 'f_right_logo_size' => '270x56',
+  ));
+}
+
+/**
+ * Implementation of hook_enable().
+ */
+function webform2pdf_enable() {
+  $key = variable_get('webform2pdf_key', '');
+  if ( empty($key) ) {
+    variable_set('webform2pdf_key', md5(uniqid(rand(), TRUE)));
+  }
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function webform2pdf_uninstall() {
+  drupal_uninstall_schema('webform2pdf');
+  variable_del('webform2pdf_default');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function webform2pdf_schema() {
+  $schema['webform2pdf'] = array(
+    'description' => 'Database containing the settings of webform2pdf.',
+    'fields' => array(
+      'nid' => array(
+        'description' => 'The node identifier of a webform2pdf.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'enabled' => array(
+        'description' => 'Show if a pdf will be generated: 0: OFF, 1: ON.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+
+      'download' => array(
+        'description' => 'Download PDF file after submitting the form.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+
+      'pdf_send_email' => array(
+        'description' => 'Attach PDF file as an attachment to the e-mail.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+
+      'no_send_email_addr' => array(
+         'type' => 'varchar',
+         'length' => 255,
+         'not null' => TRUE,
+         'default' => '',
+      ),
+
+      'page_format' => array(
+        'description' => 'Size of a page in the PDF document.',
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'default' => 'A4',
+      ),
+
+      'page_orientation' => array(
+        'description' => 'Orientation of the PDF document.',
+        'type' => 'varchar',
+        'length' => 1,
+        'not null' => TRUE,
+        'default' => 'P',
+      ),
+
+      'h_left_logo' => array(
+        'description' => 'Logo on the left side of the header.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+
+      'h_right_logo' => array(
+        'description' => 'Logo on the right side of the header.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+
+      'f_left_logo' => array(
+        'description' => 'Logo on the left side of the footer.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+
+      'f_right_logo' => array(
+        'description' => 'Logo on the right side of the footer.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+
+      'h_font_size' => array(
+        'description' => 'Header text font size.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 10,
+      ),
+
+      'p_font_size' => array(
+        'description' => 'Body text font size.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 12,
+      ),
+
+      'f_font_size' => array(
+        'description' => 'Footer text font size.',
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 10,
+      ),
+
+      'h_txt_align' => array(
+        'description' => 'Alignment of the header text.',
+        'type' => 'varchar',
+        'length' => 1,
+        'not null' => TRUE,
+        'default' => 'L',
+      ),
+
+      'h_font_family' => array(
+        'description' => 'Header text font type.',
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'default' => 'dejavuserif',
+      ),
+
+      'p_txt_align' => array(
+        'description' => 'Alignment of the body text.',
+        'type' => 'varchar',
+        'length' => 1,
+        'not null' => TRUE,
+        'default' => 'L',
+      ),
+
+      'p_font_family' => array(
+        'description' => 'Font type of the body.',
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'default' => 'dejavuserif',
+      ),
+
+      'f_txt_align' => array(
+        'description' => 'Footer text aligment.',
+        'type' => 'varchar',
+        'length' => 1,
+        'not null' => TRUE,
+        'default' => 'L',
+      ),
+
+      'f_font_family' => array(
+        'description' => 'Footer text font type.',
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'default' => 'dejavuserif',
+      ),
+
+      'h_txt' => array(
+        'type' => 'text',
+        'not null' => TRUE,
+        'size' => 'normal',
+        'description' => 'Header text.',
+      ),
+
+      'f_txt' => array(
+        'type' => 'text',
+        'not null' => TRUE,
+        'size' => 'normal',
+        'description' => 'Footer text.',
+      ),
+
+      'p_body' => array(
+        'type' => 'text',
+        'not null' => TRUE,
+        'size' => 'normal',
+        'description' => 'Text of the body.',
+      ),
+
+      'format' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Text input format type.',
+      ),
+    ),
+    'primary key' => array('nid'),
+  );
+  return $schema;
+}
+
+function webform2pdf_update_6001() {
+  $default = variable_get('webform2pdf_default', '');
+  $default['pdf_lib'] = drupal_get_path('module', 'webform2pdf') .'/tcpdf';
+  variable_set('webform2pdf_default', $default);
+
+  $ret = array();
+  db_add_field($ret, 'webform2pdf', 'no_send_email_addr', array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''));
+
+  return $ret;
+}
+
+function webform2pdf_update_6200() {
+  $result = db_query("SELECT nid, no_send_email_addr FROM {webform2pdf} WHERE enabled = 1");
+  while ( $row = db_fetch_array($result) ) {
+    $no_send_email_addr = unserialize($row['no_send_email_addr']);
+    $no_send_email_addr = array_diff($no_send_email_addr, array(0));
+    if (!empty ($no_send_email_addr)) {
+      $no_send_mail = array();
+      $node = node_load($row['nid']);
+
+      foreach ($no_send_email_addr as $key => $nomail) {
+        if ($nomail === 'email') {
+          foreach ($node->webform['emails'] as $eid => $email) {
+            if ( !is_numeric($email['email']) ) {
+              $no_send_mail[$eid] = $eid;
+              break;
+            }
+          }
+        }
+        elseif (is_numeric($nomail)) {
+          foreach ($node->webform['emails'] as $eid => $email) {
+            if ( $email['email'] == $nomail ) {
+              $no_send_mail[$eid] = $eid;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    if ( !empty($no_send_mail) ) {
+      db_query("UPDATE {webform2pdf} SET no_send_email_addr = '%s' WHERE nid = %d", serialize($no_send_mail), $row['nid']);
+    }
+  }
+
+  $ret = array();
+  return $ret;
+}
+
+/**
+ * Implementation of hook_requirements().
+ */
+function webform2pdf_requirements($phase) {
+  $requirements = array();
+  $t = get_t();
+  $error = FALSE;
+  $value = array();
+  if ($phase == 'runtime') {
+    $default = variable_get('webform2pdf_default', '');
+
+    if ( !is_file($default['pdf_lib'] .'/tcpdf.php')   ) {
+      $error = TRUE;
+      $severity = REQUIREMENT_ERROR;
+      $value = $t('The Webform2PDF module requires you to !link.', array('!link' => l($t('set the TCPDF library directory'), 'admin/settings/webform2pdf')));
+    }
+    else {
+      include_once( $default['pdf_lib'] .'/tcpdf.php' );
+      list($tmp, $version, $tmp) = explode(' ', PDF_PRODUCER);
+      if ( version_compare('4.5.000', $version) >= 0) {
+        $error = TRUE;
+        $severity = REQUIREMENT_ERROR;
+        $value = $t('The Webform2PDF module requires !TCPDF 4.5.000 or later, your version: !ver.', array('!TCPDF' => l('TCPDF', 'http://www.tcpdf.org/'), '!ver' => $version));
+      }
+    }
+  }
+  if ($error) {
+      $requirements['webform2pdf_tcpdf_library'] = array(
+        'title' => $t('TCPDF Library requirements'),
+        'value' => $value,
+        'severity' => $severity,
+        );
+    }
+  return $requirements;
+}

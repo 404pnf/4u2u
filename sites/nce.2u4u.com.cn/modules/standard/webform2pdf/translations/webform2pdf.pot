@@ -1,0 +1,378 @@
+# $Id: webform2pdf.pot,v 1.2 2010/04/14 10:00:46 york Exp $
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  webform2pdf.module,v 1.1.2.5 2009/10/19 12:59:11 york
+#  webform2pdf.install,v 1.1 2009/07/09 12:35:04 niif
+#  webform2pdf.info,v 1.1 2009/07/09 12:35:04 niif
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2009-12-03 14:59+0100\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: webform2pdf.module:126
+msgid "A PDF document will be generated from the marked results."
+msgstr ""
+
+#: webform2pdf.module:144;617
+msgid "General settings"
+msgstr ""
+
+#: webform2pdf.module:151
+msgid "PDF library path"
+msgstr ""
+
+#: webform2pdf.module:154
+msgid "Please enter the path of the TCPDF library. Example: sites/all/libraries/tcpdf"
+msgstr ""
+
+#: webform2pdf.module:159;664
+msgid "Attach PDF as an attachment to the e-mails sent to the form recipients."
+msgstr ""
+
+#: webform2pdf.module:165;624
+msgid "Paper size"
+msgstr ""
+
+#: webform2pdf.module:180;639
+msgid "Letter"
+msgstr ""
+
+#: webform2pdf.module:180;639
+msgid "Legal"
+msgstr ""
+
+#: webform2pdf.module:181;640
+msgid "Executive"
+msgstr ""
+
+#: webform2pdf.module:181;640
+msgid "Folio"
+msgstr ""
+
+#: webform2pdf.module:187;646
+msgid "Page orientation"
+msgstr ""
+
+#: webform2pdf.module:190;649
+msgid "Portrait"
+msgstr ""
+
+#: webform2pdf.module:191;650
+msgid "Landscape"
+msgstr ""
+
+#: webform2pdf.module:197
+msgid "Images size settings"
+msgstr ""
+
+#: webform2pdf.module:204
+msgid "Maximum size of left header logo"
+msgstr ""
+
+#: webform2pdf.module:207
+msgid "Maximum dimensions of the logo on the left side of the header in pixels. Format: width x height. E.g: 270x205"
+msgstr ""
+
+#: webform2pdf.module:212
+msgid "Maximum dimensions of right header logo"
+msgstr ""
+
+#: webform2pdf.module:215
+msgid "Maximum dimensions of the logo on the right side of the header in pixels. Format: width x height. E.g: 270x205"
+msgstr ""
+
+#: webform2pdf.module:220
+msgid "Maximum dimensions of left footer logo"
+msgstr ""
+
+#: webform2pdf.module:223
+msgid "Maximum dimensions of the logo on the left side of the footer in pixels. <b>WARNING! Setting height greater than 56px could cause error in PDF output.</b> Format: width x height. E.g: 270x205"
+msgstr ""
+
+#: webform2pdf.module:228
+msgid "Maximum dimensions of right footer logo"
+msgstr ""
+
+#: webform2pdf.module:231
+msgid "Maximum dimensions of the logo on the right side of the footer in pixels. <b>WARNING! Setting height greater than 56px could cause error in PDF output.</b> Format: width x height. E.g: 270x205"
+msgstr ""
+
+#: webform2pdf.module:237;700
+msgid "PDF header"
+msgstr ""
+
+#: webform2pdf.module:252;418;715;884
+msgid "Logo on the left side"
+msgstr ""
+
+#: webform2pdf.module:257;423;720;889
+msgid "Delete left side logo."
+msgstr ""
+
+#: webform2pdf.module:263;429;726;895
+msgid "Upload left side logo"
+msgstr ""
+
+#: webform2pdf.module:266;432;729;898
+msgid "Upload left side logo. If the size of the uploaded image is more than !size, it will be resized to this size."
+msgstr ""
+
+#: webform2pdf.module:272;735
+msgid "Header text"
+msgstr ""
+
+#: webform2pdf.module:276;739
+msgid "PDF header text. 5 rows maximum."
+msgstr ""
+
+#: webform2pdf.module:281;365;447;744;831;913
+msgid "Text alignment"
+msgstr ""
+
+#: webform2pdf.module:284;368;450;747;834;916
+msgid "Align left"
+msgstr ""
+
+#: webform2pdf.module:285;369;451;748;835;917
+msgid "Align center"
+msgstr ""
+
+#: webform2pdf.module:286;370;452;749;836;918
+msgid "Align right"
+msgstr ""
+
+#: webform2pdf.module:292;376;458;755;842;924
+msgid "Font Family"
+msgstr ""
+
+#: webform2pdf.module:304;388;470;767;854;936
+msgid "Set the font family to be used."
+msgstr ""
+
+#: webform2pdf.module:309;393;475;772;859;941
+msgid "Font Size"
+msgstr ""
+
+#: webform2pdf.module:313;397;479;776;863;945
+msgid "Set the font size to be used for header text. This is the base value for the scaling applied to other text styles."
+msgstr ""
+
+#: webform2pdf.module:326;492;789;958
+msgid "Logo on the right side"
+msgstr ""
+
+#: webform2pdf.module:331;497;794;963
+msgid "Delete right logo."
+msgstr ""
+
+#: webform2pdf.module:337;503;800;969
+msgid "Upload right logo"
+msgstr ""
+
+#: webform2pdf.module:340;506;803;972
+msgid "Upload right side logo. If the size of the uploaded image is more than !size, it will be resized to this size."
+msgstr ""
+
+#: webform2pdf.module:347;810
+msgid "Content of the PDF document"
+msgstr ""
+
+#: webform2pdf.module:354;820
+msgid "Page body"
+msgstr ""
+
+#: webform2pdf.module:357
+msgid "The content of the PDF file can be defined here, the text can be formatted with HTML and CSS tags. The form elements can be referred with the following special strings: !vars."
+msgstr ""
+
+#: webform2pdf.module:403;869
+msgid "PDF footer"
+msgstr ""
+
+#: webform2pdf.module:438;904
+msgid "Footer text"
+msgstr ""
+
+#: webform2pdf.module:442;908
+msgid "The PDF footer text. 2 rows maximum. The following special element can be used: %pagenumber - number of the page, %totalpage - total page count."
+msgstr ""
+
+#: webform2pdf.module:512;988;1005;1025
+msgid "Submit"
+msgstr ""
+
+#: webform2pdf.module:523;527;531;535
+msgid "Wrong picture size format!"
+msgstr ""
+
+#: webform2pdf.module:541;1009
+msgid "Up to 5 rows can be set!"
+msgstr ""
+
+#: webform2pdf.module:546;1014
+msgid "Up to 2 rows can be set!"
+msgstr ""
+
+#: webform2pdf.module:606
+msgid "Generate PDF Document."
+msgstr ""
+
+#: webform2pdf.module:657
+msgid "E-mail settings"
+msgstr ""
+
+#: webform2pdf.module:677
+msgid "Form component: %component"
+msgstr ""
+
+#: webform2pdf.module:689
+msgid "Don't attach PDF file"
+msgstr ""
+
+#: webform2pdf.module:693
+msgid "PDF file won't be attached to the e-mail sent to the following recipients."
+msgstr ""
+
+#: webform2pdf.module:823
+msgid "The content of the PDF file can be defined here, the text can be formatted with HTML and CSS tags. The form elements can be referred with the following special strings: !vars. Select form elements can be outputted in different ways, write one of the following strings after the element name to choose from them: '-nl', '-all', '-nl-all'. '-nl ' modifier writes every selected element into a new line, '-all' lists every option, and marks which were selected from them. '-nl-all' lists all of the options in separate lines, and marks selected ones."
+msgstr ""
+
+#: webform2pdf.module:994;1078
+msgid "Reset to defaults"
+msgstr ""
+
+#: webform2pdf.module:1447
+msgid "View"
+msgstr ""
+
+#: webform2pdf.module:1448;1464;36;49
+msgid "Download PDF"
+msgstr ""
+
+#: webform2pdf.module:26
+msgid "Generate PDF"
+msgstr ""
+
+#: webform2pdf.module:69
+msgid "Webform to PDF"
+msgstr ""
+
+#: webform2pdf.module:73
+msgid "Global configuration of webform2pdf functionality."
+msgstr ""
+
+#: webform2pdf.install:47
+msgid "Database containing the settings of webform2pdf."
+msgstr ""
+
+#: webform2pdf.install:50
+msgid "The node identifier of a webform2pdf."
+msgstr ""
+
+#: webform2pdf.install:56
+msgid "Show if a pdf will be generated: 0: OFF, 1: ON."
+msgstr ""
+
+#: webform2pdf.install:65
+msgid "Download PDF file after submitting the form."
+msgstr ""
+
+#: webform2pdf.install:74
+msgid "Attach PDF file as an attachment to the e-mail."
+msgstr ""
+
+#: webform2pdf.install:90
+msgid "Size of a page in the PDF document."
+msgstr ""
+
+#: webform2pdf.install:98
+msgid "Orientation of the PDF document."
+msgstr ""
+
+#: webform2pdf.install:106
+msgid "Logo on the left side of the header."
+msgstr ""
+
+#: webform2pdf.install:114
+msgid "Logo on the right side of the header."
+msgstr ""
+
+#: webform2pdf.install:122
+msgid "Logo on the left side of the footer."
+msgstr ""
+
+#: webform2pdf.install:130
+msgid "Logo on the right side of the footer."
+msgstr ""
+
+#: webform2pdf.install:138
+msgid "Header text font size."
+msgstr ""
+
+#: webform2pdf.install:147
+msgid "Body text font size."
+msgstr ""
+
+#: webform2pdf.install:156
+msgid "Footer text font size."
+msgstr ""
+
+#: webform2pdf.install:165
+msgid "Alignment of the header text."
+msgstr ""
+
+#: webform2pdf.install:173
+msgid "Header text font type."
+msgstr ""
+
+#: webform2pdf.install:181
+msgid "Alignment of the body text."
+msgstr ""
+
+#: webform2pdf.install:189
+msgid "Font type of the body."
+msgstr ""
+
+#: webform2pdf.install:197
+msgid "Footer text aligment."
+msgstr ""
+
+#: webform2pdf.install:205
+msgid "Footer text font type."
+msgstr ""
+
+#: webform2pdf.install:216
+msgid "Header text."
+msgstr ""
+
+#: webform2pdf.install:223
+msgid "Footer text."
+msgstr ""
+
+#: webform2pdf.install:230
+msgid "Text of the body."
+msgstr ""
+
+#: webform2pdf.install:238
+msgid "Text input format type."
+msgstr ""
+
+#: webform2pdf.info:0
+msgid "WebForm 2 PDF"
+msgstr ""
+
+#: webform2pdf.info:0
+msgid "Generates PDF documents from the submitted webforms."
+msgstr ""
+

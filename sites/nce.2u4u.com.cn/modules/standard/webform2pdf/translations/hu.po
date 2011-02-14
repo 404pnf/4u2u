@@ -1,0 +1,428 @@
+# $Id: hu.po,v 1.2 2010/04/14 10:00:46 york Exp $
+#
+# Hungarian translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from files:
+#  webform2pdf.module,v 1.1.2.5 2009/10/19 12:59:11 york
+#  webform2pdf.install,v 1.1 2009/07/09 12:35:04 niif
+#  webform2pdf.info,v 1.1 2009/07/09 12:35:04 niif
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2009-12-03 14:59+0100\n"
+"PO-Revision-Date: 2009-12-03 14:59+0100\n"
+"Last-Translator: Kiss Zoltán <kzoli@niif.hu>\n"
+"Language-Team: NIIF <niif@niif.hu>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Hungarian\n"
+"X-Poedit-Country: HUNGARY\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\n"
+
+#: webform2pdf.module:73
+msgid "Global configuration of webform2pdf functionality."
+msgstr "A webform2pdf modul általános és alapértelmezett beállításai"
+
+#: webform2pdf.module:126
+msgid "A PDF document will be generated from the marked results."
+msgstr "A kiválasztott eredményeket összefűzzük egy PDF dokumentummá."
+
+#: webform2pdf.module:144;617
+msgid "General settings"
+msgstr "Általános beállítások"
+
+#: webform2pdf.module:151
+msgid "PDF library path"
+msgstr "PDF könyvtár útvonala"
+
+#: webform2pdf.module:154
+msgid "Please enter the path of the TCPDF library. Example: sites/all/libraries/tcpdf"
+msgstr "Add meg a TCPDF könyvtár elérési útját. Például: sites/all/libraries/tcpdf"
+
+#: webform2pdf.module:159;664
+msgid "Attach PDF as an attachment to the e-mails sent to the form recipients."
+msgstr ""
+"A PDF csatolása e-mail mellékletként az űrlap címzettjei számára."
+
+#: webform2pdf.module:165;624
+msgid "Paper size"
+msgstr "Lap méret"
+
+#: webform2pdf.module:180;639
+msgid "Letter"
+msgstr "Levél"
+
+#: webform2pdf.module:180;639
+msgid "Legal"
+msgstr ""
+
+#: webform2pdf.module:181;640
+msgid "Executive"
+msgstr ""
+
+#: webform2pdf.module:181;640
+msgid "Folio"
+msgstr ""
+
+#: webform2pdf.module:187;646
+msgid "Page orientation"
+msgstr "Oldal tájolása"
+
+#: webform2pdf.module:190;649
+msgid "Portrait"
+msgstr "Álló"
+
+#: webform2pdf.module:191;650
+msgid "Landscape"
+msgstr "Fekvő"
+
+#: webform2pdf.module:197
+msgid "Images size settings"
+msgstr "Képek méretének beállítása"
+
+#: webform2pdf.module:204
+msgid "Maximum size of left header logo"
+msgstr "Fejléc bal oldali logó mérete"
+
+#: webform2pdf.module:207
+msgid "Maximum dimensions of the logo on the left side of the header in pixels. Format: width x height. E.g: 270x205"
+msgstr ""
+"A fejlécben található bal oldalra feltölthető kép maximális "
+"mérete képpontban. Formátum: szélesség x magasság pl.: 270x205"
+
+#: webform2pdf.module:212
+msgid "Maximum dimensions of right header logo"
+msgstr "Fejléc jobb oldali logó mérete"
+
+#: webform2pdf.module:215
+msgid "Maximum dimensions of the logo on the right side of the header in pixels. Format: width x height. E.g: 270x205"
+msgstr ""
+"A fejlécben található jobb oldalra feltölthető kép maximális "
+"mérete képpontban. Formátum: szélesség x magasság pl.: 270x205"
+
+#: webform2pdf.module:220
+msgid "Maximum dimensions of left footer logo"
+msgstr "Lábléc bal oldali logó mérete"
+
+#: webform2pdf.module:223
+msgid "Maximum dimensions of the logo on the left side of the footer in pixels. <b>WARNING! Setting height greater than 56px could cause error in PDF output.</b> Format: width x height. E.g: 270x205"
+msgstr ""
+"A láblécben található bal oldalra feltölthető kép maximális "
+"mérete képpontban. <b>FIGYELEM! Ha eltérsz az 56px magasságtól "
+"akkor elképzelhető, hogy hibás PDF készül.</b> Formátum: "
+"szélesség x magasság pl.: 270x56"
+
+#: webform2pdf.module:228
+msgid "Maximum dimensions of right footer logo"
+msgstr "Lábléc jobb oldali logó mérete"
+
+#: webform2pdf.module:231
+msgid "Maximum dimensions of the logo on the right side of the footer in pixels. <b>WARNING! Setting height greater than 56px could cause error in PDF output.</b> Format: width x height. E.g: 270x205"
+msgstr ""
+"A láblécben található jobb oldalra feltölthető kép maximális "
+"mérete képpontban. <b>FIGYELEM! Ha eltérsz az 56px magasságtól "
+"akkor elképzelhető, hogy hibás PDF készül.</b> Formátum: "
+"szélesség x magasság pl.: 270x56"
+
+#: webform2pdf.module:237;700
+msgid "PDF header"
+msgstr "PDF fejléc"
+
+#: webform2pdf.module:252;418;715;884
+msgid "Logo on the left side"
+msgstr "Bal oldali logó"
+
+#: webform2pdf.module:257;423;720;889
+msgid "Delete left side logo."
+msgstr "Bal oldali logó törlése."
+
+#: webform2pdf.module:263;429;726;895
+msgid "Upload left side logo"
+msgstr "Bal oldali logó feltöltése"
+
+#: webform2pdf.module:266;432;729;898
+msgid "Upload left side logo. If the size of the uploaded image is more than !size, it will be resized to this size."
+msgstr ""
+"A bal oldali logó feltöltése. Ha a feltöltött kép mérete "
+"meghaladja a !size méretet, akkor a program arányosan kicsinyíti a "
+"feltöltött képet."
+
+#: webform2pdf.module:272;735
+msgid "Header text"
+msgstr "Fejléc szövege"
+
+#: webform2pdf.module:276;739
+msgid "PDF header text. 5 rows maximum."
+msgstr "A PDF fejlécebe írható szöveg. Maximum 5 sor."
+
+#: webform2pdf.module:281;365;447;744;831;913
+msgid "Text alignment"
+msgstr "A szöveg igazítása"
+
+#: webform2pdf.module:284;368;450;747;834;916
+msgid "Align left"
+msgstr "Balra zárt"
+
+#: webform2pdf.module:285;369;451;748;835;917
+msgid "Align center"
+msgstr "Középre zárt"
+
+#: webform2pdf.module:286;370;452;749;836;918
+msgid "Align right"
+msgstr "Jobbra zárt"
+
+#: webform2pdf.module:292;376;458;755;842;924
+msgid "Font Family"
+msgstr "Betűcsalád"
+
+#: webform2pdf.module:304;388;470;767;854;936
+msgid "Set the font family to be used."
+msgstr "A használandó betűkészlet beállítása"
+
+#: webform2pdf.module:309;393;475;772;859;941
+msgid "Font Size"
+msgstr "Betűméret"
+
+#: webform2pdf.module:313;397;479;776;863;945
+msgid "Set the font size to be used for header text. This is the base value for the scaling applied to other text styles."
+msgstr ""
+"Be kell állítani a fejléc szöveghez tartozó betűméretet. Ez "
+"lesz a méretezés bázisértéke a többi szöveg stílushoz."
+
+#: webform2pdf.module:326;492;789;958
+msgid "Logo on the right side"
+msgstr "Jobb oldali logó"
+
+#: webform2pdf.module:331;497;794;963
+msgid "Delete right logo."
+msgstr "Jobb oldali logó törlése."
+
+#: webform2pdf.module:337;503;800;969
+msgid "Upload right logo"
+msgstr "Jobb oldali logó feltöltése"
+
+#: webform2pdf.module:340;506;803;972
+msgid "Upload right side logo. If the size of the uploaded image is more than !size, it will be resized to this size."
+msgstr ""
+"A jobb oldali logó feltöltése. Ha a feltöltött kép mérete "
+"meghaladja a !size méretet, akkor a program arányosan kicsinyíti a "
+"feltöltött képet."
+
+#: webform2pdf.module:347;810
+msgid "Content of the PDF document"
+msgstr "PDF tartalma"
+
+#: webform2pdf.module:354;820
+msgid "Page body"
+msgstr "Oldal törzse"
+
+#: webform2pdf.module:357
+msgid "The content of the PDF file can be defined here, the text can be formatted with HTML and CSS tags. The form elements can be referred with the following special strings: !vars."
+msgstr ""
+"A PDF tartalmát itt adjuk meg, a szöveget HTML nyelv és CSS "
+"segítségével tudjuk formázni. A kérdőívben megadott válaszokra "
+"az itt felsorolt speciális elemekkel lehet hivatkozni: !vars. A "
+"választólista típusú elemeknek többfelé kiíratása lehetséges, "
+"ezeket a hivatkozási név végére írt: -nl, -all, -nl-all tudjuk "
+"meghatározni. Az `-nl`: minden kiválasztott elemet új sorba ír, "
+"`-all`: minden választható lehetőséget kiír és a "
+"kiválasztottakat kiemeli, `-nl-all`: működése megegyezik az "
+"előbbivel csak minden elemet új sorba ír ki."
+
+#: webform2pdf.module:403;869
+msgid "PDF footer"
+msgstr "PDF lábléc"
+
+#: webform2pdf.module:438;904
+msgid "Footer text"
+msgstr "Lábléc szövege"
+
+#: webform2pdf.module:442;908
+msgid "The PDF footer text. 2 rows maximum. The following special element can be used: %pagenumber - number of the page, %totalpage - total page count."
+msgstr ""
+"A PDF láblécbe írható szöveg. Maximum 2 sor. A felhasználható "
+"speciális elemek: %pagenumber - oldal száma, %totalpage - összes "
+"oldal száma."
+
+#: webform2pdf.module:512;988;1005;1025
+msgid "Submit"
+msgstr "Beküldés"
+
+#: webform2pdf.module:523;527;531;535
+msgid "Wrong picture size format!"
+msgstr "Hibás képméret formátum!"
+
+#: webform2pdf.module:541;1009
+msgid "Up to 5 rows can be set!"
+msgstr "Maximum 5 sor adható meg!"
+
+#: webform2pdf.module:546;1014
+msgid "Up to 2 rows can be set!"
+msgstr "Maximum 2 sor adható meg!"
+
+#: webform2pdf.module:606
+msgid "Generate PDF Document."
+msgstr "A PDF készítés engedélyezése."
+
+#: webform2pdf.module:657
+msgid "E-mail settings"
+msgstr "E-mail beállítások"
+
+#: webform2pdf.module:677
+msgid "Form component: %component"
+msgstr "Összetevő: %component"
+
+#: webform2pdf.module:689
+msgid "Don't attach PDF file"
+msgstr "A PDF csatolás mellőzése"
+
+#: webform2pdf.module:693
+msgid "PDF file won't be attached to the e-mail sent to the following recipients."
+msgstr "A kiválasztott mezőkre küldött levelekhez nem kerül csatolásra a PDF."
+
+#: webform2pdf.module:823
+msgid "The content of the PDF file can be defined here, the text can be formatted with HTML and CSS tags. The form elements can be referred with the following special strings: !vars. Select form elements can be outputted in different ways, write one of the following strings after the element name to choose from them: '-nl', '-all', '-nl-all'. '-nl ' modifier writes every selected element into a new line, '-all' lists every option, and marks which were selected from them. '-nl-all' lists all of the options in separate lines, and marks selected ones."
+msgstr ""
+"A PDF tartalmát itt adjuk meg, a szöveget HTML nyelv és CSS "
+"segítségével tudjuk formázni. A kérdőívben megadott válaszokra "
+"az itt felsorolt speciális elemekkel lehet hivatkozni: !vars. A "
+"választólista típusú elemeknek többfelé kiíratása lehetséges, "
+"ezeket a hivatkozási név végére írt: -nl, -all, -nl-all tudjuk "
+"meghatározni. Az `-nl`: minden kiválasztott elemet új sorba ír, "
+"`-all`: minden választható lehetőséget kiír és a "
+"kiválasztottakat kiemeli, `-nl-all`: működése megegyezik az "
+"előbbivel csak minden elemet új sorba ír ki."
+
+#: webform2pdf.module:994;1078
+msgid "Reset to defaults"
+msgstr "Visszaállítás alapértelmezésre"
+
+#: webform2pdf.module:1447
+msgid "View"
+msgstr "Megtekintés"
+
+#: webform2pdf.module:1448;1464;36;49
+msgid "Download PDF"
+msgstr "PDF Letöltés"
+
+#: webform2pdf.module:26
+msgid "Generate PDF"
+msgstr "PDF készítés"
+
+#: webform2pdf.module:69
+msgid "Webform to PDF"
+msgstr "Űrlapból PDF"
+
+#: webform2pdf.module:73
+msgid "Global configuration of webform2pdf functionality."
+msgstr "A webform2pdf modul általános és alapértelmezett beállításai"
+
+#: webform2pdf.install:47
+msgid "Database containing the settings of webform2pdf."
+msgstr "Webform2pdf beállításait tartalmazó adatbázis."
+
+#: webform2pdf.install:50
+msgid "The node identifier of a webform2pdf."
+msgstr "A tartalom azonosítója a webform2pdf-ben."
+
+#: webform2pdf.install:56
+msgid "Show if a pdf will be generated: 0: OFF, 1: ON."
+msgstr ""
+"A PDF generálás bekapcsolásának jelzése. 0: kikapcsolt, 1: "
+"bekapcsolt."
+
+#: webform2pdf.install:65
+msgid "Download PDF file after submitting the form."
+msgstr "A PDF letöltése űrlap beküldés után."
+
+#: webform2pdf.install:74
+msgid "Attach PDF file as an attachment to the e-mail."
+msgstr "A PDF csatolása e-mail mellékletként."
+
+#: webform2pdf.install:90
+msgid "Size of a page in the PDF document."
+msgstr "A PDF oldal mérete."
+
+#: webform2pdf.install:98
+msgid "Orientation of the PDF document."
+msgstr "A PDF dokumentum oldal tájolása."
+
+#: webform2pdf.install:106
+msgid "Logo on the left side of the header."
+msgstr "Bal oldali fejléc logó."
+
+#: webform2pdf.install:114
+msgid "Logo on the right side of the header."
+msgstr "Jobb oldali fejléc logó."
+
+#: webform2pdf.install:122
+msgid "Logo on the left side of the footer."
+msgstr "Bal oldali lábléc logó."
+
+#: webform2pdf.install:130
+msgid "Logo on the right side of the footer."
+msgstr "Jobb oldali lábléc logó."
+
+#: webform2pdf.install:138
+msgid "Header text font size."
+msgstr "Fejléc szövegének betű mérete."
+
+#: webform2pdf.install:147
+msgid "Body text font size."
+msgstr "Fejléc szövegének betű mérete."
+
+#: webform2pdf.install:156
+msgid "Footer text font size."
+msgstr "Lábléc szövegének betű mérete."
+
+#: webform2pdf.install:165
+msgid "Alignment of the header text."
+msgstr "Fejléc szövegének igazítása."
+
+#: webform2pdf.install:173
+msgid "Header text font type."
+msgstr "Fejléc szövegének betűtípusa."
+
+#: webform2pdf.install:181
+msgid "Alignment of the body text."
+msgstr "Oldal szövegének igazítása."
+
+#: webform2pdf.install:189
+msgid "Font type of the body."
+msgstr "Oldal szövegének betűtípusa."
+
+#: webform2pdf.install:197
+msgid "Footer text aligment."
+msgstr "Lábléc szövegének igazítása."
+
+#: webform2pdf.install:205
+msgid "Footer text font type."
+msgstr "Lábléc szövegének igazítása."
+
+#: webform2pdf.install:216
+msgid "Header text."
+msgstr "Fejléc szövege."
+
+#: webform2pdf.install:223
+msgid "Footer text."
+msgstr "Lábléc szövege."
+
+#: webform2pdf.install:230
+msgid "Text of the body."
+msgstr "Az oldal szövege."
+
+#: webform2pdf.install:238
+msgid "Text input format type."
+msgstr "A szöveg beviteli mező típusa."
+
+#: webform2pdf.info:0
+msgid "WebForm 2 PDF"
+msgstr "WebForm 2 PDF"
+
+#: webform2pdf.info:0
+msgid "Generates PDF documents from the submitted webforms."
+msgstr "A beküldött webform űrlapokból PDF állományt készít."
+

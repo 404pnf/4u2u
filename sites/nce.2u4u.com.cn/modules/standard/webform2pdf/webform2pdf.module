@@ -1,0 +1,2004 @@
+<?php
+// $Id: webform2pdf.module,v 1.2.2.9 2010/10/28 13:21:09 york Exp $
+
+/**
+ * This menu appears only if 'Generate PDF' option is enabled
+ */
+function webform2pdf_enabled_pdf_access() {
+  $param = func_get_args();
+
+  $node = array_shift($param);
+  $call = array_shift($param);
+
+  $result = db_query("SELECT enabled FROM {webform2pdf} WHERE nid = %d AND enabled = 1", $node->nid);
+  $row = db_fetch_array($result);
+
+  return ($row['enabled'] && call_user_func_array($call, $param));
+} // function webform2pdf_enabled_pdf_access()
+
+/**
+ * Implementation of hook_menu().
+ */
+function webform2pdf_menu() {
+  $items = array();
+
+  $items['node/%webform_menu/webform/webform2pdf'] = array(
+    'title' => 'Generate PDF',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('webform2pdf_edit_form', 1),
+    'access callback' => 'node_access',
+    'access arguments' => array('update', 1),
+    'weight' => 4,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  $items['node/%webform_menu/webform-results/downloadpdf'] = array(
+    'title' => 'Download PDF',
+    'load arguments' => array(1),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('webform2pdf_download_pdf_form', 1),
+    'file' => 'webform.report.inc',
+    'file path' => drupal_get_path('module', 'webform') . '/includes',
+    'access callback' => 'webform2pdf_enabled_pdf_access',
+    'access arguments' => array(1, 'user_access', 'access webform results'),
+    'weight' => 9,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  $items['node/%webform_menu/submission/%webform_menu_submission/downloadpdf'] = array(
+    'title' => 'Download PDF',
+    'load arguments' => array(1),
+    'page callback' => 'webform2pdf_submission_download_pdf',
+    'page arguments' => array(1, 3),
+    'access callback' => 'webform2pdf_enabled_pdf_access',
+    'access arguments' => array(1, 'webform_submission_access', 1, 3, 'view'),
+    'weight' => 6,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+/*  $items['webform2pdf/%'] = array(
+    'title' => 'Download PDF',
+    'page callback' => 'webform2pdf_url_decode',
+    'page arguments' => array(1),
+    'access arguments' => TRUE,
+    'weight' => 4,
+    'type' => MENU_CALLBACK,
+  );*/
+
+  $items['admin/settings/webform2pdf'] = array(
+    'title' => 'Webform to PDF',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('webform2pdf_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+    'description' => 'Global configuration of webform2pdf functionality.',
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+} // function webform2pdf_menu()
+
+/**
+ * Implementation of hook_theme()
+ */
+function webform2pdf_theme() {
+  return array(
+    'webform2pdf_download_pdf_form' => array(
+      'arguments' => array('form' => NULL),
+    ),
+    'webform2pdf_download_pdf_form' => array(
+      'arguments' => array('form' => NULL),
+    ),
+    'webform2pdf_pdf_init' => array(
+      'arguments' => array('node' => NULL, 'template' => NULL),
+    ),
+    'webform2pdf_pdf_header' => array(
+      'arguments' => array('pdf' => NULL, 'node' => NULL, 'template' => NULL),
+    ),
+    'webform2pdf_pdf_page' => array(
+      'arguments' => array('pdf' => NULL, 'node' => NULL, 'template' => NULL),
+    ),
+    'webform2pdf_pdf_content' => array(
+      'arguments' => array('pdf' => NULL, 'node' => NULL, 'template' => NULL, 'tokens' => NULL),
+    ),
+    'webform2pdf_pdf_footer' => array(
+      'arguments' => array('pdf' => NULL, 'node' => NULL, 'template' => NULL),
+    ),
+    'webform2pdf_mail2pdf' => array(
+      'arguments' => array('nid' => NULL, 'sid' => NULL),
+    ),
+    'webform2pdf_filename' => array(
+      'arguments' => array('node' => NULL, 'submission' => NULL),
+    ),
+  );
+} // function webform2pdf_theme()
+
+/**
+ * Implementation of hook_help()
+ */
+function webform2pdf_help($path, $arg) {
+  global $base_url;
+
+  switch ($path) {
+    case 'node/%/webform-results/downloadpdf':
+      return $output = '<p>' . t('A PDF document will be generated from the marked results.') . '</p>';
+    break;
+  }
+} // function webform2pdf_help()
+
+function webform2pdf_preprocess_webform_mail_message(&$vars) {
+  global $webform2pdf_send2pdf;
+
+  $webform2pdf = _webform2pdf_get_template($vars['node']->nid);
+  $nopdf = array();
+  if ($webform2pdf['enabled'] && $webform2pdf['pdf_send_email']) {
+    $no_mail = unserialize($webform2pdf['no_send_email_addr']);
+
+    if (is_array($no_mail)) {
+      $no_mail = array_diff($no_mail, array(0));
+      if ( !empty($no_mail) ) {
+        foreach ($no_mail as $eid) {
+          $email_addresses = $vars['node']->webform['emails'][$eid]['email'];
+          if ( isset($vars['node']->webform['components'][$email_addresses]) ) {
+            $email_addresses = $vars['submission']->data[$eid]['value'];
+          }
+          else {
+            $email_addresses = array_filter(explode(',', check_plain($vars['node']->webform['emails'][$eid]['email'])));
+          }
+          $nopdf = array_merge($nopdf, $email_addresses);
+          $nopdf = array_map("trim", $nopdf);
+        }
+      }
+    }
+
+    // Check for a multi-page form that is not yet complete.
+    $webform2pdf_send2pdf = array('nid' => $vars['node']->nid, 'sid' => $vars['submission']->sid, 'nopdf' => $nopdf);
+  }
+}
+
+/**
+ * Adds a pdf download link to the webform submission page.
+ */
+function webform2pdf_preprocess_webform_results_submissions(&$vars) {
+  $rows =& $vars['table']['#rows'];
+
+  $i = 0;
+  $table_row_keys = array_keys($vars['table']['#rows']);
+  foreach ($vars['submissions'] as $sid => $submission) {
+    if (webform2pdf_enabled_pdf_access($vars['node'], 'webform_submission_access', $vars['node'], $submission->nid, 'view')) {
+      $rows[$table_row_keys[$i]][] = l(t('Download PDF'), 'node/' . $submission->nid . '/submission/' . $submission->sid . '/downloadpdf');
+    }
+    else {
+      $rows[$table_row_keys[$i]][] = '';
+    }
+    $i++;
+  }
+
+  $last_header_key = array_pop(array_keys($vars['table']['#header']));
+  $vars['table']['#operation_total'] += 1;
+  $vars['table']['#header'][$last_header_key]['colspan'] += 1;
+}
+
+/**
+ * Overview form of all components for this webform.
+ */
+function webform2pdf_admin_settings() {
+  $form = array();
+
+  $default = variable_get('webform2pdf_default', '');
+
+  // It is needed because of file upload
+  $form['#attributes'] = array('enctype' => 'multipart/form-data');
+  $form['base'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('General settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['base']['pdf_lib'] = array(
+    '#type' => 'textfield',
+    '#title' => t('PDF library path'),
+    '#default_value' => $default['pdf_lib'],
+    '#required' => TRUE,
+    '#description' => t('Please enter the path of the TCPDF library. Example: sites/all/libraries/tcpdf'),
+  );
+
+  $form['base']['pdf_send_email'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Attach PDF as an attachment to the e-mails sent to the form recipients.'),
+    '#default_value' => $default['pdf_send_email'],
+  );
+
+  $form['base']['page_format'] = array(
+    '#type' => 'select',
+    '#title' => t('Paper size'),
+    '#default_value' => $default['page_format'],
+    '#options' => array(
+      '4A0' => '4A0', '2A0' => '2A0', 'A0' => 'A0',
+      'A1' => 'A1', 'A2' => 'A2', 'A3' => 'A3', 'A4' => 'A4',
+      'A5' => 'A5', 'A6' => 'A6', 'A7' => 'A7', 'A8' => 'A8',
+      'A9' => 'A9', 'A10' => 'A10', 'B0' => 'B0', 'B1' => 'B1',
+      'B2' => 'B2', 'B3' => 'B3', 'B4' => 'B4', 'B5' => 'B5',
+      'B6' => 'B6', 'B7' => 'B7', 'B8' => 'B8', 'B9' => 'B9',
+      'B10' => 'B10', 'C0' => 'C0', 'C1' => 'C1', 'C2' => 'C2',
+      'C3' => 'C3', 'C4' => 'C4', 'C5' => 'C5', 'C6' => 'C6',
+      'C7' => 'C7', 'C8' => 'C8', 'C9' => 'C9', 'C10' => 'C10',
+      'RA0' => 'RA0', 'RA1' => 'RA1', 'RA2' => 'RA2',
+      'RA3' => 'RA3', 'RA4' => 'RA4', 'SRA0' => 'SRA0',
+      'SRA1' => 'SRA1', 'SRA2' => 'SRA2', 'SRA3' => 'SRA3',
+      'SRA4' => 'SRA4', 'LETTER' => t('Letter'), 'LEGAL' => t('Legal'),
+      'EXECUTIVE' => t('Executive'), 'FOLIO' => t('Folio'),
+    ),
+  );
+
+  $form['base']['page_orientation'] = array(
+    '#type' => 'radios',
+    '#title' => t('Page orientation'),
+    '#default_value' => $default['page_orientation'],
+    '#options' => array(
+      'P' => t('Portrait'),
+      'L' => t('Landscape'),
+    ),
+  );
+
+  $form['img'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Images size settings'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['img']['h_left_logo_size'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Maximum size of left header logo'),
+    '#default_value' => $default['h_left_logo_size'],
+    '#size' => 10,
+    '#description' => t('Maximum dimensions of the logo on the left side of the header in pixels. Format: width x height. E.g: 270x205'),
+  );
+
+  $form['img']['h_right_logo_size'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Maximum dimensions of right header logo'),
+    '#default_value' => $default['h_right_logo_size'],
+    '#size' => 10,
+    '#description' => t('Maximum dimensions of the logo on the right side of the header in pixels. Format: width x height. E.g: 270x205'),
+  );
+
+  $form['img']['f_left_logo_size'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Maximum dimensions of left footer logo'),
+    '#default_value' => $default['f_left_logo_size'],
+    '#size' => 10,
+    '#description' => t('Maximum dimensions of the logo on the left side of the footer in pixels. <b>WARNING! Setting height greater than 56px could cause error in PDF output.</b> Format: width x height. E.g: 270x205'),
+  );
+
+  $form['img']['f_right_logo_size'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Maximum dimensions of right footer logo'),
+    '#default_value' => $default['f_right_logo_size'],
+    '#size' => 10,
+    '#description' => t('Maximum dimensions of the logo on the right side of the footer in pixels. <b>WARNING! Setting height greater than 56px could cause error in PDF output.</b> Format: width x height. E.g: 270x205'),
+  );
+
+  // Header
+  $form['header'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('PDF header'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['header']['h_left_logo'] = array(
+    '#type' => 'value',
+    '#value' => $default['h_left_logo'],
+  );
+
+  if ($default['h_left_logo']) {
+    $logo_file = _webform2pdf_get_file($default['h_left_logo']);
+
+    $form['header']['h_left_logo_img'] = array(
+      '#type' => 'item',
+      '#title' => t('Logo on the left side'),
+      '#value' => theme('image', $logo_file->filepath, 'Header left logo.', $logo_file->filename),
+    );
+    $form['header']['h_left_logo_del'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Delete left side logo.'),
+    );
+  }
+  else {
+    $form['header']['h_left_logo_file'] = array(
+      '#type' => 'file',
+      '#title' => t('Upload left side logo'),
+      '#size' => 60,
+      '#maxlength' => 250,
+      '#description' => t("Upload left side logo. If the size of the uploaded image is more than !size, it will be resized to this size.", array('!size' => $default['h_left_logo_size'])),
+    );
+  }
+
+  $form['header']['h_txt'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Header text'),
+    '#rows' => '5',
+    '#default_value' => $default['h_txt'],
+    '#resizable' => FALSE,
+    '#description' => t("PDF header text. 5 rows maximum.") . theme('webform_token_help'),
+  );
+
+  $form['header']['h_txt_align'] = array(
+    '#type' => 'select',
+    '#title' => t('Text alignment'),
+    '#default_value' => $default['h_txt_align'],
+    '#options' => array(
+      'L' => t('Align left'),
+      'C' => t('Align center'),
+      'R' => t('Align right'),
+    ),
+  );
+
+  $form['header']['h_font_family'] = array(
+    '#type' => 'select',
+    '#title' => t('Font Family'),
+    '#default_value' => $default['h_font_family'],
+    '#options' => array(
+      'helvetica' => 'Helvetica',
+      'times' => 'Times',
+      'courier' => 'Courier',
+      'dejavusans' => 'Dejavu Sans',
+      'dejavuserif' => 'Dejavu Serif',
+      'freesans' => 'Free Sans',
+      'freeserif' => 'Free Serif',
+      'freemono' => 'Free Mono',
+			'stsongstdlight' => 'Chinese simple',
+    ),
+    '#description' => t('Set the font family to be used.'),
+  );
+
+  $form['header']['h_font_size'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Font Size'),
+    '#default_value' => $default['h_font_size'],
+    '#size' => 2,
+    '#maxlength' => 3,
+    '#description' => t('Set the font size to be used for header text. This is the base value for the scaling applied to other text styles.'),
+  );
+
+  $form['header']['h_right_logo'] = array(
+    '#type' => 'value',
+    '#value' => $default['h_right_logo'],
+  );
+
+  if ($default['h_right_logo']) {
+    $logo_file = _webform2pdf_get_file($default['h_right_logo']);
+
+    $form['header']['h_right_logo_img'] = array(
+      '#type' => 'item',
+      '#title' => t('Logo on the right side'),
+      '#value' => theme('image', $logo_file->filepath, 'Header right logo.', $logo_file->filename),
+    );
+    $form['header']['h_right_logo_del'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Delete right logo.'),
+    );
+  }
+  else {
+    $form['header']['h_right_logo_file'] = array(
+      '#type' => 'file',
+      '#title' => t('Upload right logo'),
+      '#size' => 60,
+      '#maxlength' => 250,
+      '#description' => t("Upload right side logo. If the size of the uploaded image is more than !size, it will be resized to this size.", array('!size' => $default['h_right_logo_size'])),
+    );
+  }
+
+  // PDF body (page)
+  $form['page'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Content of the PDF document'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['page']['p_body'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Page body'),
+    '#rows' => '10',
+    '#default_value' => $default['p_body'],
+    '#description' => t("The content of the PDF file can be defined here, the text can be formatted with HTML and CSS tags. The form elements can be referred with the following special strings: !vars."
+    , array('!vars' => '%pagebreak')) . theme('webform_token_help'),
+  );
+
+  $form['page']['format'] = filter_form($default['format']);
+
+  $form['page']['p_txt_align'] = array(
+    '#type' => 'select',
+    '#title' => t('Text alignment'),
+    '#default_value' => $default['p_txt_align'],
+    '#options' => array(
+      'L' => t('Align left'),
+      'C' => t('Align center'),
+      'R' => t('Align right'),
+      ),
+  );
+
+  $form['page']['p_font_family'] = array(
+    '#type' => 'select',
+    '#title' => t('Font Family'),
+    '#default_value' => $default['p_font_family'],
+    '#options' => array(
+      'helvetica' => 'Helvetica',
+      'times' => 'Times',
+      'courier' => 'Courier',
+      'dejavusans' => 'Dejavu Sans',
+      'dejavuserif' => 'Dejavu Serif',
+      'freesans' => 'Free Sans',
+      'freeserif' => 'Free Serif',
+      'freemono' => 'Free Mono',
+			'stsongstdlight' => 'Chinese simple',
+    ),
+    '#description' => t('Set the font family to be used.'),
+  );
+
+  $form['page']['p_font_size'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Font Size'),
+    '#default_value' => $default['p_font_size'],
+    '#size' => 2,
+    '#maxlength' => 3,
+    '#description' => t('Set the font size to be used for header text. This is the base value for the scaling applied to other text styles.'),
+  );
+
+  // Footer
+  $form['footer'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('PDF footer'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  $form['footer']['f_left_logo'] = array(
+    '#type' => 'value',
+    '#value' => $default['f_left_logo'],
+  );
+
+  if ($default['f_left_logo']) {
+    $logo_file = _webform2pdf_get_file($default['f_left_logo']);
+
+    $form['footer']['f_left_logo_img'] = array(
+      '#type' => 'item',
+      '#title' => t('Logo on the left side'),
+      '#value' => theme('image', $logo_file->filepath, 'Footer left logo.', $logo_file->filename),
+    );
+    $form['footer']['f_left_logo_del'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Delete left side logo.'),
+    );
+  }
+  else {
+    $form['footer']['f_left_logo_file'] = array(
+      '#type' => 'file',
+      '#title' => t('Upload left side logo'),
+      '#size' => 60,
+      '#maxlength' => 250,
+      '#description' => t("Upload left side logo. If the size of the uploaded image is more than !size, it will be resized to this size.", array('!size' => $default['f_left_logo_size'])),
+    );
+  }
+
+  $form['footer']['f_txt'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Footer text'),
+    '#rows' => '2',
+    '#default_value' => $default['f_txt'],
+    '#resizable' => FALSE,
+    '#description' => t("The PDF footer text. 2 rows maximum. The following special element can be used: %pagenumber - number of the page, %totalpage - total page count.") . theme('webform_token_help'),
+  );
+
+  $form['footer']['f_txt_align'] = array(
+    '#type' => 'select',
+    '#title' => t('Text alignment'),
+    '#default_value' => $default['f_txt_align'],
+    '#options' => array(
+      'L' => t('Align left'),
+      'C' => t('Align center'),
+      'R' => t('Align right'),
+    ),
+  );
+
+  $form['footer']['f_font_family'] = array(
+    '#type' => 'select',
+    '#title' => t('Font Family'),
+    '#default_value' => $default['f_font_family'],
+    '#options' => array(
+      'helvetica' => 'Helvetica',
+      'times' => 'Times',
+      'courier' => 'Courier',
+      'dejavusans' => 'Dejavu Sans',
+      'dejavuserif' => 'Dejavu Serif',
+      'freesans' => 'Free Sans',
+      'freeserif' => 'Free Serif',
+      'freemono' => 'Free Mono',
+      'stsongstdlight' => 'Chinese simple',
+    ),
+    '#description' => t('Set the font family to be used.'),
+  );
+
+  $form['footer']['f_font_size'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Font Size'),
+    '#default_value' => $default['f_font_size'],
+    '#size' => 2,
+    '#maxlength' => 3,
+    '#description' => t('Set the font size to be used for header text. This is the base value for the scaling applied to other text styles.'),
+  );
+
+  $form['footer']['f_right_logo'] = array(
+    '#type' => 'value',
+    '#value' => $default['f_right_logo'],
+  );
+
+  if ($default['f_right_logo']) {
+    $logo_file = _webform2pdf_get_file($default['f_right_logo']);
+
+    $form['footer']['f_right_logo_img'] = array(
+      '#type' => 'item',
+      '#title' => t('Logo on the right side'),
+      '#value' => theme('image', $logo_file->filepath, 'Footer right logo.', $logo_file->filename),
+    );
+    $form['footer']['f_right_logo_del'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Delete right logo.'),
+    );
+  }
+  else {
+    $form['footer']['f_right_logo_file'] = array(
+      '#type' => 'file',
+      '#title' => t('Upload right logo'),
+      '#size' => 60,
+      '#maxlength' => 250,
+      '#description' => t("Upload right side logo. If the size of the uploaded image is more than !size, it will be resized to this size.", array('!size' => $default['f_right_logo_size'])),
+    );
+  }
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+
+  return $form;
+} // function webform2pdf_admin_settings()
+
+/*
+ * webform2pdf_admin_settings_validate: implementation of validate hook
+ */
+function webform2pdf_admin_settings_validate($form, &$form_state) {
+  if ( !is_file($form_state['values']['pdf_lib'] . '/tcpdf.php')   ) {
+    form_set_error('pdf_lib', t('Not found TCPDF library: %dir!', array('%dir' => $form_state['values']['pdf_lib'] . '/tcpdf.php') ));
+  }
+
+  if ( !preg_match("/^\d+x\d+$/", $form_state['values']['h_left_logo_size'], $t) ) {
+    form_set_error('h_left_logo_size', t('Wrong picture size format!'));
+  }
+
+  if ( !preg_match("/^\d+x\d+$/", $form_state['values']['h_right_logo_size'], $t) ) {
+    form_set_error('h_right_logo_size', t('Wrong picture size format!'));
+  }
+
+  if ( !preg_match("/^\d+x\d+$/", $form_state['values']['f_left_logo_size'], $t) ) {
+    form_set_error('f_left_logo_size', t('Wrong picture size format!'));
+  }
+
+  if ( !preg_match("/^\d+x\d+$/", $form_state['values']['f_right_logo_size'], $t) ) {
+    form_set_error('f_right_logo_size', t('Wrong picture size format!'));
+  }
+
+  $header = explode('<br />', nl2br( str_replace('<br>', '<br />', $form_state['values']['h_txt']) ) );
+
+  if ( count($header) > 5) {
+    form_set_error('h_txt', t('Up to 5 rows can be set!'));
+  }
+
+  $footer = explode('<br />', nl2br( str_replace('<br>', '<br />', $form_state['values']['f_txt']) ) );
+  if ( count($footer) > 2) {
+    form_set_error('f_txt', t('Up to 2 rows can be set!'));
+  }
+} // function webform2pdf_admin_settings_validate()
+
+/*
+ * webform2pdf_admin_settings_submit: implementation of submit hook
+ */
+function webform2pdf_admin_settings_submit($form, &$form_state) {
+  // File deleted.
+  foreach (array('h_left_logo', 'h_right_logo', 'f_left_logo', 'f_right_logo') as $logo) {
+    if ( isset($form_state['values'][$logo . '_del']) ) {
+      if ( $form_state['values'][$logo . '_del'] ) {
+        if ( (_webform2pdf_use_file($form_state['values'][$logo])-1) == 0) {
+          $logo_file = _webform2pdf_get_file($form_state['values'][$logo]);
+          file_delete($logo_file->filepath);
+        }
+        $form_state['values'][$logo] = 0;
+      }
+    }
+  }
+
+  // Header and footer image file save.
+  foreach (array('h_left_logo', 'h_right_logo', 'f_left_logo', 'f_right_logo') as $logo) {
+    if ( isset($form_state['values'][$logo . '_file']) ) {
+      $validators = array(
+        'file_validate_is_image' => array(),
+        'file_validate_image_resolution' => array($form_state['values'][$logo . '_size']),
+      );
+
+      if ( $file = file_save_upload($logo . '_file', $validators, file_directory_path() ) ) {
+        file_set_status($file, FILE_STATUS_PERMANENT);
+        $form_state['values'][$logo] = $file->fid;
+      }
+    }
+  }
+
+  $save = $form_state['values'];
+  foreach (array('h_left_logo_del', 'h_right_logo_del', 'f_left_logo_del', 'f_right_logo_del',
+    'h_left_logo_img', 'h_right_logo_img', 'f_left_logo_img', 'f_right_logo_img',
+    'h_left_logo_file', 'h_right_logo_file', 'f_left_logo_file', 'f_right_logo_file',
+    'op', 'submit', 'form_build_id', 'form_token', 'form_id') as $del) {
+    unset($save[$del]);
+  }
+
+  variable_set('webform2pdf_default', $save);
+} // function webform2pdf_admin_settings_submit()
+
+/**
+ * Overview form of all components for this webform.
+ */
+function webform2pdf_edit_form($form_state, $node) {
+  $form = array();
+
+  $result = db_query("SELECT * FROM {webform2pdf} WHERE nid = %d AND enabled = 1", $node->nid);
+  $default = db_fetch_array($result);
+
+  $form['enabled'] = array(
+    '#default_value' => $default['enabled'],
+    '#type' => 'checkbox',
+    '#title' => t('Generate PDF Document.'),
+  );
+
+  if ($default['enabled']) {
+    $webform2pdf_default = variable_get('webform2pdf_default', '');
+
+    // Needed because of file upload
+    $form['#attributes'] = array('enctype' => 'multipart/form-data');
+
+    $form['base'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('General settings'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+
+    $form['base']['page_format'] = array(
+      '#type' => 'select',
+      '#title' => t('Paper size'),
+      '#default_value' => $default['page_format'],
+      '#options' => array(
+        '4A0' => '4A0', '2A0' => '2A0', 'A0' => 'A0',
+        'A1' => 'A1', 'A2' => 'A2', 'A3' => 'A3', 'A4' => 'A4',
+        'A5' => 'A5', 'A6' => 'A6', 'A7' => 'A7', 'A8' => 'A8',
+        'A9' => 'A9', 'A10' => 'A10', 'B0' => 'B0', 'B1' => 'B1',
+        'B2' => 'B2', 'B3' => 'B3', 'B4' => 'B4', 'B5' => 'B5',
+        'B6' => 'B6', 'B7' => 'B7', 'B8' => 'B8', 'B9' => 'B9',
+        'B10' => 'B10', 'C0' => 'C0', 'C1' => 'C1', 'C2' => 'C2',
+        'C3' => 'C3', 'C4' => 'C4', 'C5' => 'C5', 'C6' => 'C6',
+        'C7' => 'C7', 'C8' => 'C8', 'C9' => 'C9', 'C10' => 'C10',
+        'RA0' => 'RA0', 'RA1' => 'RA1', 'RA2' => 'RA2',
+        'RA3' => 'RA3', 'RA4' => 'RA4', 'SRA0' => 'SRA0',
+        'SRA1' => 'SRA1', 'SRA2' => 'SRA2', 'SRA3' => 'SRA3',
+        'SRA4' => 'SRA4', 'LETTER' => t('Letter'), 'LEGAL' => t('Legal'),
+        'EXECUTIVE' => t('Executive'), 'FOLIO' => t('Folio'),
+      ),
+    );
+
+    $form['base']['page_orientation'] = array(
+      '#type' => 'radios',
+      '#title' => t('Page orientation'),
+      '#default_value' => $default['page_orientation'],
+      '#options' => array(
+        'P' => t('Portrait'),
+        'L' => t('Landscape'),
+      ),
+    );
+
+    // E-mail settings
+    $form['email'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('E-mail settings'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+
+    $form['email']['pdf_send_email'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Attach PDF as an attachment to the e-mails sent to the form recipients.'),
+      '#default_value' => $default['pdf_send_email'],
+    );
+
+    $send_mail = array();
+    if ( !empty($node->webform['email']) ) {
+      $send_mail['email'] = $node->webform['email'];
+    }
+
+    if (is_array($node->webform['emails'])) {
+      foreach ($node->webform['emails'] as $eid => $email) {
+        $email_addresses = array_filter(explode(',', check_plain($email['email'])));
+        foreach ($email_addresses as $key => $email_address) {
+          $email_addresses[$key] = webform_format_email_address($email_address, NULL, $node, NULL, FALSE);
+        }
+
+        $send_mail[$eid] = implode(', ', $email_addresses);
+      }
+    }
+
+    if ( count($send_mail) ) {
+      $def = unserialize($default['no_send_email_addr']);
+      if ( !is_array($def) ) {
+        $def = array();
+      }
+
+      $form['email']['no_send_email_addr'] = array(
+        '#title' => t("Don't attach PDF file"),
+        '#type' => 'checkboxes',
+        '#options' => $send_mail,
+        '#default_value' => $def,
+        '#description' => t("PDF file won't be attached to the e-mail sent to the following recipients."),
+      );
+    }
+
+    // Header
+    $form['header'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('PDF header'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+
+    $form['header']['h_left_logo'] = array(
+      '#type' => 'value',
+      '#value' => $default['h_left_logo'],
+    );
+
+    if ($default['h_left_logo']) {
+      $logo_file = _webform2pdf_get_file($default['h_left_logo']);
+
+      $form['header']['h_left_logo_img'] = array(
+        '#type' => 'item',
+        '#title' => t('Logo on the left side'),
+        '#value' => theme('image', $logo_file->filepath, 'Header left logo.', $logo_file->filename),
+      );
+      $form['header']['h_left_logo_del'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Delete left side logo.'),
+      );
+    }
+    else {
+      $form['header']['h_left_logo_file'] = array(
+        '#type' => 'file',
+        '#title' => t('Upload left side logo'),
+        '#size' => 60,
+        '#maxlength' => 250,
+        '#description' => t("Upload left side logo. If the size of the uploaded image is more than !size, it will be resized to this size.", array('!size' => $webform2pdf_default['h_left_logo_size'])),
+      );
+    }
+
+    $form['header']['h_txt'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Header text'),
+      '#rows' => '5',
+      '#default_value' => $default['h_txt'],
+      '#resizable' => FALSE,
+      '#description' => t("PDF header text. 5 rows maximum.") . theme('webform_token_help'),
+    );
+
+    $form['header']['h_txt_align'] = array(
+      '#type' => 'select',
+      '#title' => t('Text alignment'),
+      '#default_value' => $default['h_txt_align'],
+      '#options' => array(
+        'L' => t('Align left'),
+        'C' => t('Align center'),
+        'R' => t('Align right'),
+      ),
+    );
+
+    $form['header']['h_font_family'] = array(
+      '#type' => 'select',
+      '#title' => t('Font Family'),
+      '#default_value' => $default['h_font_family'],
+      '#options' => array(
+        'helvetica' => 'Helvetica',
+        'times' => 'Times',
+        'courier' => 'Courier',
+        'dejavusans' => 'Dejavu Sans',
+        'dejavuserif' => 'Dejavu Serif',
+        'freesans' => 'Free Sans',
+        'freeserif' => 'Free Serif',
+        'freemono' => 'Free Mono',
+				'stsongstdlight' => 'Chinese simple',
+      ),
+      '#description' => t('Set the font family to be used.'),
+    );
+
+    $form['header']['h_font_size'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Font Size'),
+      '#default_value' => $default['h_font_size'],
+      '#size' => 2,
+      '#maxlength' => 3,
+      '#description' => t('Set the font size to be used for header text. This is the base value for the scaling applied to other text styles.'),
+    );
+
+    $form['header']['h_right_logo'] = array(
+      '#type' => 'value',
+      '#value' => $default['h_right_logo'],
+    );
+
+    if ($default['h_right_logo']) {
+      $logo_file = _webform2pdf_get_file($default['h_right_logo']);
+
+      $form['header']['h_right_logo_img'] = array(
+        '#type' => 'item',
+        '#title' => t('Logo on the right side'),
+        '#value' => theme('image', $logo_file->filepath, 'Header right logo.', $logo_file->filename),
+      );
+      $form['header']['h_right_logo_del'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Delete right logo.'),
+      );
+    }
+    else {
+      $form['header']['h_right_logo_file'] = array(
+        '#type' => 'file',
+        '#title' => t('Upload right logo'),
+        '#size' => 60,
+        '#maxlength' => 250,
+        '#description' => t("Upload right side logo. If the size of the uploaded image is more than !size, it will be resized to this size.", array('!size' => $webform2pdf_default['h_right_logo_size'])),
+      );
+    }
+
+    // PDF body (page)
+    $form['page'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Content of the PDF document'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+
+    $tokens = _webform2pdf_list_template_vars($node);
+    array_unshift($tokens, '%pagebreak');
+
+    $form['page']['p_body'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Page body'),
+      '#rows' => '10',
+      '#default_value' => $default['p_body'],
+      '#description' => t("The content of the PDF file can be defined here, the text can be formatted with HTML and CSS tags. The form elements can be referred with the following special strings: !vars. Select form elements can be outputted in different ways, write one of the following strings after the element name to choose from them: '-nl', '-all', '-nl-all'. '-nl ' modifier writes every selected element into a new line, '-all' lists every option, and marks which were selected from them. '-nl-all' lists all of the options in separate lines, and marks selected ones."
+      , array('!vars' => implode(', ', $tokens ))) . theme('webform_token_help'),
+    );
+
+    $form['page']['format'] = filter_form($default['format']);
+
+    $form['page']['p_txt_align'] = array(
+      '#type' => 'select',
+      '#title' => t('Text alignment'),
+      '#default_value' => $default['p_txt_align'],
+      '#options' => array(
+        'L' => t('Align left'),
+        'C' => t('Align center'),
+        'R' => t('Align right'),
+        ),
+    );
+
+    $form['page']['p_font_family'] = array(
+      '#type' => 'select',
+      '#title' => t('Font Family'),
+      '#default_value' => $default['p_font_family'],
+      '#options' => array(
+        'helvetica' => 'Helvetica',
+        'times' => 'Times',
+        'courier' => 'Courier',
+        'dejavusans' => 'Dejavu Sans',
+        'dejavuserif' => 'Dejavu Serif',
+        'freesans' => 'Free Sans',
+        'freeserif' => 'Free Serif',
+        'freemono' => 'Free Mono',
+				'stsongstdlight' => 'Chinese simple',
+      ),
+      '#description' => t('Set the font family to be used.'),
+    );
+
+    $form['page']['p_font_size'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Font Size'),
+      '#default_value' => $default['p_font_size'],
+      '#size' => 2,
+      '#maxlength' => 3,
+      '#description' => t('Set the font size to be used for header text. This is the base value for the scaling applied to other text styles.'),
+    );
+
+    // Footer
+    $form['footer'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('PDF footer'),
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+
+    $form['footer']['f_left_logo'] = array(
+      '#type' => 'value',
+      '#value' => $default['f_left_logo'],
+    );
+
+    if ($default['f_left_logo']) {
+      $logo_file = _webform2pdf_get_file($default['f_left_logo']);
+
+      $form['footer']['f_left_logo_img'] = array(
+        '#type' => 'item',
+        '#title' => t('Logo on the left side'),
+        '#value' => theme('image', $logo_file->filepath, 'Footer left logo.', $logo_file->filename),
+      );
+      $form['footer']['f_left_logo_del'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Delete left side logo.'),
+      );
+    }
+    else {
+      $form['footer']['f_left_logo_file'] = array(
+        '#type' => 'file',
+        '#title' => t('Upload left side logo'),
+        '#size' => 60,
+        '#maxlength' => 250,
+        '#description' => t("Upload left side logo. If the size of the uploaded image is more than !size, it will be resized to this size.", array('!size' => $webform2pdf_default['f_left_logo_size'])),
+      );
+    }
+
+    $form['footer']['f_txt'] = array(
+      '#type' => 'textarea',
+      '#title' => t('Footer text'),
+      '#rows' => '2',
+      '#default_value' => $default['f_txt'],
+      '#resizable' => FALSE,
+      '#description' => t("The PDF footer text. 2 rows maximum. The following special element can be used: %pagenumber - number of the page, %totalpage - total page count.") . theme('webform_token_help'),
+    );
+
+    $form['footer']['f_txt_align'] = array(
+      '#type' => 'select',
+      '#title' => t('Text alignment'),
+      '#default_value' => $default['f_txt_align'],
+      '#options' => array(
+        'L' => t('Align left'),
+        'C' => t('Align center'),
+        'R' => t('Align right'),
+      ),
+    );
+
+    $form['footer']['f_font_family'] = array(
+      '#type' => 'select',
+      '#title' => t('Font Family'),
+      '#default_value' => $default['f_font_family'],
+      '#options' => array(
+        'helvetica' => 'Helvetica',
+        'times' => 'Times',
+        'courier' => 'Courier',
+        'dejavusans' => 'Dejavu Sans',
+        'dejavuserif' => 'Dejavu Serif',
+        'freesans' => 'Free Sans',
+        'freeserif' => 'Free Serif',
+        'freemono' => 'Free Mono',
+				'stsongstdlight' => 'Chinese simple',
+      ),
+      '#description' => t('Set the font family to be used.'),
+    );
+
+    $form['footer']['f_font_size'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Font Size'),
+      '#default_value' => $default['f_font_size'],
+      '#size' => 2,
+      '#maxlength' => 3,
+      '#description' => t('Set the font size to be used for header text. This is the base value for the scaling applied to other text styles.'),
+    );
+
+    $form['footer']['f_right_logo'] = array(
+      '#type' => 'value',
+      '#value' => $default['f_right_logo'],
+    );
+
+    if ($default['f_right_logo']) {
+      $logo_file = _webform2pdf_get_file($default['f_right_logo']);
+
+      $form['footer']['f_right_logo_img'] = array(
+        '#type' => 'item',
+        '#title' => t('Logo on the right side'),
+        '#value' => theme('image', $logo_file->filepath, 'Footer right logo.', $logo_file->filename),
+      );
+      $form['footer']['f_right_logo_del'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Delete right logo.'),
+      );
+    }
+    else {
+      $form['footer']['f_right_logo_file'] = array(
+        '#type' => 'file',
+        '#title' => t('Upload right logo'),
+        '#size' => 60,
+        '#maxlength' => 250,
+        '#description' => t("Upload right side logo. If the size of the uploaded image is more than !size, it will be resized to this size.", array('!size' => $webform2pdf_default['f_right_logo_size'])),
+      );
+    }
+  }
+  else {
+    // if 'Generate PDF' is not yet enabled
+    $form['#submit'] = array('webform2pdf_enable_edit_form_submit');
+  }
+
+  $form['nid'] = array(
+    '#type' => 'value',
+    '#value' => $node->nid,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+  );
+
+  if ($default['enabled']) {
+    $form['reset'] = array(
+      '#type' => 'submit',
+      '#value' => t('Reset to defaults'),
+    );
+  }
+
+  return $form;
+} // function webform2pdf_edit_form()
+
+/*
+ * webform2pdf_edit_form_validate: implementation of validate hook
+ */
+function webform2pdf_edit_form_validate($form, &$form_state) {
+  if ($form_state['values']['op'] == t('Submit')) {
+    $header = explode('<br />', nl2br( str_replace('<br>', '<br />', $form_state['values']['h_txt']) ) );
+
+    if ( count($header) > 5) {
+      form_set_error('h_txt', t('Up to 5 rows can be set!'));
+    }
+
+    $footer = explode('<br />', nl2br( str_replace('<br>', '<br />', $form_state['values']['f_txt']) ) );
+    if ( count($footer) > 2) {
+      form_set_error('f_txt', t('Up to 2 rows can be set!'));
+    }
+  }
+} // function webform2pdf_edit_form_validate()
+
+/*
+ * webform2pdf_edit_form_submit: implementation of submit hook
+ */
+function webform2pdf_edit_form_submit($form, &$form_state) {
+  $webform2pdf_default = variable_get('webform2pdf_default', '');
+
+  if ($form_state['values']['op'] == t('Submit')) {
+    $update['enabled'] = $form_state['values']['enabled'];
+    $update['pdf_send_email'] = $form_state['values']['pdf_send_email'];
+    $update['no_send_email_addr'] = serialize($form_state['values']['no_send_email_addr']);
+    $update['page_format'] = $form_state['values']['page_format'];
+    $update['page_orientation'] = $form_state['values']['page_orientation'];
+    $update['h_left_logo'] = $form_state['values']['h_left_logo'];
+    $update['h_right_logo'] = $form_state['values']['h_right_logo'];
+    $update['f_left_logo'] = $form_state['values']['f_left_logo'];
+    $update['f_right_logo'] = $form_state['values']['f_right_logo'];
+    $update['h_font_size'] = $form_state['values']['h_font_size'];
+    $update['p_font_size'] = $form_state['values']['p_font_size'];
+    $update['f_font_size'] = $form_state['values']['f_font_size'];
+    $update['h_txt_align'] = $form_state['values']['h_txt_align'];
+    $update['h_font_family'] = $form_state['values']['h_font_family'];
+    $update['p_txt_align'] = $form_state['values']['p_txt_align'];
+    $update['p_font_family'] = $form_state['values']['p_font_family'];
+    $update['f_txt_align'] = $form_state['values']['f_txt_align'];
+    $update['f_font_family'] = $form_state['values']['f_font_family'];
+    $update['h_txt'] = $form_state['values']['h_txt'];
+    $update['f_txt'] = $form_state['values']['f_txt'];
+    $update['p_body'] = $form_state['values']['p_body'];
+    $update['format'] = $form_state['values']['format'];
+    $update['nid'] = $form_state['values']['nid'];
+
+    // Image file deleted.
+    foreach (array('h_left_logo', 'h_right_logo', 'f_left_logo', 'f_right_logo') as $logo) {
+      if ( isset($form_state['values'][$logo . '_del']) ) {
+        if ( $form_state['values'][$logo . '_del'] ) {
+          if ( (_webform2pdf_use_file($form_state['values'][$logo])-1) == 0) {
+            $logo_file = _webform2pdf_get_file($form_state['values'][$logo]);
+            file_delete($logo_file->filepath);
+          }
+          $update[$logo] = 0;
+        }
+      }
+    }
+
+    // Header and footer image file save.
+    foreach (array('h_left_logo', 'h_right_logo', 'f_left_logo', 'f_right_logo') as $logo) {
+      if ( isset($form_state['values'][$logo . '_file']) ) {
+        $validators = array(
+          'file_validate_is_image' => array(),
+          'file_validate_image_resolution' => array($webform2pdf_default[$logo . '_size']),
+        );
+
+        if ( $file = file_save_upload($logo . '_file', $validators, file_directory_path() ) ) {
+          file_set_status($file, FILE_STATUS_PERMANENT);
+          $update[$logo] = $file->fid;
+        }
+      }
+    }
+  }
+  elseif ($form_state['values']['op'] == t('Reset to defaults')) {
+    $update['enabled'] = $form_state['values']['enabled'];
+    $update['pdf_send_email'] = $webform2pdf_default['pdf_send_email'];
+    $update['page_format'] = $webform2pdf_default['page_format'];
+    $update['page_orientation'] = $webform2pdf_default['page_orientation'];
+    $update['h_left_logo'] = $webform2pdf_default['h_left_logo'];
+    $update['h_right_logo'] = $webform2pdf_default['h_right_logo'];
+    $update['f_left_logo'] = $webform2pdf_default['f_left_logo'];
+    $update['f_right_logo'] = $webform2pdf_default['f_right_logo'];
+    $update['h_font_size'] = $webform2pdf_default['h_font_size'];
+    $update['p_font_size'] = $webform2pdf_default['p_font_size'];
+    $update['f_font_size'] = $webform2pdf_default['f_font_size'];
+    $update['h_txt_align'] = $webform2pdf_default['h_txt_align'];
+    $update['h_font_family'] = $webform2pdf_default['h_font_family'];
+    $update['p_txt_align'] = $webform2pdf_default['p_txt_align'];
+    $update['p_font_family'] = $webform2pdf_default['p_font_family'];
+    $update['f_txt_align'] = $webform2pdf_default['f_txt_align'];
+    $update['f_font_family'] = $webform2pdf_default['f_font_family'];
+    $update['h_txt'] = $webform2pdf_default['h_txt'];
+    $update['f_txt'] = $webform2pdf_default['f_txt'];
+    $update['p_body'] = $webform2pdf_default['p_body'];
+    $update['format'] = $webform2pdf_default['format'];
+    $update['nid'] = $form_state['values']['nid'];
+
+    // Image file deleted.
+    foreach (array('h_left_logo', 'h_right_logo', 'f_left_logo', 'f_right_logo') as $logo) {
+      if ( (_webform2pdf_use_file($form_state['values'][$logo])-1) == 0) {
+        $logo_file = _webform2pdf_get_file($form_state['values'][$logo]);
+        file_delete($logo_file->filepath);
+      }
+    }
+  }
+
+  // update settings
+  $SQL = "UPDATE {webform2pdf} SET enabled = %d, pdf_send_email = %d, no_send_email_addr = '%s'";
+  $SQL .= ", page_format = '%s', page_orientation = '%s', h_left_logo = %d, h_right_logo = %d";
+  $SQL .= ", f_left_logo = %d, f_right_logo = %d, h_font_size = %d, p_font_size = %d";
+  $SQL .= ", f_font_size = %d, h_txt_align = '%s', h_font_family = '%s'";
+  $SQL .= ", p_txt_align = '%s', p_font_family = '%s', f_txt_align = '%s', f_font_family = '%s'";
+  $SQL .= ", h_txt = '%s', f_txt = '%s', p_body = '%s', format = %d";
+  $SQL .= " WHERE nid = %d";
+  db_query($SQL, $update);
+} // function webform2pdf_edit_form_submit()
+
+/*
+ * webform2pdf_enable_edit_form_submit: enables and saves advanced PDF generation settings for a webform
+ */
+function webform2pdf_enable_edit_form_submit($form, &$form_state) {
+  if ($form_state['values']['enabled']) {
+    $result = db_query("SELECT * FROM {webform2pdf} WHERE nid = %d", $form_state['values']['nid']);
+    $row = db_fetch_array($result);
+    if ($row['nid']) {
+      $SQL = "UPDATE {webform2pdf} SET enabled = %d WHERE nid = %d";
+      db_query($SQL, $form_state['values']['enabled'], $form_state['values']['nid']);
+    }
+    else {
+      $default = variable_get('webform2pdf_default', '');
+      unset($default['h_left_logo_size'], $default['h_right_logo_size'], $default['f_left_logo_size'], $default['f_right_logo_size']);
+
+      $SQL = "INSERT INTO {webform2pdf} (nid, enabled, download, pdf_send_email, page_format, page_orientation,";
+      $SQL .= " h_left_logo, h_right_logo, f_left_logo, f_right_logo, h_font_size, p_font_size, f_font_size,";
+      $SQL .= " h_txt_align, h_font_family, p_txt_align, p_font_family, f_txt_align, f_font_family, h_txt,";
+      $SQL .= " f_txt, p_body, format) VALUES (%d, %d, %d, %d, '%s', '%s', %d, %d, %d, %d,";
+      $SQL .= " %d, %d, %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', %d)";
+      db_query($SQL, $form_state['values']['nid'], $form_state['values']['enabled'], $default['download']
+      , $default['pdf_send_email'], $default['page_format'], $default['page_orientation']
+      , $default['h_left_logo'], $default['h_right_logo'], $default['f_left_logo'], $default['f_right_logo']
+      , $default['h_font_size'], $default['p_font_size'], $default['f_font_size'], $default['h_txt_align']
+      , $default['h_font_family'], $default['p_txt_align'], $default['p_font_family'], $default['f_txt_align']
+      , $default['f_font_family'], $default['h_txt'], $default['f_txt'], $default['p_body'], $default['format']);
+    }
+  }
+} // function webform2pdf_enable_edit_form_submit()
+
+/*
+ * _webform2pdf_get_file: returns a file array based on file id
+ * @param: $fid - file id
+ */
+function _webform2pdf_get_file($fid) {
+  if ( is_numeric($fid) ) {
+    $result = db_query("SELECT * FROM {files} WHERE fid = %d", $fid);
+    return db_fetch_object($result);
+  }
+  return 0;
+} // function _webform2pdf_get_file()
+
+/*
+ * _webform2pdf_use_file: check if an other template use the file.
+ * @param: $fid - file id
+ * @return: the number of templates using the file
+ */
+function _webform2pdf_use_file($fid) {
+  $webform2pdf_default = variable_get('webform2pdf_default', '');
+
+  if ( is_numeric($fid) ) {
+    $SQL = "SELECT count(*) AS num FROM {webform2pdf}";
+    $SQL .= " WHERE (h_left_logo = %d) OR (h_right_logo = %d) OR (f_left_logo = %d) OR (f_right_logo = %d)";
+    $result = db_query($SQL, $fid, $fid, $fid, $fid);
+    $count = db_fetch_array($result);
+
+    if ($webform2pdf_default['h_left_logo'] == $fid) {
+      $count['num']++;
+    }
+    if ($webform2pdf_default['h_right_logo'] == $fid) {
+      $count['num']++;
+    }
+    if ($webform2pdf_default['f_left_logo'] == $fid) {
+      $count['num']++;
+    }
+    if ($webform2pdf_default['f_right_logo'] == $fid) {
+      $count['num']++;
+    }
+
+    return $count['num'];
+  }
+  return 0;
+} // function _webform2pdf_use_file()
+
+/*
+ * _webform2pdf_list_template_vars: These variables can be used in the template.
+ * @param: $node - webform node
+ * @param: $submission - submitted values of the webform node
+ */
+function _webform2pdf_list_template_vars($node) {
+  $tokens = array();
+
+  foreach ($node->webform['components'] as $component) {
+    switch ($component['type']) {
+      case 'select':
+        $tokens[] = '%' . $component['form_key'];
+        $tokens[] = '%' . $component['form_key'] . '-all';
+        $tokens[] = '%' . $component['form_key'] . '-nl';
+        $tokens[] = '%' . $component['form_key'] . '-all-nl';
+      break;
+
+      case 'email':
+      case 'date':
+      case 'time':
+      case 'hidden':
+      case 'textarea':
+      case 'textfield':
+      case 'grid':
+        $tokens[] = '%' . $component['form_key'];
+      break;
+
+        // markup', 'pagebreak', etc.
+      default:
+        // calling _hook_webform2pdf_list_template_vars hivas, support of extra types
+        foreach (module_list() as $module) {
+          $function = '_' . $module . 'webform2pdf_list_template_vars';
+          if (function_exists($function)) {
+            call_user_func($function, $component, $tokens);
+          }
+        }
+      break;
+    }
+  }
+  $tokens[] = '%nid';
+  $tokens[] = '%sid';
+  return $tokens;
+} // function _webform2pdf_list_template_vars()
+
+/*
+ * _webform2pdf_get_template_vars: returns the values of the variables used in the template
+ * @param: $node - webform node
+ * @param: $submission - submitted values of the webform node
+ */
+function _webform2pdf_get_template_vars($node, $submission) {
+  $tokens = array_flip(_webform2pdf_list_template_vars($node));
+  foreach ($tokens as $key => $token) {
+    $tokens[$key] = '';
+  }
+
+  foreach ($node->webform['components'] as $component) {
+    if ( !empty($submission->data[$component['cid']]['value'] ) ) {
+      switch ($component['type']) {
+        case 'date':
+          if ( !empty($submission->data[$component['cid']]['value'][0]) ) {
+            $timestamp = strtotime($submission->data[$component['cid']]['value'][0] . ' GMT');
+            $format = webform_date_format('medium');
+            $date = format_date($timestamp, 'custom', $format, 0);
+
+            $tokens['%' . $component['form_key']] = $date;
+          }
+          else {
+            $tokens['%' . $component['form_key']] = '';
+          }
+        break;
+
+        case 'time':
+          if ( !empty($submission->data[$component['cid']]['value'][0]) ) {
+            list($hour, $min, $sec) = explode(':', $submission->data[$component['cid']]['value'][0]);
+            $ampm = '';
+
+            if ($component['extra']['hourformat'] === '12-hour') {
+              if ($hour > 12) {
+                $hour -= 12;
+                $ampm = t('pm');
+              }
+              else {
+                $ampm = t('am');
+              }
+            }
+
+            $tokens['%' . $component['form_key']] = trim($hour . ':' . $min . ' ' . $ampm);
+          }
+          else {
+            $tokens['%' . $component['form_key']] = '';
+          }
+        break;
+
+        case 'grid':
+          $answers = $questions = array();
+          $a = explode("<nl2br>", preg_replace("/(\r\n)+|(\n|\r)+/", "<nl2br>", $component['extra']['options']) );;
+          $q = explode("<nl2br>", preg_replace("/(\r\n)+|(\n|\r)+/", "<nl2br>", $component['extra']['questions']) );
+
+          foreach ($a as $key => $value) {
+            if ( strpos($value, '|') === FALSE ) {
+              $key = $option = $value;
+            }
+            else {
+              $key = drupal_substr($value, 0, strpos($value, '|'));
+              $option = drupal_substr($value, strpos($value, '|') + 1);
+            }
+            $answers[$key] = $option;
+          }
+
+          foreach ($q as $key => $value) {
+            if ( strpos($value, '|') === FALSE ) {
+              $key = $option = $value;
+            }
+            else {
+              $key = drupal_substr($value, 0, strpos($value, '|'));
+              $option = drupal_substr($value, strpos($value, '|') + 1);
+            }
+            $questions[$key] = $option;
+          }
+
+          $grid = array();
+          foreach ($submission->data[$component['cid']]['value'] as $question => $answer) {
+            if ( isset($questions[$question]) && isset($answers[$answer]) ) {
+              $grid[] = $questions[$question] . ': ' . $answers[$answer];
+            }
+          }
+          $tokens['%' . $component['form_key']] = implode("<br />\n", $grid);
+        break;
+
+        case 'select':
+          // in the $component:
+          // if aslist=Y, then standard select + if multiple=Y then Multi-select
+          // if aslist=N and multiple=Y then checkbox (there is no difference between single, and multivalue)
+          // if aslist=N and multiple=N then radiobuton (there is no difference between single, and multivalue)
+          $values = $submission->data[$component['cid']]['value'];
+          if ( is_array($values) ) {
+            $items = explode("<nl2br>", preg_replace("/(\r\n)+|(\n|\r)+/", "<nl2br>", $component['extra']['items']) );
+
+            $options = array();
+            foreach ($items as $item) {
+              if ( strpos($item, '|') === FALSE ) {
+                $key = $option = $item;
+              }
+              else {
+                $key = drupal_substr($item, 0, strpos($item, '|'));
+                $option = drupal_substr($item, strpos($item, '|') + 1);
+              }
+              $options[$key] = $option;
+            }
+
+            $select = $selectNL = $selectAll = $selectAllNL = array();
+
+            foreach ($options as $key => $option) {
+              if ( (in_array($option, $values)) || (in_array($key, $values)) ) {
+                $select[] = $option;
+                $selectNL[] = ' - ' . $option . "<br />\n";
+                $selectAll[] = '<u><b><span class="selected">' . $option . '</span></b></u>';
+                $selectAllNL[] = ' [X] ' . $option . "<br />\n";
+              }
+              else {
+                $selectAll[] = $option;
+                $selectAllNL[] = ' [  ] ' . $option . "<br />\n";
+              }
+            }
+
+            $tokens['%' . $component['form_key']] = implode(', ', $select);
+            $tokens['%' . $component['form_key'] . '-all'] = implode(', ', $selectAll);
+            $tokens['%' . $component['form_key'] . '-nl'] = implode('', $selectNL);
+            $tokens['%' . $component['form_key'] . '-all-nl'] = implode('', $selectAllNL);
+          }
+          else {
+            $tokens['%' . $component['form_key']] =
+            $tokens['%' . $component['form_key'] . '-all'] =
+            $tokens['%' . $component['form_key'] . '-nl'] =
+            $tokens['%' . $component['form_key'] . '-all-nl'] = '';
+          }
+        break;
+
+        case 'email':
+        case 'hidden':
+        case 'textarea':
+        case 'textfield':
+          if ( !empty($submission->data[$component['cid']]['value'][0]) ) {
+            $tokens['%' . $component['form_key']] = $submission->data[$component['cid']]['value'][0];
+          }
+          else {
+            $tokens['%' . $component['form_key']] = '';
+          }
+        break;
+
+          // markup', 'pagebreak', etc.
+        default:
+          // _hook_webform2pdf_get_template_vars call, support of extra types
+          foreach (module_list() as $module) {
+            $function = '_' . $module . 'webform2pdf_get_template_vars';
+            if (function_exists($function)) {
+              call_user_func($function, $component, $submission, $tokens);
+            }
+          }
+        break;
+      }
+    }
+  }
+  // node id
+  $tokens['%nid'] = $node->nid;
+  // submission id
+  $tokens['%sid'] = $submission->sid;
+	$tokens['%uid'] = $submission->uid;
+
+  // hook_webform2pdf_tokens($tokens, $node, $submission): modify values of $tokens array
+  drupal_alter('webform2pdf_tokens', $tokens, $node, $submission);
+
+  return $tokens;
+} // function _webform2pdf_get_template_vars()
+
+/*
+ * _webform2pdf_get_template: returns the PDF settings of the given webform
+ */
+function _webform2pdf_get_template($nid) {
+  $result = db_query("SELECT * FROM {webform2pdf} WHERE nid = %d AND enabled = 1", $nid);
+  $row = db_fetch_array($result);
+  $row['p_body'] = check_markup($row['p_body'], $row['format'], FALSE);
+  return $row;
+} // function _webform2pdf_get_template()
+
+/**
+ * Return all the submissions for a particular node.
+ * Original function webform module: webform_get_submissions.
+ *
+ * @param $nid
+ *   The node ID for which submissions are being fetched.
+ * @param $header
+ *   If the results of this fetch will be used in a sortable
+ *   table, pass the array header of the table.
+ * @param $sids
+ *   Optional; the submissions ID to filter the submissions by.
+ * @return $submissions
+ *   An array of submissions matching your filters.
+ */
+function _webform2pdf_get_submissions($nid, $header = NULL, $sids = array()) {
+  $SQL = 'SELECT s.*, sd.cid, sd.no, sd.data, u.name, u.mail, u.status';
+  $SQL .= ' FROM {webform_submissions} s';
+  $SQL .= ' LEFT JOIN {webform_submitted_data} sd ON sd.sid = s.sid';
+  $SQL .= ' LEFT JOIN {users} u ON u.uid = s.uid';
+  $SQL .= ' WHERE sd.nid = %d';
+
+  if (count($sids)) {
+    $SQL .= ' AND s.sid IN (%s)';
+  }
+
+  if (is_array($header)) {
+    $SQL .= tablesort_sql($header);
+    if (!isset($header[0]['sort'])) {
+      $SQL .= ', sid ASC';
+    }
+    $SQL .= ', cid ASC, no ASC';
+  }
+  else {
+    $SQL .= ' ORDER BY sid ASC, cid ASC, no ASC';
+  }
+
+  $result = db_query($SQL, $nid, implode(',', $sids));
+  $submissions = array();
+  $previous = array();
+
+  // Outer loop: iterate for each submission.
+  while ($row = db_fetch_object($result)) {
+    if ($row->sid != $previous) {
+      $submissions[$row->sid] = new stdClass();
+      $submissions[$row->sid]->sid = $row->sid;
+      $submissions[$row->sid]->submitted = $row->submitted;
+      $submissions[$row->sid]->remote_addr = $row->remote_addr;
+      $submissions[$row->sid]->uid = $row->uid;
+      $submissions[$row->sid]->name = $row->name;
+      $submissions[$row->sid]->status = $row->status;
+    }
+    $submissions[$row->sid]->data[$row->cid]['value'][$row->no] = $row->data;
+    $previous = $row->sid;
+  }
+
+  return $submissions;
+} // function _webform2pdf_get_submissions()
+
+function theme_webform2pdf_filename($node, $submission) {
+  $sid = is_object($submission) ? $submission->sid : $submission;
+
+  $pdf_file_name = "webform_submission-" . $node->nid;
+  $pdf_file_name .= !empty($sid) ? '-' . $sid : '';
+  $pdf_file_name .= ".pdf";
+  return $pdf_file_name;
+}
+
+/*
+ * _webform2pdf_download_pdf_form: Creates a form, where the submissions can be downloaded in PDF format
+ */
+function webform2pdf_download_pdf_form(&$form_state, $node) {
+  $header = theme('webform_results_submissions_header', $node);
+  $submissions = webform_get_submissions($node->nid, $header);
+
+  $form = $options = array();
+  foreach ($submissions as $sid => $submission) {
+    $form['sid'][$sid] = array('#value' => $sid);
+    $form['date'][$sid] = array('#value' => format_date($submission->submitted, 'small'));
+    $form['username'][$sid] = array('#value' => theme('username', $submission));
+    $form['remote_addr'][$sid] = array('#value' => $submission->remote_addr);
+    $form['view'][$sid] = array('#value' => l(t('View'), "node/$node->nid/submission/$sid"));
+    $form['download_pdf'][$sid] = array('#value' => l(t('Download PDF'), "node/$node->nid/submission/$sid/downloadpdf"));
+    $options[$sid] = '';
+  }
+
+  $form['sids'] = array(
+    '#type' => 'checkboxes',
+    '#options' => $options,
+  );
+
+  $form['nid'] = array(
+    '#type' => 'value',
+    '#value' => $node->nid,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Download PDF'),
+  );
+
+  return $form;
+} // function webform2pdf_download_pdf_form()
+
+/*
+ * theme_webform2pdf_download_pdf_form: webform2pdf_download_pdf_form of theme hook
+ */
+function theme_webform2pdf_download_pdf_form($form) {
+  $output = '';
+  $header = theme('webform_results_submissions_header', $node);
+  $hc = theme('table_select_header_cell');
+  array_unshift($header, $hc );
+  $rows = array();
+  foreach ($form['sids']['#options'] as $sid => $empty) {
+    $row = array();
+    $row[] = array('data' => drupal_render($form['sids'][$sid]), 'class' => 'checkbox' );
+    $row[] = array('data' => drupal_render($form['sid'][$sid]) );
+    $row[] = array('data' => drupal_render($form['date'][$sid]) );
+    $row[] = array('data' => drupal_render($form['username'][$sid]) );
+    $row[] = array('data' => drupal_render($form['remote_addr'][$sid]) );
+    $row[] = array('data' => drupal_render($form['view'][$sid]) );
+    $row[] = array('data' => drupal_render($form['download_pdf'][$sid]) );
+    $rows[] = $row;
+  }
+  $output .= theme('table', $header, $rows);
+  $output .= drupal_render($form);
+
+  return $output;
+} // function theme_webform2pdf_download_pdf_form()
+
+/*
+ * webform2pdf_download_pdf_form_submit: webform2pdf_download_pdf_form of submit hook
+ */
+function webform2pdf_download_pdf_form_submit($form, &$form_state) {
+  // filter zero values
+  $form_state['values']['sids'] = array_filter($form_state['values']['sids']);
+
+  // If there is a selected form element
+  if (count($form_state['values']['sids'])) {
+    // call header generator
+    $header = theme('webform_results_submissions_header', $node);
+
+    $submissions = _webform2pdf_get_submissions($form_state['values']['nid'], $header, $form_state['values']['sids']);
+    $node = node_load($form_state['values']['nid']);
+    $template = _webform2pdf_get_template($node->nid);
+
+    $tokens = array();
+    foreach ($submissions as $key => $submission) {
+      $tokens[$key] = _webform2pdf_get_template_vars($node, $submission);
+    }
+
+    $pdf = theme('webform2pdf_pdf_init', $node, $template);
+    $pdf = theme('webform2pdf_pdf_header', $pdf, $node, $template);
+    $pdf = theme('webform2pdf_pdf_footer', $pdf, $node, $template);
+    $pdf = theme('webform2pdf_pdf_page', $pdf);
+
+    // initialize document
+    $pdf->AliasNbPages();
+
+    // Inserts every token value into the template
+    foreach ($tokens as $key => $token) {
+      $pages[$key] = strtr($template['p_body'], $token);
+    }
+
+    $template['pages'] = implode('%pagebreak', $pages);
+    $template['pages'] = explode('%pagebreak', $template['pages']);
+
+    $pdf = theme('webform2pdf_pdf_content', $pdf, $node, $template, $tokens);
+
+    // reset pointer to the last page
+    $pdf->lastPage();
+    $filename = theme('webform2pdf_filename', $node, time());
+
+    // Close and output PDF document
+    $pdf->Output($filename, 'I');
+    die;
+  }
+} // function webform2pdf_download_pdf_form_submit()
+
+/*
+ * _webform2pdf_init_tcpdf: PDF initializing
+ */
+function _webform2pdf_init_tcpdf($node, $template) {
+  global $base_url;
+
+  $default = variable_get('webform2pdf_default', '');
+
+  define('K_TCPDF_EXTERNAL_CONFIG', TRUE);
+  define('K_PATH_MAIN', dirname($_SERVER['SCRIPT_FILENAME']));
+  define('K_PATH_URL', $base_url);
+  define('K_PATH_FONTS', $default['pdf_lib'] . '/fonts/');
+  define('K_PATH_CACHE', $default['pdf_lib'] . '/cache/');
+  define('K_PATH_IMAGES', '');
+  define('K_BLANK_IMAGE', $default['pdf_lib'] . '/images/_blank.png');
+  define('K_CELL_HEIGHT_RATIO', 1.25);
+  define('K_SMALL_RATIO', 2/3);
+
+  if ( is_file($default['pdf_lib'] . '/tcpdf.php')   ) {
+    include_once( drupal_get_path('module', 'webform2pdf') . '/webform2pdf.class.inc' );
+
+    $font = Array(
+      variable_get('print_pdf_font_family', PRINT_PDF_FONT_FAMILY_DEFAULT),
+      '',
+      variable_get('print_pdf_font_size', PRINT_PDF_FONT_SIZE_DEFAULT),
+    );
+
+    // create new PDF document
+    $pdf = new W2PDF($template['page_orientation'] , 'mm', $template['page_format'], TRUE);
+
+    // set document information
+    $pdf->SetCreator(variable_get('site_name', 'Drupal'));
+    $pdf->SetAuthor($node->name);
+    $pdf->SetTitle($node->title);
+    $pdf->setPDFVersion('1.6');
+    return $pdf;
+  }
+  else {
+    return;
+  }
+} // function _webform2pdf_init_tcpdf()
+
+/*
+ * theme_webform2pdf_pdf_init: pdf initializing, theme hook
+ */
+function theme_webform2pdf_pdf_init($node, $template) {
+  return _webform2pdf_init_tcpdf($node, $template);
+} // function theme_webform2pdf_pdf_init()
+
+/*
+ * _webform2pdf_pdf_header: pdf header data
+ */
+function _webform2pdf_pdf_header($pdf, $node, $template) {
+  if (!empty($template['h_left_logo'])) {
+    $f = _webform2pdf_get_file($template['h_left_logo']);
+    $s = getimagesize($f->filepath);
+    $logo['left'] = $f->filepath;
+    // 75dpi image, image size convert millimeter
+    $size['left']['w'] = $s[0]/75*25;
+    $size['left']['h'] = $s[1]/75*25;
+  }
+
+  if (!empty($template['h_right_logo'])) {
+    $f = _webform2pdf_get_file($template['h_right_logo']);
+    $s = getimagesize($f->filepath);
+
+    $logo['right'] = $f->filepath;
+    // 75dpi image, image size convert millimeter
+    $size['right']['w'] = $s[0]/75*25;
+    $size['right']['h'] = $s[1]/75*25;
+  }
+
+  // set header font
+  $pdf->setHeaderFont(array($template['h_font_family'], '', $template['h_font_size']));
+  // set header margin
+  $pdf->setHeaderMargin(5);
+
+  // webform filter
+  $header_msg = nl2br( _webform_filter_values($template['h_txt'], $node, NULL, NULL, FALSE) );
+
+  // set header data
+  $pdf->setHeaderData($logo, $size, $header_msg, $template['h_txt_align']);
+
+  return $pdf;
+} // function _webform2pdf_pdf_header()
+
+/*
+ * _webform2pdf_pdf_header: pdf header theme hook
+ */
+function theme_webform2pdf_pdf_header($pdf, $node, $template) {
+  return _webform2pdf_pdf_header($pdf, $node, $template);
+} // function theme_webform2pdf_pdf_header()
+
+/*
+ * _webform2pdf_pdf_footer: pdf footer data
+ */
+function _webform2pdf_pdf_footer($pdf, $node, $template) {
+  if (!empty($template['f_left_logo'])) {
+    $f = _webform2pdf_get_file($template['f_left_logo']);
+    $s = getimagesize($f->filepath);
+
+    $logo['left'] = $f->filepath;
+    // 75dpi image, image size convert millimeter
+    $size['left']['w'] = $s[0]/75*25;
+    $size['left']['h'] = $s[1]/75*25;
+  }
+
+  if (!empty($template['f_right_logo'])) {
+    $f = _webform2pdf_get_file($template['f_right_logo']);
+    $s = getimagesize($f->filepath);
+
+    $logo['right'] = $f->filepath;
+    // 75dpi image, image size convert millimeter
+    $size['right']['w'] = $s[0]/75*25;
+    $size['right']['h'] = $s[1]/75*25;
+  }
+
+  // set footer font
+  $pdf->setFooterFont(array($template['f_font_family'], '', $template['f_font_size']));
+  // set footer margin
+  $pdf->setFooterMargin(5);
+
+  // webform filter
+  $footer_msg = nl2br( _webform_filter_values($template['f_txt'], $node, NULL, NULL, FALSE) );
+
+  // set footer data
+  $pdf->SetFooterData($logo, $size, $footer_msg, $template['f_txt_align']);
+
+  return $pdf;
+} // function _webform2pdf_pdf_footer()
+
+/*
+ * theme_webform2pdf_pdf_footer: pdf footer theme hook
+ */
+function theme_webform2pdf_pdf_footer($pdf, $node, $template) {
+  return _webform2pdf_pdf_footer($pdf, $node, $template);
+} // function theme_webform2pdf_pdf_footer()
+
+/*
+ * _webform2pdf_pdf_page: pdf page init
+ */
+function _webform2pdf_pdf_page($pdf) {
+
+  // set margins
+  $pdf->SetMargins(15, 20, 15);
+  // set auto page breaks
+  $pdf->SetAutoPageBreak(TRUE, 25 );
+
+  // set image scale factor
+  $pdf->setImageScale(4);
+  // set image compression quality
+  $pdf->setJPEGQuality(100);
+  return $pdf;
+} // function _webform2pdf_pdf_page()
+
+/*
+ * theme_webform2pdf_pdf_page: pdf page theme hook
+ */
+function theme_webform2pdf_pdf_page($pdf) {
+  return _webform2pdf_pdf_page($pdf);
+} // function theme_webform2pdf_pdf_page()
+
+/*
+ * _webform2pdf_pdf_content: Fills PDF page with content
+ */
+function _webform2pdf_pdf_content($pdf, $node, $template, $tokens) {
+  $pdf->SetFont($template['p_font_family'], '', $template['p_font_size'] );
+
+  foreach ($template['pages'] as $page) {
+    // add a page
+    $pdf->AddPage();
+
+    // webform filter
+    $page = _webform_filter_values($page, $node, NULL, NULL, FALSE);
+
+    $pdf->writeHTML($page, TRUE, FALSE, FALSE, FALSE, $template['p_txt_align']);
+  }
+
+  return $pdf;
+} // function _webform2pdf_pdf_content()
+
+/*
+ * theme_webform2pdf_pdf_content: pdf content theme hook
+ */
+function theme_webform2pdf_pdf_content($pdf, $node, $template, $tokens) {
+  return _webform2pdf_pdf_content($pdf, $node, $template, $tokens);
+} // function theme_webform2pdf_pdf_content()
+
+/*
+ * webform2pdf_submission_download_pdf: download submission as one PDF file
+ */
+function webform2pdf_submission_download_pdf($node, $submission, $output_type = 'I') {
+  $output_types = array('I', 'D', 'S');
+
+  if ( in_array($output_type, $output_types) ) {
+    $tokens = _webform2pdf_get_template_vars($node, $submission);
+    $template = _webform2pdf_get_template($node->nid);
+
+    $pdf = theme('webform2pdf_pdf_init', $node, $template);
+    if ( !empty($pdf) ) {
+      $pdf = theme('webform2pdf_pdf_header', $pdf, $node, $template);
+      $pdf = theme('webform2pdf_pdf_footer', $pdf, $node, $template);
+      $pdf = theme('webform2pdf_pdf_page', $pdf);
+
+      // initialize document
+      $pdf->AliasNbPages();
+
+      $template['pages'] = explode('%pagebreak', $template['p_body']);
+
+      foreach ($template['pages'] as $key => $page) {
+        $template['pages'][$key] = strtr($page, $tokens);
+      }
+
+      $pdf = theme('webform2pdf_pdf_content', $pdf, $node, $template, $tokens);
+
+      // reset pointer to the last page
+      $pdf->lastPage();
+
+      $filename = theme('webform2pdf_filename', $node, $submission);
+
+      if ( $output_type == 'S') {
+        return $pdf->Output($filename, $output_type);
+      }
+      else {
+        // Close and output PDF document
+        $pdf->Output($filename, $output_type);
+        die;
+      }
+    }
+  }
+} // function webform2pdf_submission_download_pdf()
+
+/*
+ * webform2pdf_mail_alter: hook_mail_alter
+ */
+function webform2pdf_mail_alter(&$message) {
+  global $webform2pdf_send2pdf;
+
+  if ( ($message['id'] == 'webform_submission') && (isset($webform2pdf_send2pdf['nid'])) ) {
+    $attach_pdf = 1;
+
+    if ( !empty($webform2pdf_send2pdf['nopdf']) ) {
+      if (in_array($message['to'], $webform2pdf_send2pdf['nopdf'])) {
+          $attach_pdf = 0;
+      }
+    }
+
+    if ( $attach_pdf ) {
+      $trenner  = '------------' . md5(uniqid(time()));
+
+      $content_type = $message['headers']['Content-Type'];
+      $message['headers']['Content-Type'] = 'multipart/mixed; boundary="' . $trenner . '"';
+      unset($message['headers']['Content-Transfer-Encoding']);
+
+      $body = "\n--" . $trenner . "\n" .
+            "Content-Type: " . $content_type . "\n" .
+            "Content-Transfer-Encoding: 8bit\n\n";
+      $body .= is_array($message['body']) ? drupal_wrap_mail(implode("\n\n", $message['body'])) : drupal_wrap_mail($message['body']);
+
+      unset($message['body']);
+
+      $message['body'] = $body;
+      unset($body);
+
+      $node = node_load($webform2pdf_send2pdf['nid']);
+      $filename = theme('webform2pdf_filename', $node, $webform2pdf_send2pdf['sid']);
+      unset($node);
+
+      $message['body'] .= "\n\n--" . $trenner . "\n";
+      $message['body'] .= "Content-Type: application/pdf; name=\"" . $filename . "\"\n";
+      $message['body'] .= "Content-Transfer-Encoding: base64\n";
+      $message['body'] .= "Content-Disposition: attachment; filename=\"" . $filename . "\"\n\n";
+      $message['body'] .= chunk_split( base64_encode( theme('webform2pdf_mail2pdf', $webform2pdf_send2pdf['nid'], $webform2pdf_send2pdf['sid']) ) );
+      $message['body'] .= "\n\n";
+      $message['body'] .= "--" . $trenner . "--";
+    }
+  }
+} // function webform2pdf_mail_alter()
+
+/*
+ * theme_webform2pdf_mail2pdf(): mail attachment pdf
+ */
+function theme_webform2pdf_mail2pdf($nid, $sid) {
+  $node = node_load(array('nid' => $nid));
+  $submissions = _webform2pdf_get_submissions($nid, NULL, array($sid));
+
+  $token = _webform2pdf_get_template_vars($node, $submissions[$sid]);
+  $template = _webform2pdf_get_template($node->nid);
+
+  $pdf = theme('webform2pdf_pdf_init', $node, $template);
+  if ( !empty($pdf) ) {
+    $pdf = theme('webform2pdf_pdf_header', $pdf, $node, $template);
+    $pdf = theme('webform2pdf_pdf_footer', $pdf, $node, $template);
+    $pdf = theme('webform2pdf_pdf_page', $pdf);
+
+    // initialize document
+    $pdf->AliasNbPages();
+
+    $template['pages'] = explode('%pagebreak', $template['p_body']);
+
+    foreach ($template['pages'] as $key => $page) {
+      $template['pages'][$key] = strtr($page, $token);
+    }
+
+    $pdf = theme('webform2pdf_pdf_content', $pdf, $node, $template, $token);
+
+    // reset pointer to the last page
+    $pdf->lastPage();
+
+    // Return PDF document
+    return $pdf->Output($filename, 'S');
+  }
+} // function theme_webform2pdf_mail2pdf()
+
+/*
+ * webform2pdf_url_encode: pdf download anonymous url generation.
+ */
+function webform2pdf_url_encode($nid, $sid, $encode = TRUE) {
+  $url = 'node/' . $nid . '/submission/' . $sid . '/downloadpdf';
+  if ($encode && ( function_exists('mcrypt_encrypt') ) ) {
+    $key = variable_get('webform2pdf_key', '');
+    return 'webform2pdf/' . urlencode(trim(base64_encode(mcrypt_encrypt(MCRYPT_RIJNDAEL_256, $key, $url, MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)))));
+  }
+  return $url;
+} // function webform2pdf_url_encode()
+
+/*
+ * webform2pdf_url_encode: pdf download anonymous url generation.
+ */
+function webform2pdf_url_decode($url) {
+  if ( function_exists('mcrypt_decrypt')  ) {
+    $key = variable_get('webform2pdf_key', '');
+    $url2 = trim(mcrypt_decrypt(MCRYPT_RIJNDAEL_256, $key, urldecode(base64_decode($url)), MCRYPT_MODE_ECB, mcrypt_create_iv(mcrypt_get_iv_size(MCRYPT_RIJNDAEL_256, MCRYPT_MODE_ECB), MCRYPT_RAND)));
+
+    list($tmp, $nid, $tmp, $sid, $tmp) = explode('/', $url2);
+    unset($tmp, $url2);
+    if ( is_int($nid) && is_int($sid) ) {
+      $node = webform_menu_load($nid);
+      $submission = webform_menu_submission_load($sid, $nid);
+      if ( !empty($node) && !empty($submission) ) {
+        return webform2pdf_submission_download_pdf($node, $submission);
+      }
+    }
+  }
+  drupal_not_found();
+} // function webform2pdf_url_encode()

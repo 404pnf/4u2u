@@ -1,0 +1,8 @@
+为了让能成功导出中文
+请修改module文件
+在每个
+
+'freemono' => 'Free Mono',
+下面增加一行
+'stsongstdlight' => 'Chinese simple',
+

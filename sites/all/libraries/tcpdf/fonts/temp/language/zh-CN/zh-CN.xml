@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- $Id: zh-CN.xml 129 2008-07-28 09:45:23Z protege $ -->
+<metafile version="1.5.7" client="site">
+	<name>简体中文</name>
+	<version>1.5.7</version>
+	<creationDate>2008-09-10</creationDate>
+	<author>Joomla! Project</author>
+	<authorEmail>admin@joomla.org</authorEmail>
+	<authorUrl>www.joomla.org</authorUrl>
+	<copyright>(C) 2008 Open Source Matters. All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<description></description>
+	<metadata>
+		<name>简体中文</name>
+		<tag>zh-CN</tag>
+		<rtl>0</rtl>
+		<locale>zh_CN.utf8, zh, zho, zhi, zh_CN, zho_CN, zhi_CN, simplified_chinese</locale>
+		<winCodePage>cp936</winCodePage>
+		<backwardLang>english</backwardLang>
+		<pdfFontName>stsongstdlight</pdfFontName>
+	</metadata>
+	<params />
+</metafile>

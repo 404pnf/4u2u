@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metafile version="1.5"  client="site" >
+	<tag>zh-TW</tag>
+	<name>正體中文</name>
+	<description></description>
+	<version>1.5.2</version>
+	<creationDate>2008-03-26</creationDate>
+	<author>Joomla! Taiwan</author>
+	<authorUrl>www.joomla.org.tw</authorUrl>
+	<authorEmail></authorEmail>
+	<copyright>(C) 2008 Joomla! Taiwan All rights reserved.</copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<metadata>
+		<name>正體中文</name>
+		<tag>zh-TW</tag>
+		<rtl>0</rtl>
+		<locale>zh_TW.UTF8, zh_TW, zho_TW, zhi_TW, traditional_chinese</locale>
+		<winCodePage>cp950</winCodePage>
+		<backwardLang>traditional_chinese</backwardLang>
+		<pdfFontName>msungstdlight</pdfFontName>
+	</metadata>
+	<params></params>
+</metafile>

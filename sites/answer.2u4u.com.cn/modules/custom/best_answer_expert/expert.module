@@ -38,7 +38,7 @@ function expert_form_alter(&$form,&$form_state,$form_id) {
 			$options = $form['taxonomy']['8']['#options'];
 			$new_options = array();
 			foreach($options as $key => $value){
-				if(!isset($value->option[39] )){
+				if(!isset($value->option[39])  && !isset($value->option[10557])){
 					$new_options[$key] = $value;
 				}
 			}
@@ -57,7 +57,7 @@ function expert_form_alter(&$form,&$form_state,$form_id) {
 			$options = $form['taxonomy']['8']['#options'];
 			$new_options = array();
 			foreach($options as $key => $value){
-				if(!isset($value->option[39] )){
+				if(!isset($value->option[39] )  && !isset($value->option[10557])){
 					$new_options[$key] = $value;
 				}
 			}

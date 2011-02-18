@@ -729,5 +729,33 @@ td.active{
 	margin-top:0px;
 }
 
-.page-node-add-best-answer-expert
+/*.page-node-add-best-answer-expert*/
 
+
+#block-views-answer_term-block_1 .view-content .views-row{
+	float:left;
+}
+
+#sidebar-second #block-views-answer_term-block_1 .view-content{
+	height:120px;
+}
+#block-views-answer_term-block_1 .view-content .views-field-name .field-content{
+	font-size:12px;
+	font-weight:normal;
+	margin-left:5px;
+}
+#block-views-answer_term-block_1 .shuang{
+	margin:0 5px 0 5px;
+}
+#block-views-answer_term-block_1 .views-row-last .shuang{
+	color: #FFFFFF;
+}
+#block-views-answer_term-block_1 .views-field-name .field-content a:hover{
+	background-color:#870606;
+	color:#FFFFFF;
+}
+
+#block-views-answer_term-block_1 a.active{
+	background-color:#870606;
+	color:#FFFFFF;
+}

@@ -147,7 +147,7 @@
                             </div>
 							<div id="pane_tab2" class="pane">
 							  <ul><li><a href="http://2u4u.com.cn/chongzhi/recommender">图书验证码充值</a></li>
-								  <li><a href="http://2u4u.com.cn/node/63503">购买悠游网积分</a></li>
+								  <li><a href="http://2u4u.com.cn/bangzhuzhongxin#goumai">购买悠游网积分</a></li>
 								  <li><a href="http://2u4u.com.cn/bangzhuzhongxin#hongdong">参与活动得积分</a></li>
 							  </ul>
                             </div>

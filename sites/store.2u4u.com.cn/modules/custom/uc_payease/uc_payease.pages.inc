@@ -25,7 +25,7 @@ function uc_payease_notify() {
 	//支付方式组
 	$v_pmode = $_POST["v_pmode"];
 	
-	//支付状态组 1－已提交，2－支付成功，3－支付失败
+	//支付状态组 0－待处理，1－支付完成，3－支付失败
 	$v_pstatus = $_POST["v_pstatus"];
 	
 	//支付结果说明： 成功时（v_pstatus=1）为“支付成功”，支付被拒绝时（v_pstatus=3）为失败原因
@@ -85,7 +85,9 @@ function uc_payease_notify() {
 	//不知道为什么,这个好像起作用.
 	exec("$default_capinfoRSA PublicVerifyMD5 $default_capinfoRSA_key $v_sign '".$rsa_source."' $rsa_source_length", $ress, $rcs);
 	*/
-	
+	$msg = 'v_count:'.$v_count. ';v_oid' . $v_oid . ';v_pmode' . $v_pmode . ';v_pstatus' . $v_pstatus . ';v_pstring' . $v_pstring . ';v_amount' . $v_amount . ';v_moneytype' . $v_moneytype;
+  watchdog('uc_payease',$msg);
+	watchdog('uc_payease','v_md5money:'.$v_md5money.';md5sign2[0]:'.$md5sign2[0]);
 	//if ($v_mac==$md5sign1 && $v_md5money==$md5sign2) {
 	//这里面我担心中文验证有问题,所以仅使用了md5money进行验证，下面的代码从理论上和上面是一致的，也就是等效的。	
 	//当有特殊字符时,会加密失败,此时$v_md5money为空,所以检查是否为空,以防止潜在的安全漏洞
@@ -104,6 +106,7 @@ function uc_payease_notify() {
 			if($v_pstatus ==1){
 				if($order->order_status=='payment_received'||$order->order_status=='completed'){
 					//订单已经完成,此时不做操作
+					watchdog('uc_payease','订单已经完成,此时不做操作');
 				}else{
 						//内部完成付款
 					$comment = t('异步通知--首信易交易ID: @v_oid', array('@v_oid' => $v_oid));
@@ -142,6 +145,8 @@ function uc_payease_notify() {
 			
 			//支付结果说明： 成功时（v_pstatus=1）为“支付成功”，支付被拒绝时（v_pstatus=3）为失败原因
 			$v_pstring = explode("|_|",$v_pstring);
+			
+			watchdog('uc_payease','进入批量发送的订单,订单个数:'.$v_count);
 			for ($i=0; $i<$v_count; $i++) {
 				//分别处理每个订单
 				_uc_payease_process_order($v_oid[$i],$v_pmode[$i],$v_pstatus[$i],$v_pstring[$i]);

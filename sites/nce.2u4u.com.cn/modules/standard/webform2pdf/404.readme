@@ -6,3 +6,5 @@
 下面增加一行
 'stsongstdlight' => 'Chinese simple',
 
+
+参考： http://www.yinzhili.com/2009/08/using-tcpdf-to-generate-pdf-in-chinese.html

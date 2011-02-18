@@ -24,7 +24,15 @@ function api_egs_menu(){
 		'type'=>MENU_CALLBACK,
 		'file' => 'api_egs.pages.inc'
 	);
-	
+
+	$items['query/username'] = array(
+		'title'=>t(''),
+		'access callback'=>true,
+		'page callback'=>'query_user_name',
+		'type'=>MENU_CALLBACK,
+		'file' => 'api_egs.pages.inc'
+	);
+		
 	return $items;	
 	
 }

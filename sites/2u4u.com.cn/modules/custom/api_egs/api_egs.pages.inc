@@ -87,6 +87,35 @@ function query_user_info($app_key,$session_id,$uid){
 	 drupal_json($array);   
 }
 
+
+
+function query_user_name($app_key,$uid){
+	
+	$is_app = check_appkey($app_key);	
+	if($is_app){	
+		 
+	    if(strpos($uid,",")){		  	   
+  	    	   $sql = "SELECT `uid`,`name` FROM {users} WHERE `uid` IN (".$uid.")";
+  	    	   $rs = db_query($sql);
+        	}else{
+		       $sql = "SELECT `uid`,`name` FROM {users} WHERE `uid` =%d ";
+  	    	   $rs = db_query($sql,$uid);
+		   	}
+                  while($row = db_fetch_object($rs)){    	 	
+	    	 	$arr[$row->uid] = $row->name;    	 	
+	    	 }	 
+	    	    	
+	    	 $array = array("status" => "Success",	 
+	    	                "user_info" => $arr
+	    	  );    	    	 	
+		
+	    }else{
+			 $array = array("status" => "false");
+		}	
+	 drupal_json($array);   
+}
+
+
 /**
  * 验证密钥
  *

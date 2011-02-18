@@ -1,0 +1,232 @@
+
+body {
+ 	background-color: #ccc;
+}
+
+#main {
+ 	background-color: #ffffff;
+}
+
+#sidebar-second {
+ 	background-color: #ffffff;
+}
+
+.item-list ul li {list-style:none;}
+
+h2 { text-shadow: -1px 2px 3px #ffb69a; }
+
+#block-block-4 {background-color: #fff2e0;}
+
+#block-aggregator-feed-1  .more-link {visibility:hidden;}
+
+#block-aggregator-feed-1  .block-title , #block-block-5 .block-title{
+	background: url("../images/block_bg.gif"); 
+	padding: 0.2em 0.5em 0 0.2em;
+}
+
+#block-aggregator-feed-1 , #block-block-5 {
+	background-color:white;
+	border: 1px solid #ededed;
+}
+
+
+.news_list .more-link {visibility:hidden;}
+
+#review ul {list-style:none; margin: 0; padding: 0;}
+#review li {float:left; margin: 0.5em 1em 0 0;}
+
+
+.news_title {
+	background: url("../images/news_bg.gif"); 
+	height: 34px;
+	color: #ffffff;
+	line-height: 2em;
+	font-weight: bold;
+	padding-left: 0.5em;
+}
+
+.news-more {float: right; padding-right: 7em; margin-top: -2em; margin-bottom:2em;}
+
+#sidebar-first .block-inner, #sidebar-second .block-inner {padding: 0.5em;}
+
+/* 这个block是个图片，宽度已经和左边栏一样了，所以不能有padding */
+#block-block-3 .block-inner {padding:0;}
+
+
+#content-header, #content-area {padding:1em 2em 1em 1em;}
+
+#footer .content {
+	text-align: center;
+}
+img {
+	border: 0px;
+}
+.tablayout{
+	width: 960px;
+}
+a:link,a:visited {
+	color: #666666;
+	text-decoration: none;
+	line-height: 22px;
+}
+a:hover,a:active {
+	text-decoration: underline;
+}
+.a1:link,.a1:visited {
+	color: #cccccc;
+	text-decoration: underline;
+	line-height: 22px;
+	font-size: 12px;
+}
+.a1:hover,.a1:active {
+	text-decoration: none;
+}
+.a2:link,.a2:visited {
+	color: #3366FF;
+	text-decoration: underline;
+	line-height: 22px;
+	font-size: 12px;
+}
+.a2:hover,.a2:active {
+	text-decoration: none;
+}
+.a3:link,.a3:visited {
+	color: #333333;
+	text-decoration: underline;
+	line-height: 22px;
+	font-size: 12px;
+}
+.a3:hover,.a3:active {
+	text-decoration: none;
+}
+
+#navigation {
+	background:url(../images/menubg.gif) repeat-x #000 ;
+}
+#primary a:link, #primary a:visited {
+	color: #ffffff;
+	text-decoration: underline;
+	line-height: 20px;
+	font-size: 14px;
+	font-weight: bold;
+	margin-top: 1em;
+}
+.a4:hover,.a4:active {
+	text-decoration: none;
+}
+.a5:link,.a5:visited {
+	color: #0066FF;
+	text-decoration: underline;
+	line-height: 22px;
+	font-size: 12px;
+	font-weight: normal;
+	background-image: url(images/bg2.gif);
+	padding-top: 0px;
+	padding-right: 4px;
+	padding-bottom: 1px;
+	padding-left: 4px;
+}
+.a5:hover,.a5:active {
+	text-decoration: none;
+}
+.a6:link,.a6:visited {
+	color: #ffffff;
+	line-height: 22px;
+	font-size: 12px;
+	font-weight: bold;
+	background-image: url(images/baoming.gif);
+	padding-top: 0px;
+	padding-right: 2px;
+	padding-bottom: 1px;
+	padding-left: 2px;
+	text-decoration: underline;
+}
+.a6:hover,.a6:active {
+	text-decoration: none;
+}
+.a7:link,.a7:visited {
+	color: #666;
+	text-decoration: underline;
+	line-height: 22px;
+	font-size: 12px;
+	text-decoration: none;
+}
+.a7:hover,.a7:active {
+	text-decoration: underline;
+}
+
+.tb01{
+	border: 1px solid #ff3400;
+}
+.tb02{border:1px solid #ededed}
+.tb03{
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #CCCCCC;
+	border-right-width: 1px;
+	border-right-style: solid;
+	border-right-color: #CCCCCC;
+}
+.tb04{
+	padding:10px 30px;
+	text-align:left;
+	 
+}
+.font01{
+	font-size: 14px;
+	font-weight: bold;
+	color: #000;
+}
+.font02{
+	font-size: 12px;
+	font-weight: normal;
+	color: #666666;
+	line-height: 20px;
+}
+.font03{
+	font-size: 12px;
+	font-weight: normal;
+	color: #333333;
+	line-height: 20px;
+}
+.font04{
+	font-size: 12px;
+	font-weight: bold;
+	color: #333333;
+	line-height: 20px;
+}
+.font05{
+	font-size: 12px;
+	font-weight: bold;
+	color: #FF6600;
+	line-height: 20px;
+}
+.font06{
+	font-size: 12px;
+	font-weight: normal;
+	color: #FF0000;
+	line-height: 20px;
+}
+.font07{
+	font-size: 12px;
+	font-weight: normal;
+	color: #333333;
+	line-height: 24px;
+}
+.font08{
+	font-size: 14px;
+	font-weight: bold;
+	color: #FFFFFF;
+	line-height: 24px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+.font09{
+	font-size: 12px;
+	color:#000;
+	padding:4px;
+	background-color:#eeebbf;
+	line-height: 30px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+#video
+{ width:191px; height:263px; padding: 10px 15px;  background-image: url(images/back01.jpg);}

@@ -1,0 +1,691 @@
+<?php
+// $Id: swftools_flowplayer3.module,v 1.1.2.30 2010/04/14 22:13:39 stuartgreenfield Exp $
+
+/**
+ * SWF Tools support for FlowPlayer 3.
+ */
+
+/**
+ * The default name of the FlowPlayer3 player file.
+ */
+define('SWFTOOLS_FLOWPLAYER3_FILE', 'flowplayer-3.1.5.swf');
+
+/**
+ * The default name of the FlowPlayer3 streaming plug-in file.
+ */
+define('SWFTOOLS_FLOWPLAYER3_STREAM_PLUGIN', 'flowplayer.rtmp-3.1.2.swf');
+
+/**
+ * The default name of the FlowPlayer3 JavaScript API file.
+ */
+define('SWFTOOLS_FLOWPLAYER3_JAVASCRIPT', 'example/flowplayer-3.1.4.min.js');
+
+/**
+ * The default name of the FlowPlayer3 JavaScript playlist file.
+ */
+define('SWFTOOLS_FLOWPLAYER3_PLAYLIST_JAVASCRIPT', 'flowplayer.playlist-3.0.7.min.js');
+
+/**
+ * Implementation of hook_swftools_methods().
+ */
+function swftools_flowplayer3_swftools_methods() {
+
+  $flowplayer3 = array(
+    'module'      => 'swftools_flowplayer3',
+    'version'     => 9,
+    'title'       => t('FlowPlayer 3'),
+    'download'    => 'http://flowplayer.org',
+    'width'       => 500,
+    'height'      => 375,
+    'library'     => SWFTOOLS_LIBRARIES . 'flowplayer3/' . variable_get('swftools_flowplayer3_file', SWFTOOLS_FLOWPLAYER3_FILE),
+    'profile'     => array(
+      'path' => 'flowplayer3',
+      'settings' => array('swftools_flowplayer3', 'swftools_flowplayer3_palette', 'swftools_flowplayer3_scheme'),
+      'file' => 'swftools_flowplayer3.admin.inc',
+      'page argument' => 'swftools_flowplayer3_profile_form',
+    ),
+  );
+  
+  /**
+   * Define actions that the player can support by returning an array with keys
+   * [action][name_of_player] = [player_details]
+   */
+  $methods['video']['flowplayer3'] = $flowplayer3;
+  $methods['video_list']['flowplayer3'] = $flowplayer3;
+  $methods['audio']['flowplayer3'] = $flowplayer3;
+  $methods['audio_list']['flowplayer3'] = $flowplayer3;
+  $methods['image_list']['flowplayer3'] = $flowplayer3;
+  $methods['swftools_media_display']['flowplayer3'] = $flowplayer3;
+  $methods['media_list']['flowplayer3'] = $flowplayer3;
+
+  // Return the method results
+  return $methods;
+}
+
+
+/**
+ * Implementation of hook_menu().
+ */
+function swftools_flowplayer3_menu() {
+  
+  $items = array();
+
+  $items['admin/settings/swftools/flowplayer3'] = array(
+    'title' => 'FlowPlayer 3',
+    'description' => 'Settings for ' . l('FlowPlayer 3', 'http://flowplayer.org') . '.',
+    'access arguments' => array('administer flash'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('swftools_flowplayer3_admin_settings'),
+    'file' => 'swftools_flowplayer3.admin.inc',
+    'file path' => drupal_get_path('module', 'swftools_flowplayer3'),
+  );
+
+  return $items;
+}
+
+
+/**
+ * Implementation of hook_swftools_preprocess_[player]().
+ */
+function swftools_flowplayer3_swftools_preprocess_flowplayer3(&$data) {
+  
+  // Initialise flag to show it this content is being streamed
+  $stream = $data['othervars']['stream'] ? TRUE : FALSE;
+  
+  // Initialise playlist
+  $playlist = array();
+  
+  // If an image was supplied to be the splash then put this first in the list
+  if ($data['othervars']['image']) {
+
+    // Get source path to the image file
+    $source = swftools_get_url_and_path($data['othervars']['image']);
+
+    // If $source succeeded add image to the playlist
+    if ($source) {
+      $playlist[] = '{ "url": "' . $source['fileurl'] . '", "autoPlay": true, "duration": "0" }'; 
+    }
+    
+  }
+
+  // Attach the playlist from earlier, if we have it
+  if (isset($data['othervars']['flowplayer3']['playlist'])) {
+
+    // Attach the playlist after the splash image
+    $playlist = $playlist + $data['othervars']['flowplayer3']['playlist'];
+    
+    // Implode the playlist to a string
+    $playlist = '[ ' . implode(', ', $playlist) . ' ]';
+  
+  }
+  else {
+    
+    // If there is no splash image just use the file_url
+    if (!$playlist) {
+      $playlist[] = $data['othervars']['file_url'];
+
+    }
+    else {
+      
+      // Attach file url to the splash image
+      $playlist[] = '{ "url": "' . $data['othervars']['file_url'] . '" }';
+      
+      // Implode the playlist to a string
+      $playlist = '[ ' . implode(', ', $playlist) . ' ]';
+      
+    }
+  
+  }
+  
+  // Initialise array of FlowPlayer3 configuration settings
+  $flowplayer = array();
+  
+  // Over-ride embedding to use FlowPlayer?
+  if (variable_get('swftools_flowplayer3_embed', FALSE)) {
+    $data['resolved_methods']['embed']['theme'] = 'swftools_flowplayer3';
+  }
+  else {
+    // Assign a playerId flashvar to initiate the external interface outside of FlowPlayer embedding
+    $flowplayer['playerId'] = $data['othervars']['id'];
+  }
+
+  // Attach the FlowPlayer playlist to the configuration
+  $flowplayer['playlist'] = $playlist;
+  
+  // Retrieve the current FlowPlayer3 settings
+  $saved_settings = _swftools_flowplayer3_settings($data['othervars']['profile']);
+
+  // Attach logo settings, if required
+  if ($saved_settings['logo']['use_logo']) {
+    unset($saved_settings['logo']['use_logo']);
+    $flowplayer['logo'] = $saved_settings['logo'];
+  }
+
+  // Create accessible controls if necessary
+  if ($saved_settings['accessibility']['accessible']) {
+    $data['othervars']['#suffix'] = theme('swftools_flowplayer3_accessible', $data['othervars']['id'], $saved_settings['accessibility']['accessible_visible']);
+  }
+  
+  // TODO: Can we just array merge here? And can we recursively unset blank entries?
+  // TODO: Use swftools_array_merge as a common way to merge a multi-dimensional array
+  // TODO: See swftools_wijering4.admin.inc for use of array_diff() to unset blanks.
+  // TODO: Can we optimise this to use fewer passes? Pre-filter the settings to eliminate blanks? Like JW4.
+  
+  // Scan through each setting to see if it is over-ridden in $data['othervars']
+  // Unset properties that are blank to keep the resulting code 'tidy'
+  
+  // TODO: Do the same as wijering4 - we should clear out blanks during form submission
+  // There is no need to do this here? The only issue is that anything passed on othervars
+  // is a flat array of keys and values, so we need to locate its key within the FlowPlayer3
+  // structure. We will also have to consider if anything might have duplicate key names
+  // (not sure - need to check. Or we could simply make it that FlowPlayer can't be
+  // over-ridden from the input filter - I've never been sure if anyone even uses that feature!
+  // We could flatten the FlowPlayer3 saved settings, then try an array check to see if we
+  // have any matches - but then we still have to know where to put the thing afterwards...
+  // Maybe with the new caching mechanism we shouldn't worry too much - we only run this
+  // function when we generate content, and then it's done. It we filtered the blanks we
+  // would have no way of locating the proper place for the value in the array.
+  foreach ($saved_settings as $category => $values) {
+    foreach (array_keys($values) as $property) {
+      if (isset($data['othervars'][$property])) {
+        $saved_settings[$category][$property] = $data['othervars'][$property];
+      }
+      if ($saved_settings[$category][$property] === '') {
+        unset($saved_settings[$category][$property]);
+      }
+    }
+  }
+  
+  // If the object doesn't have a width set then assign one
+  if (!isset($data['params']['width'])) {
+    $data['params']['width'] = $saved_settings['canvas']['width'];
+  }
+
+  // If the object doesn't have a height set then assign one
+  if (!isset($data['params']['height'])) {
+    $data['params']['height'] = $saved_settings['canvas']['height'];
+  }
+
+  // Translate labels if they are set
+  if (isset($saved_settings['play']['label'])) {
+    $saved_settings['play']['label'] = t($saved_settings['play']['label']);
+  }
+  
+  if (isset($saved_settings['play']['replayLabel'])) {
+    $saved_settings['play']['replayLabel'] = t($saved_settings['play']['replayLabel']);
+  }
+  
+  // Add the properties to the flowplayer array ready for rendering
+  $flowplayer['canvas'] = $saved_settings['canvas'];
+  $flowplayer['clip'] = $saved_settings['clip'];
+  $flowplayer['play'] = $saved_settings['play'];
+  
+  // Configure the control bar
+  $flowplayer['plugins']['controls'] = $saved_settings['controls'];
+  
+  // Assign the control bar url if required
+  if (variable_get('swftools_flowplayer3_controls', '')) {
+    $flowplayer['plugins']['controls']['url'] = variable_get('swftools_flowplayer3_controls', '');
+  }
+  
+  // If we are streaming this file, add the stream plugin
+  if ($data['othervars']['stream']) {
+
+    // Define the clip provider as 'stream'
+    $flowplayer['clip']['provider'] = 'stream';
+    
+    // Get the name of the stream plugin
+    $flowplayer['plugins']['stream']['url'] = variable_get('swftools_flowplayer3_stream_plugin', SWFTOOLS_FLOWPLAYER3_STREAM_PLUGIN);
+    
+    // Set the path to the source of the stream
+    $flowplayer['plugins']['stream']['netConnectionUrl'] = $data['othervars']['stream'];
+    
+  }
+  
+  // Add product key if it has been set
+  if (variable_get('swftools_flowplayer3_product_key', '')) {
+    $flowplayer['key'] = variable_get('swftools_flowplayer3_product_key', '');
+  }
+  
+  // For now we will attach the complete flowplayer array to othervars so we can access it elsewhere
+  $data['othervars']['flowplayer3']['config'] = $flowplayer;
+  
+  // Convert flowplayer array to JSON, ready to assign to a flashvar called config
+  $config = drupal_to_js($flowplayer);
+  
+  // Replace " with ', and remove quotes from around true and false, to satisfy FlowPlayer
+  $config = str_replace(array('"', "'false'", "'true'", "'[", "]'"), array("'", "false", "true", "[", "]"), $config);
+  
+  // The ' has been escaped, so reverse it where it occurs in the playlist (it gets escaped again later!)
+  $config = str_replace(array("\'"), array("'"), $config);
+  
+  // Attach config to flashvars
+  $data['flashvars']['config'] = $config;
+  
+  // Add JavaScript to enable auto-close behavior and accessibility
+  swftools_flowplayer3_add_js();
+
+}
+
+
+/*
+ * Implementation of hook_swftools_variable_mapping().
+ *
+ * @return
+ *   Array of data describing how parameters passed to the player should be
+ *   mapped. The first keys describe the name of the player, and this contains 
+ *   a sub-array that consists of key/value pairs. The key describes the name
+ *   of the parameter, the value describes what it maps to, e.g. flashvars
+ */
+function swftools_flowplayer3_swftools_variable_mapping() {
+  
+  // FlowPlayer3 doesn't need to make any variable mappings
+  return array(
+    'flowplayer3' => array(),
+  );
+}
+
+
+/**
+ * Returns an array of default settings for the player.
+ */
+function _swftools_flowplayer3_settings($profile = '', $static = TRUE) {
+  
+  // Cache this
+  static $saved_settings = array();
+  
+  // We need a name to access the default profile in the array
+  $_profile = $profile ? $profile : SWFTOOLS_UNDEFINED;
+  
+  // Build settings if we don't already have them
+  // TODO : What is $static for??!!
+  if (!isset($saved_settings[$_profile]) || !$static) {
+  
+    // Define the settings list
+    $defaults['clip'] = array(
+      'autoPlay' => 'false',
+      'autoBuffering' => 'false',
+      'scaling' => 'scale',
+      'start' => '',
+      'duration' => '',
+      'accelerated' => 'false',
+      'bufferLength' => '',
+      'provider' => '',
+      'fadeInSpeed' => '',
+      'fadeOutSpeed' => '',
+      'linkUrl' => '',
+      'linkWindow' => '_blank',
+      'live' => 'false',
+      'cuePointMultiplier' => '',
+    );
+  
+    $defaults['controls'] = array(
+      'backgroundColor' => '#000000',
+      'timeColor' => '#01DAFF',
+      'durationColor' => '#FFFFFF',
+      'progressColor' => '#015B7A',
+      'backgroundGradient' => 'medium',
+      'progressGradient' => 'medium',
+      'bufferColor' => '#6C9CBC',
+      'bufferGradient' => 'none',
+      'sliderColor' => '#000000',
+      'sliderGradient' => 'none',
+      'buttonColor' => '#889AA4',
+      'buttonOverColor' => '#92B2BD',
+      'volumeSliderColor' => '#000000',
+      'volumeSliderGradient' => 'none',
+      'timeBgColor' => '#555555',
+      'autoHide' => 'fullscreen',
+      'hideDelay' => 4000,
+      'play' => 'true',
+      'volume' => 'true',
+      'mute' => 'true',
+      'time' => 'true',
+      'stop' => 'false',
+      'playlist' => 'false',
+      'fullscreen' => 'true',
+      'scrubber' => 'true',
+      'top' => '',
+      'left' => '',
+      'bottom' => '',
+      'right' => '',
+      'opacity' => '',
+      'borderRadius' => 0,
+      'scrubberHeightRatio' => 0.4,
+      'scrubberBarHeightRatio' => 1,
+      'volumeSliderHeightRatio' => 0.4,
+      'volumeBarHeightRatio' => 1,
+      'timeBgHeightRatio' => 0.7,
+    );
+    
+    $defaults['canvas'] = array(
+      'width' => 500,
+      'height' => 375,
+      'backgroundColor' => '#000000',
+      'backgroundImage' => '',
+      'backgroundRepeat' => 'repeat',
+      'backgroundGradient' => 'low',
+      'border' => '',
+      'borderRadius' => '',
+    );
+    
+    $defaults['logo'] = array(
+      'use_logo' => FALSE,
+      'displayTime' => 100,
+      'fadeSpeed' => 2,
+      'opacity' => 1,
+      'top' => '45%',
+      'right' => '50%',
+      'width' => '100%',
+      'height' => '100%',
+      'zIndex' => 0,
+      'url' => '',
+      'fullscreenOnly' => 'false',
+      'linkUrl' => '',
+      'linkWindow' => '_blank', 
+    );
+    
+    $defaults['play'] = array(
+      'url' => '',
+      'opacity' => 0.8,
+      'label' => '',
+      'replayLabel' => 'Play again',
+      'fadeSpeed' => 500,
+      'rotateSpeed' => 50,
+      'height' => '10%',
+      'width' => '10%',
+    );
+    
+    $defaults['accessibility'] = array(
+      'accessible'          => 0,
+      'accessible_visible'  => 1,
+    );
+    
+    // Retrieve settings from the database if available
+    $saved_settings[$_profile] = swftools_variable_get('swftools_flowplayer3', $defaults, $profile);
+    
+    //$saved_colors = variable_get('swftools_flowplayer3_palette', array());
+    $saved_colors = swftools_variable_get('swftools_flowplayer3_palette', array(), $profile);
+    
+    if ($saved_colors) {
+      // Move background color to canvas
+      $saved_settings[$_profile]['canvas']['backgroundColor'] = $saved_colors['backgroundColor'];
+      
+      // Move control bar background color to controls
+      $saved_colors['backgroundColor'] = $saved_colors['controlbarbackgroundColor'];
+      unset($saved_colors['controlbarbackgroundColor']);
+  
+      $saved_settings[$_profile]['controls'] += $saved_colors;
+    }
+  
+  }
+
+  // Return resulting defaults
+  return $saved_settings[$_profile];
+  
+}
+
+
+/**
+ * Implementation of hook_help().
+ */
+function swftools_flowplayer3_help($path, $arg) {
+  switch ($path) {
+    case 'admin/settings/swftools/flowplayer3':
+      return '<p>' . t('These are the settings for the FlowPlayer 3 media player.
+                      For details of what each parameter does refer to the
+                      <a href="@flowplayer">FlowPlayer 3 documentation</a>.
+                      It is possible that you do not need to change any of
+                      these settings and blank values will use FlowPlayer
+                      defaults.
+                      If content is embedded using the SWF Tools filter then each parameter
+                      can be over-ridden by specifying a new value in the filter string.', array('@flowplayer' => 'http://flowplayer.org/documentation/configuration')) . '</p>';
+  }
+}
+
+
+/**
+ * Implementation of hook_theme().
+ */
+function swftools_flowplayer3_theme() {
+  return array(
+    'swftools_flowplayer3_scheme_form' => array(
+      'arguments' => array('form' => NULL),
+      'file' => 'swftools_flowplayer3.admin.inc',
+    ),
+    'swftools_flowplayer3_playlist' => array(
+      'template' => 'swftools-flowplayer3-playlist',
+      'arguments' => array('player_id' => NULL, 'parameters' => NULL, 'config' => NULL, 'height' => NULL, 'width' => NULL, 'html_alt' => NULL),
+    ),
+    'swftools_flowplayer3_playlist_element' => array(
+      'template' => 'swftools-flowplayer3-playlist-element',
+      'arguments' => array('element' => NULL),
+    ),
+    'swftools_flowplayer3_accessible' => array(
+      'arguments' => array('id' => NULL, 'visible' => NULL),
+    ),
+    'swftools_flowplayer3' => array(
+      'arguments' => array('file' => NULL, 'options' => NULL),
+    ),
+  );
+}
+
+
+/**
+ * Embeds media on the page using the FlowPlayer3 embedding JavaScript.
+ * 
+ * $data
+ *   An array of SWF Tools data.
+ * @return
+ *   A string of markup that includes both HTML and JavaScript necessary to embed the player.
+ */
+function theme_swftools_flowplayer3($file, $data) {
+  
+  // Ensure FlowPlayer3 embedding script is added to the page
+  swftools_flowplayer3_add_js();
+  
+  // Convert config array to JSON
+  $config = drupal_to_js($data['othervars']['flowplayer3']['config']);
+  
+  // Remove quotes from around true and false
+  $config = str_replace(array('"false"', '"true"'), array("false", "true"), $config);
+
+  // Reverse escaped quotes - temporary code while working up template based JSON
+  $config = str_replace('\"', '"', $config);
+  
+  // Reverse quoting around [ and ] - temporary code while working up template based JSON
+  $config = str_replace(array('"[', ']"'), array("[", "]"), $config);
+ 
+  // Clear wmode parameter as if this is not window then FlowPlayer will not display
+  unset($data['params']['wmode']);
+  
+  // Clear the version parameters as having it seems to upset IE6/7
+  unset($data['params']['version']);
+  
+  // Put the src in to the params ready to be output
+  $data['params']['src'] = $data['othervars']['fileurl'];
+  
+  // Convert parameters to JSON
+  $parameters = drupal_to_js($data['params']);
+  
+  // Remove quotes from around true and false
+  $parameters = str_replace(array('"false"', '"true"'), array("false", "true"), $parameters);
+  
+  // If we have a playlist then use this code, based on http://flowplayer.org/plugins/javascript/playlist.html
+  if (isset($data['othervars']['playlist_data']) && variable_get('swftools_flowplayer3_playlist', FALSE)) {
+    
+    // Generate mark up for the combined player and playlist using the flowplayer3_playlist template
+    // Using a template lets a website completely over-ride the appearance of the player
+    $html = theme('swftools_flowplayer3_playlist', $data['othervars']['id'], $parameters, $config, $data['params']['height'], $data['params']['width'], variable_get('swftools_flowplayer3_load', TRUE) ? '' : $html_alt);
+    
+    // Return placeholder and JavaScript ready to be cached
+    return "\n" . $html . "\n";
+
+  }
+  
+  // We have a single file, so use this code
+ 
+  // Build a simple HTML string to act as the container - this version excludes alternate text so the player appears
+  $html = t('<div id="!id">!alt</div>', array(
+    '!id' => $data['othervars']['id'],
+    '!alt' => variable_get('swftools_flowplayer3_load', TRUE) ? '' : $html_alt,
+  ));
+
+  // Start adding scripts to the page
+  // Rather than add each script separately with drupal_add_js build an array and then collapse it and add once
+  $script = array();
+  
+  // Provision ready for later to add some JavaScript immediately after FlowPlayer embedding
+  $post_js = '';
+  
+  // Script to add player instance
+  $script[] = t('flowplayer("!id", !url, !config);
+             !post_js
+             ', array(
+               '!id' => $data['othervars']['id'],  
+               '!url' => $parameters,
+               '!config' => $config,
+               '!post_js' => $post_js,
+  ));
+  
+  // Script to set height and width of container
+  // TODO: We could make this a behavior and use Drupal.settings to pass the details
+  $script[] = t('$("#!id").height(!height).width(!width);',
+                array(
+                  '!id' => $data['othervars']['id'],
+                  '!height' => $data['othervars']['height'],
+                  '!width' => $data['othervars']['width'],
+                ));
+  
+  // Test code to add some JavaScript after the player - hard coded for now, but will be exposed
+//  $script[] = 'alert($f("'. $id . '").getVersion());';
+  
+  // Implode the array to a single string ready for inclusion
+  $script = implode("\n", $script);
+  
+  // Add script using container id as context to retrieve only scripts relevant to this player
+  drupal_add_js($script, 'inline', $data['othervars']['id']);
+  
+  // Retrieve formatted string containg scripts for this player
+  $script = drupal_get_js($data['othervars']['id']);
+  
+  // Return placeholder and JavaScript ready to be cached
+  return $html . "\n" . $script;
+  
+}
+
+
+/**
+ * Implementation of hook_init().
+ */
+function swftools_flowplayer3_init() {
+
+  // Add JavaScript to enable auto-close behavior and accessibility
+  if (variable_get('swftools_always_add_js', SWFTOOLS_ALWAYS_ADD_JS)) {
+    swftools_flowplayer3_add_js();
+  }
+
+}
+
+
+/**
+ * Attaches FlowPlayer3 JavaScript and CSS to the page.
+ * 
+ * @return
+ *   Nothing.
+ */
+function swftools_flowplayer3_add_js() {
+
+  // Add CSS to ensure FlowPlayer containers are set as block
+  drupal_add_js(drupal_get_path('module', 'swftools_flowplayer3') . '/swftools_flowplayer3.js');
+  
+  // If FlowPlayer3 embedding is active then put this in place too
+  if (variable_get('swftools_flowplayer3_embed', FALSE)) {
+
+    // Add css to ensure container is set as block
+    drupal_add_css(drupal_get_path('module', 'swftools_flowplayer3') . '/swftools_flowplayer3.css');
+    
+    // Add flowplayer3 embedding script
+    drupal_add_js(SWFTOOLS_LIBRARIES . 'flowplayer3/' . variable_get('swftools_flowplayer3_javascript', SWFTOOLS_FLOWPLAYER3_JAVASCRIPT));
+
+    // Add flowplayer3 playlist script if feature is enabled
+    if (variable_get('swftools_flowplayer3_playlist', FALSE)) {
+      drupal_add_js(SWFTOOLS_LIBRARIES . 'flowplayer3/' . variable_get('swftools_flowplayer3_playlist_javascript', SWFTOOLS_FLOWPLAYER3_PLAYLIST_JAVASCRIPT));
+    }
+  
+  }
+    
+}
+
+
+/**
+ * Returns markup to enable accessible controls for FlowPlayer 3.
+ * 
+ * @param $id
+ *   Id of the player to be made accessible.
+ * @param $visible
+ *   Whether the controls should be visible on the page.
+ * @return
+ *   Mark up to place accessible controls on the page.
+ */
+function theme_swftools_flowplayer3_accessible($id, $visible) {
+  
+  $return[] = $visible ? '<ul>' : '<ul class="swftools-accessible-hidden">';
+  
+  // Note the class names - this is what lets the JavaScript determine what to attach to, and with what action
+  $return[] = "<li><a href=\"#\" class=\"flowplayer3-accessible-play-$id\">" . t('Play') . "</a></li>";
+  $return[] = "<li><a href=\"#\" class=\"flowplayer3-accessible-pause-$id\">" . t('Pause') . "</a></li>";
+  $return[] = "<li><a href=\"#\" class=\"flowplayer3-accessible-mute-$id\">" . t('Mute') . "</a></li>";
+  $return[] = "<li><a href=\"#\" class=\"flowplayer3-accessible-unmute-$id\">" . t('Unmute') . "</a></li>";
+  $return[] = "<li><a href=\"#\" class=\"flowplayer3-accessible-stop-$id\">" . t('Rewind and stop') . "</a></li>";
+  
+  $return[] = '</ul>';
+  
+  // Implode array to a nicely formatted string
+  return implode($return, "\n");
+  
+}
+
+
+/**
+ * Implementation of hook_swftools_playlist_[player]().
+ */
+function swftools_flowplayer3_swftools_playlist_flowplayer3(&$data) {
+  
+  // Initialise array to hold data
+  $playlist = array();
+  
+  // Initialise flag to show it this content is being streamed
+  $stream = $data['othervars']['stream'] ? TRUE : FALSE;
+  
+  // Get file paths out of the playlist_data array and add to FlowPlayer playlist
+  foreach ($data['othervars']['playlist_data']['playlist'] as $play) {
+
+    if (isset($play['image']) && $play['image']) {
+      $playlist[] = '{ "url": "' . $play['image'] . '" , "autoPlay": true, "duration": "0" }';
+    }
+    
+    // If this is a streamed playlist, use filename, otherwise use fileurl  
+    if ($stream) {
+      $play['fileurl'] = $play['filename'];
+    }
+    else {
+      $play['fileurl'] = $play['fileurl'];
+    }
+
+    // Generate playlist element, already formatted to JSON
+    $element = theme('swftools_flowplayer3_playlist_element', $play);
+
+    // Attach this playlist element
+    $playlist[] = $element;
+
+  }
+      
+  // Attach the completed playlist to flowplayer array
+//  $flowplayer['playlist'] = $playlist;
+  $data['othervars']['flowplayer3']['playlist'] = $playlist;
+  
+  // Show we are not offering xml
+  return SWFTOOLS_NON_XML_PLAYLIST;
+
+}

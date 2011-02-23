@@ -1,0 +1,161 @@
+<?php
+// $Id: node_limitnumber.module,v 1.6.2.2 2011/02/01 23:17:29 jdwfly Exp $
+
+/**
+ * @file
+ * This module allows admin to limit the number of nodes of a given type a role can create.
+ * Example: Registered users can create just one photo gallery with ten images. "Class A users" can create up to five galleries, and webmaster can create unlimited.
+ */
+ 
+ /**
+ * Implementation of hook_help().
+ */ 
+function node_limitnumber_help($path, $arg) {
+  $output = '';
+  switch ($path) {
+    case "admin/help#modulename":
+      $output = t("This module allows admin to limit the number of nodes of a given type a role can create. Different roles may have different limits.") ."<p>". t("Example: Registered users can create all blog entries they want, but just one photo gallery with ten images") ."</p>";
+      break;
+  }
+  return $output;
+}
+
+function node_limitnumber_perm() {
+  return array('administer node limitnumber');
+}
+
+/**
+  * Implementation of hook_menu().
+  */
+function node_limitnumber_menu() {
+  $items = array();
+  $items['admin/settings/node_limitnumber'] = array(
+    'title' => 'Node Limit Number',
+    'description' => 'Limit number of nodes of a given type a user can publish based on his/her roles.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('node_limitnumber_admin'),
+    'access arguments' => array('administer node limitnumber'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+  return $items;
+}
+
+/**
+ * Admin menu
+ */
+function node_limitnumber_admin() {
+  if (arg(3) == 'delete' && is_numeric(arg(4))) {
+    node_limitnumber_admin_delete_limit();
+  }
+  include_once(drupal_get_path('module', 'node_limitnumber') .'/node_limitnumber.inc');
+  return node_limitnumber_admin_modify_form();
+}
+
+function theme_node_limitnumber_admin($form) {
+  include_once(drupal_get_path('module', 'node_limitnumber') .'/node_limitnumber.inc');
+  return theme_node_limitnumber_admin_modify_form($form);
+}
+function node_limitnumber_theme() {
+  $themes = array(
+    'node_limitnumber_admin' => array(
+      'arguments' => array('form'),
+      'function' => 'theme_node_limitnumber_admin'
+    )
+  );
+  return ($themes);
+}
+/**
+  * Function for deleting a rule
+  */
+function node_limitnumber_admin_delete_limit() {
+  $q = "DELETE FROM {node_limitnumber_rules} WHERE id = %d";
+  db_query($q, arg(4));
+  drupal_set_message(t('Limit deleted succesfully'));
+  drupal_goto('admin/settings/node_limitnumber');
+}
+
+/** 
+  * Validate the limit field form for the forms
+  */
+function node_limitnumber_validate_limit($item) {
+  $num = $item['#value'];
+  $val = (is_numeric($num) && intval($num) > 0 && ($num == intval($num))) ? TRUE : FALSE;
+  if ($val == FALSE) {
+    form_error($item, t('Limit must be a number.'));
+  }
+}
+
+/** 
+  * Validate the form for new rules
+  * Essentially, this is going to check if the rule we're trying to insert exists.
+  */
+function node_limitnumber_admin_add_form_validate($form, &$form_state) {
+  $values = $form_state['values'];
+  $q = "SELECT * FROM {node_limitnumber_rules} WHERE class = '%s' AND item = '%d' AND pubtype = '%s'";
+  $result = db_query($q, 'role', $values['role'], $values['pubtype']);
+  $total = db_affected_rows();
+  if ($total > 0) {
+    form_set_error('pubtype', t('This limit exists. If you want to change the limit, edit it instead of creating a new one'));
+  }
+  if ($values['limit'] <= 0) {
+    form_set_error('limit', t('The limit must be > 0'));
+  }
+}
+
+/** 
+  * Saving the form for new rules
+  */
+function node_limitnumber_admin_add_form_submit($form, &$form_state) {
+  $values = $form_state['values'];
+  $q = "INSERT INTO {node_limitnumber_rules} (class , item, pubtype, max) VALUES ('%s', '%d', '%s', '%d')";
+  db_query($q, 'role', $values['role'], $values['pubtype'], $values['limit']);
+  drupal_set_message(t('Limit saved succesfully'));
+}
+
+/**
+  * Implementation of hook_node_type
+  * Delete all rules related to the node type being deleted
+  */
+function node_limitnumber_node_type($op, $type) {
+  if ($op == 'delete') {
+    $q = "DELETE FROM {node_limitnumber_rules} WHERE class = 'role' AND pubtype = '%s'";
+    $result = db_query($q, $type->type);
+    $num = db_affected_rows();
+    if ($num > 0) {
+      drupal_set_message(sprintf(t('%d limit rules deleted.'), $num));
+    }
+  }
+}
+/**
+  * Saving the modifications on existant rules
+  */
+function node_limitnumber_admin_modify_form_submit($form, &$form_state) {
+  $rows = $form_state['clicked_button']['#post']['modify'];
+  foreach ($rows as $row) {
+    $q = "UPDATE {node_limitnumber_rules} SET item = %d, pubtype = '%s', max = %d WHERE id = %d";
+    db_query($q, $row['role'], $row['pubtype'], $row['limit'], $row['id']);
+  }
+  drupal_set_message(t('Limits updated') . $row['submit']);
+}
+
+/**
+  * Implementation of hook_nodeapi
+  * This is where the real job gets done.
+  */
+function node_limitnumber_nodeapi($node, $op) {
+  include_once(drupal_get_path('module', 'node_limitnumber') .'/node_limitnumber.inc');
+  global $user;
+  if (($op == 'prepare' || $op == 'presave') && $user->uid != 1 && !$node->nid) {
+    $limit = _get_limits_for_user($user, $node->type);
+    if (!empty($limit)) { // We get the total number of nodes of this type owned by this user
+      $q = "SELECT * FROM {node} WHERE type = '%s' AND uid = %d";
+      $result = db_query( $q, $node->type, $user->uid);
+      $num = db_affected_rows();
+      if ($num >= $limit) {// We have the data, now we check the limit
+        $nodetypename = node_get_types('name', $node);
+        drupal_set_message(t("You can't create more content of type !type, sorry.", array('!type' => $nodetypename)), 'error');
+        drupal_goto('node/add');
+      }
+    }
+  }
+}

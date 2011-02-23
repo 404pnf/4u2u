@@ -11,9 +11,14 @@ body {
  	background-color: #ffffff;
 }
 
-.item-list ul li {list-style:none;}
+/*header高度与图片 这样两者才不会有白的空*/
+#header {
+	   height: 258px;
+   }
 
-h2 { text-shadow: -1px 2px 3px #ffb69a; }
+.item-list ul li {list-style:none;}
+#content { font-size:12px; line-height:25px;}
+h2 { font-size:16px; font-weight:bold;}
 
 #block-block-4 {background-color: #fff2e0;}
 
@@ -22,11 +27,16 @@ h2 { text-shadow: -1px 2px 3px #ffb69a; }
 #block-aggregator-feed-1  .block-title , #block-block-5 .block-title{
 	background: url("../images/block_bg.gif"); 
 	padding: 0.2em 0.5em 0 0.2em;
+	font-size:16px; 
+	font-family: Arial, Helvetica, sans-serif;
+	font-weight: bold;
+	text-align:center;
+
 }
 
 #block-aggregator-feed-1 , #block-block-5 {
 	background-color:white;
-	border: 1px solid #ededed;
+
 }
 
 
@@ -34,7 +44,11 @@ h2 { text-shadow: -1px 2px 3px #ffb69a; }
 
 #review ul {list-style:none; margin: 0; padding: 0;}
 #review li {float:left; margin: 0.5em 1em 0 0;}
+#skip{
+	background-color:#F60;
+	font-size:18px;
 
+	}
 
 .news_title {
 	background: url("../images/news_bg.gif"); 
@@ -45,9 +59,10 @@ h2 { text-shadow: -1px 2px 3px #ffb69a; }
 	padding-left: 0.5em;
 }
 
+
 .news-more {float: right; padding-right: 7em; margin-top: -2em; margin-bottom:2em;}
 
-#sidebar-first .block-inner, #sidebar-second .block-inner {padding: 0.5em;}
+#sidebar-first .block-inner, #sidebar-second .block-inner {padding: 1em;}
 
 /* 这个block是个图片，宽度已经和左边栏一样了，所以不能有padding */
 #block-block-3 .block-inner {padding:0;}
@@ -102,12 +117,14 @@ a:hover,a:active {
 
 #navigation {
 	background:url(../images/menubg.gif) repeat-x #000 ;
+	text-align:center;
+        line-height: 40px;       /*导航文字上下居中，需要把文字的行高设定为该div的高度*/
 }
 #primary a:link, #primary a:visited {
 	color: #ffffff;
 	text-decoration: underline;
 	line-height: 20px;
-	font-size: 14px;
+	font-size: 16px;
 	font-weight: bold;
 	margin-top: 1em;
 }

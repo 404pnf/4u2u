@@ -1,0 +1,353 @@
+<?php
+// $Id: swftools_soundmanager2.module,v 1.1.2.2 2010/04/09 22:20:06 stuartgreenfield Exp $
+
+/**
+ * SWF Tools support for the SoundManager 2 audio player.
+ */
+
+/**
+ * Implementation of hook_swftools_methods().
+ */
+function swftools_soundmanager2_swftools_methods() {
+
+  // Define the media player
+  $soundmanager2 = array(
+    'module'      => 'swftools_soundmanager2',
+    'title'       => t('SoundManager 2'),
+    'download'    => 'http://wpaudioplayer.com/',
+    'width'       => 50,
+    'height'      => 50,
+    'library'     => SWFTOOLS_LIBRARIES . 'soundmanager2/script/soundmanager2.js',
+    'profile'     => array(
+      'path' => 'soundmanager2',
+      'settings' => array('swftools_soundmanager2'),
+      'file' => 'swftools_soundmanager2.admin.inc',
+      'page argument' => 'swftools_soundmanager2_profile_form',
+    ),
+  );
+
+  // SoundManager 2 supports single audio files and playlists
+  $methods['audio']['soundmanager2'] = $soundmanager2;
+  $methods['audio_list']['soundmanager2'] = $soundmanager2;
+
+  // Return methods that the player supports
+  return $methods;
+  
+}
+
+
+/**
+ * Implementation of hook_menu().
+ */
+function swftools_soundmanager2_menu() {
+
+  // Initialise an array
+  $items = array();
+
+  // Define menu items
+  $items['admin/settings/swftools/soundmanager2'] = array(
+    'title' => 'SoundManager 2',
+    'description' => 'Settings for '. l('SoundManager 2 audio player', 'http://wpaudioplayer.com/') .'.',
+    'access arguments' => array('administer flash'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('swftools_soundmanager2_admin_form'),
+    'file' => 'swftools_soundmanager2.admin.inc',
+    'file path' => drupal_get_path('module', 'swftools_soundmanager2'),
+  );
+
+  // Return menu items
+  return $items;
+
+}
+
+
+/**
+ * Implementation of hook_init().
+ * 
+ * Push the script to stop other players on to the page.
+ */
+function swftools_soundmanager2_init() {
+  
+  // Add all JavaScripts to be sure SoundManager 2 can activate its players
+  if (variable_get('swftools_always_add_js', SWFTOOLS_ALWAYS_ADD_JS)) {
+    swftools_soundmanager2_add_js('__add_everything__');
+  }
+  
+};
+
+
+/**
+ * Adds SoundManager 2 audio JavaScript to the page.
+ */
+function swftools_soundmanager2_add_js($profile = '', $player = '') {
+  
+  // We don't want to add things multiple times so we set some static variables
+  static $everything_added = FALSE;
+  static $global_settings_added = FALSE;
+  static $ui360_settings_added = FALSE;
+
+  // Get global settings
+  $global_settings = _swftools_soundmanager2_global_settings();
+  
+  // Get profile settings
+  $profile_settings = _swftools_soundmanager2_settings($profile);
+  
+  // We use a profile name that we hope no-one ever picks to indicate we want to add all scripts flagged for every page
+  if ($profile == '__add_everything__' && !$everything_added) {
+    $everything_added = TRUE;
+    foreach ($global_settings['addScripts'] as $add_player) {
+      if ($add_player) {
+        swftools_soundmanager2_add_js('', $add_player);
+      }
+    }
+  }
+    
+  // See if we need to add global settings - do this once only
+  if (!$global_settings_added) {
+    $global_settings_added = TRUE;
+    $settings = array(
+      'soundManager.url' => base_path() . SWFTOOLS_LIBRARIES. 'soundmanager2/swf/',
+      'soundManager.debugMode' => $global_settings['debugMode'] ? true : false,
+      'soundManager.useFlashBlock' => $global_settings['useFlashBlock'] ? true : false,
+      'soundManager.flashVersion' => $global_settings['flashVersion'],
+      'soundManager.useFastPolling' => $global_settings['useFastPolling'] ? true : false,
+      'soundManager.useHighPerformance' => $global_settings['useHighPerformance'] ? true : false,
+      'threeSixtyPlayer.config.imageRoot' => base_path() . SWFTOOLS_LIBRARIES . 'soundmanager2/demo/360-player/',
+    );
+    drupal_add_js(array('swftools_soundmanager2' => $settings), 'setting');
+  }
+    
+  // Add main SoundManager2 script and SWF Tools script to load the defaults in to it
+  $script = $global_settings['debugMode'] ? 'soundmanager2.js' : 'soundmanager2-nodebug-jsmin.js';
+  drupal_add_js(SWFTOOLS_LIBRARIES . 'soundmanager2/script/' . $script);
+  drupal_add_js(drupal_get_path('module', 'swftools_soundmanager2') . '/swftools_soundmanager2.js');
+  
+  if ($global_settings['useFlashBlock']) {
+    drupal_add_css(SWFTOOLS_LIBRARIES . 'soundmanager2/demo/flashblock/flashblock.css');
+  }
+  
+  // Add special IE canvas script - we have to add this ourselves as a conditional script
+  $script = base_path() . SWFTOOLS_LIBRARIES . 'soundmanager2/script/excanvas.js';
+  $script = '<!--[if IE]><script type="text/javascript" src="'. $script .'"></script><![endif]-->';
+  drupal_set_html_head($script);
+  
+  // If the function was called with a specific player we are iterating to add all the scripts
+  $player = $player ? $player : $profile_settings['player'];
+  
+  // Add the relevant scripts and css
+  switch ($player) {
+    case 'ui360':
+      drupal_add_css(SWFTOOLS_LIBRARIES . 'soundmanager2/demo/360-player/360player.css');
+      drupal_add_js(SWFTOOLS_LIBRARIES . 'soundmanager2/demo/360-player/script/berniecode-animator.js');
+      drupal_add_js(SWFTOOLS_LIBRARIES . 'soundmanager2/demo/360-player/script/360player.js');
+      break;
+      
+    case 'mp3_links':
+      drupal_add_css(SWFTOOLS_LIBRARIES . 'soundmanager2/demo/play-mp3-links/css/inlineplayer.css');
+      drupal_add_css(drupal_get_path('module', 'swftools_soundmanager2') . '/swftools_soundmanager2.inlineplayer.css');
+      drupal_add_js(SWFTOOLS_LIBRARIES . 'soundmanager2/demo/play-mp3-links/script/inlineplayer.js');
+      break;
+      
+    case 'mp3_button':
+      drupal_add_css(SWFTOOLS_LIBRARIES . 'soundmanager2/demo/mp3-player-button/css/mp3-player-button.css');
+      drupal_add_js(SWFTOOLS_LIBRARIES . 'soundmanager2/demo/mp3-player-button/script/mp3-player-button.js');
+      break;
+      
+    case 'ui360_visualization':
+      drupal_add_css(SWFTOOLS_LIBRARIES . 'soundmanager2/demo/360-player/360player.css');
+      drupal_add_css(SWFTOOLS_LIBRARIES . 'soundmanager2/demo/360-player/360player-visualization.css');
+      drupal_add_js(SWFTOOLS_LIBRARIES . 'soundmanager2/demo/360-player/script/berniecode-animator.js');
+      drupal_add_js(SWFTOOLS_LIBRARIES . 'soundmanager2/demo/360-player/script/360player.js');
+
+      // See if we need to add visualisation settings - do this once only
+      if (!$ui360_settings_added) {
+        $ui360_settings_added = TRUE;
+        $settings = array(
+          'useVisualisation' => true,
+          'threeSixtyPlayer.config.showHMSTime' => true,
+          'threeSixtyPlayer.config.useWaveformData' => true,
+          'threeSixtyPlayer.config.useEQData' => true,
+          'soundManager.flash9Options.useWaveformData' => true,
+          'soundManager.flash9Options.useEQData' => true,
+          'soundManager.flash9Options.usePeakData' => true,
+        );
+        drupal_add_js(array('swftools_soundmanager2' => $settings), 'setting');
+      }
+      break;
+
+  }
+
+}
+  
+
+
+
+/**
+ * Implementation of hook_swftools_playlist_[player]().
+ */
+function swftools_soundmanager2_swftools_playlist_soundmanager2(&$data) {
+
+  // I think we can delete this - we just take the playlist straight out of $data['playlist_data']['playlist']
+  
+}
+
+
+/**
+ * Implementation of hook_swftools_preprocess_[player]().
+ */
+function swftools_soundmanager2_swftools_preprocess_soundmanager2(&$data) {
+
+  // Retrieve saved settings
+  $saved_settings = _swftools_soundmanager2_settings($data['othervars']['profile']);
+  
+  // Make sure the right script got added
+  swftools_soundmanager2_add_js($data['othervars']['profile']);
+  
+  // All we need to do is over-ride the embedding theme to send the relevant SoundManager2 theme
+  $data['resolved_methods']['embed']['theme'] = 'swftools_soundmanager2_' . $saved_settings['player'];
+
+}
+
+
+/**
+ * Implementation of hook_theme().
+ */
+function swftools_soundmanager2_theme() {
+  return array(
+    'swftools_soundmanager2_mp3_links' => array(
+      'arguments' => array('file' => NULL, 'options' => NULL),
+    ),
+    'swftools_soundmanager2_ui360' => array(
+      'arguments' => array('file' => NULL, 'options' => NULL),
+    ),
+    'swftools_soundmanager2_ui360_visualization' => array(
+      'arguments' => array('file' => NULL, 'options' => NULL),
+      'function' => 'theme_swftools_soundmanager2_ui360',
+    ),
+    'swftools_soundmanager2_mp3_button' => array(
+      'arguments' => array('file' => NULL, 'options' => NULL),
+    ),
+  );
+}
+
+
+/**
+ * Implements ui360 player.
+ */
+function theme_swftools_soundmanager2_ui360($file, $data) {
+  
+  $html = '';
+
+  if (!$data['othervars']['playlist_data']) {
+    $html .= '<div class="ui360"><a href="'. $data['othervars']['file_url'] .'"></a></div>';
+  }
+  else {
+  
+    foreach($data['othervars']['playlist_data']['playlist'] as $play) {
+      $html .= '<div class="sm2-inline-list">';
+      $html .= '<div class="ui360"><a href="'. $play['fileurl'] .'"></a></div>';
+      $html .= '</div>';
+    }
+  
+  }
+  
+  return $html;
+
+}
+
+
+/**
+ * Implements inline mp3 links player.
+ */
+function theme_swftools_soundmanager2_mp3_links($file, $data) {
+
+  $html = '<ul class="graphic">';
+
+  if (!$data['othervars']['playlist_data']) {
+    $html .= '<li><a href="' . $data['othervars']['file_url'] . '">Play</a></li>';
+  }
+  else {
+  
+    foreach($data['othervars']['playlist_data']['playlist'] as $play) {
+      $html .= '<li><a href="' . $play['fileurl'] . '">' . $play['title'] . '</a></li>';
+    }
+  
+  }
+  
+  $html .= '</ul>';
+  
+  return $html;
+
+}
+
+
+/**
+ * Implements button player.
+ */
+function theme_swftools_soundmanager2_mp3_button($file, $data) {
+
+  $html = '';
+
+  if (!$data['othervars']['playlist_data']) {
+    $html .= '<p>' . t('Play') . '<a href="' . $data['othervars']['file_url'] . '" class="sm2_button">'. t('Play') . '</a></p>';
+  }
+  else {
+  
+    foreach($data['othervars']['playlist_data']['playlist'] as $play) {
+      $html .= '<p>' . $play['title'] . '<a href="' . $play['fileurl'] . '" class="sm2_button">' . t('{Play') . ' ' . $play['title'] . '</a></p>';
+    }
+  
+  }
+  
+  return $html;
+
+}
+
+
+/**
+ * Returns the audio player default settings, or customised settings from the configuration page.
+ */
+function _swftools_soundmanager2_settings($profile) {
+
+  // Set up defaults
+  // TODO: Put these in an array so we can organise the admin form by categories, like other players
+  $defaults = array(
+
+    'player' => 'ui360',
+    
+  );
+
+  // Retrieve settings from the database if available
+  $settings = swftools_variable_get('swftools_soundmanager2', $defaults, $profile);
+  
+  // Return result
+  return $settings;
+  
+}
+
+
+/**
+ * Returns the audio player default settings, or customised settings from the configuration page.
+ */
+function _swftools_soundmanager2_global_settings() {
+
+  // Set up defaults
+  // TODO: Put these in an array so we can organise the admin form by categories, like other players
+  $defaults = array(
+
+    'debugMode' => 0,
+    'useFlashBlock' => 1,
+    'flashVersion' => 8,
+    'useFastPolling' => 0,
+    'useHighPerformance' => 1,
+    'addScripts' => array(),
+    
+  );
+
+  // Retrieve settings from the database if available
+  $settings = variable_get('swftools_soundmanager2_globals', $defaults);
+  
+  // Return result
+  return $settings;
+  
+}

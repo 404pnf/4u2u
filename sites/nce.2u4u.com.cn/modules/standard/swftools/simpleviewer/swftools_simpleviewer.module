@@ -1,0 +1,379 @@
+<?php
+// $Id: swftools_simpleviewer.module,v 1.1.2.17 2010/04/14 23:29:54 stuartgreenfield Exp $
+
+/**
+ * SWF Tools support for SimpleViewer image viewer.
+ */
+
+/**
+ * Implementation of hook_swftools_methods().
+ */
+function swftools_simpleviewer_swftools_methods() {
+  
+  $simpleviewer = array(
+    'module'      => 'swftools_simpleviewer',
+    'title'       => t('SimpleViewer'),
+    'download'    => 'http://www.simpleviewer.net/simpleviewer',
+    'width'       => 700,
+    'height'      => 600,
+    'library'     => SWFTOOLS_LIBRARIES . 'simpleviewer/web/simpleviewer.swf',
+    'profile'     => array(
+      'path' => 'simpleviewer',
+      'settings' => array('swftools_simpleviewer'),
+      'file' => 'swftools_simpleviewer.admin.inc',
+      'page argument' => 'swftools_simpleviewer_profile_form',
+    ),
+  );
+  
+  $tiltviewer = array(
+    'module'      => 'swftools_simpleviewer',
+    'title'       => t('TiltViewer'),
+    'download'    => 'http://www.simpleviewer.net/tiltviewer',
+    'width'       => 700,
+    'height'      => 600,
+    'library'     => SWFTOOLS_LIBRARIES . 'tiltviewer/TiltViewer.swf',
+    'profile'     => array(
+      'path' => 'tiltviewer',
+      'settings' => array('swftools_tiltviewer'),
+      'file' => 'swftools_simpleviewer.admin.inc',
+      'page argument' => 'swftools_tiltviewer_profile_form',
+    ),
+  );
+  
+  $methods['image_list']['simpleviewer'] = $simpleviewer;
+  $methods['image_list']['tiltviewer'] = $tiltviewer;
+  
+  return $methods;
+
+}
+
+
+/**
+ * Implementation of hook_menu().
+ */
+function swftools_simpleviewer_menu() {
+  
+  $items = array();
+
+  $items['admin/settings/swftools/simpleviewer'] = array(
+    'title' => 'SimpleViewer',
+    'description' => 'Settings for ' . l('SimpleViewer', 'http://www.simpleviewer.net/simpleviewer') . '.',
+    'weight' => 1,
+    'access arguments' => array('administer flash'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('swftools_simpleviewer_admin_form'),
+    'file' => 'swftools_simpleviewer.admin.inc',
+    'file path' => drupal_get_path('module', 'swftools_simpleviewer'),
+  );
+  
+  $items['admin/settings/swftools/tiltviewer'] = array(
+    'title' => 'TiltViewer',
+    'description' => 'Settings for ' . l('TiltViewer', 'http://www.simpleviewer.net/tiltviewer') . '.',
+    'weight' => 1,
+    'access arguments' => array('administer flash'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('swftools_tiltviewer_admin_form'),
+    'file' => 'swftools_simpleviewer.admin.inc',
+    'file path' => drupal_get_path('module', 'swftools_simpleviewer'),
+  );
+
+  return $items;
+
+}
+
+
+/**
+ * Implementation of hook_swftools_preprocess_[player]().
+ */
+function swftools_simpleviewer_swftools_preprocess_simpleviewer(&$data) {
+
+  // Retrieve settings
+  $saved_settings = _swftools_simpleviewer_vars($data['othervars']['profile']);
+  
+  // Combine user supplied values and defaults, letting user values dominate
+  $data['flashvars'] = array_merge($saved_settings['swf'], $data['flashvars']);
+  
+  // Attach file url of the content to display to flashvars
+  $data['flashvars']['galleryURL'] = $data['othervars']['file_url'];
+
+}
+
+
+/**
+ * Implementation of hook_swftools_preprocess_[player]().
+ */
+function swftools_simpleviewer_swftools_preprocess_tiltviewer(&$data) {
+
+  // Retrieve settings
+  $saved_settings = _swftools_tiltviewer_vars($data['othervars']['profile']);
+  
+  // Extract any relevant config vars from the $data['othervars'] array
+  $user_vars = array_intersect_key($data['othervars'], $saved_settings['basic']);
+  
+  // Merge any incoming values with basic settings
+  $saved_settings['basic'] = array_merge($saved_settings['basic'], $user_vars);
+  
+  // Extract any relevant Flickr config vars from the $data['othervars'] array
+  $user_vars = array_intersect_key($data['othervars'], $saved_settings['flickr']);
+  
+  // Merge any incoming values with flickr settings
+  $saved_settings['flickr'] = array_merge($saved_settings['flickr'], $user_vars);
+
+  // Always set the useFlickr option on the main settings
+  $saved_settings['basic']['useFlickr'] = $saved_settings['flickr']['useFlickr'];
+  
+  // Adjust flash vars depending on whether we're integrating to Flickr or not
+  if ($saved_settings['flickr']['useFlickr'] == 'true') {
+    $data['flashvars'] += $saved_settings['flickr'];
+  }
+  else {
+    $data['flashvars']['xmlURL'] = $data['othervars']['file_url'];
+  }
+  
+  // Combine user supplied values and defaults, letting user values dominate
+  $data['flashvars'] = array_merge($saved_settings['basic'], $data['flashvars']);
+
+}
+
+
+/**
+ * Implementation of hook_swftools_playlist().
+ */
+function swftools_simpleviewer_swftools_playlist_simpleviewer(&$data) {
+  
+  // Get array of simpleviewer settings
+  $saved_settings = _swftools_simpleviewer_vars($data['othervars']['profile']);
+
+  // Extract any relevant vars from the $data['othervars'] array
+  $user_xml = array_intersect_key($data['othervars'], $saved_settings['xml']);
+  
+  // Merge user defined flashvars with default vars
+  $xml_vars = array_merge($saved_settings['xml'], $user_xml);
+  
+  // Put xml_vars and base in to the header array so the xml themer can access them
+  $data['othervars']['playlist_data']['header']['xml_vars'] = $xml_vars;
+  $data['othervars']['playlist_data']['header']['base'] = $data['params']['base'];
+  
+  // Initialise a string to contain the elements
+  $xml = '';
+  
+  // Iterate over the playlist to build elements xml
+  // If we are using flickr integration this will be empty
+  if ($data['othervars']['playlist_data']['playlist']) {
+    foreach ($data['othervars']['playlist_data']['playlist'] AS $track => $details) {
+      $xml .= theme('swftools_simpleviewer_playlist_element', $details);
+    }
+  }
+  
+  // Add xml wrapper around the elements
+  $xml = theme('swftools_simpleviewer_playlist_wrapper', $data['othervars']['playlist_data']['header'], $xml);
+  
+  // Return the resulting xml
+  return $xml;
+  
+}
+
+
+/**
+ * Implementation of hook_swftools_playlist().
+ */
+function swftools_simpleviewer_swftools_playlist_tiltviewer(&$data) {
+  
+  // Initialise a string to contain the elements
+  $xml = '';
+  
+  // Iterate over the playlist to build elements xml
+  // If we are using flickr integration this will be empty
+  if ($data['othervars']['playlist_data']['playlist']) {
+    foreach ($data['othervars']['playlist_data']['playlist'] AS $track => $details) {
+      $details += array('description' => '');
+      $xml .= theme('swftools_tiltviewer_playlist_element', $details);
+    }
+  }
+  
+  // Add xml wrapper around the elements
+  $xml = theme('swftools_tiltviewer_playlist_wrapper', $data['othervars']['playlist_data']['header'], $xml);
+  
+  // Return the resulting xml
+  return $xml;
+  
+}
+
+
+/**
+ * Implementation of hook_theme().
+ */
+function swftools_simpleviewer_theme() {
+  return array(
+    'swftools_simpleviewer_playlist_element' => array(
+      'template' => 'swftools-simpleviewer-playlist-element',
+      'arguments' => array('element' => NULL),
+    ),
+    'swftools_simpleviewer_playlist_wrapper' => array(
+      'template' => 'swftools-simpleviewer-playlist-wrapper',
+      'arguments' => array('header' => NULL, 'xml' => NULL),
+    ),
+    'swftools_tiltviewer_playlist_element' => array(
+      'template' => 'swftools-tiltviewer-playlist-element',
+      'arguments' => array('element' => NULL),
+    ),
+    'swftools_tiltviewer_playlist_wrapper' => array(
+      'template' => 'swftools-tiltviewer-playlist-wrapper',
+      'arguments' => array('header' => NULL, 'xml' => NULL),
+    ),
+  );
+}
+
+
+/**
+ * Return an array of default settings for the admin page and player configuration
+ */
+function _swftools_simpleviewer_settings($profile) {
+  
+  $defaults['appearance'] = array(
+    'width' => 700,
+    'height' => 600,
+    'maxImageWidth' => 480,
+    'maxImageHeight' => 480,
+    'frameWidth' => 20,
+    'thumbPosition' => 'LEFT',
+    'thumbColumns' => 3,
+    'thumbRows' => 4,
+    'showOpenButton' => 'true',
+    'showFullScreenButton' => 'true',
+    'galleryStyle' => 'MODERN',
+    'textColor' => '#FFFFFF',
+    'frameColor' => '#FFFFFF',
+  );
+  
+  $defaults['flickr'] = array(
+    'useFlickr' => 0,
+    'flickrUserName' => '',
+    'flickrTags' => '',
+  );
+  
+  // Retrieve settings from database, if available
+  $settings = swftools_variable_get('swftools_simpleviewer', $defaults, $profile);
+  
+  // Return resulting defaults
+  return $settings;
+
+}
+
+
+/**
+ * Remap values from the settings form to the format needed to build player output.
+ */
+function _swftools_simpleviewer_vars($profile) {
+
+  // Cache this
+  static $cache = array();
+  
+  // If profile is not set then we need a name to cache it
+  $_profile = $profile ? $profile : SWFTOOLS_UNDEFINED;
+  
+  // If values not already populated then get them
+  if (!isset($cache[$_profile])) {
+  
+    // Get current defaults
+    $settings = _swftools_simpleviewer_settings($profile);  
+  
+    // Attach height and width
+    $cache[$_profile]['swf'] = array(
+      'width' => $settings['appearance']['width'],
+      'height' => $settings['appearance']['height'],
+    );
+    
+    // Don't attach swf settings to xml
+    unset($settings['appearance']['swf']);
+    
+    // Attach remaining variables to xml
+    $cache[$_profile]['xml'] = $settings['appearance'];
+    
+    // Are we using Flickr?
+    if ($settings['flickr']['useFlickr']) {
+      $cache[$_profile]['xml'] += array(
+        'useFlickr' => 'true',
+        'flickrUserName' => $settings['flickr']['flickrUserName'],
+      );
+      if($settings['flickr']['flickrTags']) {
+        $cache[$_profile]['xml'] += array(
+          'flickrTags' => $settings['flickr']['flickrTags'],
+        );
+      }
+    }
+  }
+
+  // Return remapped variables
+  return $cache[$_profile];
+  
+}
+
+
+/**
+ * Return an array of default settings for the admin page and player configuration
+ */
+function _swftools_tiltviewer_settings($profile) {
+  
+  $defaults['basic'] = array(
+    'width' => 700,
+    'height' => 600,
+    'useReloadButton' => 'true',
+    'showFlipButton' => 'true',
+    'showLinkButton' => 'true',
+    'columns' => 5,
+    'rows' => 5,
+    'linkLabel' => t('go to Flickr Page'),
+    'frameColor' => '0xFFFFFF',
+    'backColor' => '0xFFFF00',
+    'bkgndInnerColor' => '0x333333',
+    'bkgndOuterColor' => '0x000000',
+    'langGoFull' => t('Go Fullscreen'),
+    'langExitFull' => t('Exit Fullscreen'),
+    'langAbout' => t('About'),
+    'maxJPGSize' => 1024,
+  );
+  
+  $defaults['flickr'] = array(
+    'useFlickr' => 'false',
+    'user_id' => '',
+    'tags' => '',
+    'tag_mode' => 'any',
+    'showTakenByText' => 'true',
+  );
+  
+  // Retrieve settings from database, if available
+  $settings = swftools_variable_get('swftools_tiltviewer', $defaults, $profile);
+  
+  // Return resulting defaults
+  return $settings;
+
+}
+
+
+/**
+ * Retrieves TiltViewer settings for the selected profile
+ */
+function _swftools_tiltviewer_vars($profile) {
+
+  // Cache this
+  static $cache = array();
+  
+  // If profile is not set then we need a name to cache it
+  $_profile = $profile ? $profile : SWFTOOLS_UNDEFINED;
+  
+  // If values not already populated then get them
+  if (!isset($cache[$_profile])) {
+    
+    // Get current defaults
+    $settings = _swftools_tiltviewer_settings($profile);  
+    
+    // Attach settings to the cache
+    $cache[$_profile] = $settings;
+    
+  }
+
+  // Return settings for this profile
+  return $cache[$_profile];
+  
+}

@@ -1,0 +1,363 @@
+<?php
+// $Id: swftools_wpaudio.module,v 1.1.2.18 2010/04/07 21:33:36 stuartgreenfield Exp $
+
+/**
+ * SWF Tools support for WordPress Audio Player.
+ */
+
+/**
+ * Implementation of hook_swftools_methods().
+ */
+function swftools_wpaudio_swftools_methods() {
+
+  // Define the media player
+  $wpaudio = array(
+    'module'      => 'swftools_wpaudio',
+    'title'       => t('WordPress Audio'),
+    'download'    => 'http://wpaudioplayer.com/',
+    'width'       => 290,
+    'height'      => 24,
+    'library'     => SWFTOOLS_LIBRARIES . 'audio-player/player.swf',
+    'profile'     => array(
+      'path' => 'wpaudio',
+      'settings' => array('swftools_wpaudio'),
+      'file' => 'swftools_wpaudio.admin.inc',
+      'page argument' => 'swftools_wpaudio_profile_form',
+    ),
+  );
+
+  // WordPress audio player supports single audio files and playlists
+  $methods['audio']['wpaudio'] = $wpaudio;
+  $methods['audio_list']['wpaudio'] = $wpaudio;
+
+  // Return methods that the player supports
+  return $methods;
+  
+}
+
+
+/**
+ * Implementation of hook_menu().
+ */
+function swftools_wpaudio_menu() {
+
+  // Initialise an array
+  $items = array();
+
+  // Define menu items
+  $items['admin/settings/swftools/wpaudio'] = array(
+    'title' => 'WordPress Audio Player',
+    'description' => 'Settings for '. l('WordPress audio player', 'http://wpaudioplayer.com/') .'.',
+    'access arguments' => array('administer flash'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('swftools_wpaudio_admin_form'),
+    'file' => 'swftools_wpaudio.admin.inc',
+    'file path' => drupal_get_path('module', 'swftools_wpaudio'),
+  );
+
+  // Return menu items
+  return $items;
+
+}
+
+
+/**
+ * Implementation of hook_swftools_preprocess_[player]().
+ */
+function swftools_wpaudio_swftools_preprocess_wpaudio(&$data) {
+  
+  // If the passed variables includes 'playlist_data' we have a playlist to use
+  if ($data['othervars']['playlist_data']) {
+    
+    // Overwrite the file_url with the playlist string
+    $data['othervars']['file_url'] = $data['othervars']['wpaudio']['soundFile'];
+
+  }
+  else {
+
+    // Was a title set on this single element from CCK?
+    if (isset($data['othervars']['title']) && $data['othervars']['title']) {
+      $data['flashvars']['titles'] = $data['othervars']['title'];
+    }
+  
+  }
+
+  // Set the playerID the same as the container id
+  $data['flashvars']['playerID'] = $data['othervars']['id'];
+  
+  // Retrieve default audio player settings
+  $saved_settings = _swftools_wpaudio_flashvars($data['othervars']['profile']);
+  
+  // Combine user supplied values and defaults, letting user values dominate
+  $data['flashvars'] = array_merge($saved_settings, $data['flashvars']);
+  
+  // Add accessible controls?
+  if ($data['flashvars']['accessible']) {
+
+    // Add the accessible markup to #suffix so it will be output after the player   
+    $data['othervars']['#suffix'] = theme('swftools_wpaudio_accessible', $data['othervars']['id'], $data['flashvars']['accessible_visible']);
+    
+    // Unset the accessible parameters from flashvars so they are not output
+    unset($data['flashvars']['accessible'], $data['flashvars']['accessible_visible']);
+  
+  }
+  
+  // Attach file url of the content to display to flashvars
+  $data['flashvars']['soundFile'] = $data['othervars']['file_url'];
+  
+  // Add JavaScript to enable auto-close behavior and accessibility
+  swftools_wpaudio_add_js();
+
+}
+
+
+/**
+ * Returns the audio player default settings, or customised settings from the configuration page.
+ */
+function _swftools_wpaudio_settings($profile) {
+
+  // Set up defaults
+  // TODO: Put these in an array so we can organise the admin form by categories, like other players
+  $defaults = array(
+
+    'player' => array(
+      'height'            => 24,
+      'width'             => 290,
+      'autostart'         => 'no',
+      'loop'              => 'no',
+      'animation'         => 'yes',
+      'remaining'         => 'no',
+      'noinfo'            => 'no',
+      'initialvolume'     => 60,
+      'buffer'            => 5,
+      'encode'            => 'no',
+      'checkpolicy'       => 'no',
+      'rtl'               => 'no',
+      'transparentpagebg' => 'no',
+    ),
+
+    'colors' => array(
+      'bg'                => 'E5E5E5',
+      'leftbg'            => 'CCCCCC',
+      'lefticon'          => '333333',
+      'voltrack'          => 'F2F2F2',
+      'volslider'         => '666666',  
+      'rightbg'           => 'B4B4B4',
+      'rightbghover'      => '999999',
+      'righticon'         => '333333',
+      'righticonhover'    => 'FFFFFF',
+      'loader'            => '009900',
+      'track'             => 'FFFFFF',
+      'tracker'           => 'DDDDDD',
+      'border'            => 'CCCCCC',
+      'skip'              => '666666',
+      'text'              => '333333',
+      'pagebg'            => '',
+    ),
+    
+    'accessibility' => array(
+      'accessible'          => 0,
+      'accessible_visible'  => 1,
+    ),
+    
+  );
+
+  // Retrieve settings from the database if available
+  $settings = swftools_variable_get('swftools_wpaudio', $defaults, $profile);
+  
+  // Return result
+  return $settings;
+  
+}
+
+
+/**
+ * Retrieve the audio player default settings and unset any that are empty.
+ * 
+ * @return
+ *   An array of settings.
+ */
+function _swftools_wpaudio_flashvars($profile) {
+  
+  // Initialise cache to handle repeated calls
+  static $cache = array();
+  
+  // Store name of profile
+  $_profile = $profile;
+  if ($profile === '') {
+    $_profile = '__default';
+  }
+  
+  // If no settings stored for this profile then fetch them
+  if (!isset($cache[$_profile])) {
+
+    // Get default/saved settings
+    $settings = _swftools_wpaudio_settings($profile);
+
+    // Flatten
+    swftools_array_flatten($settings);
+    
+    // Filter out unassigned or default entries
+    $settings = array_diff($settings, array('', 'default'));
+        
+    // Store the result
+    $cache[$_profile] = $settings;
+  
+  }
+  
+  // Return the settings
+  return $cache[$_profile];
+
+}
+
+
+/*
+ * Implementation of hook_swftools_variable_mapping.
+ * 
+ * This tells SWF Tools where to map parameters passed through the input filter. 
+ *
+ */
+function swftools_wpaudio_swftools_variable_mapping() {
+  return array(
+    'wpaudio' => array(
+      'height'            => 'flashvars',
+      'width'             => 'flashvars',
+      'autostart'         => 'flashvars',
+      'loop'              => 'flashvars',
+      'animation'         => 'flashvars',
+      'remaining'         => 'flashvars',
+      'noinfo'            => 'flashvars',
+      'initialvolume'     => 'flashvars',
+      'buffer'            => 'flashvars',
+      'encode'            => 'flashvars',
+      'checkpolicy'       => 'flashvars',
+      'rtl'               => 'flashvars',
+      'transparentpagebg' => 'flashvars',
+      'pagebg'            => 'flashvars',
+      'bg'                => 'flashvars',
+      'leftbg'            => 'flashvars',
+      'lefticon'          => 'flashvars',
+      'voltrack'          => 'flashvars',
+      'volslider'         => 'flashvars',
+      'rightbg'           => 'flashvars',
+      'rightbghover'      => 'flashvars',
+      'righticon'         => 'flashvars',
+      'righticonhover'    => 'flashvars',
+      'loader'            => 'flashvars',
+      'track'             => 'flashvars',
+      'tracker'           => 'flashvars',
+      'border'            => 'flashvars',
+      'skip'              => 'flashvars',
+      'text'              => 'flashvars',
+    ),
+  );
+}
+
+
+/**
+ * Implementation of hook_init().
+ * 
+ * Push the script to stop other players on to the page.
+ */
+function swftools_wpaudio_init() {
+  
+  // Add JavaScript to enable auto-close behavior and accessibility
+  if (variable_get('swftools_always_add_js', SWFTOOLS_ALWAYS_ADD_JS)) {
+    swftools_wpaudio_add_js();
+  }
+  
+};
+
+
+/**
+ * Return markup to enable accessible controls for the WordPress audio player.
+ * 
+ * @param $id
+ *   Id of the player to be made accessible.
+ * @param $visible
+ *   Whether the controls should be visible on the page.
+ * @return unknown_type
+ *   Mark up to place accessible controls on the page.
+ */
+function theme_swftools_wpaudio_accessible($id, $visible) {
+
+  $return[] = $visible ? '<ul>' : '<ul class="swftools-accessible-hidden">';
+
+  // Note the class names - this is what lets the JavaScript determine what to attach to, and with what action
+  $return[] = "<li><a href=\"#\" class=\"wpaudio-accessible-open-$id\">" . t('Play') . "</a></li>";
+  $return[] = "<li><a href=\"#\" class=\"wpaudio-accessible-close-$id\">" . t('Stop') . "</a></li>";
+  
+  $return[] = '</ul>';
+  
+  // Implode array to a nicely formatted string
+  return implode($return, "\n");
+  
+}
+
+
+/**
+ * Implementation of hook_theme().
+ */
+function swftools_wpaudio_theme() {
+  return array(
+    'swftools_wpaudio_accessible' => array(
+      'arguments' => array('id' => NULL, 'visible' => NULL),
+    ),
+  );
+}
+
+
+/**
+ * Adds WordPress audio JavaScript to the page.
+ */
+function swftools_wpaudio_add_js() {
+  
+  // Add JavaScript to enable auto-close behavior and accessibility
+  drupal_add_js(drupal_get_path('module', 'swftools_wpaudio') . '/swftools_wpaudio.js');
+  
+}
+
+
+/**
+ * Implementation of hook_swftools_playlist_[player]().
+ */
+function swftools_wpaudio_swftools_playlist_wpaudio(&$data) {
+  
+  // Set flag to show if we found a description
+  $found_titles = FALSE;
+   
+  // Initialise arrays
+  $playlist = array();
+  $titles = array();
+  
+  // Get file paths out of the playlist_data array and add to the playlist
+  foreach ($data['othervars']['playlist_data']['playlist'] as $key => $play) {
+
+    // Add this element to the playlist
+    $playlist[] = $play['fileurl'];
+    
+    // Add title to titles array
+    $titles[]= $play['title'];
+    
+    // Set flag if this title actually contained something
+    if ($play['title']) {
+      $found_titles = TRUE;
+    }
+    
+  }
+
+  // Convert playlist array to a string
+  $playlist = implode(',', $playlist);
+  
+  // Convert titles array to a string
+  $titles = implode(',', $titles);
+  
+  // Overwrite $data['othervars']['file_url'] with playlist string
+  $data['othervars']['wpaudio']['soundFile'] = $playlist;
+  
+  // If we found some actual titles add these to the flashvars array
+  if ($found_titles) {
+    $data['flashvars']['titles'] = $titles;
+  }
+  
+}

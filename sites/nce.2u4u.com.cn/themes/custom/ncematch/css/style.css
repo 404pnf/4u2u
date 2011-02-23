@@ -4,7 +4,8 @@ body {
   margin: 0;
   /* Setting up font size, leading and font family
    * http://www.markboulton.co.uk/journal/comments/five-simple-steps-to-better-typography */
-  font: 13px/1.5em "Helvetica Neue", helvetica, Arial, sans-serif;
+  font: 1.em "Helvetica Neue", helvetica, Arial, sans-serif;
+  line-height: 1.4em;
 }
 
 /* Links */
@@ -23,7 +24,7 @@ a:hover, a:active {
 /* Titles. */
 /* line 21, ../sass/style.sass */
 h1, h2, h3, h4, h5, h6 {
-  line-height: 1.3em;
+  line-height: 1.5em;
 }
 
 /* line 24, ../sass/style.sass */
@@ -43,8 +44,9 @@ h2 {
 
 /* line 35, ../sass/style.sass */
 h3 {
-  font-size: 1.4em;
+  font-size: 1.6em;
   margin-bottom: 1em;
+  margin-top: 1em;
 }
 
 /* line 39, ../sass/style.sass */
@@ -228,3 +230,4 @@ div.status {
 #navigation {
   background: #feffa5;
 }
+

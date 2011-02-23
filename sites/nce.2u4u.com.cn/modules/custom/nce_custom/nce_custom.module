@@ -1,0 +1,139 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * 用来修改单次大赛信息表单的状态.
+ */
+function nce_custom_form_alter(&$form, &$form_state, $form_id){
+	//参看answer子站点下面的best_answer_expert模块expert.module
+	//if($form_id == 'nce_video_node_form' && arg(2) == 'nce-video' && arg(1) == 'add'){
+	if(arg(2) == 'nce-video' && arg(1) == 'add' && arg(0) == 'node'){
+		drupal_add_css(drupal_get_path('module', 'nce_custom').'/nce_custom.css');
+		module_load_include('inc', 'webform', 'includes/webform.submissions');
+	
+		global $user;
+		//webform 节点的nid
+		$nid = 1;
+		$submissions = webform_get_submissions(array('nid' => $nid, 'uid' => $user->uid));
+		if(empty($submissions)){
+			drupal_set_message(t('你还没有填写报名信息，现在立即填写,报名后方能上传视频'));
+			//没有报名的用户先报名,这里重定向到报名页面
+			$gpage = 'matcharea';
+			drupal_goto($gpage);
+		}elseif(count($submissions) >1){
+			drupal_set_message(t('你多次填写报名信息，现在删除一个'));
+		}
+		//drupal_set_message('submissions:'.print_r($submissions));
+		$submission = NULL;
+		foreach( $submissions as $sid => $sub){
+			$submission = $sub;
+			break;
+		}
+		$city = $submission->data[11][value][0];
+		$name= $submission->data[1][value][0];
+		$school= $submission->data[6][value][0];
+		$group = $submission->data[5][value][0];
+		//$form['title']['#default_value'] =  '123123'; 
+		//drupal_set_message('school:'.$school);
+		//drupal_set_message('name:'.$name);
+		
+	  //drupal_set_message('submissions:'.print_r($form['field_name']));
+		//drupal_set_message('city:'.$city);
+		$terms = taxonomy_get_term_by_name($city);
+		$term = $terms[0];
+		$group_terms = taxonomy_get_term_by_name($group);
+		$group_term = $group_terms[0];
+	  //drupal_set_message('term:'.$term->tid);
+		//大赛赛区
+		$form['taxonomy']['3']['#default_value'] =  $term->tid; 
+		$form['taxonomy']['3']['#attributes'] = array('disabled'=>TRUE,);	
+		//大赛组别
+		$form['taxonomy']['4']['#default_value'] =  $group_term->tid; 
+		$form['taxonomy']['4']['#attributes'] = array('disabled'=>TRUE,);	
+		
+		$form['field_name'][0]['#default_value']['value'] =  $name; 
+		//$form['field_name'][0]['#attributes'] = array('disabled'=>TRUE,);	
+		$form['field_school'][0]['#default_value']['value'] =  $school; 
+		//$form['field_school'][0]['#attributes']['value']['disabled'] = 'disabled';	
+		//$form['#after_build'][] = '_nce_custom_after_build';
+	}
+	
+	//if($form_id == 'nce_video_node_form' && arg(2) == 'edit' && arg(0) == 'node'){
+	if($form_id == 'nce_video_node_form' && arg(2) == 'edit' && arg(0) == 'node'){
+		drupal_add_css(drupal_get_path('module', 'nce_custom').'/nce_custom.css');
+		module_load_include('inc', 'webform', 'includes/webform.submissions');
+		$node =node_load(arg(1));
+		
+		
+		//drupal_set_message('submissions:'.print_r($form_state));
+		global $user;
+		if($node->uid == $user->uid){
+		  //webform 节点的nid
+			$nid = 1;
+			$submissions = webform_get_submissions(array('nid' => $nid, 'uid' => $user->uid));
+			if(empty($submissions)){
+				drupal_set_message(t('你还没有填写报名信息，现在立即填写,报名后方能上传视频'));
+				//没有报名的用户先报名,这里重定向到报名页面
+				$gpage = 'matcharea';
+				drupal_goto($gpage);
+			}elseif(count($submissions) >1){
+				drupal_set_message(t('你多次填写报名信息，现在删除一个'));
+			}
+			//drupal_set_message('submissions:'.print_r($submissions));
+			$submission = NULL;
+			foreach( $submissions as $sid => $sub){
+				$submission = $sub;
+				break;
+			}
+			$city = $submission->data[11][value][0];
+			$name= $submission->data[1][value][0];
+			$school= $submission->data[6][value][0];
+			$group = $submission->data[5][value][0];
+			drupal_set_message('group:'.$group);
+			$terms = taxonomy_get_term_by_name($city);
+			$term = $terms[0];
+			//drupal_set_message('term:'.$term->tid);
+			$group_terms = taxonomy_get_term_by_name($group);
+			$group_term = $group_terms[0];
+			drupal_set_message('term:'.$group_term->tid);
+			//大赛赛区
+			$form['taxonomy']['3']['#default_value'] =  $term->tid; 
+			$form['taxonomy']['3']['#attributes'] = array('disabled'=>TRUE,);	
+			//大赛组别
+			$form['taxonomy']['4']['#default_value'] =  $group_term->tid; 
+			$form['taxonomy']['4']['#attributes'] = array('disabled'=>TRUE,);	
+			
+			$form['field_name'][0]['#default_value']['value'] =  $name; 
+			//$form['field_name'][0]['#attributes'] = array('disabled'=>TRUE,);	
+			$form['field_school'][0]['#default_value']['value'] =  $school; 
+			$form['field_school'][0]['#attributes']['value']['disabled'] = 'disabled';	
+			//$form['#after_build'][] = '_nce_custom_after_build';
+		}
+	}
+}
+
+function _nce_custom_after_build($form, &$form_state) {  
+	// Use this one if the field is placed on top of the form.  
+	_nce_custom_fix_disabled($form['field_name']);  
+	_nce_custom_fix_disabled($form['field_school']);  
+	// Use this one if the field is placed inside a fieldgroup.
+	//  _mysnippet_fix_disabled($form['group_mygroup']['field_myfield']);  
+	return $form;
+}
+
+/** 
+ * Recursively set the disabled attribute of a CCK field * and all its dependent FAPI elements. 
+ */
+function _nce_custom_fix_disabled(&$elements) {  
+	foreach (element_children($elements) as $key) {    
+		if (isset($elements[$key]) && $elements[$key]) {      
+			// Recurse through all children elements.      
+			_nce_custom_fix_disabled($elements[$key]);    
+		}  
+	}  
+	if (!isset($elements['#attributes'])) {    
+		$elements['#attributes'] = array();  
+	}  
+	$elements['#attributes']['disabled'] = 'disabled';
+}

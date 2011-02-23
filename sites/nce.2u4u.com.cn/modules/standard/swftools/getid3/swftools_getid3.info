@@ -1,0 +1,14 @@
+; $Id: swftools_getid3.info,v 1.1.2.3 2010/03/29 22:07:14 stuartgreenfield Exp $
+name =  GetID3
+description = Enables integration with GetID3.
+package = SWF Tools
+dependencies[] = getid3
+dependencies[] = swftools
+core = 6.x
+
+; Information added by drupal.org packaging script on 2010-04-14
+version = "6.x-3.0-beta4"
+core = "6.x"
+project = "swftools"
+datestamp = "1271288707"
+

@@ -1,0 +1,55 @@
+<?php
+// $Id: swftools_profiles.install,v 1.2.2.2 2010/03/29 22:07:14 stuartgreenfield Exp $
+
+/**
+ * Implementation of hook_install().
+ */
+function swftools_profiles_install() {
+  drupal_install_schema('swftools_profiles');
+}
+
+
+/**
+ * Implementation of hook_schema.
+ */
+function swftools_profiles_schema() {
+
+  $schema['swftools_profiles'] = array(
+    'description' => 'Stores profiles that can be used by SWF Tools.',
+    'fields' => array(
+      'profile' => array(
+        'description' => 'The machine-readable name of this profile.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE),
+      'name' => array(
+        'description' => 'The human-readable name of this profile.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => ''),
+      'description'    => array(
+        'description' => 'A brief description of this profile.',
+        'type' => 'text',
+        'not null' => TRUE,
+        'size' => 'medium'),
+      'multiple' => array(
+        'description' => 'An integer indicating CONTENT_HANDLE_CORE (single players) or CONTENT_HANDLE_MODULE (playlists).',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 2,
+        'size' => 'tiny'),
+      'download_link' => array(
+        'description' => 'Boolean indicating whether download links should be included when outputting file or link fields.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'size' => 'tiny'),
+      ),
+    'primary key' => array('profile'),
+  );
+  
+  return $schema;
+
+}

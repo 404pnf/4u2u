@@ -1,0 +1,15 @@
+;$Id: video.info,v 1.3.4.1.4.1.2.2 2010/05/16 17:10:33 iLLin Exp $
+
+name = Video
+description = Allows Creation of CCK Video Fields.
+package = "Video"
+dependencies[] = content
+dependencies[] = filefield
+core = 6.x
+version = 6.x-4.x-dev
+; Information added by drupal.org packaging script on January 1, 1970 - 00:00
+version = "6.x-4.2-beta2"
+core = "6.x"
+project = "video"
+datestamp = "1296138115"
+

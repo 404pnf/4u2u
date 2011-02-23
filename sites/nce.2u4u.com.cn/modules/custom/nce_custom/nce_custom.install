@@ -1,0 +1,10 @@
+<?php
+
+function nce_custom_install(){
+	db_query("UPDATE {system} SET weight=999 WHERE name='nce_custom'");
+}
+function nce_custom_uninstall(){
+	db_query("DELETE FROM {system} WHERE name='nce_custom'");
+}
+
+

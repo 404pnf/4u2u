@@ -1,0 +1,172 @@
+<?php
+// $Id: swftools_swfobject2.module,v 1.1.2.20 2010/04/08 23:46:02 stuartgreenfield Exp $
+
+/**
+ * SWF Tools - SWFObject2
+ *
+ * Enables the use of swfobject.js for JavaScript based flash embedding.
+ */
+
+
+/**
+ * Implemention of hook_swftools_methods().
+ */
+function swftools_swfobject2_swftools_methods() {
+  
+  $methods['swftools_embed_method']['swftools_swfobject2'] = array(
+    'module'      => 'swftools_swfobject2',
+    'title'       => t('SWFObject 2 - JavaScript'),
+    'download'    => 'http://code.google.com/p/swfobject',
+    'library'     => SWFTOOLS_LIBRARIES . 'swfobject/swfobject.js',
+  );
+  
+  // Return result
+  return $methods;
+
+}
+
+
+/**
+ * Places swfobject JavaScript on the page, either using the local code, or from Google APIs.
+ */
+function swftools_swfobject2_add_js() {
+
+  // Set flag to indicate if the JavaScript has been added to the header
+  static $swfobject2_has_run;
+
+  // Output JavaScript to the header to load the SWF Object code
+  if (!$swfobject2_has_run) {
+
+    // Find out if swfobject2 is available locally and add script accordingly
+    if (swftools_swfobject2_available_locally()) {
+      // Add the local script library when it is present
+      drupal_add_js(SWFTOOLS_LIBRARIES . 'swfobject/swfobject.js');
+    }
+    else {
+      // We have to add script directly to the head as drupal_add_js can't handle external scripts (drupal.org/node/91250)
+      drupal_set_html_head('<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/swfobject/2.2/swfobject.js"></script>');
+    }
+
+    // Set flag to show script is in place
+    $swfobject2_has_run = TRUE;
+    
+  }
+  
+}
+
+
+/**
+ * Verifies if the swfobject2.js library is available locally.
+ * 
+ * @return
+ *   TRUE or FALSE, depending if the library is present.
+ */
+function swftools_swfobject2_available_locally() {
+
+  // See if the library is present
+  if (file_exists(SWFTOOLS_LIBRARIES . 'swfobject/swfobject.js')) {
+    return TRUE;
+  }
+
+  // Return false if it doesn't
+  return FALSE;
+  
+}
+
+
+/**
+ * Implementation of hook_init().
+ */
+function swftools_swfobject2_init() {
+  
+  // Put swfobject JavaScript on the page
+  if (variable_get('swftools_always_add_js', SWFTOOLS_ALWAYS_ADD_JS)) {
+    swftools_swfobject2_add_js();
+  }
+  
+}
+
+
+/**
+ * Implementation of hook_theme().
+  */
+function swftools_swfobject2_theme() {
+  return array(
+    'swftools_swfobject2' => array(
+      'arguments' => array('file' => NULL, 'options' => NULL),
+    ),
+  );
+}
+
+
+/**
+ * Turns an SWF Tools data array in to markup and JavaScript for inclusion on the page.
+ */
+function theme_swftools_swfobject2($file, $data, $script_location = SWFTOOLS_JAVASCRIPT_INLINE) {
+  
+  // Put JavaScript on the page
+  swftools_swfobject2_add_js();
+  
+  // If bgcolor isn't assigned a value then unset it
+  if (isset($data['params']['bgcolor']) && !$data['params']['bgcolor']) {
+    unset($data['params']['bgcolor']);
+  }
+  
+  // Initialise an array to hold output of encoding flashvars 
+  $flashvars = array();
+  
+  // Encode flashvars
+  foreach ($data['flashvars'] as $key => $value) {
+    $flashvars[rawurlencode($key)] = rawurlencode($value);
+  }
+  
+  // For JavaScript interaction to work we must assign a name via attributes
+  $attributes = array(
+    'name' => $data['othervars']['id'],
+  );
+  
+  // TODO: Should we process params to ensure booleans are true/flase, like we do with direct embedding
+  
+  // Determine if we can use express install (must be available locally, and big enough)
+  if (swftools_swfobject2_available_locally() && $data['othervars']['width'] >= 310 && $data['othervars']['height'] >= 137 ) {
+    $express = base_path() . SWFTOOLS_LIBRARIES . 'swfobject/expressInstall.swf';
+  }
+  else {
+    $express = '';
+  }
+  
+  // Generate js string ready for output to the page header
+  // swfObject takes parameters swfURL, id, width, height, version, expressinstall, flashvars, params, attributes
+  // See http://code.google.com/p/swfobject/wiki/documentation
+  $script = t('swfobject.embedSWF("!url", "!id", "!width", "!height", "!version", "!express", !flashvars, !params, !attributes);', array(
+    '!url' => $file,
+    '!id' => $data['othervars']['id'],
+    '!width' => $data['othervars']['width'],
+    '!height' => $data['othervars']['height'],
+    '!version' => $data['params']['version'],
+    '!express' => $express,
+    '!flashvars' => drupal_to_js($flashvars),
+    '!params' => drupal_to_js($data['params']),
+    '!attributes' => drupal_to_js($attributes),
+  ));
+  
+  // Generate inline script, or place script in the header
+  if ($script_location == SWFTOOLS_JAVASCRIPT_INLINE) {
+    // Add script using container id as context and then retrieve it so we get it formatted and wrapped in CDATA
+    drupal_add_js($script, 'inline', $data['othervars']['id']);
+    $script = drupal_get_js($data['othervars']['id']);
+  }
+  else {
+    // Add script to the header, but we also put a copy inline, using id as context, so SWF Tools can cache it
+    drupal_add_js($script, 'inline', 'header');
+    drupal_add_js($script, 'inline', $data['othervars']['id']);
+    $script = '';
+  }
+
+  // Return markup, with script attached if necessary
+  $html  = '<div id="' . $data['othervars']['id'] . '">' . $data['othervars']['html_alt'] . '</div>' . $script;
+  
+  // Return html markup
+  return $html;
+
+}

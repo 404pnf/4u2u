@@ -1,0 +1,123 @@
+/**
+ * $Id: swftools_flowplayer3.css,v 1.1.2.4 2010/03/29 22:07:14 stuartgreenfield Exp $
+ */
+
+.swftools-flowplayer3-container {
+  display: block;
+  height: 375px;
+  width: 500px;
+  text-align:center;
+  margin:0;
+  padding:0;
+  /**border:1px solid #999;**/
+  /**background-image:url(../shared/film.png);**/
+}
+ 
+/* splash image */ 
+.swftools-flowplayer3-container img.flowplayer3-play-button { 
+    margin-top:146px; 
+    border:0px;
+} 
+
+/* highlight player on hover */
+.swftools-flowplayer3-container:hover { 
+    /**border:1px solid #000;**/ 
+}
+
+
+
+
+
+/*{{{ general playlist settings, light gray */
+
+div.clips {
+	width:260px;	
+}
+
+div.clips a {
+	background:url(images/h80.png);
+	display:block;
+	background-color:#fefeff;
+	padding:12px 15px;
+	height:46px;
+	width:195px;
+	font-size:12px;
+	border:1px outset #ccc;		
+	text-decoration:none;
+	letter-spacing:-1px;
+	color:#000;
+}
+
+div.clips a.first {
+	border-top-width:1px;
+}
+
+div.clips a.playing, div.clips a.paused, div.clips a.progress {
+	background:url(images/light.png) no-repeat 0px -69px;
+	width:225px;
+	border:0;
+}
+	
+div.clips a.progress {
+	opacity:0.6;		
+}
+
+div.clips a.paused {
+	background-position:0 0;	
+}
+
+div.clips a span {
+	display:block;		
+	font-size:11px;
+	color:#666;
+}
+
+div.clips a em {
+	font-style:normal;
+	color:#f00;
+}	
+
+div.clips a:hover {
+	background-color:#f9f9fa;		
+}
+
+div.clips a.playing:hover, div.clips a.paused:hover, div.clips a.progress:hover {
+	background-color:transparent !important;		 
+}
+/*}}}*/
+
+
+/*{{{ petrol colored */
+
+div.clips.petrol a {
+	background-color:#193947;
+	color:#fff;
+	border:1px outset #193947;
+}
+
+div.clips.petrol a.playing, div.clips.petrol a.paused, div.clips.petrol a.progress {
+	background:url(images/dark.png) no-repeat 0px -69px;
+	border:0;
+}
+
+div.clips.petrol a.paused {
+	background-position:0 0;	
+}
+
+div.clips.petrol a span {
+	color:#aaa;
+}
+
+div.clips.petrol a em {
+	color:#FCA29A;
+	font-weight:bold;
+}	
+
+div.clips.petrol a:hover {
+	background-color:#274D58;		
+} 
+
+div.clips.petrol a.playing:hover, div.clips.petrol a.paused:hover, div.clips.petrol a.progress:hover {
+	background-color:transparent !important;		 
+}
+/*}}}*/

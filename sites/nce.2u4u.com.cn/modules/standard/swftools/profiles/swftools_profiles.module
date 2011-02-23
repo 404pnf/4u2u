@@ -1,0 +1,339 @@
+<?php
+// $Id: swftools_profiles.module,v 1.4.2.7 2010/04/07 21:33:36 stuartgreenfield Exp $
+
+/**
+ * Implementation of hook_menu().
+ */
+function swftools_profiles_menu() {
+
+  // Initialise array
+  $items = array();
+
+  // Should this be administer swf tools?
+  $swf_admin = array('administer flash');
+
+  $items['admin/settings/swftools/profiles'] = array(
+    'title' => 'Profiles',
+    'file' => 'swftools_profiles.admin.inc',
+    'description' => 'Administer SWF Tools profiles.',
+    'page callback' => 'swftools_profiles_overview',
+    'access arguments' => $swf_admin,
+    'weight' => -2,
+  );
+  
+  $items['admin/settings/swftools/profiles/list'] = array(
+    'title' => 'List',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -10,
+  );
+  
+  $items['admin/settings/swftools/profiles/add'] = array(
+    'title' => 'Add new profile',
+    'file' => 'swftools_profiles.admin.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('swftools_profiles_profile_form'),
+    'access arguments' => $swf_admin,
+    'type' => MENU_LOCAL_TASK,
+  );
+
+  $items['admin/settings/swftools/profile/%swftools_profiles_profile'] = array(
+    // Use a title call back so that if the title is set we use it
+    'title callback' => 'swftools_profiles_title_callback',
+    'title arguments' => array(4),
+    'file' => 'swftools_profiles.admin.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('swftools_profiles_profile_form', 4),
+    'access arguments' => $swf_admin,
+    'type' => MENU_CALLBACK,
+  );
+  
+  $items['admin/settings/swftools/profile/%swftools_profiles_profile/edit'] = array(
+    'title' => 'Edit',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+  );
+  
+  $items['admin/settings/swftools/profile/%swftools_profiles_profile/configure'] = array(
+    'title' => 'Configure',
+    'file' => 'swftools_profiles.admin.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('swftools_profiles_configure_settings', 4, array('swftools_handlers'), 'swftools', 'includes/swftools.admin.inc', 'swftools_handling_profile_form'),
+    'access arguments' => $swf_admin,
+    'type' => MENU_LOCAL_TASK,
+    'weight' =>1,
+  );
+
+  // Convenience link to get back to the profile list
+  $items['admin/settings/swftools/profile/%swftools_profiles_profile/list'] = array(
+    'title' => 'List',
+    'page callback' => 'drupal_goto',
+    'page arguments' => array('admin/settings/swftools/profiles'),
+    'access arguments' => $swf_admin,
+    'type' => MENU_LOCAL_TASK,
+    'weight' => -1,
+  );
+  
+  $items['admin/settings/swftools/profile/%swftools_profiles_profile/configure/handling'] = array(
+    'title' => 'File handling',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => -1,
+  );
+
+  $items['admin/settings/swftools/profile/%swftools_profiles_profile/clone'] = array(
+    'title' => 'Add new profile',
+    'file' => 'swftools_profiles.admin.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('swftools_profiles_profile_form', 4, TRUE),
+    'access arguments' => $swf_admin,
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['admin/settings/swftools/profile/%swftools_profiles_profile/delete'] = array(
+    'title' => 'Delete',
+    'file' => 'swftools_profiles.admin.inc',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('swftools_profiles_delete_confirm', 4),
+    'access arguments' => $swf_admin,
+    'type' => MENU_CALLBACK,
+  );
+  
+  // Get SWF Tools methods, making sure the cache is flushed
+  $methods = swftools_get_methods('', TRUE);
+  
+  // Build menu items for settings that support profiles
+  foreach ($methods as $handlers) {
+    foreach ($handlers as $handler) {
+      if ($handler['profile']) {
+        $handler['profile'] += array(
+          'settings' => array(),
+          'module' => '',  
+          'file' => '',
+          
+        );
+        $items['admin/settings/swftools/profile/%swftools_profiles_profile/configure/' . $handler['profile']['path']] = array(
+          'title' => $handler['title'],
+          'file' => 'swftools_profiles.admin.inc',
+          'page callback' => 'drupal_get_form',
+          'page arguments' => array('swftools_profiles_configure_settings', 4, $handler['profile']['settings'], $handler['module'], $handler['profile']['file'], $handler['profile']['page argument']),
+          'access arguments' => $swf_admin,
+          'type' => MENU_LOCAL_TASK,
+        );        
+      }
+    }
+  }
+  
+  // Return array of menu items
+  return $items;
+
+}
+
+
+/**
+ * Menu wildcard loader for profile title.
+ */
+function swftools_profiles_title_callback($profile) {
+  return $profile['name'];
+}
+
+
+/**
+ * Combines a profile name with variable name to create a variable name for use with a profile specific configuration.
+ * 
+ * @param $variable
+ *   The name of the variable.
+ * @param $profile
+ *   The name of the profile.
+ * @return
+ *   Variable name as a string in the form swftools_{profile}_{variable}
+ */
+function swftools_profiles_variable_name($variable, $profile = '') {
+
+  // If a profile is set then prefix the variable name with swftools_[profile]
+  $prefix = $profile ? 'swftools_' . $profile . '_' : ''; 
+  
+  // Return the resulting variable name
+  return $prefix . $variable;
+
+}
+
+
+/**
+ * Menu callback to check that a valid profile is being requested.
+ * 
+ * @return
+ *   FALSE if the requested profile does not exist, or the profile if it exists.
+ */
+function swftools_profiles_profile_load($profile) {
+  $profile = str_replace('-', '_', $profile);
+  return(swftools_profiles_get_profile($profile));
+}
+
+
+/**
+ * Implementation of hook_field_formatter_info().
+ *
+ * Returns an array of formatter definitions - one for each profile.
+ */
+function swftools_profiles_field_formatter_info() {
+
+  // Initialise an array to hold results
+  $profiles = array();
+  
+  // Iterate over each profile and create a formatter for it
+  foreach (swftools_profiles_get_profiles() as $profile) {
+    $profiles['swftools_profiles_' . $profile['profile']] = array(
+      'label' => t('SWF Tools profile - @name', array('@name' => $profile['name'])),
+      'field types' => array('filefield', 'link', 'text'),
+      'multiple values' => $profile['multiple'], 
+    );
+  }
+  
+  // Return the result
+  return $profiles;
+
+}
+
+
+/**
+ * Implementation of hook_theme().
+ * 
+ * We create a series of "dummy" formatters that simply have a name
+ * that can be used to identify the profile we want.
+ * 
+ * Note the function varies depending on whether we are using
+ * CONTENT_HANDLE_CORE (1) or CONTEN_HANDLE_MODULE (2).
+ */
+function swftools_profiles_theme() {
+
+  // Initialise an array to hold results
+  $themes = array();
+  
+  // Iterate over each profile and construct a formatter for it
+  foreach (swftools_profiles_get_profiles(TRUE) as $profile) {
+    $themes['swftools_profiles_formatter_swftools_profiles_' . $profile['profile']] = array(
+      'arguments' => array('element' => NULL),
+      'function' => 'theme_swftools_profiles', 
+    );
+  }
+  
+  // Return the results
+  return $themes;
+  
+}
+
+
+/**
+ * Hands an element to the appropriate SWF Tools formatter for theming.
+ * 
+ * @param $element
+ *   The CCK element to be themed.
+ * @return
+ *   Markup to render the element.
+ */
+function theme_swftools_profiles($element) {
+  
+  // Get the settings for the profile being used
+  $profile = swftools_profiles_get_profile(substr($element['#formatter'], 18));
+  
+  // Helper array to assign appropriate theme functions
+  $theme = array(
+    '1' => 'swftools_formatter_swftools',
+    '2' => 'swftools_formatter_swftools_playlist',
+  );
+  
+  // Theme - pass the element, the profile, and the profile configuration
+  return theme($theme[$profile['multiple']], $element, $profile);
+
+}
+
+
+/**
+ * Returns an array of available profiles.
+ *
+ * We cache the result because profiles won't change that often and it saves a
+ * database query.
+ * 
+ * @parameter $reset
+ *   When TRUE the cache is rebuilt.
+ */
+function swftools_profiles_get_profiles($reset = FALSE) {
+
+  static $profiles = array();
+
+  // Clear caches if $reset is TRUE;
+  if ($reset) {
+    $profiles = array();
+    cache_clear_all('profiles', 'cache_swftools');
+
+    // Clear the content.module cache (refreshes the list of formatters)
+    if (module_exists('content')) {
+      content_clear_type_cache();
+    }
+  }
+
+  // Return profiles from the static array if it is populated
+  if (!empty($profiles)) {
+    return $profiles;
+  }
+
+  // Get from the cache or build the array.
+  if (($cache = cache_get('profiles', 'cache_swftools')) && $cache->data) {
+    $profiles = $cache->data;
+  }
+  else {
+   
+    $result = db_query('SELECT * FROM {swftools_profiles} ORDER BY name');
+
+    while ($profile = db_fetch_array($result)) {
+      $profiles[$profile['profile']] = $profile;
+    }
+
+    cache_set('profiles', $profiles, 'cache_swftools');
+  
+  }
+  
+  // Return the profiles
+  return $profiles;
+  
+}
+
+
+/**
+ * Returns details of a specific profile.
+ * 
+ * @param $profile
+ *   The name of the profile requested.
+ * @param $reset
+ *   Optional: When TRUE the profiles cache is also be flushed.
+ * @return
+ *   Profile details, or an empty array if the profile does not exist.
+ */
+function swftools_profiles_get_profile($profile, $reset = FALSE) {
+
+  $profiles = swftools_profiles_get_profiles($reset);
+
+  return isset($profiles[$profile]) ? $profiles[$profile] : array();
+  
+}
+
+
+/**
+ * Implementation of hook_form_FORM_ID_alter().
+ * 
+ * Attaches an additional handler to the content_display_overview_form to flush
+ * {cache_swftools} when the form is saved.
+ */
+function swftools_profiles_form_content_display_overview_form_alter(&$form, &$form_state) {
+
+  $form['#submit'][] = 'swftools_profiles_content_display_overview_form_submit';
+  
+}
+
+
+/**
+ * Flushes {cache_swftools}. Called when the content display fields settings are saved.
+ */
+function swftools_profiles_content_display_overview_form_submit($form, $form_state) {
+  
+  cache_clear_all(NULL, 'cache_swftools');
+  
+}

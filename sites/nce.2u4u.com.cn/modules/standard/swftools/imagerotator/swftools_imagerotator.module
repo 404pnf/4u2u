@@ -1,0 +1,264 @@
+<?php
+// $Id: swftools_imagerotator.module,v 1.1.2.13 2010/04/07 21:33:36 stuartgreenfield Exp $
+
+/**
+ * SWF Tools support for Longtail Image Rotator.
+ */
+
+/**
+ * Implementation of hook_swftools_methods().
+ */
+function swftools_imagerotator_swftools_methods() {
+
+  $image_rotator = array(
+    'module'      => 'swftools_imagerotator',
+    'title'       => t('JW Image Rotator 3'),
+    'download'    => 'http://www.longtailvideo.com/players/jw-image-rotator',
+    'width'       => 400,
+    'height'      => 320,
+    'library'     => SWFTOOLS_LIBRARIES . 'imagerotator/imagerotator.swf',
+  );
+  
+  $methods['image_list']['imagerotator'] = $image_rotator;
+
+  return $methods;
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function swftools_imagerotator_menu() {
+
+  $items = array();
+
+  $items['admin/settings/swftools/imagerotator'] = array(
+    'title' => 'JW Image Rotator 3',
+    'description' => 'Plug-in for ' . l('JW Image Rotator 3', 'http://www.longtailvideo.com/players/jw-image-rotator') . '.',
+    'access arguments' => array('administer flash'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('swftools_imagerotator_admin_form'),
+    'file' => 'swftools_imagerotator.admin.inc',
+    'file path' => drupal_get_path('module', 'swftools_imagerotator'),
+  );
+
+  return $items;
+}
+
+
+/**
+ * These are the default settings as they are stored in the database and displayed
+ * on the settings page.
+ */
+function _swftools_imagerotator_settings() {
+
+  $defaults['basic'] = array(
+    'width'               => '400',
+    'height'              => '320',
+  );
+  
+  $defaults['color'] = array(
+    'backcolor'           => '',
+    'frontcolor'          => '',
+    'lightcolor'          => '',
+  );
+  
+  $defaults['appearance'] = array(
+    'logo'                => '',
+    'overstretch'         => 'default',
+    'showicons'           => 'default',
+    'shownavigation'      => 'default',
+    'transition'          => 'default',
+  );
+  
+  $defaults['playback'] = array(
+    'rotatetime'          => '3',
+    'shuffle'             => 'default',
+  );
+  
+  $defaults['interaction'] = array(
+    'enablejs'            => 'default',
+    'link'                => '',
+    'linkfromdisplay'     => 'default',
+    'linktarget'          => 'default',
+  );
+  
+  // Retrieve settings from database, if available
+  $settings = variable_get('swftools_imagerotator', $defaults);
+  
+  // Return resulting defaults
+  return $settings;
+
+}
+
+
+/**
+ * Implementation of hook_swftools_preprocess_[player]().
+ */
+function swftools_imagerotator_swftools_preprocess_imagerotator(&$data) {
+
+  // Get current defaults for the player
+  $saved_settings = _swftools_imagerotator_flashvars();
+
+  // Prepare an array of flashvars by merging defaults and user values
+  $data['flashvars'] = array_merge($saved_settings, $data['flashvars']);
+  
+  // Attach file url of the content to display to flashvars
+  $data['flashvars']['file'] = $data['othervars']['file_url'];
+
+}
+
+
+/**
+ * This function is called from swftools_imagerotator_swftools_flashvars() which is called from swf()
+ * It will return the default flashvar configuration, just prior to any overrides
+ * passed into swf(). We start with the settings defined on admin/swf/imagerotator
+ * which are returned by _swftools_imagerotator_settings(). Then we prepare these values for output
+ * to html (eg. '1' become 'true') and we unset undefined flashvars to prevent their output.
+ *
+ */
+function _swftools_imagerotator_flashvars() {
+  
+  // Cache this in case we call again
+  static $settings = array();
+  
+  // If $settings is empty then retrieve them
+  if (!$settings) {
+    
+    // Get saved settings for this method.
+    $settings = _swftools_imagerotator_settings();
+
+    // Flatten defaults
+    swftools_array_flatten($settings);
+
+      // Iterate over boolean settings
+    foreach (array('showicons', 'shownavigation', 'shuffle', 'enablejs', 'linkfromdisplay') as $key) {
+      
+      // Settings are already encoded properly on the settings page, but if we called from PHP it might be 1/0 or TRUE/FALSE
+      if ($settings[$key] != 'default') {
+        $settings[$key] = _swftools_tf($settings[$key]);
+      }
+      
+    }
+    
+    // Filter out unassigned or default entries
+    $settings = array_diff($settings, array('', 'default'));
+    
+  }
+  
+  // Return the result
+  return $settings;
+
+}
+
+
+function swftools_imagerotator_swftools_playlist_imagerotator($data) {
+
+  /**
+   * ImageRotator prints undefined if there is a blank title amongst
+   * others that are set, but it skips all titles if all of them are
+   * blank. To make tidy output we will build two playlists in parallel
+   * and count the number of blanks. Then we will decide which one to
+   * return. If every title is blank we output the xml with blank titles.
+   * If there is a mixture of blank and non-blank titles then we output
+   * a list where the blanks are replaced with a dash.
+   */
+  
+  // Initialise a string to contain the elements
+  $xml_with_blanks = '';
+  $xml_with_blanks_replaced = '';
+  $blanks = 0;
+  
+  // Iterate over the playlist to build elements xml
+  foreach ($data['othervars']['playlist_data']['playlist'] AS $track => $details) {
+    
+    // Create an individual xml element on the raw playlist
+    $xml_with_blanks .= theme('swftools_imagerotator_playlist_element', $details);
+    
+    // Is the title blank?
+    if (!$details['title']) {
+      $details['title'] = '-';
+      $blanks++;
+    }
+    
+    // Create the parallel xml which has blanks replaced with a dash
+    $xml_with_blanks_replaced .= theme('swftools_imagerotator_playlist_element', $details);
+    
+  }
+  
+  // Was every title in the playlist blank?
+  if ($blanks == count($data['othervars']['playlist_data']['playlist'])) {
+    $xml = $xml_with_blanks;
+  }
+  else {
+    $xml = $xml_with_blanks_replaced;
+  }
+  
+  // Add xml wrapper around the elements
+  $xml = theme('swftools_imagerotator_playlist_wrapper', $data['othervars']['playlist_data']['header'], $xml);
+  
+  // Return the resulting xml
+  return $xml;
+ 
+}
+
+
+/*
+ * Implementation of hook_swftools_variable_mapping.
+ *
+ */
+function swftools_imagerotator_swftools_variable_mapping() {
+  return array(
+    'imagerotator' => array(
+      'height'          => 'flashvars',
+      'width'           => 'flashvars',
+      'shuffle'         => 'flashvars',
+      'shownavigation'  => 'flashvars',
+      'linkfromdisplay' => 'flashvars',
+      'showicons'       => 'flashvars',
+      'enablejs'        => 'flashvars',
+      'backcolor'       => 'flashvars',
+      'frontcolor'      => 'flashvars',
+      'lightcolor'      => 'flashvars',
+      'logo'            => 'flashvars',
+      'link'            => 'flashvars',
+      'rotatetime'      => 'flashvars',
+      'transition'      => 'flashvars',
+      'linktarget'      => 'flashvars',
+      'overstretch'     => 'flashvars',
+    ),
+  );
+}
+
+
+/**
+ * Implementation of hook_help
+ */
+function swftools_imagerotator_help($path, $arg) {
+  switch ($path) {
+    case 'admin/settings/swftools/imagerotator':
+      return '<p>'.t('These are the settings for Jeroen Wijering\'s imagerotator.swf
+                      and correspond (by category and order) to the
+                      <a href="@imagerotator">Media Player and Image Rotator read me</a>.
+                      It is possible that you do not need to change any of
+                      these settings and blank values will defer to friendly
+                      defaults. Note that the label in (<em>brackets</em>)
+                      is the actual flashvar name and corresponds to the read me.', array('@imagerotator' => 'http://jeroenwijering.com/extras/readme.html')).'</p>';
+  }
+}
+
+
+/**
+ * Implementation of hook_theme().
+ */
+function swftools_imagerotator_theme() {
+  return array(
+    'swftools_imagerotator_playlist_element' => array(
+      'template' => 'swftools-imagerotator-playlist-element',
+      'arguments' => array('element' => NULL),
+    ),
+    'swftools_imagerotator_playlist_wrapper' => array(
+      'template' => 'swftools-imagerotator-playlist-wrapper',
+      'arguments' => array('header' => NULL, 'xml' => NULL),
+    ),
+  );
+}

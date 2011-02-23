@@ -1,0 +1,14 @@
+;$Id: video_s3.info,v 1.1.2.1 2010/10/16 06:28:58 heshanmw Exp $
+
+name = Amazon S3 on Video
+description = Leverages the Video module and Amazon Simple Storage Service (Amazon S3) to serve and store your video's saving bandwidth.
+package = "Video"
+dependencies[] = video
+core = 6.x
+version = 6.x-4.x-dev
+; Information added by drupal.org packaging script on January 1, 1970 - 00:00
+version = "6.x-4.2-beta2"
+core = "6.x"
+project = "video"
+datestamp = "1296138115"
+

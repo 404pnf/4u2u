@@ -1,0 +1,2446 @@
+<?php
+// $Id: swftools.module,v 1.20.2.16.2.61 2010/04/14 23:29:54 stuartgreenfield Exp $
+
+// Include the generic player module for basic mp3 and flv support
+module_load_include('inc', 'swftools', 'includes/swftools.genericplayers');
+
+// Load core module
+module_load_include('inc', 'swftools', 'includes/swftools.core');
+
+/**
+ * Other modules can query whether SWF Tools is present by checking for this constant.
+ */
+define('SWFTOOLS_INSTALLED', TRUE);
+
+/**
+ * SWF Tools does not allow access to private files by default. 
+ */
+define('SWFTOOLS_PRIVATE_ACCESS_DENIED', 0x0000);
+
+/**
+ * When private access via SWF Tools is enabled grant access to these extensions.
+ */
+define('SWFTOOLS_PRIVATE_ACCESS_ALLOWED_EXTENSIONS', 'swf flv xml mp3 jpg jpeg png');
+
+/**
+ * Used in various places to indicate that the requested item is undefined.
+ */
+define('SWFTOOLS_UNDEFINED', '__undefined');
+
+/**
+ * The calling function is requesting player settings and only needs settings that are non-default.
+ */
+define('SWFTOOLS_STORED_SETTINGS', 0x0001);
+
+/**
+ * The calling function is requesting player settings and wants the full set, including blanks and defaults. 
+ */
+define('SWFTOOLS_FULL_SETTINGS', 0x0002);
+
+/**
+ * SWF Tools should return mark up to place on the page. 
+ */
+define('SWFTOOLS_RETURN_MARKUP', 0x0000);
+
+/**
+ * SWF Tools should return the cid for the content which was stored in the cache. 
+ */
+define('SWFTOOLS_RETURN_CID', 0x0001);
+
+/**
+ * This playlist does not return xml but updates the data array directly. 
+ */
+define('SWFTOOLS_NON_XML_PLAYLIST', '');
+
+/**
+ * Settings are being stored in to the variables table. 
+ */
+define('SWFTOOLS_ADMIN_STORE', 1);
+
+/**
+ * Settings are being retrieved from the variables table.
+ */
+define('SWFTOOLS_ADMIN_RETRIEVE', 0);
+
+
+/**
+ * Implementation of hook_init().
+ */
+function swftools_init() {
+
+  // Add JavaScript that allows other scripts to access movies from the DOM
+  drupal_add_js(drupal_get_path('module', 'swftools') . '/swftools.js');
+  
+  // Add CSS to enable hiding of accessible controls
+  drupal_add_css(drupal_get_path('module', 'swftools') . '/swftools.css');
+
+}
+
+
+/**
+ * Implementation of hook_menu().
+ */
+function swftools_menu() {
+
+  // Reset methods cache
+  $methods = swftools_get_methods('', TRUE);
+  
+  // Initialise array
+  $items = array();
+
+  // Should this be administer swf tools?
+  $swf_admin = array('administer flash');
+
+  $items['admin/settings/swftools'] = array(
+    'title' => 'SWF Tools',
+    'description' => 'Settings to control how SWF Tools integrates with Adobe Flash related methods and tools like video players, MP3 players and image viewers.',
+    'access arguments' => $swf_admin,
+    'page callback' => 'system_admin_menu_block_page',
+    'file' => 'system.admin.inc',
+    'file path' => drupal_get_path('module', 'system'),
+  );
+
+  $items['admin/settings/swftools/handling'] = array(
+    'title' => 'File handling',
+    'description' => 'Configure how SWF Tools should handle different types of file.',
+    'access arguments' => $swf_admin,
+    'weight' => -2,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('swftools_admin_handling_form'),
+    'file' => 'includes/swftools.admin.inc',
+  );
+
+  $items['swftools/playlist/%'] = array(
+    'title' => 'SWF Tools playlist',
+    'page callback' => 'swftools_get_xml',
+    'page arguments' => array(2),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  
+  $items['swftools/html/%'] = array(
+    'title' => 'SWF Tools html',
+    'page callback' => 'swftools_get_html',
+    'page arguments' => array(2),
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+  
+  $items['admin/settings/swftools/embed'] = array(
+    'title' => 'Embedding settings',
+    'description' => 'Set the embedding method that SWF Tools should use, and configure embedding defaults.',
+    'access arguments' => $swf_admin,
+    'weight' => -2,
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('swftools_admin_embed_form'),
+    'file' => 'includes/swftools.admin.inc',
+  );
+  
+  // If CCK is active then add a link to the CCK formatters
+  if (module_exists('content')) {
+    $items['admin/settings/swftools/cck'] = array(
+      'title' => 'CCK formatters',
+      'description' => 'Additional settings to control how SWF Tools should interact with CCK.',
+      'access arguments' => $swf_admin,
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('swftools_admin_cck_form'),
+      'file' => 'includes/swftools.admin.inc',
+    );
+  }
+  
+  // Add SWF Tools status report
+  $items['admin/reports/swftools'] = array(
+    'title' => 'SWF Tools status',
+    'description' => 'Get an overview of the status of the SWF Tools module and its supporting files.',
+    'page callback' => 'swftools_status',
+    'access arguments' => $swf_admin,
+    'file' => 'includes/swftools.admin.status.inc',
+    'weight' => 9,
+  );
+  
+  // Integrate items from the generic players module
+  $items = array_merge($items, swftools_genericplayers_menu());
+
+  // Return array of menu items
+  return $items;
+
+}
+
+
+/**
+ * Implementation of hook_perm().
+ */
+function swftools_perm() {
+  return array(
+    'administer flash',
+  );
+}
+
+
+/**
+ * Return output, which might be embed markup, or pre-flash markup
+ * that includes the appropriate jQuery added to the <head>
+ *
+ * @param $file
+ *   The file to be played. If it is a SWF file it will usually be embedded directly.
+ *   Use a full URL, a path relative to webroot, or a path relative to the configured files directory.
+ *   If an array is passed then the array will be converted to a playlist automatically.
+ *   If the file string is a complete url then SWF Tools will pass it along unaltered. If the string
+ *   is a partial path then it will either be resolved to the local file system, or to a remote host,
+ *   depending whether the swftools_media_url variable is set.
+ * @param $options=>$params
+ *   An associative array of <param> variables to set.eg. array('bgcolor'=>'FF00FF')
+ *   To set height and width: array('width'=>'200', 'height'=>'120'). However,
+ *   as a convenient alternative for the common requirement of just height and width
+ *   you can also pass a text string like '200x100'.
+ *   If you pass nothing, and the file to play is a .swf, swftools will try and
+ *   establish a natural width and height from the actual .swf file that you've
+ *   passed into $file.
+ * @param $options=>$flashvars
+ *   An associative array of flashvar variables to set. eg. array('playlist'=>'files/my_playlist.xml')
+ * @param $options=>$othervars
+ *   An associative array of variables that might be required by the $player or $embed technique.
+ *   These values are not output as params or flashvars.
+ * @param $options=>$methods
+ *   Explicitly declare an action, player or action by passing an array of
+ *   the form: array('action'=>'dosomething','player'=>'withsomething','embed'=>'withthisjavascript').
+ *   These usually default to the administration settings and also you will
+ *   usually use a CONSTANT which will be documented further at a later stage.
+ */
+function swf($file, $options = array()) {
+  
+//  $time_start = microtime(true);
+    
+  // TODO: We should put SWF Tools own settings somewhere safe in the othervars array
+  // If someone passes a variable from the input filter it could collide.
+  // Maybe put them under #swftools (since the data are properties of swftools?)
+  // A finished item has player, profile, cid, id, file_url, src_path, src
+  
+  // Initialise any $options array elements that weren't passed by the caller
+  $options += array(
+    'params' => array(),
+    'flashvars' => array(),
+    'othervars' => array(),
+    'methods' => array(),
+  );
+  
+  // Initialise othervars with some defaults
+  $options['othervars'] += array(
+    'profile' => '',
+    'return' => SWFTOOLS_RETURN_MARKUP,
+    'html_alt' => variable_get('swftools_html_alt', SWFTOOLS_DEFAULT_HTML_ALT),
+    'playlist_data' => '',
+    'image' => '',
+    'id' => '',
+  );
+  
+  // Initialise methods with some defaults
+  $options['methods'] += array(
+    'action' => '',
+    'player' => '',
+    'embed' => '',
+    'stream' => '',
+  );
+  
+  // Initialise params with some defaults
+  $options['params'] += array(
+    'base' => swftools_get_base(),
+  );
+  
+  // See if we can get this item from the SWF Tools cache
+  if (($ret = swftools_get_from_cache($file, $options)) && variable_get('swftools_cache', CACHE_NORMAL)) {
+//      $time_end = microtime(true);
+//      $time = $time_end - $time_start;
+//      dsm('Used cache in ' . $time);
+    if ((variable_get('swftools_javascript_location', SWFTOOLS_JAVASCRIPT_INLINE) == SWFTOOLS_JAVASCRIPT_HEADER) && $ret->headers) {
+      drupal_add_js($ret->headers, 'inline', 'header'); 
+    }
+    return $options['othervars']['return'] == SWFTOOLS_RETURN_CID ? $options['othervars']['return'] : $ret->data;
+  }
+  
+  // Ensure id is unique, or assign an id if one isn't set
+  $options['othervars']['id'] = swftools_get_id($options['othervars']['id']);
+  
+  // If swf() was called with an array of files, make a playlist
+  if (is_array($file)) {
+
+    // Turn the array in to a playlist and attach it to othervars
+    swftools_prepare_playlist_data($file, $options);
+        
+  }
+  
+  // ACTION
+  // Work out what SWF Tools should do with this file (e.g. video, audio)
+  // If an explicit action wasn't set then try to determine an appropriate one using the filename
+  $options['methods']['action'] = $options['methods']['action'] ? swftools_fix_old_action_names($options['methods']['action']) : swftools_get_action($file);
+  
+  // RESOLVE PLAYER AND EMBEDDING
+  // 'resolved' refers to the fact that these are the methods we now intend to use, not /all/ methods available.
+  
+  // PLAYER
+  // Work out what player SWF Tools will need to use for this action
+  // If an explicit player wasn't set then find out what player is configured for the current action
+  $options['methods']['player'] = $options['methods']['player'] ? swftools_fix_old_player_names($options['methods']['player']) : swftools_get_player($options['methods']['action'], $options['othervars']['profile']); 
+  
+  // If there is no player assigned we don't what to do with this action
+  if (!$options['methods']['player']) {
+
+    // Get the descriptions that go with the actions
+    $actions = swftools_get_actions();
+    
+    // If we have a matching description for the specified action, create a meaningful message
+    if (isset($actions[$options['methods']['action']]['#description'])) {
+      
+      // If we also have a meaningful profile name use that too
+      if ($options['othervars']['profile']) {
+        if (function_exists('swftools_profiles_get_profile') && ($profile = swftools_profiles_get_profile($options['othervars']['profile']))) {
+          $profile = $profile['name'];
+        }
+        else {
+          $profile = $options['othervars']['profile'];
+        }
+        $profile = t('@profile profile', array('@profile' => $profile));
+      }
+      else {
+        $profile = 'SWF Tools';
+      }
+      
+      // And build a message!
+      drupal_set_message(t('No player is configured for ' . $actions[$options['methods']['action']]['#description'] . '. Check the @profile file handling settings.', array('@profile' => $profile)), 'error');
+
+    }
+    
+    // Otherwise we have an action that SWF Tools doesn't understand, so create a fallback message
+    else {
+      drupal_set_message(t('No modules have registered the action %action. Check any required supporting modules are enabled.', array('%action' => $options['methods']['action'])), 'error');
+    }
+
+    // We couldn't find a player for this content, so fallback to the alternate markup and return
+    return $options['othervars']['html_alt'];
+  }
+  
+  // Get all the actions, tools and embedding options available to us
+  $all_methods = swftools_get_methods();
+
+  // Check that the action / player combination is valid (it should appear in the array of all methods)
+  if (isset($all_methods[$options['methods']['action']][$options['methods']['player']])) {
+    
+    // The combination was found, place player information in to resolved_methods
+    $options['resolved_methods']['player'] = $all_methods[$options['methods']['action']][$options['methods']['player']];
+   
+  }
+  
+  // If the action / player combination doesn't appear then we give up here
+  else {
+
+    // Get the descriptions that go with the actions
+    $actions = swftools_get_actions();
+    
+    drupal_set_message(t('The combination of %player with %action is not valid. Check that the player is available and that it supports the requested action.', array('%player' => $options['methods']['player'], '%action' => $options['methods']['action'])), 'error', FALSE);
+    return $options['othervars']['html_alt'];
+
+  }
+  
+  // EMBED
+  // Work out what embedding method SWF Tools should use for this content
+  
+  // If an explicit embed method was not set then assign one now
+  $options['methods']['embed'] = $options['methods']['embed'] ? $options['methods']['embed'] : variable_get('swftools_embed_method', 'swftools_nojavascript');
+
+  // Place the embedding method information in to resolved_methods
+  $options['resolved_methods']['embed'] = $all_methods['swftools_embed_method'][$options['methods']['embed']];
+
+  // PARAMS
+  // If $options['params'] is not an array then assume it is width x height as a string
+  // TODO: This is an ugly legacy - can we retire it?
+  if (!is_array($options['params'])) {
+
+    // Explode string
+    $dimensions = explode('x', $options['params']);
+    
+    // If we got two pieces assume success
+    if (count($dimensions) == 2) {
+      $options['params'] = array(
+        'width' => $dimensions[0],
+        'height' => $dimensions[1],
+      );
+    }
+  }
+  
+  // FLASHVARS
+  // If the flashvars were passed as a string then turn it in to an array
+  if (!is_array($options['flashvars'])) {
+    parse_str($options['flashvars'], $options['flashvars']);
+  }
+  
+  // XML PLAYLIST
+  // Determine if we are trying to generate a playlist that needs xml output, and create it if required
+  
+  // If $options['othervars']['playlist_data'] is set then we are processing a playlist
+  if ($options['othervars']['playlist_data']) {
+
+    // Try to generate an xml playlist and get the path to the xml file. $file will be an empty string if we don't need xml.
+    $file = swftools_generate_playlist($options);
+
+  }
+  
+  // FILE
+  // Make sure that the file path in $file is valid, and as necessary try to 
+  // expand it to a relative url on the local file system, or point to the remote media directory
+  
+  // First we assume that we can just set $file_url to the value in $file
+  $file_url = $file;
+
+  // If we are not streaming this file, and $file isn't empty, then we might need to process it to get a proper path
+  if (!$options['othervars']['stream'] || !$file) {
+
+    // Process to get a url (in src) and expand the path (in src_path) if necessary
+    $source = swftools_get_url_and_path($file);
+    
+    // If FALSE was returned then the file doesn't exist so return $html_alt
+    if (!$source) {
+      return $options['othervars']['html_alt'];
+    }
+    
+    // $file might need to be changed to reflect a path on the local file system
+    // This happens when the user just supplied a filename and files are being sourced locally
+    // Put $file = $source['filepath'] in case that happened
+    $file = $source['filepath'];
+    
+    // In all cases $file_url is now an absolute, or relative, url to the file that we can use
+    $file_url = $source['fileurl']; 
+
+  }
+  
+  // Attach file_url to othervars so player modules have access if required
+  $options['othervars']['file_url'] = $file_url;
+  
+  // Depending if we are outputting a swf or using a player we need to attach $file in different places 
+  switch ($options['methods']['player']) {
+
+    // Embedding an swf directly - no player
+    case 'swf':
+      $options['othervars']['filepath'] = $file;
+      $options['othervars']['fileurl'] = $file_url;
+      break;
+
+    // Embedding with a player
+    default:
+      if ($options['resolved_methods']['player']['library']) {
+        $options['othervars']['filepath'] = $options['resolved_methods']['player']['library'];
+        $options['othervars']['fileurl'] = base_path() . $options['othervars']['filepath'];
+      }
+      
+  }
+  
+  // Merge default and user defined parameters, with user defined ones taking precedence
+  $options['params'] = array_merge(_swftools_params(), $options['params']);
+  
+  /**
+   * We used to call hook_flashvars, using the module name, but we are starting to do a lot
+   * more than just flashvars. So we will borrow from the theme system and implement
+   * hook_swftools_preprocess_[playername]. Normally you would just expect the module that
+   * defines the player to handle its own players, but in theory anyone can hook in at this
+   * point and manipulate the entire data array just before we output it.
+   */
+  $preprocess = 'swftools_preprocess_' . $options['resolved_methods']['player']['name'];
+
+  foreach (module_implements($preprocess) as $module) {
+    $function = $module . '_' . $preprocess;
+    $function($options);
+  }
+
+  // TODO: Can we deprecate this - we are accommodating the ability to specify width x height in a string on params.
+  
+  // We used to set height and width on $vars->params, but they're not actually params and they were
+  // being unset in individual embedding functions. So we'll move them to $vars->othervars.
+  // We will continue to let users pass the data on $vars->params so as not to break existing code.
+  if (!isset($options['othervars']['height']) && !empty($options['params']['height'])) {
+    $options['othervars']['height'] = $options['params']['height'];
+    unset($options['params']['height']);
+  }
+  
+  if (!isset($options['othervars']['width']) && !empty($options['params']['width'])) {
+    $options['othervars']['width'] = $options['params']['width'];
+    unset($options['params']['width']);
+  }
+  
+  // Try and make sure we have a size set on this content
+  swftools_set_size($options);
+  
+  // See if anyone wants to alter anything just before it is output
+  drupal_alter('swftools', $options);
+  
+  // Call theme function
+  $output = theme('swftools_embed', $options);
+  
+  // See if the embed placed a script for us to cache
+  $script = ($data = drupal_get_js($options['othervars']['id'])) ? str_replace(array("<script type=\"text/javascript\">\n<!--//--><![CDATA[//><!--\n", "\n//--><!]]>\n</script>\n"), '', $data) : '';
+  
+  // Cache the result
+  cache_set('swf:'.$options['othervars']['cid'], $output, 'cache_swftools', CACHE_PERMANENT, $script);
+  
+  // If we want just the cid then return that
+  if ($options['othervars']['return'] == SWFTOOLS_RETURN_CID) {
+    return $options['othervars']['cid'];
+  }
+  
+  // Return the markup
+  return $output;
+
+}
+
+
+/**
+ * Converts an array of paramters to JSON and returns them as a string ready for use as a flashvar.
+ * 
+ * @param $params
+ *   An array of parameters.
+ * @param $attribute
+ *   The attribute that the JSON string will be attached to.
+ * @return
+ *   A string in the form [attr]={JSON}
+ */
+function swftools_json_params(&$params, $attribute = 'swftools') {
+  return $attribute . "='" . drupal_to_js($params) . "'";
+}
+
+
+/**
+ * Returns 'true' or 'false' for JavaScript based the supplied value $bool.
+ * 
+ * @param $bool
+ *   The value that should be cast to true or false.
+ * @return
+ *   The string 'true' or 'false' depending on the supplied value.
+ */
+function _swftools_tf($bool) {
+
+  // String 'false' is treated as TRUE in PHP logic, so force to FALSE
+  if (strtolower($bool) == 'false') {
+    $bool = FALSE;
+  }
+
+  // Return 'true' or 'false' now we are sure of result
+  return $bool ? 'true' : 'false';
+
+}
+
+
+/**
+ * Returns the currently configured player for the specified action and profile.
+ * 
+ * We use a static array so that if we are generating a complex page we can
+ * quickly locate the relevant action/profile player after we've done it the
+ * first time. This saves us from repeat calls to swftools_variable_get().
+ *
+ * @param $action
+ *   The SWF Tools action to be performed.
+ * @param $profile
+ *   The profile being used for this item.
+ * @return
+ *   The name of the currently configured player for this action.
+ */
+function swftools_get_player($action, $profile = '') {
+  
+  // Initialise a static array for this page call
+  static $players = array();
+  
+  // We need to give the empty profile a name to place it in the array
+  $_profile = $profile ? $profile : SWFTOOLS_UNDEFINED;
+  
+  // Do we already know the players for this profile?
+  if (!isset($players[$_profile])) {
+    
+    // Register the players for this profile in the array
+    $players[$_profile] = swftools_get_players($profile);
+    
+  }
+
+  // Return the result
+  return isset($players[$_profile][$action]) ? $players[$_profile][$action] : FALSE;
+   
+}
+
+
+/**
+ * Returns an array of default values to use as the swf parameters.
+ * Parameters are described in the Adobe knowledge base TechNote 12701
+ * http://kb.adobe.com/selfservice/viewContent.do?externalId=tn_12701
+ */
+function _swftools_params() {
+
+  // Cache this
+  static $params = array();
+  
+  // If not set then get defaults
+  if (!$params) {
+    
+    // Define default parameters for case when settings have been stored
+    $defaults = array(
+      'swliveconnect'     => 'false',
+      'play'              => 'true',
+      'loop'              => 'true',
+      'menu'              => 'false',
+      'allowfullscreen'   => 'true',
+      'quality'           => 'autohigh',
+      'scale'             => 'showall',
+      'align'             => 'l',
+      'salign'            => 'tl',
+      'wmode'             => 'opaque',
+      'bgcolor'           => '',
+      'version'           => '7',
+      'allowscriptaccess' => 'sameDomain', 
+    );
+
+    // Retrieve settings from the database if available
+    $params = variable_get('swftools_params', $defaults);
+    
+  }
+
+  // Return the default parameters
+  return $params;
+
+}
+
+
+/**
+ * Returns information about the specified file.
+ * 
+ * We use this function to try and get the height and width for content that
+ * we don't have a specific size for.
+ * 
+ * The returned value is an array that may include width, height, extension,
+ * file_size, mime_type. We return FALSE if we didn't get a valid file, or if
+ * image_get_info() couldn't tell us anything.
+ * 
+ * @parameter $file
+ *   Path to a local file that we want to interrogate.
+ * @return
+ *   An array of data, or FALSE if we didn't get anything.
+ */
+function swftools_get_info($file) {
+  
+  // Assume we won't have data
+  $info = FALSE;
+  
+  // Try to get image info (first assume it is in the file directory (most likely case))
+  if ($try == file_create_path($file)) {
+    $info = image_get_info($try);
+  }
+  
+  // If it wasn't in the file system just try the file path - that might be valid
+  if (!$info) {
+    $info = image_get_info($file);
+  }
+  
+  // Return either the info array, or it will be FALSE if we got nothing
+  return $info;
+
+}
+
+
+/**
+ * Generates an playlist and places it in {cache_swftools} ready for use.
+ * 
+ * This relies on player modules implementing hook_swftools_playlist_[player].
+ * A module implementing this hook may either return an xml string that will be
+ * used by the player, or it may update the data array directly.
+ * 
+ * We don't check for the existence of this content in the cache already. If we
+ * are here then the swf wasn't in the cache, so it's pretty certain the xml
+ * won't be either.
+ * 
+ * We used to create an actual file. Now we place the content in {cache_swftools}
+ * and access it via swftools/playlist/nnn, where nnn is the cid.
+ * 
+ * @param &$options
+ *   The SWF Tools data array for this element.
+ * @return
+ *   The path to the virtual xml file (will be in the form swftools/playlist/nnn),
+ *   or an empty string (SWFTOOLS_NON_XML_PLAYLIST) if there is no xml.
+ */
+function swftools_generate_playlist(&$options) {
+  
+  // We don't need to hash again. We have been given a cid via $vars->othervars['cid']
+  // which is based on the incoming data, so lets just use that. Then we don't have to
+  // hash again. We prefix cache entries with xml: when they are a playlist so the cid
+  // for the playlist will be xml:nnn, and for the movie will be swf:nnn. We have a
+  // matched pair in the database which is neat.
+
+  // Determine the name of the hook that would be used to generate an xml playlist
+  $hook = '_swftools_playlist_' . $options['resolved_methods']['player']['name'];
+
+  // Build the name of the function we would call
+  $function = $options['resolved_methods']['player']['module'] . $hook;
+    
+  // See if the function exists - if it doesn't the module doesn't implement this hook
+  if (function_exists($function)) {
+  
+    // Call the function and pass variables by reference
+    $playlist = $function($options);
+
+    // If playlist is empty this is a non-xml playlist
+    if (!$playlist) {
+      return SWFTOOLS_NON_XML_PLAYLIST;
+    }
+    
+    // Cache the result
+    cache_set('xml:'.$options['othervars']['cid'], $playlist, 'cache_swftools');
+    
+    // Return the path to the xml
+    return url('swftools/playlist/' . $options['othervars']['cid']);
+    
+  }
+  
+  // We don't have hook_swftools_playlist_[player] for this player, return an empty string
+  return '';
+  
+}
+
+
+/**
+ * Prepares an array of filenames, or file objects, for use in a playlist.
+ * 
+ * This function processes the supplied array and returns an array of playlist data which has
+ * two elements, header and playlist. The header array contains the playlist title, which may
+ * be an empty string if nothing was set. The playlist array contains an array of playlist
+ * elements. As a minimum each element will contain:
+ * - filepath : the filepath for the file, if it is a local file, or FALSE if a full url
+ * - title : the title for the element, set to the filename if nothing given
+ * - filename : the filename for the file
+ * - fileurl : the full url to the file
+ * 
+ * drupal_alter is called just prior to returning the playlist, so a module can implement
+ * hook_swftools_playlist_alter(&$playlist_data) to modify the playlist prior to return. This
+ * means other modules can modify, or add, elements. For example, the swftools_getid3 module
+ * implements this hook to attach ID3 data to each playlist element.
+ *
+ * @param $files
+ *   An array of files that will be added to the playlist.
+ * @param $title
+ *   Optional playlist title
+ * @param $get_action
+ *   Optional parameter indicating if the function should determine an appropriate action. Default is TRUE.
+ * @param $type_filter
+ *   TODO: Do we need to use this? Does anyone ever use it??
+ *   Optional parameter - an array of file extensions that are permitted
+ * @param $stream
+ *   Option parameter to indicate if this is going to be a streamed playlist, in which case checks for the
+ *   existence of files should be skipped
+ * @return unknown_type
+ */
+function swftools_prepare_playlist_data($files, &$options) {
+  
+  // Make sure stream and action are present on options
+  $options['methods'] += array(
+    'player' => '',
+  );
+  
+  $options['othervars'] += array(
+    'stream' => '',
+  );
+  
+  // Initialise two flags for establishing the action to be taken on this playlist
+  $first_action = '';
+  $mixed_media = FALSE;
+  
+  // Initialise playlist data array
+  $playlist_data = array(
+    'header' => array(),
+    'playlist' => array(),
+  );
+  
+  // Iterate over the array of files to set filepath, fileurl and title keys
+  foreach ($files AS $key => $data) {
+    
+    // If $data is an object convert it to an array
+    if (is_object($data)) {
+      $data = (array)$data;
+    }
+    
+    // If $data is a string then make it array with this value on the filepath key
+    elseif (!is_array($data)) {
+      
+      // Create an array with key filepath set to the $data string
+      $data = array(
+        'filepath' => $data,
+      );
+    
+    }
+    
+    // Attach the incoming element to the playlist
+    $playlist_data['playlist'][$key] = $data;
+    
+    // If this playlist isn't a stream
+    // TODO: Allow streamed and non-streamed content to be mixed in one playlist?
+    if (!$options['othervars']['stream']) {
+      
+      // Expand $file as necessary if local or remote
+      $source = swftools_get_url_and_path($data['filepath']);
+
+      // Store results
+      $playlist_data['playlist'][$key]['filepath'] = $source['filepath'];
+      $playlist_data['playlist'][$key]['fileurl'] = $source['fileurl'];
+      
+    }
+    else {
+
+      // Set both the filepath and fileurl to the filepath
+      $playlist_data['playlist'][$key]['filepath'] = $data['filepath'];
+      $playlist_data['playlist'][$key]['fileurl'] = $data['filepath'];          
+
+    }
+    
+    // See if we have an image we need to expand
+    if ($playlist_data['playlist'][$key]['image']) {
+      $source = swftools_get_url_and_path($playlist_data['playlist'][$key]['image']);
+      $playlist_data['playlist'][$key]['image'] = $source['fileurl'];
+    }
+    
+    /**
+     * Ensure the title key is present to simplify later code as we know it will be present.
+     * Note we no longer set a default title. We leave it empty since all output should
+     * now be handled by a theme function, so if the user wants to make a default we can
+     * let them since they will know a specific value wasn't given. We don't do it for them.
+     * 
+     * We also initialise some other empty strings to make checks in other modules easier.
+     */
+    $playlist_data['playlist'][$key] += array(
+      'title' => '',
+      'image' => '',
+      'description' => '',
+      'author' => '',
+      'date' => '',
+      'link' => '',
+      'duration' => '',
+    ); 
+    
+    // Allow other modules to modify this playlist element (e.g. getID3)
+    drupal_alter('swftools_playlist_element', $playlist_data['playlist'][$key]);
+    
+    // If the caller wants us to work out the action for them then it happens in here
+    if (!$options['methods']['action']) {
+
+      // Get the extension for this item
+      $extension = strtolower(pathinfo($playlist_data['playlist'][$key]['fileurl'], PATHINFO_EXTENSION));
+  
+      // Only try to determine actions if there's an extension to work with, and we didn't already work out it's mixed
+      if ($extension && !$mixed_media) {
+      
+        // Work out what we'd do with this file
+        $action_for_this_file = swftools_get_action('dummy.' . $extension);
+  
+        // If this is the first file we've processed we log it
+        if (!$first_action) {
+          $first_action = $action_for_this_file;
+        }
+  
+        // Is this action the same as the first file we saw? If not we have mixed media
+        if ($first_action != $action_for_this_file) {
+          $mixed_media = TRUE;
+        }
+      
+      }
+
+    }
+    
+  }
+  
+  // If the didn't specify an action then assign it now
+  if (!$options['methods']['action']) {
+    
+    // Determine the required action
+    $action = $mixed_media ? 'media_list' : $first_action . '_list';
+    
+    // Assign the action in to options
+    $options['methods']['action'] = $action;
+    
+  }
+  
+  // Attach the resulting playlist to the array (we are working by reference)
+  $options['othervars']['playlist_data'] = $playlist_data;
+  
+  // Call drupal_alter to let other modules modify the entire playlist if they want
+  drupal_alter('swftools_playlist', $playlist_data);
+
+}
+
+
+/**
+ * Implementation of hook_filter_tips().
+ */
+function swftools_filter_tips($delta, $format, $long = false) {
+  if ($long) {
+    return t('
+    <h3 id="swftools_filter">SWF Tools Filter</h3>
+    <p>The basic syntax for embedding a flash file (.swf), flash movie (.flv) or audio file (.mp3) is:</p>
+    <blockquote><code>[swf file="filename.swf"]</code></blockquote>
+
+    <p>If you would like to override SWF Tools and flash player default settings,
+       you can specify additional parameters. For example:</p>
+    <blockquote><code>[swf file="song.mp3" flashvars="backcolor=#AABBCC&&forecolor=#11AA11"]</code></blockquote>
+    <p>If you would like to output a list of files then the format is:</p>
+    <blockquote><code>[swf files="image1.jpg&&image2.jpg&&..."]</code></blockquote>
+    SWF Tools Filter will accept following:
+    <ul>
+      <li><b>params</b> : You can specify values for parameters to be passed to Flash
+                           to control the appearance of the output. Typical values are
+                           bgcolor and wmode. Example: <code>params="wmode=true&&bgcolor="#00FF00"</code>
+                           Alternatively you can supply each parameter individually without using
+                           <code>params</code>. Example <code>wmode="true" bgcolor="#00FF00"</code></li>
+      <li><b>flashvars</b> : You can specify values for output as flashvars, which
+                           become available to the Flash movie that is playing. This is often done
+                           to control a media player. Refer to the documentation of the flash player
+                           you are using to know what flashvar options are available.
+                           Example: <code>flashvars="autostart=true&&volume=80"</code></li>
+      <li><b>methods</b> : Optional information about how to display the file. The most
+                           common usage is to specify a particular media player and
+                           thus override the default specified on the settings page.
+                           Example: <code>methods="player=onepixelout_mp3"</code></li>
+       </ul>
+      <p><strong>WARNING</strong>: with params, flashvars and othervars, pass multiple values
+                      separated by <strong>&amp;&amp;</strong>.</p>');
+  }
+  else {
+    return t('You may use !swftools_filter_help to display Flash files inline', array("!swftools_filter_help" => l('[swf file="song.mp3"]', "filter/tips/$format", array('query' => 'swftools_filter'))));
+  }
+}
+
+
+/**
+ * Implementation of hook_filter().
+ */
+function swftools_filter($op, $delta = 0, $format = -1, $text = '') {
+  switch ($op) {
+    case 'list':
+      return array(0 => t('SWF Tools filter'));
+    case 'no cache':
+      return FALSE;
+    case 'description':
+      return t('Substitutes [swf file="filename.flv"] or [swf files="file1.jpg&&file2.jpg"] with embedding code.');
+    case 'prepare':
+        // replace <swf > with [swf ] to prevent other filters stripping
+        return (preg_replace('/\<(swflist|swf)\s*(.*)>/sU', '[\1 \2]', $text));
+    case 'process':
+      return _swftools_filter_process_text($text);
+  }
+}
+
+
+/**
+ * Processes text obtained from the input filter.
+ * 
+ * This function processes the filter text that the user has added to the text area.
+ * If the filter is wrapped in <p></p> then these are stripped as part of the processing
+ * This eliminates a validation error in the resulting mark up if SWF Tools filter is
+ * being used in conjunction with other HTML filters that correct line breaks.
+ * It won't work in EVERY case, but it will work in MOST cases.
+ * Filters that are embedded in-line with text will continue to fail validation.
+ */
+function _swftools_filter_process_text($text) {
+  $endl = chr(13) ;
+  if (preg_match_all('@(?:<p>)?\[(swflist|swf)\s*(.*?)\](?:</p>)?@s', $text, $match)) {
+    // $match[0][#] .... fully matched string <swf|swflist parm_0="value_0" parm_1="value_1" parm_2="value_2">
+    // $match[1][#] .... matched tag type ( swf | swflist )
+    // $match[2][#] .... full params string until the closing '>'
+    
+    $swftools_parameters = array('file', 'params', 'flashvars', 'othervars', 'methods', 'files');
+    $match_vars = array();
+    
+    // Initialise an array to hold playlist arrays
+    $files = array();
+    
+    
+    foreach ($match[2] as $key => $passed_parameters) {
+      //preg_match_all('/(\w*)=\"(.*?)\"/', $passed_parameters, $match_vars[$key]);
+      preg_match_all('/(\w*)=(?:\"|&quot;)(.*?)(?:\"|&quot;)/', $passed_parameters, $match_vars[$key]);
+      // $match_vars[0][#] .... fully matched string
+      // $match_vars[1][#] .... matched parameter, eg flashvars, params
+      // $match_vars[2][#] .... value after the '='
+      
+      // Process the parameters onto the $prepared array.
+      // Search for standard parameters, parse the values out onto the array.
+      foreach ($match_vars[$key][1] as $vars_key => $vars_name) {
+
+        // Switch to swf or swflist, based on file or files
+        // Need to tidy up this line, probably use switch/case
+        if ($vars_name == 'file') {
+          $match[1][$key] = 'swf';
+        }
+        else {
+          if ($vars_name == 'files') {
+            $match[1][$key] = 'swflist';
+          }
+        }
+
+        if ($vars_name == 'file') {
+          $prepared[$key][$vars_name] = $match_vars[$key][2][$vars_key];
+          unset ($match_vars[$key][1][$vars_key]);
+        }
+        elseif (in_array($vars_name, $swftools_parameters)) {
+          $prepared[$key][$vars_name] = swftools_parse_str(str_replace(array('&amp;&amp;', '&&'), '&', $match_vars[$key][2][$vars_key]));
+          unset ($match_vars[$key][1][$vars_key]);
+        }
+        else {
+          $prepared[$key]['othervars'][$vars_name] = $match_vars[$key][2][$vars_key];
+        }
+      }
+
+      // Search for remaining parameters, map them as elements of the standard parameters.
+      if (isset($prepared[$key]['methods']['player'])) {
+        $player = strtolower($prepared[$key]['methods']['player']);
+      }
+      else {
+        $player_key = array_search('player', $match_vars[$key][1]);
+        if ($player_key!==FALSE) {
+          $player = strtolower($match_vars[$key][2][$player_key]);
+        }
+        else {
+          $player = FALSE;
+        }
+      }
+      $prepared[$key]['methods']['player'] = $player;
+
+      if (count($match_vars[$key][1])) {
+        // Find out if a player has been set.
+        foreach ($match_vars[$key][1] as $vars_key => $vars_name) {
+          if ($parent = swftools_get_filter_alias($vars_name, $player)) {
+            if ($parent) {
+              $prepared[$key][$parent][$vars_name] = $match_vars[$key][2][$vars_key];
+            }
+          }
+        }
+      }
+
+      // Just assigning parameters as false if not already set on the $prepared array.
+      // Really just to avoid declaration warnings when we call swf and swf_list
+      if (count($prepared[$key])) {
+        foreach ($swftools_parameters AS $swfparameter) {
+          if (!isset($prepared[$key][$swfparameter])) {
+            $prepared[$key][$swfparameter] = array();
+          }
+        }
+      }
+
+      // Assemble in to an array of options ready to pass
+      $options = array();
+      $options['params'] = $prepared[$key]['params'];
+      $options['flashvars'] = $prepared[$key]['flashvars'];
+      $options['othervars'] = $prepared[$key]['othervars'];
+      $options['methods'] = $prepared[$key]['methods'];
+
+      // Set a flag to show if we need to determine an action, or if one was provided
+//      $get_action = TRUE;
+//      if (isset($options['methods']['action'])) {
+//        $get_action = FALSE;
+//      }
+      
+      switch ($match[1][$key]) {
+        case 'swf':
+          $replace = swf($prepared[$key]['file'], $options);
+          break;
+        case 'swflist':
+          // If this filter contains a key called files
+          if ($prepared[$key]['files']) {
+            
+            // Iterate over the 
+            foreach ($prepared[$key]['files'] AS $name => $filename) {
+
+              if (!$filename) {
+                $prepared[$key]['files'][$name] = $name;
+              }
+
+              // Put in to proper format for new swftools_prepare_playlist_data()
+              $files[$key][$name]['filepath'] = $prepared[$key]['files'][$name]; 
+
+           }
+            
+            // Work out if this is a streamed playlist (in which case we will skip file existence checks)
+//            $stream = FALSE;
+//            if (isset($options['othervars']['stream'])) {
+//              $stream = TRUE;
+//            }
+
+            // Get playlist data, but don't determine action if the user specified a player
+//            $playlist_data = swftools_prepare_playlist_data($files[$key], '', $get_action, array(), $stream);
+//            $replace = swf_list($playlist_data, $options);
+              $replace = swf($files[$key], $options);
+          }
+          else {
+            $replace = '<!-- No files passed to the playlist -->';
+          }
+          break;
+      }
+      $matched[] = $match[0][$key];
+      $rewrite[] = $replace;
+    }
+    return str_replace($matched, $rewrite, $text);
+  }
+  return $text;
+}
+
+
+/**
+ * Implements a hook that extends the parameters that can be passed to the filter
+ * so that myvar="value" can be mapped to flashvars, etc.
+ */
+function swftools_get_filter_alias($var, $player = FALSE) {
+
+  static $general_mapping = array();
+  static $player_mapping = array();
+
+  if (!count($general_mapping)) {
+    // Build up the mapping arrays.
+    $general_mapping = array(
+      'action'            => 'methods',
+      'embed'             => 'methods',
+      'width'             => 'params',
+      'height'            => 'params',
+      'swliveconnect'     => 'params',
+      'play'              => 'params',
+      'loop'              => 'params',
+      'menu'              => 'params',
+      'quality'           => 'params',
+      'scale'             => 'params',
+      'align'             => 'params',
+      'salign'            => 'params',
+      'wmode'             => 'params',
+      'bgcolor'           => 'params',
+      'base'              => 'params',
+      'version'           => 'params',
+      'allowfullscreen'   => 'params',
+      'allowscriptaccess' => 'params',
+    );
+    
+    if (!count($player_mapping)) {
+      $player_mapping = module_invoke_all('swftools_variable_mapping');
+    }
+    $combined = array();
+    if (count($player_mapping)) {
+      foreach($player_mapping AS $mapping) {
+        $combined = array_merge($combined, $mapping);
+      }
+      $general_mapping = array_merge($combined, $general_mapping);
+    }
+  }
+  // Return the parent of the variable.
+  if ($player && isset($player_mapping[$player][$var])) {
+      return $player_mapping[$player][$var];
+  }
+  else {
+    return (isset($general_mapping[$var])) ? $general_mapping[$var] : FALSE;
+  }
+}
+
+
+/**
+ * Parses a string passed to the input filter in to separate key value pairs.
+ * 
+ * We cannot automatically use parse_str() because things like the list of
+ * files are not key-value pairs, but just a list of items.
+ * 
+ * @param $string
+ *   The string to parse.
+ * @return
+ *   An array of key/value pairs.
+ */
+function swftools_parse_str($string) {
+
+  // Initialise the array
+  $return = array();
+  
+  // Split the string at each &
+  $pairs = split('&', $string);
+
+  // Iterate over each piece
+  foreach($pairs as $pair) {
+    
+    // Split each piece at =
+    $splitpair = split('=', $pair);
+
+    // If there was only one item, or this key is already in the array append the value
+    if(!isset($splitpair[1]) || array_key_exists($splitpair[0], $return)) {
+      $return[] = $splitpair[0];
+    }
+    
+    // Otherwise we had a key-value we can add to the array
+    else {
+      $return[$splitpair[0]] = $splitpair[1];
+    }
+  }
+
+  // Return the result
+  return $return;
+  
+}
+
+
+/**
+ * Implementation of hook_theme().
+ */
+function swftools_theme() {
+  
+  return array(
+
+    // This is called by swf() when it is ready to embed
+    'swftools_embed' => array(
+      'arguments' => array('options' => NULL),
+    ),
+
+    // This is a specific embedding method
+    'swftools_direct' => array(
+      'arguments' => array('file' => NULL, 'options' => NULL),
+      'file' => 'includes/swftools.core.inc',
+    ),
+    
+    // These are the SWF Tools CCK formatters
+    'swftools_formatter_swftools' => array(
+      'arguments' => array('element' => NULL, 'profile' => NULL),
+      'function' => 'theme_swftools_formatter_swftools',
+    ),
+    'swftools_formatter_swftools_no_file' => array(
+      'arguments' => array('element' => NULL),
+      'function' => 'theme_swftools_formatter_swftools',
+    ),
+    'swftools_formatter_swftools_playlist' => array(
+      'arguments' => array('element' => NULL, 'profile' => NULL),
+      'function' => 'theme_swftools_formatter_playlist',
+    ),
+    'swftools_formatter_swftools_thumbnail' => array(
+      'arguments' => array('element' => NULL, 'retrieve' => NULL),
+      'function' => 'theme_swftools_formatter_thumbnail',
+    ),
+    
+    // Test swftools element
+    'swftools' => array(
+      'arguments' => array('element' => NULL),
+      'file' => 'includes/swftools.core.inc',
+    ),
+
+  );
+}
+
+
+/**
+ * Implementation of hook_file_download().
+ * 
+ * Allows SWF Tools to work with a private file system that might include files
+ * uploaded outside the control of an upload module, e.g. FTP of large video files.
+ *
+ * If the file is of a supported type, based on extension, then return a valid header.
+ * If any other module returns -1 for this file then access will be denied
+ * even if SWF Tools tries to allow it. See hook_file_download() for details.
+ */
+function swftools_file_download($file) {
+
+  // If SWF Tools is allowed to grant access then check to see if access will be allowed
+  if (variable_get('swftools_grant_access_to_private_files', SWFTOOLS_PRIVATE_ACCESS_DENIED)) {
+
+    // Get extension of file in question
+    $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+    
+    // Get list of extensions that SWF Tools can grant access to
+    $extensions = variable_get('swftools_grant_access_extensions', SWFTOOLS_PRIVATE_ACCESS_ALLOWED_EXTENSIONS);
+
+    // Need access to the user object
+    global $user;
+    
+    // Check if SWF Tools should grant access to this extension - skip the check for user #1
+    if ($user->uid != 1) {
+      $regex = '/\.('. ereg_replace(' +', '|', preg_quote($extensions)) .')$/i';
+      if (!preg_match($regex, $file)) {
+        return;
+      }
+    }
+
+    // Build an array of types that SWF Tools can react to
+    $mime_types = _swftools_mime_types();
+    
+    // If file is one of the above types, based on the extension, return headers
+    if (isset($mime_types[$extension])) {
+      return array(
+        'Content-Type: '. $mime_types[$extension],
+        'Content-Length: '. filesize(file_create_path($file)),
+      );
+    }
+  }
+}
+
+
+/**
+ * Implementation of hook_swftools_methods().
+ */
+function swftools_swftools_methods() {
+
+  // Module implements swf embedding (action swf)
+  $methods['swf']['swf'] = array(
+    'module'       => 'swftools',
+    'title'        => t('Display the swf directly on the page'),
+  );
+  
+  // Add on generic players (we have to call this hook manually as it isn't in a module
+  $methods += swftools_genericplayers_swftools_methods();
+  
+  // Return the methods that are native to SWF Tools
+  return $methods;
+
+}
+
+
+/**
+ * Helper function to set the size of the swf content in to $options['othervars']['height'] and ['width']
+ * 
+ * @param &$options
+ *   Data arrays that is being assembled by SWF Tools.
+ * @return
+ *   Nothing - function operates by reference.
+ */
+function swftools_set_size(&$options) {
+//  dsm($options);
+  // We use these defaults to filter arrays for their height and width, and assign a fallback value
+  $defaults = array('height' => '100%', 'width' => '100%');
+
+  // If height and width are already set then just return
+  if (count(array_intersect_key($options['othervars'], $defaults)) == 2) {
+    return;
+  }
+  
+  // See if we can get height and width from flashvars
+  $try = array_intersect_key($options['flashvars'], $defaults);
+  $options['othervars'] += $try;
+  
+  // See if we can get height and width from player
+  $try = array_intersect_key($options['resolved_methods']['player'], $defaults);
+  $options['othervars'] += $try;
+
+  // If we have a height and width now then return
+  if (count(array_intersect_key($options['othervars'], $defaults)) == 2) {
+    return;
+  }
+  
+  // Try and get size from the file to be embedded, but preserve height or width if just one was set
+  $info = swftools_get_info($options['othervars']['filepath']);
+  
+  // If sizes were retrieved then use them
+  if ($info) {
+    $try = array_intersect_key($info, $defaults);
+    $options['othervars'] += $try;
+  };
+
+  // And if all else fails, assign 100%
+  $options['othervars'] += $defaults;
+  
+}
+
+
+/**
+ * Implementation of hook_field_formatter_info().
+ */
+function swftools_field_formatter_info() {
+  return array(
+    'swftools_no_file' => array('label' => t('SWF Tools - no download link'),
+      'field types' => array('filefield', 'link', 'text'),
+      'multiple values' => CONTENT_HANDLE_CORE,
+    ),
+    'swftools_playlist' => array('label' => t('SWF Tools - playlist'),
+      'field types' => array('filefield', 'link', 'text'),
+      'multiple values' => CONTENT_HANDLE_MODULE,
+    ),
+    'swftools' => array('label' => t('SWF Tools - with download link'),
+      'field types' => array('filefield', 'link'),
+      'multiple values' => CONTENT_HANDLE_CORE,
+    ),
+    'swftools_thumbnail' => array('label' => t('SWF Tools - thumbnail'),
+      'field types' => array('filefield', 'link', 'text'),
+      'multiple values' => CONTENT_HANDLE_CORE,
+    ),    
+  );
+}
+
+
+/**
+ * Themes a CCK element in to flash content.
+ * 
+ * @param $element
+ *   The element to render.
+ * @return
+ *   A string of markup to produce the flash content, or nothing if the element was empty.
+ */
+function theme_swftools_formatter_swftools($element, $profile = array()) {
+
+  // If the element is empty return
+  if (empty($element['#item']['fid']) && empty($element['#item']['value']) && empty($element['#item']['url'])) {
+    return '';
+  }
+
+  // See if a thumbnail image has been stored with this content
+  $image = theme_swftools_formatter_thumbnail('', TRUE, $element['#item']['#delta']);
+  
+  // If an image was stored then set the thumbnail
+  if ($image) {
+    $options['othervars']['image'] = $image;
+  }
+  else {
+    $options = array();
+  }
+
+  // Assign the profile
+  $options['othervars']['profile'] = $profile ? $profile['profile'] : '';
+  
+  // See if we're processing a filefield and get the path and description
+  if (isset($element['#item']['filepath'])) {
+    $swf = $element['#item']['filepath'];
+    $options['othervars']['title'] = $element['#item']['data']['description'];
+    $source = 'filefield';
+  }
+
+  // See if we're processing a link field and get the path and title
+  elseif (isset($element['#item']['url'])) {
+    $swf = $element['#item']['url'];
+    $options['othervars']['title'] = $element['#item']['title'];
+    $source = 'link';
+    
+    // add the query to the base url, if necessary
+    if (isset($element['#item']['query']) && strlen($element['#item']['query']) > 0) {
+      $swf .= '?' . ($element['#item']['query']);
+    }
+    
+    // add the fragment to the url, if necessary
+    if (isset($element['#item']['fragment']) && strlen($element['#item']['fragment']) > 0) {
+      $swf .= '#' . ($element['#item']['fragment']);
+    }
+  } 
+  
+  // We're processing a text field so get the path
+  else {
+    $swf = $element['#item']['value'];
+    $options['othervars']['title'] = '';
+    $source = 'text';
+
+    // We need to run $swf through check_url to make sure it is safe, but rtmp isn't in the allowed protocols
+    // This is configurable (see filter.module line 1182) but not sure if the variable is exposed
+    // $swf = check_url($swf);
+    
+    // See if we have been given a stream by trying to explode the string
+    $stream = explode(' ', $swf);
+    
+    // If the explode return 2 elements assume we have a stream, element[0] contains the source, element[1] the file
+    if (count($stream) == 2) {
+      $options['othervars']['stream'] = $stream[0];
+      $swf = $stream[1];
+    }
+  }
+  
+  // Pass element to the swf tools processor by attaching it in othervars
+  $options['othervars']['cck'] = $element;
+  
+  // Get the markup for the flash content from swf()
+  $return = swf($swf, $options);
+  
+
+  
+  // Add the download link if required (we are either using swftools formatter, or a profile with this option enabled)
+  if ($element['#formatter'] == 'swftools' || !empty($profile['download_link'])) {
+    switch ($source) {
+      case 'filefield':
+        $return .= "\n" . theme('filefield_formatter_default', $element);
+        break;
+      case 'link':
+        $return .= "\n" . theme('link_formatter_default', $element);
+        break;
+    }
+  }
+  
+  // Return the resulting markup
+  return $return;
+}
+
+
+/**
+ * Themes multiple value CCK content in to a playlist.
+ * 
+ * @param $element
+ *   The element to render.
+ * @return
+ *   A string of markup to produce the flash content, or nothing if the element was empty.
+ */
+function theme_swftools_formatter_playlist($element, $profile = array()) {
+
+  // Initialise an array for results
+  $files = array();
+  
+  // Get the children
+  $children = element_children($element);
+  
+  // If there is only one child then maybe we don't want a playlist
+  if (count($children) == 1) {
+
+    // Pop the first value of the children array
+    $_children = $children;
+    $child = array_pop($_children);
+        
+    // Get the name of the alternate formatter for this content type
+    $formatter_name = variable_get('swftools_' . $element['#type_name'] . '_' . $element['#field_name'], 'swftools_playlist');
+    
+    // What happens next depends on the formatter name
+    
+    switch ($formatter_name) {
+      
+      case 'hidden':      
+    
+        // If the format is set to hidden then return nothing
+        if ($formatter_name == 'hidden') {
+          return;
+        }
+        
+      case 'swftools_playlist':
+        
+        // If swftools_playlist don't do anything different
+        break;
+
+      default:
+
+        // Find out what the alternate formatter should be
+        if ($formatter = _content_get_formatter($formatter_name, 'filefield')) {
+          
+          // We can work out the theme name from the formatter information
+          $theme = $formatter['module'] .'_formatter_'. $formatter_name;
+    
+          // Construct a modified element that mimics a single element
+          $element['#formatter'] = $formatter_name;
+          $element['#theme'] = $theme;
+          $element += $element[$child];
+          $element['#item']['#delta'] = 0;
+          unset($element[$child]);
+          
+          // Theme this new element according to the alternate formatter
+          return theme($theme, $element);
+          
+        }
+    }
+  }
+
+  // Retrieve images
+  $images = theme_swftools_formatter_thumbnail('', TRUE);  
+  
+  // Cycle through the file elements
+  foreach ($children as $key) {
+
+    // Is this a filefield?
+    if (isset($element[$key]['#item']['filepath'])) {
+      $files[$key] = array(
+        'filepath' => $element[$key]['#item']['filepath'],
+        'title' => $element[$key]['#item']['data']['description'], 
+      );
+    }
+    
+    // Is this a link field?
+    if (isset($element[$key]['#item']['url'])) {
+      $files[$key] = array(
+        'filepath' => $element[$key]['#item']['url'],
+        'title' => $element[$key]['#item']['title'], 
+      );
+    }
+    
+    // Is this a text field?
+    // TODO: How to handle streams in a playlist
+    if (isset($element[$key]['#item']['value'])) {
+      $files[$key] = array(
+        'filepath' => $element[$key]['#item']['value'],
+        'title' => '', 
+      );
+    }
+
+    // Is there an image?
+    if (isset($images[$key]) && $images[$key]) {
+
+      // Get the path to the image
+      $source = swftools_get_url_and_path($images[$key]);
+      
+      // If $source returned a result then use it
+      if ($source) {
+        $files[$key]['image'] = $source['fileurl'];
+      }
+
+    }
+    
+  }
+  
+  // If files array is empty then there is nothing to be rendered
+  if (empty($files)) {
+    return;
+  }
+  
+  // Pass element to the swf tools processor by attaching it in othervars
+  $options['othervars']['cck'] = $element;
+  
+  // Assign the profile
+  $options['othervars']['profile'] = $profile ? $profile['profile'] : '';
+  
+  // But if we got something then we can call swf() now to render it
+  return swf($files, $options);
+  
+}
+
+
+/**
+ * Theme function to store and retrieve thumbnail images.
+ * 
+ * If called as a theme function it stores the path of the image, but if the retrieve flag is set it returns that path.
+ * 
+ * In effect this function is a local store to hold the most recently "seen" image on behalf of the swf themer.
+ * In order for this code to work the thumbnail theme function must come before the swf theme function, so it
+ * is necessary to order the fields appropriately on the content configuration page.
+ * 
+ * When caching thumbnails then if the element delta is zero the cache is flushed first to start a new
+ * collection of images.
+ * 
+ * @param $element
+ *   The element to store.
+ * @param $retrieve
+ *   When TRUE will return the currently stored path.
+ * @param $delta
+ *   If set then attempt to retrieve just the image at the specified delta, otherwise return
+ *   the whole array of stored thumbnails.
+ * @return
+ *   A string, or an array, holding the thumbnail filepaths.
+ */
+function theme_swftools_formatter_thumbnail($element, $retrieve = FALSE, $delta = NULL) {
+  
+  // Create a static variable to hold the image path
+  static $image_path = array();
+  
+  // It retrieving a previous thumbnail then return its path and reset the stored value
+  // We may want to retrieve all cached thumbnails ($delta = NULL), or a specific thumbnail
+  // in which case $delta is the one we want
+  if ($retrieve) {
+    if ($delta !== NULL) {
+      if (isset($image_path[$delta])) {
+        return $image_path[$delta];
+      }
+      else {
+        return '';
+      }
+    }
+    else {
+      return $image_path ? $image_path : '';
+    }
+  }
+   
+  // If the delta is zero we are starting a new collection so reset in case
+  // a retrieval call wasn't made by the theme function
+  if ($element['#item']['#delta'] == 0) {
+    $image_path = array();
+  }
+  
+  // If the element is empty set the stored path to an empty string
+  if (empty($element['#item']['fid']) && empty($element['#item']['value']) && empty($element['#item']['url'])) {
+    $image_path[] = '';
+    return;
+  }
+
+  // Initialise an empty string
+  $image_url = '';
+  
+  // See if we're processing a filefield and get the appropriate value
+  if (isset($element['#item']['filepath'])) {
+    $image_url = $element['#item']['filepath'];
+  }
+
+  // See if we're processing a link field and get the appropriate value
+  elseif (isset($element['#item']['url'])) {
+    $image_url = $element['#item']['url'];
+    
+    // add the query to the base url, if necessary
+    if (isset($element['#item']['query']) && strlen($element['#item']['query']) > 0) {
+      $image_url .= '?' . ($element['#item']['query']);
+    }
+    
+    // add the fragment to the url, if necessary
+    if (isset($element['#item']['fragment']) && strlen($element['#item']['fragment']) > 0) {
+      $image_url .= '#' . ($element['#item']['fragment']);
+    }
+    
+  } 
+  
+  // We're processing a text field so get the appropriate value
+  else {
+    $image_url = $element['#item']['value'];
+
+    // Check this is a valid url
+    $image_url = check_url($image_path);
+    
+  }
+
+  // Store the result
+  $image_path[] = $image_url;
+  
+  // Return nothing at this point
+  return;
+
+}
+
+
+/**
+ * Verifies that the supplied id is unique, and assigns an id if one was not supplied.
+ * 
+ * Typically this is called to get us a unique id, but the user can also supply an id. In all cases
+ * we call form_clean_id to verify that the id is unique in this page generation session.
+ * 
+ * @param $id
+ *   An id to be checked, or empty if we don't have one yet.
+ * @return
+ *   A unique id.
+ */
+function swftools_get_id($id = '') {
+  
+  // If a specific id wasn't set then assign one
+  $id = $id ? $id : uniqid('swftools-');
+  
+  // Check the id is unique (ours should be, a user supplied one might not be)
+  $id = form_clean_id($id);
+  
+  // Return the id
+  return $id;
+ 
+}
+
+
+/**
+ * Creates a relative path url from a file path, using private or public file system.
+ * 
+ * This is an SWF Tools version of file_create_url(). The only difference is that
+ * here we do not output absolute paths as we are only using these paths within the
+ * context of a page and therefore relative is fine.
+ * 
+ * @param $path
+ *   Path to the file.
+ * @return
+ *   A string with a complete path, relative to the local file system.
+ */
+function swftools_create_url($path) {
+  
+  // Strip file_directory_path from $path. We only include relative paths in urls.
+  if (strpos($path, file_directory_path() .'/') === 0) {
+    $path = trim(substr($path, strlen(file_directory_path())), '\\/');
+  }
+
+  // Output a relative url, using public or private file transfer
+  switch (variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC)) {
+    case FILE_DOWNLOADS_PUBLIC:
+      return base_path() . file_directory_path() . '/' . str_replace('\\', '/', $path);
+    case FILE_DOWNLOADS_PRIVATE:
+      return url('system/files/' . $path);
+  }
+}
+
+
+/**
+ * Determines the url for a file, and expands its filepath if necessary.
+ * 
+ * @param $file
+ *   A string containing a url or a path to a file.
+ * @return
+ *   An array with two keys
+ *   - src: The url to the file (relative if on the local system)
+ *   - src_path: The path to the file, expanded if necessary
+ *   
+ * This function is necessary because SWF Tools allows flexibility in how the site interprets
+ * filenames. If just a filename is provided then this might point to a file on the local system,
+ * or it might point to an external location if the remote media path is set. However, for things
+ * like auto-detection of sizes to work when the filename is local it must be expanded to include
+ * the file path.
+ * 
+ * If $file is a full and valid absolute url then the function returns $file on both keys.
+ * 
+ * If $file is full and valid url on the local system then the function returns $file on both keys.
+ * 
+ * If $file is a path to a local file (sites/default/files/xxx) then src_path will return this,
+ * and src will return a full relative url.
+ * 
+ * If $file is just a filename and remote media is active then src and src_path will both be set
+ * to the url for the external location.
+ * 
+ * If $file is just a filename and remote media is not active then src_path will return the path
+ * to the local system (so xxx becomes sites/default/files/xxx) and src will return the full
+ * relative url. 
+ */
+function swftools_get_url_and_path($file) {
+
+  // src will contain a full, or relative, url that is used to render the file
+  // src_path will contain a partial path (without webroot), or the original file path
+  $ret = array(
+    'fileurl' => '',
+    'filepath' => $file,
+  );
+  
+  // If already a valid absolute url simply return it
+  if (valid_url($file, TRUE)) {
+    $ret['fileurl'] = $file;
+    return $ret;
+  }
+  
+  // If a valid url, and starts with /, then assume to be a local path relative to web root
+  // No security check is needed as the result of this is only output to the webpage
+  // We strip base_path from the file to create filepath that is valid for image_get_info later.
+  if (valid_url($file) && strpos($file, '/') === 0) {
+    return array(
+      'fileurl' => $file,
+      'filepath' => str_replace(base_path(), '', $file),
+    );
+  }
+  
+  // If defintely in the local file system return a relative url to the file
+  if ($file == file_create_path($file)) {
+
+    // If media checking is active check to see if it actually exists
+    if (variable_get('swftools_check_media', TRUE)) {
+    
+      // If the file doesn't exist, set an error message and return FALSE to indicate failure
+      if (!file_exists($file)) {
+        drupal_set_message(t('SWF Tools could not find %file.', array('%file' => $file)), 'error');
+        return FALSE;
+      }
+      
+    }
+    
+    // If we got here then return a relative url to the file
+    $ret['fileurl'] = swftools_create_url($file);
+    return $ret;
+    
+  }
+  
+  // Retrieve the media url setting
+  $media_url = trim(variable_get('swftools_media_url', ''));
+  
+  // If a remote path is set build the appropriate url to the file
+  if ($media_url) {
+    $ret['fileurl'] = $media_url . '/' . $path; 
+    return $ret;
+  }
+  
+  // If we got here then expand to a local file path and call again
+  return swftools_get_url_and_path(file_create_path($file));
+  
+}
+
+
+/**
+ * Returns a string defining a base path for flash to use.
+ */
+function swftools_get_base() {
+  
+  // Cache the result as we might get multiple calls
+  static $base = '';
+
+  // If $base is not already defined then set it
+  if (!$base) {
+  
+    // Retrieve swftools_media_url to see if a remote path has been set
+    $base = trim(variable_get('swftools_media_url', ''));
+  
+    // If $base is still empty then use local path to file directory
+    if (!$base) {
+      $base = base_path() . file_directory_path() . '/'; 
+    }
+
+  }
+  
+  // Return the base path
+  return $base;
+
+}
+
+
+/**
+ * Flatten an array which has sub-arrays in to a single keyed array.
+ * 
+ * If keys in the sub-array are the same as ones seen previously the early key will be over-written.
+ * 
+ * @param $array
+ *   Array to be processed.
+ */
+function swftools_array_flatten(&$array) {
+
+  // Only process if we passed an array
+  if (is_array($array)) {
+  
+    // Iterate over the array
+    foreach($array as $key => $value) {
+    
+      // If the value is in itself an array then flatten that too
+      if (is_array($value)) {
+        
+        // Unset this key as this contains an array
+        unset($array[$key]);
+        
+        // Flatten the sub-array
+        swftools_array_flatten($value);
+        
+        // Merge the flattened sub-array in to the rest of the array
+        $array = array_merge($array, $value);
+
+      }
+      
+    }
+
+  }
+
+}
+
+
+/**
+ * Returns a variable, or the equivalent variable from the relevant profile.
+ * 
+ * This is a custom handler to take care of the SWF Tools profile mechanism.
+ * If no profile name is given then it simply returns the requested variable,
+ * or the default if the variable is not set.
+ * 
+ * If a profile name is given then it will first try to retrive the profiled variable.
+ * If that fails it will try to return the global setting, and if that fails then it
+ * will return the default. In this way we cascade through the "most relevant" setting.
+ * 
+ * @param $name
+ *   The name of the variable to return.
+ * @param $default
+ *   The default value to use if this variable has never been set.
+ * @param $profile
+ *   The name of the profile to use.
+ * @return
+ *   The value of the variable.
+ */
+function swftools_variable_get($name, $default, $profile = '') {
+  
+  if ($profile && ($ret = variable_get('swftools_' . $profile . '_' . $name, SWFTOOLS_UNDEFINED)) != SWFTOOLS_UNDEFINED) {
+    return $ret;
+  }
+  return variable_get($name, $default);
+  
+}
+
+
+/**
+ * Serves an xml playlist from the {cache_swftools} table.
+ * 
+ * SWF Tools no longer generates a physical file for the playlist. Instead it
+ * places an entry in its internal cache table and then serves the file from
+ * there. Pages request the files by accessing swftools/playlist/nnn.xml, where
+ * nnn is the cid of the content.
+ * 
+ * Note that we check at swf() whether the relevant cid exists in the table. If
+ * it doesn't then the playlist file is regenerated.
+ * 
+ * @param $playlist
+ *   The name of the playlist being requested.
+ * @return
+ *   Serve the xml file, or issue drupal_not_found() if it doesn't exist.
+ */
+function swftools_get_xml($playlist) {
+  
+  if (!$data = cache_get('xml:'.$playlist, 'cache_swftools')) {
+    print drupal_not_found();
+  }
+  else {
+    drupal_set_header('Content-Type: text/xml; charset=utf-8');
+    print $data->data;
+  }
+  
+}
+
+
+/**
+ * Serves just the swf content from the cache via the path swftools/html/nnnn
+ * 
+ * This feature is experimental - the only access control at the moment is whether
+ * the user is generally allowed to view content. Complex permissions will come
+ * later.
+ * 
+ * @param $cid
+ *   The cid of the item to retrieve.
+ * @return
+ *   An html page, including headers
+ */
+function swftools_get_html($cid) {
+  
+  if (!variable_get('swftools_grant_access_to_cache', 0)) {
+    print drupal_access_denied();
+  }
+  else if (!$content = cache_get('swf:'.$cid, 'cache_swftools')) {
+    print drupal_not_found();
+  }
+  else {
+    $output = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n";
+    $output .= '<html xmlns="http://www.w3.org/1999/xhtml">';
+    $output .= '<head>';
+    $output .= '<title>'. variable_get('site_name', 'Drupal') .'</title>';
+    $output .= drupal_get_html_head();
+    $output .= drupal_get_css();
+    $output .= drupal_get_js();
+  
+    $output .= '</head><body>';
+    $output .= "\n<!-- begin content -->\n";
+    $output .= $content->data;
+    $output .= "\n<!-- end content -->\n";
+  
+    $output .= '</body></html>';
+    
+    print $output;
+  }
+  
+}
+
+
+/**
+ * Creates a cid for the call to swf() and returns its data from the cache when available.
+ * 
+ * To make our cid we create an array from $file and $options. Then we serialize it, and then
+ * we run it through md5. This generates a unique cid for that piece of content.
+ *
+ * Once the cid is created it is attached to $options['othervars']['cid'] so that
+ * subsequent functions don't have to rehash the data to generate it again.
+ * 
+ * Within {cache_swftools} we then prefix the cid with swf: or xml: to indicate whether the
+ * cache entry refers to the markup that produces the content, or the xml: that describes the
+ * playlist. So for xml playlist content we should have two entries with the same numeric portion
+ * in their cid.
+ * 
+ * @param $file
+ *   The $file parameter from the call to swf().
+ * @param $options
+ *   The $options parameter from the call to swf().
+ * @return
+ *   The cached content, or FALSE if it is isn't available.
+ */
+function swftools_get_from_cache($file, &$options) {
+
+  // Construct a cid for this piece of content  
+  $cid = md5(serialize(array($file, $options)));
+
+  // Set the cid on othervars ready to store this item if we have to render it 
+  $options['othervars']['cid'] = $cid;
+  
+  // If this is in the cache then return its data, attaching JavaScript if necessary
+  if ($ret = cache_get('swf:'.$cid, 'cache_swftools')) {
+    return $ret;
+  }
+    
+  // Indicate that we don't have cached data
+  return FALSE;
+  
+}
+
+
+/**
+ * Implementation of hook_flush_caches().
+ */
+function swftools_flush_caches() {
+  return array('cache_swftools');
+}
+
+
+/**
+ * Returns the default handlers, or customised handlers, for each action.
+ */
+function swftools_get_players($profile) {
+  
+  // These are the standard defaults (key is action, value is handler)
+  $defaults = array(
+    'video' => 'generic_flv',
+    'audio' => 'generic_mp3',
+    'swf' => 'swf',
+  );
+
+  // Retrieve settings from the database if available
+  $settings = swftools_variable_get('swftools_handlers', $defaults, $profile);
+  
+  // Return result
+  return $settings;
+  
+}
+
+
+/**
+ * Merges two multi-dimensional arrays.
+ * 
+ * This function is used by players that filter their settings to strip out
+ * blanks or defaults. For the admin page we need a full set of values to prevent
+ * errors. Since the arrays might be multi-dimensional we cannot use a regular
+ * array_merge(). The values in the first array will be over-written by values in
+ * the second, if they exist.
+ * 
+ * @param $array1
+ *   The first array to merge.
+ * @param $array2
+ *   The second array to merge.
+ * @return
+ *   The result of the merge.
+ */
+function swftools_array_merge($array1, $array2) {
+
+  // Iterate over $array 2 (this is normally the smaller of the two)
+  foreach ($array2 as $key => $value) {
+
+    // If this key is present in $array1 then work out what to do
+    if (isset($array1[$key])) {
+
+      // If both keys hold arrays, combine them    
+      if (is_array($value) && is_array($array1[$key])) {
+        $array1[$key] = swftools_array_merge($array1[$key], $value);
+      }
+      else {
+        // Replace value in $array1 with that from $array2
+        $array1[$key] = $value;
+      }
+    }
+    else {
+      // Simply put this value in $array1 if it isn't already in $array1
+      $array1[$key] = $value;
+    }
+
+  }
+  
+  // Return the result
+  return $array1;
+
+}
+
+
+/**
+ * Retrieves the list of actions, and their descriptions, that modules are presenting to SWF Tools.
+ * 
+ * @param $reset
+ *   When TRUE will reset the cache.
+ * @return unknown_type
+ *   An array of actions.
+ */
+function swftools_get_actions($reset = FALSE) {
+  
+  // Cache actions
+  static $actions;
+
+  // If user has requested the cache to be reset then reset it
+  if ($reset || !isset($actions)) {
+    if (!$reset && ($cached = cache_get('actions', 'cache_swftools'))) {
+      $actions = $cached->data;
+    }
+    else {
+          
+      // Build a list of standard actions that SWF Tools knows about from its other modules
+      $default_actions = array(
+        'swf' => array(
+          '#description' => 'a single swf movie',
+          '#type' => 'swf movies',
+          '#weight' => -8,
+        ),
+        'video' => array(
+          '#description' => 'a single video',
+          '#type' => 'videos',
+          '#weight' => -7,
+        ),
+        'video_list' => array(
+          '#description' => 'a series of videos',
+          '#weight' => -6,
+        ),
+        'audio' => array(
+          '#description' => 'a single audio file',
+          '#type' => 'audio',
+          '#weight' => -5,
+        ),
+        'audio_list' => array(
+          '#description' => 'a series of audio files',
+          '#weight' => -4,
+        ),
+        'image' => array(
+          '#description' => 'a single image',
+          '#type' => 'images',
+          '#weight' => -3,        
+        ),
+        'image_list' => array(
+          '#description' => 'a series of images',
+          '#weight' => -2,
+        ),
+        'media_list' => array(
+          '#description' => 'a series of mixed media files',
+          '#weight' => -1,
+        ),
+      );
+
+      // Plan ahead - give other modules the chance to declare an action
+      $actions = array();
+      foreach (module_implements('swftools_actions') as $module) {
+        $function = $module .'_swftools_actions';
+        $result = $function();
+        if (isset($result) && is_array($result)) {
+          $actions = array_merge($actions, $result);
+        }
+      }
+    
+      // Merge additional or new values over the defaults (allows defaults to be renamed)
+      $actions = array_merge($default_actions, $actions);
+      
+      // Sort the list
+      uasort($actions, 'element_sort');
+
+      // Set the cache
+      cache_set('actions', $actions, 'cache_swftools');
+    }
+  }
+  
+  // Return the list of available actions
+  return $actions;
+   
+}
+
+
+/**
+ * Determines the action to be taken, based on the extension of a filename.
+ * 
+ * @param $extension
+ *   The file being queried.
+ * @return
+ *   An SWF Tools action, or 'media_list' if we don't know.
+ */
+function swftools_get_action($file) {
+  
+  // Get the array of actions, keyed on extension
+  $actions = _swftools_actions();
+
+  // Get the extension for this file
+  $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+  
+  // If we know the handler for this then use it, otherwise return 'media_list'
+  return isset($actions[$extension]) ? $actions[$extension] : 'media_list'; 
+  
+}
+
+
+/**
+ * Returns an array of actions, keyed by file extension.
+ */
+function _swftools_actions() {
+  
+  // Cache this as there may be multiple calls
+  static $actions;
+  
+  // Do we need to fetch the array of actions?
+  if (!$actions) {
+   
+    // Defaults to use if no settings have been stored
+    $defaults = array(
+      'swf' => 'swf',
+      'flv' => 'video',
+      'mp3' => 'audio',
+      'jpg' => 'image',
+      'jpeg' => 'image',
+      'jpe' => 'image',
+      'png' => 'image',
+      'gif' => 'image',
+    );
+    
+    // Use settings from configuration page, or defaults
+    $actions = variable_get('swftools_actions', $defaults);
+    
+  }
+  
+  // Return the result
+  return $actions;
+  
+}
+
+
+/**
+ * Returns an array of mime types, keyed by file extension.
+ */
+function _swftools_mime_types() {
+
+  $defaults = array(
+    'swf' => 'application/x-shockwave-flash',
+    'flv' => 'video/x-flv',  
+    'mp3' => 'audio/mpeg',
+    'jpg' => 'image/jpeg',
+    'jpeg' => 'image/jpeg',
+    'jpe' => 'image/jpeg',
+    'png' => 'image/png',
+    'gif' => 'image/gif',
+    
+  );
+
+  // Use settings from configuration page, or defaults
+  $mime_types = variable_get('swftools_mime_types', $defaults);
+  
+  // Return the result
+  return $mime_types;
+
+}
+
+
+/**
+ * Implementation of hook_form_FORM_ID_alter().
+ * 
+ * Alters the system_performance_settings form so the SWF Tools cache can be managed along with other caches.
+ */
+function swftools_form_system_performance_settings_alter(&$form, &$form_state) {
+ 
+  $form['swftools_cache'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('SWF Tools cache'),
+    '#description' => t('Enabling the SWF Tools cache can offer a performance increase for all users by preventing embedding markup and playlists from being reconstructed on each page load. If the page cache is also enabled, performance increases from enabling the SWF Tools cache will mainly benefit authenticated users.'),
+  );
+
+  $form['swftools_cache']['swftools_cache'] = array(
+    '#type' => 'radios',
+    '#title' => t('SWF Tools cache'),
+    '#default_value' => variable_get('swftools_cache', CACHE_NORMAL),
+    '#options' => array(
+      CACHE_DISABLED => t('Disabled'),
+      CACHE_NORMAL => t('Enabled (recommended)'),
+    ),
+    '#description' => t('During site development it can be helpful to disable the cache and force content to be regenerated on every page call. Note that content being generated via an input filter is always cached by the input filter itself and disabling the SWF Tools cache will not stop the filter cache. Even when the SWF Tools cache is disabled it will continue to store content to allow features such as serving content from %path to function.', array('%path' => base_path() . 'swftools/html/nn')),
+  );
+
+  // We want to slot our new section above 'clear cached data' but we can't use weights
+  // We use a trick and unset and reset the elements we want lower
+  $temp = $form['clear_cache'];
+  unset($form['clear_cache']);
+  $form['clear_cache'] = $temp;
+  
+  $temp = $form['buttons'];
+  unset($form['buttons']);
+  $form['buttons'] = $temp;
+  
+}
+
+/**
+ * Produces finished markup ready for inserting on the page.
+ * 
+ * This function hands off to the appropriate embedding theme first, and then
+ * wraps the result in some wrapper divs before returning the result.
+ *
+ * @param $options
+ *   An SWF Tools array of data.
+ * @return
+ *   An HTML string that generates the output
+ */
+function theme_swftools_embed(&$options) {
+  
+  // Call the specific embedding function - this generates the mark to render the swf
+  // The default is a theme with the same name as the method, but this can be over-ridden by modifying the theme key
+  $embed_markup = theme($options['resolved_methods']['embed']['theme'], $options['othervars']['fileurl'], $options, variable_get('swftools_javascript_location', SWFTOOLS_JAVASCRIPT_INLINE));
+  
+  // Prepare an array of classes to include in the wrapper div
+  $classes[] = 'swftools';
+  $classes[] = 'swftools-' . str_replace('_', '-', $options['resolved_methods']['player']['name']);
+
+  // If the user provided class data already then don't over-rule it
+  if (!empty($options['othervars']['class'])) {
+    $classes[] = $options['othervars']['class'];
+  }
+
+  // TODO: Accommodate weights on this?
+  
+  // Allow for handling of #prefix and #suffix supplied via othervars
+  $options['othervars'] += array(
+    '#prefix' => '',
+    '#suffix' => '',
+  );
+  
+  // Wrap $embed_markup with prefix and suffix (e.g. to add accessible controls)
+  $embed_markup = $options['othervars']['#prefix'] . $embed_markup . $options['othervars']['#suffix'];
+  
+  // Return completed markup
+  return '<div id="swftools-' . $options['othervars']['id'] . '" class="' . implode(' ', $classes) . '">' . $embed_markup . '</div>';
+
+}
+
+
+/**
+ * Implementation of hook_elements().
+ */
+function swftools_elements() {
+  
+  $type['swftools'] = array(
+    '#params' => array(),
+    '#flashvars' => array(),
+    '#othervars' => array(),
+    '#methods' => array(),
+    '#value' => '',
+  );
+
+  // Return the type
+  return $type;
+  
+}
+
+
+/**
+ * Changes old player names to the new ones so existing content doesn't break.
+ * 
+ * @param $name
+ *   The currently assigned player name.
+ * @return
+ *   The corrected player name (which will be unchanged if it is already ok).
+ */
+function swftools_fix_old_player_names($name) {
+  
+  // This is the array to map old names to new names
+  $map = array(
+    'flowplayer_mediaplayer' => 'flowplayer',
+    'swftools_flowplayer3_mediaplayer' => 'flowplayer3',
+    'wijering_imagerotator' => 'imagerotator',
+    'wijering4_mediaplayer' => 'jwplayer4',
+  );
+  
+  // Attach the supplied action name as both key and value
+  $map += array(
+    $name => $name,
+  );
+  
+  // Return the mapped result
+  return $map[$name];
+  
+}
+
+
+/**
+ * Changes old action names to the new ones so existing content doesn't break.
+ * 
+ * @param $name
+ *   The currently assigned action name.
+ * @return
+ *   The corrected action name (which will be unchanged if it is already ok).
+ */
+function swftools_fix_old_action_names($name) {
+  
+  // This is the array to map old names to new names
+  $map = array(
+    'swftools_swf_display_direct' => 'swf',
+    'swftools_flv_display' => 'video',
+    'swftools_flv_display_list' => 'video_list',
+    'swftools_mp3_display' => 'audio',
+    'swftools_mp3_display_list' => 'audio_list',
+    'swftools_image_display' => 'image',
+    'swftools_image_display_list' => 'image_list',
+    'swftools_media_display_list' => 'media_list',
+  );
+  
+  // Attach the supplied action name as both key and value
+  $map += array(
+    $name => $name,
+  );
+  
+  // Return the mapped result
+  return $map[$name];
+  
+}
+
+
+/**
+ * Implementation of hook_views_api().
+ */
+function swftools_views_api() {
+  return array(
+    'api' => 2,
+    'path' => drupal_get_path('module', 'swftools') . '/views',
+  );
+}

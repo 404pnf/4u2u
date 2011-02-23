@@ -1,0 +1,15 @@
+; $Id: uploadfield.info,v 1.1.2.2.2.3 2010/05/16 17:10:34 iLLin Exp $
+name = Video Upload
+description = Handle video upload for video module using filefield and CCK.
+core = 6.x
+version = 6.x-4.x-dev
+dependencies[] = content
+dependencies[] = filefield
+dependencies[] = video
+package = "Video"
+; Information added by drupal.org packaging script on January 1, 1970 - 00:00
+version = "6.x-4.2-beta2"
+core = "6.x"
+project = "video"
+datestamp = "1296138115"
+

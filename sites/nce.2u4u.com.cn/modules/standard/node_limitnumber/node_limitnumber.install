@@ -1,0 +1,69 @@
+<?php
+// $Id: node_limitnumber.install,v 1.4.2.1 2009/09/22 17:17:34 jdwfly Exp $
+
+/**
+ * @file
+ * Install and uninstall functions as well as schema definition for the Node Limit Number module.
+ */
+
+/**
+* Implementation of hook_install().
+*/
+function node_limitnumber_install() {
+  drupal_install_schema('node_limitnumber');
+}
+
+/**
+* Implementation of hook_uninstall().
+*/
+function node_limitnumber_uninstall() {
+  drupal_uninstall_schema('node_limitnumber');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function node_limitnumber_schema() {
+  $schema['node_limitnumber_rules'] = array(
+    'description' => t('The table for node limits.'),
+    'fields' => array(
+      'id' => array(
+        'description' => t('The primary identifier for a node limit.'),
+        'type' => 'serial',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE),
+      'class' => array(
+        'description' => t('The type of limit'),
+        'type' => 'varchar',
+        'length' => 4,
+        'not null' => TRUE,
+        'default' => 'role'),
+      'item' => array(
+        'description' => t('The item being limited.'),
+        'type' => 'int',
+        'size' => 'normal',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0),
+      'pubtype' => array(
+        'description' => t('The type being limited.'),
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => ''),
+      'max' => array(
+        'description' => t('The maximum number of nodes allowed for the given type.'),
+        'type' => 'int',
+        'size' => 'tiny',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0),
+    ),
+    'indexes' => array(
+      'limit_id' => array('id'),
+    ),
+    'primary key' => array('id')
+  );
+  return $schema;
+}

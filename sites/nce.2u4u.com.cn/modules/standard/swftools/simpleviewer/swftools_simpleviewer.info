@@ -1,0 +1,14 @@
+; $Id: swftools_simpleviewer.info,v 1.1.2.2 2010/03/29 22:07:15 stuartgreenfield Exp $
+name =  SimpleViewer
+description = Enables support for SimpleViewer.
+package = SWF Tools
+dependencies[] = swftools
+core = 6.x
+
+
+; Information added by drupal.org packaging script on 2010-04-14
+version = "6.x-3.0-beta4"
+core = "6.x"
+project = "swftools"
+datestamp = "1271288707"
+

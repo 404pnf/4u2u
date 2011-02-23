@@ -1,0 +1,899 @@
+<?php
+// $Id: swftools.install,v 1.2.2.4.2.11 2010/04/07 21:33:36 stuartgreenfield Exp $
+
+function swftools_uninstall() {
+  db_query("DELETE from {variable} WHERE name LIKE 'swftools%'");
+}
+
+
+/**
+ * Check that the zlib extension exists for PHP.
+ */
+function swftools_requirements($phase) {
+
+  // Ensure translations don't break at install time
+  $t = get_t();
+  
+  // Check if the zlib library is loaded
+  $has_zlib = extension_loaded('zlib');
+  
+  // Generate the requirements array ready for return
+  $requirements['swftools'] = array(
+    'title' => $t('Zlib library'),
+    'description' => $has_zlib ? '' : $t('Without the <a href="@url">zlib library</a> SWF Tools is unable to automatically determine the dimensions of compressed swf files. SWF Tools will work but the size of compressed swf content must be specified, otherwise the content may not appear in some browsers.', array('@url' => 'http://www.php.net/zlib')),
+    'value' => $has_zlib ? $t('Enabled') : $t('Not installed'),
+    'severity' => $has_zlib ? REQUIREMENT_OK : REQUIREMENT_WARNING,
+  );
+  
+  // Return the array
+  return $requirements;
+}
+
+
+/**
+ * Update the parameters table to reflect the new storage format
+ */
+function swftools_update_6001() {
+  
+  // Initialise a results array
+  $ret = array();
+
+  // If no defaults are stored then just return
+  if (!variable_get('swftools_params_version', 0)) {
+    return $ret;
+  }
+  
+  // Get current default values
+  $defaults = array(
+    'swliveconnect' => variable_get('swftools_params_swliveconnect', 'default'),
+    'play' => variable_get('swftools_params_play', TRUE),
+    'loop' => variable_get('swftools_params_loop', TRUE),
+    'menu' => variable_get('swftools_params_menu', FALSE),
+    'quality' => variable_get('swftools_params_quality', 'autohigh'),
+    'scale' => variable_get('swftools_params_scale', 'showall'),
+    'align' => variable_get('swftools_params_align', 'l'),
+    'salign' => variable_get('swftools_params_salign', 'tl'),
+    'wmode' => variable_get('swftools_params_wmode', 'opaque'),
+    'bgcolor' => variable_get('swftools_params_bgcolor', ''),
+    'version' => variable_get('swftools_params_version', '7'),
+    'allowfullscreen' => variable_get('swftools_params_allowfullscreen', TRUE),
+    'allowscriptaccess' => variable_get('swftools_params_allowscriptaccess', 'sameDomain'), 
+  );
+    
+  // Store new defaults
+  variable_set('swftools_params', $defaults);
+  
+  // Delete old variables
+  variable_del('swftools_params_swliveconnect');
+  variable_del('swftools_params_play');
+  variable_del('swftools_params_loop');
+  variable_del('swftools_params_menu');
+  variable_del('swftools_params_quality');
+  variable_del('swftools_params_scale');
+  variable_del('swftools_params_align');
+  variable_del('swftools_params_salign');
+  variable_del('swftools_params_wmode');
+  variable_del('swftools_params_bgcolor');
+  variable_del('swftools_params_version');
+  variable_del('swftools_params_allowfullscreen');
+  variable_del('swftools_params_allowscriptaccess');
+    
+  // Set return message
+  $ret = array(array('success' => TRUE, 'query' => 'SWF Tools defaults remapped.'));
+
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Update the wijering4 variable to reflect the new storage format
+ */
+function swftools_update_6002() {
+  
+  // Initialise a results array
+  $ret = array();
+
+  // Get current values
+  $defaults = variable_get('swftools_wijering4_mediaplayer', array());
+  
+  // If there are some values then update them
+  if ($defaults) {
+    
+    // Initialise array for remapped defaults
+    $new_defaults = array();
+    
+    // Process defaults to new format
+    $new_defaults['basic']['playlistsize'] = $defaults['playlistsize'];
+    $new_defaults['basic']['height'] = $defaults['height'];
+    $new_defaults['basic']['width'] = $defaults['width'];
+    
+    $new_defaults['color']['frontcolor'] = $defaults['frontcolor'];
+    $new_defaults['color']['backcolor'] = $defaults['backcolor'];
+    $new_defaults['color']['lightcolor'] = $defaults['lightcolor'];
+    $new_defaults['color']['screencolor'] = $defaults['screencolor'];
+    
+    $new_defaults['appearance']['skin'] = $defaults['skin'];
+    $new_defaults['appearance']['logo'] = $defaults['logo'];
+    $new_defaults['appearance']['overstretch'] = $defaults['overstretch'];
+    $new_defaults['appearance']['controlbar'] = $defaults['controlbar'];
+    $new_defaults['appearance']['playlist'] = $defaults['playlist'];
+    $new_defaults['appearance']['plugins'] = '';
+    
+    $new_defaults['playback']['autostart'] = $defaults['autostart'];
+    $new_defaults['playback']['bufferlength'] = $defaults['bufferlength'];
+    $new_defaults['playback']['displayclick'] = $defaults['displayclick'];
+    $new_defaults['playback']['repeat'] = $defaults['repeat'];
+    $new_defaults['playback']['shuffle'] = $defaults['shuffle'];
+    $new_defaults['playback']['volume'] = $defaults['volume'];
+    
+    $new_defaults['interaction']['captions'] = $defaults['captions'];
+    $new_defaults['interaction']['link'] = $defaults['link'];
+    $new_defaults['interaction']['linktarget'] = $defaults['linktarget'];
+    $new_defaults['interaction']['streamscript'] = $defaults['streamscript'];
+    $new_defaults['interaction']['type'] = $defaults['type'];
+    $new_defaults['interaction']['fullscreen'] = $defaults['fullscreen'];
+    
+    $new_defaults['accessibility']['accessible'] = $defaults['accessible'];
+    $new_defaults['accessibility']['accessible_visible'] = $defaults['accessible_visible'];
+    
+    // Store new defaults
+    variable_set('swftools_wijering4_mediaplayer', $new_defaults);
+    
+    // Set return message
+    $ret = array(array('success' => TRUE, 'query' => 'JW4 defaults remapped.'));
+    
+  }
+
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Update the simpleviewer variable to reflect the new storage format
+ */
+function swftools_update_6003() {
+
+  // Initialise a results array
+  $ret = array();
+  
+  // If no defaults are stored then just return
+  if (!variable_get('simpleviewer_xml_navPosition', 0)) {
+    return $ret;
+  }
+  
+  // Initialise array of defaults
+  $defaults = array();
+  
+  // Get current default values
+  $defaults['display'] = array(
+    'title' => variable_get('simpleviewer_display_title', 1),
+    'album' => variable_get('simpleviewer_display_album', 1),
+    'link' => variable_get('simpleviewer_display_link', 0),
+  );
+  
+  $defaults['dimensions'] = array(
+    'width' => variable_get('simpleviewer_swf_width', 700),
+    'height' => variable_get('simpleviewer_swf_height', 600),
+    'maxImageWidth' => variable_get('simpleviewer_xml_maxImageWidth', 480),
+    'maxImageHeight' => variable_get('simpleviewer_xml_maxImageHeight', 480),
+    'frameWidth' => variable_get('simpleviewer_xml_frameWidth', 20),
+    'stagePadding' => variable_get('simpleviewer_xml_stagePadding', 40),
+  );
+  
+  $defaults['colors'] = array(
+    'bgcolor' => variable_get('simpleviewer_swf_bgcolor', '#181818'),
+    'wmode' => variable_get('simpleviewer_swf_wmode', 0),
+    'loader_color' => variable_get('simpleviewer_xml_loader_color', '#ff0000'),
+    'textColor' => variable_get('simpleviewer_xml_textColor', '#ffffff'),
+    'frameColor' => variable_get('simpleviewer_xml_frameColor', '#ffffff'),
+  );
+  
+  $defaults['navigation'] = array(
+    'navPosition' => variable_get('simpleviewer_xml_navPosition', 'top'),
+    'thumbnailColumns' => variable_get('simpleviewer_xml_thumbnailColumns', 4),
+    'thumbnailRows' => variable_get('simpleviewer_xml_thumbnailRows', 1),
+  );
+  
+  // Store new defaults
+  variable_set('swftools_simpleviewer', $defaults);
+  
+  // Delete old variables
+  variable_del('simpleviewer_display_title');
+  variable_del('simpleviewer_display_album');
+  variable_del('simpleviewer_display_link');
+  variable_del('simpleviewer_swf_width');
+  variable_del('simpleviewer_swf_height');
+  variable_del('simpleviewer_xml_maxImageWidth');
+  variable_del('simpleviewer_xml_maxImageHeight');
+  variable_del('simpleviewer_xml_frameWidth');
+  variable_del('simpleviewer_xml_stagePadding');
+  variable_del('simpleviewer_swf_bgcolor');
+  variable_del('simpleviewer_swf_wmode');
+  variable_del('simpleviewer_xml_loader_color');
+  variable_del('simpleviewer_xml_textColor');
+  variable_del('simpleviewer_xml_frameColor');
+  variable_del('simpleviewer_xml_navPosition');
+  variable_del('simpleviewer_xml_thumbnailColumns');
+  variable_del('simpleviewer_xml_thumbnailRows');
+  
+  // Set return message
+  $ret = array(array('success' => TRUE, 'query' => 'SimpleViewer defaults remapped.'));
+
+  // Return results
+  return $ret;
+  
+}
+
+
+/**
+ * Update the imagerotator variable to reflect the new storage format
+ */
+function swftools_update_6004() {
+  
+  // Initialise a results array
+  $ret = array();
+
+  // Get current values
+  $defaults = variable_get('swftools_wijering_imagerotator', array());
+  
+  // If there are some values then update them
+  if ($defaults) {
+    
+    // Initialise array for remapped defaults
+    $new_defaults = array();
+    
+    // Process defaults to new format
+    $new_defaults['basic']['height'] = $defaults['height'];
+    $new_defaults['basic']['width'] = $defaults['width'];
+    
+    $new_defaults['color']['frontcolor'] = $defaults['frontcolor'];
+    $new_defaults['color']['backcolor'] = $defaults['backcolor'];
+    $new_defaults['color']['lightcolor'] = $defaults['lightcolor'];
+    
+    $new_defaults['appearance']['logo'] = $defaults['logo'];
+    $new_defaults['appearance']['overstretch'] = $defaults['overstretch'];
+    $new_defaults['appearance']['showicons'] = $defaults['showicons'];
+    $new_defaults['appearance']['shownavigation'] = $defaults['shownavigation'];
+    $new_defaults['appearance']['transition'] = $defaults['transition'];
+    
+    $new_defaults['playback']['rotatetime'] = $defaults['rotatetime'];
+    $new_defaults['playback']['shuffle'] = $defaults['shuffle'];
+    
+    $new_defaults['interaction']['enablejs'] = $defaults['enablejs'];
+    $new_defaults['interaction']['link'] = $defaults['link'];
+    $new_defaults['interaction']['linkfromdisplay'] = $defaults['linkfromdisplay'];
+    $new_defaults['interaction']['linktarget'] = $defaults['linktarget'];
+
+    // Store new defaults
+    variable_set('swftools_wijering_imagerotator', $new_defaults);
+    
+    // Set return message
+    $ret = array(array('success' => TRUE, 'query' => 'Image rotator defaults remapped.'));
+    
+  }
+
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Add the additional flowplayer3 settings to the controls array
+ */
+function swftools_update_6005() {
+  
+  // Initialise a results array
+  $ret = array();
+
+  // Get current values
+  $defaults = variable_get('swftools_flowplayer3_mediaplayer', 0);
+  
+  // If there are some values then update with new setting
+  if ($defaults) {
+
+    // Add new setting
+    $defaults['controls'] += array(
+      'borderRadius' => '',
+      'volumeSliderGradient' => 'none',
+      'scrubberHeightRatio' => 0.4,
+      'scrubberBarHeightRatio' => 1,
+      'volumeSliderHeightRatio' => 0.4,
+      'volumeBarHeightRatio' => 1,
+      'timeBgHeightRatio' => 0.7,
+      'hideDelay' => 4000,
+    );
+    
+    $defaults['play'] = array(
+      'url' => '',
+      'opacity' => '',
+      'label' => 'Play',
+      'replayLabel' => 'Play again',
+      'fadeSpeed' => '',
+      'rotateSpeed' => '',
+      'height' => '',
+      'width' => '',
+    );
+
+    // Store new defaults
+    variable_set('swftools_flowplayer3_mediaplayer', $defaults);
+    
+    // Set return message
+    $ret = array(array('success' => TRUE, 'query' => 'FlowPlayer3 settings updated.'));
+    
+  }
+
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Add additional flowplayer3 color palette settings
+ */
+function swftools_update_6006() {
+  
+  // Initialise a results array
+  $ret = array();
+
+  // Get current values
+  $defaults = variable_get('swftools_flowplayer3_palette', 0);
+  
+  // If there are some values then update with new setting
+  if ($defaults) {
+
+    // Add new setting
+    $defaults += array(
+      'volumeSliderColor' => '#000000',
+      'timeBgColor' => '#555555',    
+    );
+
+    // Store new defaults
+    variable_set('swftools_flowplayer3_palette', $defaults);
+    
+    // Set return message
+    $ret = array(array('success' => TRUE, 'query' => 'FlowPlayer3 palette updated.'));
+    
+  }
+
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Change embedding params from 1/0 to true/false
+ */
+function swftools_update_6007() {
+  
+  // Initialise a results array
+  $ret = array();
+
+  // Get current values
+  $defaults = variable_get('swftools_params', 0);
+  
+  // If there are some values then update with new setting
+  if ($defaults) {
+
+    $defaults['play'] = $defaults['play'] ? 'true' : 'false';
+    $defaults['loop'] = $defaults['loop'] ? 'true' : 'false';
+    $defaults['menu'] = $defaults['menu'] ? 'true' : 'false';
+    $defaults['swliveconnect'] = $defaults['swliveconnect'] ? 'true' : 'false';
+    $defaults['allowfullscreen'] = $defaults['allowfullscreen'] ? 'true' : 'false';
+    
+    // Store new defaults
+    variable_set('swftools_params', $defaults);
+    
+    // Set return message
+    $ret = array(array('success' => TRUE, 'query' => 'SWF Tools embedding parameters updated.'));
+    
+  }
+
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Add the flowplayer3 accessibility settings to the settings array
+ */
+function swftools_update_6008() {
+  
+  // Initialise a results array
+  $ret = array();
+
+  // Get current values
+  $defaults = variable_get('swftools_flowplayer3_mediaplayer', 0);
+  
+  // If there are some values then update with new setting
+  if ($defaults) {
+
+    // Add new setting
+    $defaults['accessibility'] = array(
+      'accessible' => 0,
+      'accessible_visible' => 1,
+    );
+
+    // Store new defaults
+    variable_set('swftools_flowplayer3_mediaplayer', $defaults);
+    
+    // Set return message
+    $ret = array(array('success' => TRUE, 'query' => 'FlowPlayer3 accessibility settings added.'));
+    
+  }
+
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Creates the SWF Tools cache table {cache_swftools}.
+ */
+function swftools_update_6009() {
+  
+  // Initialise a results array
+  $ret = array();
+
+  // Define the cache schema
+  $schema['cache_swftools'] = array(
+    'description' => 'Cache table for SWF Tools to keep its markup, playlists and settings.',
+    'fields' => array(
+      'cid' => array(
+        'description' => 'Primary Key: Unique cache ID.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => ''),
+      'data' => array(
+        'description' => 'A collection of data to cache.',
+        'type' => 'blob',
+        'not null' => FALSE,
+        'size' => 'big'),
+      'expire' => array(
+        'description' => 'A Unix timestamp indicating when the cache entry should expire, or 0 for never.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0),
+      'created' => array(
+        'description' => 'A Unix timestamp indicating when the cache entry was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0),
+      'headers' => array(
+        'description' => 'Any custom HTTP headers to be added to cached data.',
+        'type' => 'text',
+        'not null' => FALSE),
+      'serialized' => array(
+        'description' => 'A flag to indicate whether content is serialized (1) or not (0).',
+        'type' => 'int',
+        'size' => 'small',
+        'not null' => TRUE,
+        'default' => 0)
+      ),
+    'indexes' => array('expire' => array('expire')),
+    'primary key' => array('cid'),
+  );
+
+  // Create the cache table
+  db_create_table($ret, 'cache_swftools', $schema['cache_swftools']);
+  
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Move file handling defaults to new format.
+ */
+function swftools_update_6010() {
+  
+  // Initialise a results array
+  $ret = array();
+
+  // We will iterate over these settings
+  $settings = array(
+    'audio',
+    'audio_list',
+    'video',
+    'video_list',
+    'swftools_swf_display',
+    'image_list',
+    'media_list',
+  );
+  
+  // Store defaults in here if we find any
+  $handlers = array();
+  
+  // Iterate, copy results to the new array, and deleting the original
+  foreach ($settings as $variable) {
+    if (($value = variable_get($variable, '__undefined')) != '__undefined') {
+      $handlers[$variable] = $value;
+      variable_del($variable);
+    }
+  }
+
+  // Store new defaults and set return message if settings were altered
+  if ($handlers) {
+    
+    // Attach swf handler
+    $handlers['swf'] = 'swftools_swf';
+
+    // Store new variable
+    variable_set('swftools_handlers', $handlers);
+    
+    // Set return message
+    $ret = array(array('success' => TRUE, 'query' => 'SWF Tools handler defaults migrated to new format.'));
+    
+  }
+
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Accommodate renaming of wijering4_mediplayer.
+ */
+function swftools_update_6011() {
+  
+  // Initialise a results array
+  $ret = array();
+
+  // Migrate global player defaults
+  $settings = variable_get('swftools_wijering4_mediaplayer', FALSE);
+  
+  if ($settings) {
+    variable_del('swftools_wijering4_mediaplayer');
+    variable_set('swftools_jwplayer4', $settings);
+    
+    // Set return message
+    $ret[] = array('success' => TRUE, 'query' => 'Wijering4 defaults migrated to new name.');
+    
+  }
+  
+  // Migrate handler defaults
+  $defaults = variable_get('swftools_handlers', FALSE);
+  
+  if ($defaults) {
+
+    foreach ($defaults as $action => $handler) {
+      if ($handler == 'wijering4_mediaplayer') {
+        $defaults[$action] = 'jwplayer4';
+        $ret[] = array('success' => TRUE, 'query' => 'Wijering4 file handling defaults updated.');
+      }
+    }
+
+    variable_set('swftools_handlers', $defaults);
+  
+  }
+  
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Accommodate renaming of wijering_imagerotator.
+ */
+function swftools_update_6012() {
+  
+  // Initialise a results array
+  $ret = array();
+
+  // Migrate global player defaults
+  $settings = variable_get('swftools_wijering_imagerotator', FALSE);
+  
+  if ($settings) {
+    variable_del('swftools_wijering_imagerotator');
+    variable_set('swftools_imagerotator', $settings);
+    
+    // Set return message
+    $ret[] = array('success' => TRUE, 'query' => 'Imagerotator defaults migrated to new name.');
+    
+  }
+  
+  // Migrate handler defaults
+  $defaults = variable_get('swftools_handlers', FALSE);
+  
+  if ($defaults) {
+
+    foreach ($defaults as $action => $handler) {
+      if ($handler == 'wijering_imagerotator') {
+        $defaults[$action] = 'imagerotator';
+        $ret[] = array('success' => TRUE, 'query' => 'Imagerotator file handling defaults updated.');
+      }
+    }
+
+    variable_set('swftools_handlers', $defaults);
+  
+  }
+  
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Accommodate renaming of swftools_flowplayer3_mediaplayer.
+ */
+function swftools_update_6013() {
+  
+  // Initialise a results array
+  $ret = array();
+
+  // There are six variables to process
+  $suffixes = array(
+    '',
+    '_controls',
+    '_file',
+    '_javascript',
+    '_playlist_javascript',
+    '_stream_plugin',
+  );
+
+  foreach ($suffixes as $suffix) {
+    
+    $setting = variable_get('swftools_flowplayer3_mediaplayer' . $suffix, '__undefined');
+    
+    if ($setting != '__undefined') {
+      variable_del('swftools_flowplayer3_mediaplayer' . $suffix);
+      variable_set('swftools_flowplayer3' . $suffix, $setting);
+      $ret = array(array('success' => TRUE, 'query' => 'FlowPlayer3 defaults migrated to new name.'));
+    }
+    
+  }
+    
+  // Migrate handler defaults
+  $defaults = variable_get('swftools_handlers', FALSE);
+  
+  if ($defaults) {
+
+    foreach ($defaults as $action => $handler) {
+      if ($handler == 'swftools_flowplayer3_mediaplayer') {
+        $defaults[$action] = 'flowplayer3';
+        $ret[] = array('success' => TRUE, 'query' => 'FlowPlayer3 file handling defaults updated.');
+      }
+    }
+
+    variable_set('swftools_handlers', $defaults);
+  
+  }
+  
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Accommodate renaming of flowplayer_mediaplayer.
+ */
+function swftools_update_6014() {
+  
+  // Initialise a results array
+  $ret = array();
+
+  // Migrate global player defaults
+  $settings = variable_get('swftools_flowplayer_mediaplayer', FALSE);
+  
+  if ($settings) {
+    variable_del('swftools_flowplayer_mediaplayer');
+    variable_set('swftools_flowplayer', $settings);
+    
+    // Set return message
+    $ret[] = array('success' => TRUE, 'query' => 'FlowPlayer defaults migrated to new name.');
+    
+  }
+  
+  // Migrate handler defaults
+  $defaults = variable_get('swftools_handlers', FALSE);
+  
+  if ($defaults) {
+
+    foreach ($defaults as $action => $handler) {
+      if ($handler == 'flowplayer_mediaplayer') {
+        $defaults[$action] = 'flowplayer';
+        $ret[] = array('success' => TRUE, 'query' => 'FlowPlayer file handling defaults updated.');
+      }
+    }
+
+    variable_set('swftools_handlers', $defaults);
+  
+  }
+  
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Accommodate renaming of swftools_swf.
+ */
+function swftools_update_6015() {
+  
+  // Initialise a results array
+  $ret = array();
+
+  // Migrate handler defaults
+  $defaults = variable_get('swftools_handlers', FALSE);
+  
+  if ($defaults) {
+
+    foreach ($defaults as $action => $handler) {
+      if ($handler == 'swftools_swf') {
+        $defaults[$action] = 'swf';
+        $ret[] = array('success' => TRUE, 'query' => 'SWF Tools swf file handling defaults updated.');
+      }
+    }
+
+    variable_set('swftools_handlers', $defaults);
+  
+  }
+  
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Accommodate renaming of embedding methods.
+ */
+function swftools_update_6016() {
+  
+  // Initialise a results array
+  $ret = array();
+
+  // Migrate handler defaults
+  $method = variable_get('swftools_embed_method', FALSE);
+  
+  if ($method) {
+
+    $map = array(
+      'swftools_nojavascript' => 'swftools_direct',
+      'swfobject2_replace' => 'swftools_swfobject2'
+    );
+
+    variable_set('swftools_embed_method', $map[$method]);
+    
+    $ret = array(array('success' => TRUE, 'query' => 'Embedding method migrated to new name.'));
+  
+  }
+  
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Accommodate renaming of actions.
+ */
+function swftools_update_6017() {
+  
+  // Initialise a results array
+  $ret = array();
+  
+  // Initialise a map
+  $map = array(
+    'swftools_swf_display_direct' => 'swf',
+    'swftools_flv_display' => 'video',
+    'swftools_flv_display_list' => 'video_list',
+    'swftools_mp3_display' => 'audio',
+    'swftools_mp3_display_list' => 'audio_list',
+    'swftools_image_display' => 'image',
+    'swftools_image_display_list' => 'image_list',
+    'swftools_media_display_list' => 'media_list',
+  );
+
+  // Migrate action defaults
+  $actions = variable_get('swftools_actions', FALSE);
+  
+  if ($actions) {
+
+    $new_actions = array();
+    
+    foreach ($actions as $key => $value) {
+      
+      $new_actions[$key] = $map[$value];
+    
+    }
+    
+    variable_set('swftools_actions', $new_actions);
+    
+    $ret[] = array('success' => TRUE, 'query' => 'Actions variable migrated to new action names.');
+  
+  }
+  
+  // Migrate handler defaults
+  $handlers = variable_get('swftools_handlers', FALSE);
+  
+  if ($handlers) {
+    
+    $new_handlers = array();
+    
+    foreach ($handlers as $key => $value) {
+      $new_handlers[$map[$key]] = $value;
+    }
+    
+    variable_set('swftools_handlers', $new_handlers);
+    
+    $ret[] = array('success' => TRUE, 'query' => 'Handler variable migrated to new action names.');
+    
+  }
+  
+  // Return results
+  return $ret;
+
+}
+
+
+/**
+ * Implementation of hook_install().
+ */
+function swftools_install() {
+  drupal_install_schema('swftools');
+}
+
+
+/**
+ * Implementation of hook_schema().
+ */
+function swftools_schema() {
+
+  $schema['cache_swftools'] = array(
+    'description' => 'Cache table for SWF Tools to keep its markup, playlists and settings.',
+    'fields' => array(
+      'cid' => array(
+        'description' => 'Primary Key: Unique cache ID.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => ''),
+      'data' => array(
+        'description' => 'A collection of data to cache.',
+        'type' => 'blob',
+        'not null' => FALSE,
+        'size' => 'big'),
+      'expire' => array(
+        'description' => 'A Unix timestamp indicating when the cache entry should expire, or 0 for never.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0),
+      'created' => array(
+        'description' => 'A Unix timestamp indicating when the cache entry was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0),
+      'headers' => array(
+        'description' => 'Any custom HTTP headers to be added to cached data.',
+        'type' => 'text',
+        'not null' => FALSE),
+      'serialized' => array(
+        'description' => 'A flag to indicate whether content is serialized (1) or not (0).',
+        'type' => 'int',
+        'size' => 'small',
+        'not null' => TRUE,
+        'default' => 0)
+      ),
+    'indexes' => array('expire' => array('expire')),
+    'primary key' => array('cid'),
+  );
+    
+  return $schema;
+
+}

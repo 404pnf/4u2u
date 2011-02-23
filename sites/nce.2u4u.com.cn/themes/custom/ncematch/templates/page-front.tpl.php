@@ -16,7 +16,10 @@
     <div id="page">
 
     <!-- ______________________ HEADER _______________________ -->
-
+    <div id="header_title">
+    <?php $content = file_get_contents('http://cdn1.2u4u.com.cn/header.html');
+      echo $content;?>
+    </div> 
     <div id="header">
        <img src="<?php print $base_path . path_to_theme() ?>/images/headerimage.jpg">
 

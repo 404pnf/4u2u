@@ -1,6 +1,0 @@
-; $Id: $
-
-name = quizviews Export Module
-description = Exports some views of quizviews
-dependencies[] = views
-core = 6.x

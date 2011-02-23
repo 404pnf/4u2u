@@ -1,6 +1,6 @@
 
 body {
- 	background-color: #ccc;
+ 	background-color: #ccc; Font-size:62.5%;
 }
 
 #main {
@@ -20,13 +20,13 @@ body {
 #content { font-size:12px; line-height:25px;}
 h2 { font-size:16px; font-weight:bold;}
 
-#block-block-4 {background-color: #fff2e0;}
+#block-block-4 {background-color: #fff2e0 ; padding: 0.2em 0.5em 0 0.2em;}
 
 #block-aggregator-feed-1  .more-link {visibility:hidden;}
 
 #block-aggregator-feed-1  .block-title , #block-block-5 .block-title{
 	background: url("../images/block_bg.gif"); 
-	padding: 0.2em 0.5em 0 0.2em;
+	
 	font-size:16px; 
 	font-family: Arial, Helvetica, sans-serif;
 	font-weight: bold;

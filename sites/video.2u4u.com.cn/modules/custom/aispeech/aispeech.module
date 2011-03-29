@@ -1,0 +1,159 @@
+<?php
+// $Id$
+/**
+ * @file
+ * AIspeech 首信易的支付服务.
+ */
+ 
+/**
+ * 实现hook_menu钩子
+ */ 
+function aispeech_menu() {
+  $items['oral/test'] = array(
+    'title'            => 'Oral Test',
+    'page callback'    => 'aispeech_oral_test_page',
+		'access callback' => TRUE,
+    'weight'           => 1,
+    'type' => MENU_CALLBACK,
+    'file' => 'aispeech.pages.inc',
+  );
+	$items['oral/test1'] = array(
+    'title'            => 'oral test1',
+    'page callback'    => 'aispeech_oral_test1_page',
+		'access callback' => TRUE,
+    'weight'           => 1,
+    'type' => MENU_CALLBACK,
+    'file' => 'aispeech.pages.inc',
+  );
+	$items['oral/next'] = array(
+    'title'            => 'Next word',
+    'page callback'    => 'aispeech_oral_test_next',
+		'access callback' => TRUE,
+    'weight'           => 1,
+    'type' => MENU_CALLBACK,
+    'file' => 'aispeech.pages.inc',
+  );
+	$items['oral/test/point/add'] = array(
+    'title'            => 'Oral Test Add Point',
+    'page callback'    => 'aispeech_oral_test_point_add',
+		'access callback' => TRUE,
+    'weight'           => 1,
+    'type' => MENU_CALLBACK,
+    'file' => 'aispeech.pages.inc',
+  );
+	
+	$items['oral/test/session/key'] = array(
+    'title'            => 'Oral Test Get Session Key',
+    'page callback'    => 'aispeech_oral_test_get_session_key',
+		'access callback' => TRUE,
+    'weight'           => 1,
+    'type' => MENU_CALLBACK,
+    'file' => 'aispeech.pages.inc',
+  );
+	
+  return $items;
+}
+
+/**
+ * 实现hook_theme钩子
+ */ 
+function aispeech_theme(){
+  return array(
+    'aispeech_word_content' => array(
+		  'template' => 'aispeech-word-content',
+      'arguments' => array('word' => NULL),
+			//'file' => 'aispeech.pages.inc',	
+    ),
+		    
+  );
+}
+
+/*
+function template_preprocess_aispeech_word_content(&$variables) {
+  drupal_set_message("<pre>".print_r($variables)."</pre>");
+  $variables['word'] = $variables['word'];
+}
+*/
+
+function aispeech_block($op = 'list', $delta = 0, $edit = array()) {
+	switch ($op) {
+		case 'list':
+			$blocks[0]['info'] = t('口语测评');
+			$blocks[0]['cache'] = BLOCK_NO_CACHE;
+			return $blocks;
+
+
+		case 'view':
+			if ($delta == 0) {
+				$block['subject'] = t('口语测评');
+				module_load_include('inc', 'aispeech', 'aispeech.pages');
+        $block['content'] = aispeech_oral_test_page();
+			}
+
+			return $block;
+	}
+}
+
+/**
+ * 帮助函数，用来获取下一个单词
+ */ 
+function aispeech_get_next_word(){
+
+  $words = array();
+	$word1 = new stdClass;
+  $word1->spell = 'good';
+  $word1->explaination =  'good explaination';
+  $words[1] = $word1;
+	
+	$word2 = new stdClass;
+  $word2->spell = 'bad';
+  $word2->explaination =  'bad explaination';
+  $words[2] = $word2;
+	
+	$word3 = new stdClass;
+  $word3->spell = 'nice';
+  $word3->explaination =  'nice explaination';
+  $words[3] = $word3;
+	
+	$word4 = new stdClass;
+  $word4->spell = 'ok';
+  $word4->explaination =  'ok explaination';
+  $words[4] = $word4;
+	
+	$word5 = new stdClass;
+  $word5->spell = 'water';
+  $word5->explaination =  'water explaination';
+  $words[5] = $word5;
+	
+	$next = rand(1,5);
+	
+	$word = $words[$next];
+	
+	/*
+	$total_count = 26231;
+	//$next = rand(0,4);
+	$wid = rand(0, $total_count) + 1;
+	$result = db_query('SELECT word FROM {wordlist} WHERE wid = %d', $wid);
+	$word_result = db_fetch_object($result);
+	$word = new stdClass;
+	$word->spell = $word_result->word;
+
+	//$word->chinese =  $word_result->word;
+	
+	module_load_include('inc', 'aispeech', 'class');
+		
+	$t = new common();
+	$ip = $_SERVER['HTTP_X_REAL_IP'];
+	$ar = array(
+	  'lang' => 'en',
+		'word' => $word_result->word,
+	);
+	$str = $t->get_result($word_result->word, $ar, "normal", $ip);
+	
+	$word->explaination =  $str;
+	//$word->explaination =  'test';
+	 */
+	
+	
+	return $word;
+}

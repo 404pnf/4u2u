@@ -1,0 +1,4 @@
+; $Id$
+name = AISpeech
+description = AISpeech API 集成
+core = 6.x

@@ -48,6 +48,10 @@
  * @see template_preprocess_node()
  */
 ?>
+<?php if (!$page): ?>
+<h1 class="title"><?php print $title; ?></h1>
+<?php endif; ?>
+<?php if ($page): ?>
 <div class="node <?php print $classes; ?>" id="node-<?php print $node->nid; ?>">
  <div class="node-inner">
 
@@ -143,3 +147,4 @@
 	
  </div> <!-- /node-inner -->
 </div> <!-- /node-->
+<?php endif; ?>

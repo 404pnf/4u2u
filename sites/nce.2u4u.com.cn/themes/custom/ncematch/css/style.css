@@ -4,14 +4,14 @@ body {
   margin: 0;
   /* Setting up font size, leading and font family
    * http://www.markboulton.co.uk/journal/comments/five-simple-steps-to-better-typography */
-  font: 1.em "Helvetica Neue", helvetica, Arial, sans-serif;
-  line-height: 1.4em;
+  font: 0.80em "Helvetica Neue", helvetica, Arial, sans-serif;
+  line-height: 1.7em;
 }
 
 /* Links */
 /* line 10, ../sass/style.sass */
 a:link, a:visited {
-  color: blue;
+  color: #000;
   text-decoration: none;
 }
 
@@ -29,8 +29,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* line 24, ../sass/style.sass */
 h1 {
-  font-size: 2.2em;
-  font-weight: 300;
+  font-size: 1.5em;
+  font-weight: bold;
   padding: 0 0 0.5em;
   margin: 0;
 }

@@ -1,0 +1,116 @@
+<?php
+// $Id: custom_breadcrumbs_identifiers.module,v 1.1.2.2 2010/05/03 22:49:15 mgn Exp $
+
+/**
+ * @file
+ * Provide special identifiers for use with custom breadcrumbs.
+ */
+
+/**
+ * Implements hook_cb_identifier_list().
+ *
+ * @return
+ *   An array of text strings describing special identifier behavoir.
+ */
+function custom_breadcrumbs_identifiers_cb_identifier_list() {
+  $identifiers = array();
+
+  $identifiers['<none>'] = t('This will result in a plain text crumb. This identifier should not be used with the pipe (|) symbol.');
+  if (module_exists('pathauto')) {
+    $identifiers['<pathauto>'] = t('Cleans the given path using your pathauto replacement rules.');
+  }
+
+  // Additional identifiers can be added here.
+  $identifiers['<book-hierarchy>'] =  t('Provides crumbs for each parent node of a book page. Whatever is placed in the corresponding position of the title area will be ignored. It should not be used with the pipe (|) symbol.');
+  $identifiers['<page-title>'] = t('Provides a plain text crumb using the page title. Whatever is placed in the corresponding position of the title area will be ignored. It should not be used with the pipe (|) symbol.');
+  return $identifiers;
+}
+
+/**
+ * Implements hook_cb_identifier_values().
+ *
+ * This function prepares an array of crumb items to replace an identifier.
+ * The identifier should be a string starting with '<' and ending with '>'.
+ * The function also requires an object to make the substitution. Usually,
+ * this object will include the crumb title and path, but may contain other
+ * properties that can be used.
+ *
+ * This function returns an array of crumb items. Each crumb item is an
+ * associative array with keys
+ *   'crumb' = the html crumb to use in the breadcrumb
+ *   'title' = the title of the crumb
+ *   'href'  = the link path
+ */
+function custom_breadcrumbs_identifiers_cb_identifier_values($identifier, $obj) {
+  $crumb_items = NULL;
+  switch ($identifier) {
+    case '<none>':
+      $crumb_item = array(
+        'crumb' => check_plain($obj['title']),
+        'title' => $obj['title'],
+      );
+      $crumb_items[] = $crumb_item;
+      break;
+    case '<page-title>':
+      $title = check_plain(drupal_get_title());
+      $crumb_item = array(
+        'crumb' => $title,
+        'title' => $title,
+      );
+      $crumb_items[] = $crumb_item;
+      break;
+    case '<pathauto>':
+      $options = parse_url($obj['path']);
+      $options = array_merge($options, $obj['attributes']);
+      if (module_exists('pathauto')) {
+        module_load_include('inc', 'pathauto', 'pathauto');
+        $crumb = l($obj['title'], pathauto_cleanstring($options['path'], FALSE), $options);
+      }
+      else {
+        $crumb = l($obj['title'], $options['path'], $options);
+      }
+      $crumb_item = array(
+        'crumb' => $crumb,
+        'title' => $obj['title'],
+        'href'  => $obj['path'],
+      );
+      $crumb_items[] = $crumb_item;
+      break;
+
+    // New identifiers can be added here.
+
+    case '<book-hierarchy>':
+      // Get the node object for the current page and make sure its a book page.
+      if (arg(0) == 'node' && is_numeric(arg(1)) && !arg(2)) {
+        $node = node_load(array('nid' => arg(1)));
+        do {
+          if (isset($node->book['plid']) && ($node->book['plid'] != 0) && (count($crumb_items) < 9)) {
+            $parent = book_link_load($node->book['plid']);
+            $node = node_load(array('nid' => $parent['nid']));
+            $item = array(
+              'crumb' => l($node->book['title'], $node->book['href']),
+              'title' => $node->book['title'],
+              'href'  => $node->book['href'],
+            );
+            $crumb_items[] = $item;
+            $ascend = TRUE;
+          }
+          else {
+            $ascend = FALSE;
+          }
+        } while ($ascend);
+        if (count($crumb_items) > 1) {
+          $crumb_items = array_reverse($crumb_items);
+        }
+        if (empty($crumb_items)) {
+          // Provide a plain text crumb using the book title.
+          $crumb_items[] = array(
+            'crumb' => check_plain($node->book['title']),
+            'title' => $node->book['title'],
+          );
+        }
+      }
+      break;
+  }
+  return $crumb_items;
+}

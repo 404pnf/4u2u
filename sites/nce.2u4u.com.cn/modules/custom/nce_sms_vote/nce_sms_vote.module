@@ -1,0 +1,143 @@
+<?php 
+
+/*新概念大赛短信投票
+ * 
+ */
+
+/*带通配符并且回调参数为array(1)，与不带通配符效果是一样的。 
+ */
+
+   function nce_sms_vote_menu(){
+     $items['admin/settings/smsvote'] = array(
+       'title' =>'短信投票限额设置',
+       'description' => t('设置手机投票的各种限制'),
+       'page callback' => 'drupal_get_form',
+       'page arguments' => array('smsvote_settings'),
+       'access arguments' =>array('administer site configuration'),    
+     );
+   	
+     
+      $items['smsvote'] =array( 
+        'title' => '短信投票',
+      	'page callback' => 'sms_vote',
+      //'page arguments' => array($linkid,$msg,$oa,$sendtime,$mobile),
+      	'access callback' =>TRUE,   
+        'type'=> MENU_CALLBACK,
+            );
+
+      return $items;      
+   } 
+
+   function smsvote_settings(){
+     $form['max_vote_per_mobile'] =array(
+       '#type' => 'textfield',
+       '#title' => t('每个手机最大投票总数'),     
+       '#description' => t('设置每个手机的最大投票数量'),
+       '#default_value' => variable_get('max_vote_per_mobile',3),
+     );
+     
+    $form['max_vote_per_people_per_mobile'] =array(
+       '#type' => 'textfield',
+       '#title' => t('每个手机给每个选手最大投票数'),     
+       '#description' => t('设置每个手机给每个选手最大投票数量'),
+       '#default_value' => variable_get('max_vote_per_people_per_mobile',1),
+     );
+     
+     return system_settings_form($form);
+   }
+   
+   function sms_vote(){
+   //对方提供的参数是POST或GET方式。参数传递方式为固定方式，所以未使用DRUPAL路由方式处理；
+   	
+   	$linkid = $_GET['linkid'];
+    $msg = $_GET['msg'];
+    $oa = $_GET['oa'];
+    $sendtime = $_GET['sendtime'];
+    $mobile = $_GET['mobile'];
+   	$max_vote_per_mobile = variable_get('max_vote_per_mobile',3);
+   	$max_vote_per_people_per_mobile = variable_get('$max_vote_per_people_per_mobile',1);
+   	
+   	
+   	//从短信日志中取出信息，判断当前手机号投票数是否超出限制
+   	$sql = "select count(1) vote_count from {sms_vote} where mobile='%s'" ;
+   	$result = db_query(db_rewrite_sql($sql),$mobile);
+   	 if($data = db_fetch_object($result)){
+   	   $vote_count = $data->vote_count;
+   	 }
+
+   	 if($vote_count>=$max_vote_per_mobile)
+   	 {
+		$sms_return_msg=t('投票数超过总投票限制');
+   	 	sms_send($sms_return_msg,$mobile);
+   	 	return false;
+   	 }
+
+   	 
+   	//从短信日志中取出信息，判断当前手机号投票数是否超出限制
+   	$sql = "select count(1) vote_count_this_player from {sms_vote} where mobile='%s' and msg='%s'" ;
+   	$result = db_query(db_rewrite_sql($sql),$mobile,$msg);
+   	 if($data = db_fetch_object($result)){
+   	   $vote_count_this_player = $data->vote_count_this_player;
+   	 }
+   	 
+   	 if($vote_count_this_player>=$max_vote_per_people_per_mobile)
+   	 {
+   	   $sms_return_msg=t('投票数超过投票限制');
+   	 	sms_send($sms_return_msg,$mobile);
+   	 	return false;
+   	 }    	 
+
+
+   	$node_type = 'nce_video';
+   	$sql = "select * from {node} where type='%s' and uid=%s and status=1" ;
+   	$result = db_query(db_rewrite_sql($sql),$node_type,$msg);
+   	 if($data = db_fetch_object($result)){
+   	  $node_id = $data->nid;   	  
+   	 }
+   	 else 
+   	 {
+   	 	$sms_return_msg=t('无效投票，请检查您投票的选手号码是否正确'); 
+   	 	sms_send($sms_return_msg,$mobile);
+   	 	return false;
+   	 }
+    	
+   	 //将有效短信投票记录到短信日志中
+   	$sms_table = 'sms_vote';
+   	$sms_vote = new stdClass();
+   	$sms_vote->mobile = $mobile;
+   	$sms_vote->msg = $msg;
+   	$sms_vote->sendtime =strtotime("now")  ;
+   	drupal_write_record($sms_table,$sms_vote);
+   	 
+   	 
+
+   	//将投票信息追加到投票系统中
+    $vote['content_type']= 'node' ;
+    $vote['content_id']=$node_id    ;
+    $vote['value_type']= 'points'    ;
+    $vote['value'] =1        ;
+    $vote['tag']='顶'           ;
+    $vote['uid']=0           ;
+    $vote['vote_source']='218.247.244.25'   ;
+    $vote['timestamp']=strtotime("now")   ;
+   	 
+    votingapi_set_votes($vote);
+
+    
+   	drupal_set_message("mobile is  $mobile,userid is $msg");
+   	
+   	return(t("投票成功"));
+   
+   }
+
+   
+  /*
+   * 下行短信通道实现程序
+   */ 
+  function sms_send($sms_to_be_sent=null,$mobile=null)
+  {
+  	 if(isset($sms_to_be_sent)) {
+  	 	drupal_set_message( $sms_to_be_sent);
+  	 	$url="http://210.51.13.211:8790/smscenter/SendSmsServlet?user=chilink&password=123456&destter=13901154879&content=20091201160726&records=16072613330391126489";
+  	 }
+  } 

@@ -1,0 +1,49 @@
+<?php 
+
+function nce_sms_vote_schema() {
+ 
+ $schema['sms_vote'] = array(
+  'description' => t('InnoDB free: 9216 kB'),
+  'fields' => array(
+    'sms_id' => array(
+      'description' => t('TODO: please describe this field!'),
+      'type' => 'serial',
+      'size' => 'big',
+      'not null' => TRUE,
+    ),
+    'mobile' => array(
+      'description' => t('TODO: please describe this field!'),
+      'type' => 'varchar',
+      'length' => '50',
+      'not null' => FALSE,
+    ),
+    'msg' => array(
+      'description' => t('TODO: please describe this field!'),
+      'type' => 'varchar',
+      'length' => '100',
+      'not null' => FALSE,
+    ),
+    'sendtime' => array(
+      'description' => t('TODO: please describe this field!'),
+      'type' => 'int',
+      'not null' => FALSE,
+      'default' => 0,
+    ),
+  ),
+  'primary key' => array('sms_id'),
+);
+
+return $schema;
+ }
+ 
+ function nce_sms_vote_install(){
+  drupal_install_schema('nce_sms_vote');
+  variable_set('max_vote_per_mobile',3);
+   variable_set('max_vote_per_people_per_mobile',1);
+ }
+ 
+ function nce_sms_vote_uninstall(){
+    drupal_uninstall_schema('nce_sms_vote');
+     variable_del('max_vote_per_mobile');
+     variable_del('max_vote_per_people_per_mobile');
+  }

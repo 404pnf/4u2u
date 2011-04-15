@@ -16,6 +16,8 @@ function aispeech_oral_test_page(){
 	// $word  = aispeech_get_next_word();
 	//$output .= theme('aispeech_word_content',$variables;
 	$output .= theme('aispeech_word_content',$word);
+	drupal_add_js(drupal_get_path('module', 'aispeech') .'/jquery.countdown.package/jquery.countdown.min.js');
+	drupal_add_js(drupal_get_path('module', 'aispeech') .'/jquery.countdown.package/jquery.countdown-zh-CN.js');
 	drupal_add_js(drupal_get_path('module', 'aispeech') .'/aispeech.js');
 	//$word  = $variables['word'];
 	//$output .='spell:'. $word->spell;

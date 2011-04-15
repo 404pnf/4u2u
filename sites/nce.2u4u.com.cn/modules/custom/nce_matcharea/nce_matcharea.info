@@ -1,0 +1,7 @@
+﻿; $Id$
+name = nce_matcharea
+description = 新概念英语大赛赛区选择模块，取自对应赛区分类
+package = nce.2u4u.com.cn
+project = 2u4u
+core = 6.x
+php = 5.0

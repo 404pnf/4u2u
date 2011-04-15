@@ -98,7 +98,7 @@ function aispeech_block($op = 'list', $delta = 0, $edit = array()) {
  * 帮助函数，用来获取下一个单词
  */ 
 function aispeech_get_next_word(){
-
+/*
   $words = array();
 	$word1 = new stdClass;
   $word1->spell = 'good';
@@ -128,8 +128,8 @@ function aispeech_get_next_word(){
 	$next = rand(1,5);
 	
 	$word = $words[$next];
+	*/
 	
-	/*
 	$total_count = 26231;
 	//$next = rand(0,4);
 	$wid = rand(0, $total_count) + 1;
@@ -137,7 +137,7 @@ function aispeech_get_next_word(){
 	$word_result = db_fetch_object($result);
 	$word = new stdClass;
 	$word->spell = $word_result->word;
-
+  $word->explaination =  $word_result->word.' explaination';
 	//$word->chinese =  $word_result->word;
 	
 	module_load_include('inc', 'aispeech', 'class');
@@ -152,7 +152,7 @@ function aispeech_get_next_word(){
 	
 	$word->explaination =  $str;
 	//$word->explaination =  'test';
-	 */
+	
 	
 	
 	return $word;

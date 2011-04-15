@@ -665,3 +665,18 @@ font-size:12px;
 .form-item .description{
 	font-size:0.9em;
 }
+
+
+html, body, #main {height: 100%;}
+
+body > #main {height: auto; min-height: 100%;}
+
+#main {padding-bottom: 100px;}
+
+
+#footer .block-inner .content{
+	position: relative;
+ 　　　　　margin-top: -100px;
+ 　　　　　　height: 100px;
+ 　　　　　　clear:both;
+}

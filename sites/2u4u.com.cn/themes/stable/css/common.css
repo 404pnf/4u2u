@@ -132,6 +132,7 @@ div.block:hover .edit {
 
 #main,#header-middle,#navigation{ width: 960px; margin: 0 auto; }
 #content {   float: left;   width: 960px;   margin-right: -100%;   padding-top:0px; }
+#sidebar-first { float: left; }
 #sidebar-second { float: right; }
 #footer {float: none;  clear: both; }
 
@@ -148,6 +149,18 @@ div.block:hover .edit {
 *  For example, if I want to increase the width of the left sidebar
 *  to 300px, I would have to change each '190' to '300'.
 */
+.sidebar-left .center {
+  margin-left: 235px;    
+  position:relative;/*whx 为翻译推荐页面的“我也来推荐”确定位置*/
+  z-index:1;
+} 
+/* bxy this is the right sidebar */
+#sidebar-first {
+  width: 220px;           /* LEFT value */
+}
+#sidebar-first-inner{
+margin-left:0px;
+}
 .sidebar-right .center {
   margin-right: 235px;    
   position:relative;/*whx 为翻译推荐页面的“我也来推荐”确定位置*/
@@ -328,7 +341,7 @@ border-right:1px solid #CECECE;
 border-left:1px solid #CECECE;
 }
 
-#sidebar-second h3.title,#sidebar-second .view-header
+#sidebar-second h3.title,#sidebar-second .view-header,#sidebar-first h3.title,#sidebar-first .view-header
 {
 font-size:12px;
 font-weight:normal;
@@ -342,7 +355,7 @@ border:0;
 font-size:14px;
 }
 /* 加框 */
-#sidebar-second .block-inner .content,
+#sidebar-second .block-inner .content,#sidebar-first .block-inner .content,
 .section-fanyi  #main #content-area, 
 .section-fanyituijian #main #content-area,
 .section-yuedu  #main #content-area, 
@@ -359,13 +372,13 @@ padding:0 10px;
 .section-fanyi  #main #content-area{
 padding:0px;
 }
-#sidebar-second .block-inner .content{
+#sidebar-second .block-inner .content,#sidebar-first .block-inner .content{
 padding:0 5px;
 }
 #block-block-31 .block-inner .content{
 border:0;
 }
-#sidebar-second .block-inner .view-content{
+#sidebar-second .block-inner .view-content,#sidebar-first .block-inner .view-content{
 padding:5px;
 }
 
@@ -435,7 +448,8 @@ text-decoration:none;
     width: 620px;
 }
 /* 具体内容 */
-#block-block-73,#block-block-77{
+/* #block-block-73,#block-block-77 */
+#header-region .block-header{
 	float: right;
 	margin-bottom:10px;
 }

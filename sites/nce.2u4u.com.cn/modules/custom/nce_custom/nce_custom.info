@@ -1,5 +1,6 @@
 ; $Id$
 name = NCE Custom
 description = 新概念英语大赛专用定制模块.
+project = 2u4u
 core = 6.x
 php = 5.0

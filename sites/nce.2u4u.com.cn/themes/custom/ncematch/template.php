@@ -424,3 +424,19 @@ function ncematch_breadcrumb($breadcrumb) {
   // Otherwise, return an empty string.
   return '';
 }
+
+function ncematch_print_terms($terms) {
+	$output=""; 
+	$new_array = array();
+	//drupal_set_message(print_r($terms));
+	foreach($terms as $tid=>$term ){
+		$output .= '<div class = "fenlei-class">';
+		$voc = taxonomy_vocabulary_load($term->vid);
+		$output .= '<span class="fenlei-span">'.$voc->name .':</span>';
+		
+		$output .= l($term->name, 'taxonomy/term/'.$tid, array('attributes'=>array('title'=>$term->description)));
+		$output .= '</div>';
+  }
+ 
+  return $output; //去掉最后一个顿号，并返回输出值
+} 

@@ -1,0 +1,14 @@
+<?php
+// $Id: uc_product.install,v 1.12.2.11 2009/09/23 15:45:56 islandusurper Exp $
+
+/**
+ * @file
+ * Database installation, uninstallation, and updates for the dz2drupalpoints module.
+ */
+ 
+ /**
+ * Implementation of hook_uninstall().
+ */
+function dz2drupalpoints_uninstall() {
+  db_query("DELETE FROM {variable} WHERE name LIKE 'dz2drupalpoints_%%'");
+}

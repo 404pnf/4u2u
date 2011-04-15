@@ -1,0 +1,5 @@
+; $Id$
+name = my 2u4u
+description = 2u4u 用户中心
+core = 6.x
+php = 5.0

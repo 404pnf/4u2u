@@ -1,0 +1,121 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * 2u4u用户中心"我做过的测试".
+ */
+ 
+/**
+ * Implementation of hook_service().
+ */
+
+function myquiz_service() {
+  return array(
+
+    array(
+      '#method'   => 'myquiz.get',
+      '#callback' => 'myquiz_get',
+			'#access callback'  => 'myquiz_service_access',
+      '#args'     => array(
+        array(
+          '#name' => 'uid',
+          '#type' => 'int',
+          '#description' => t('A valid Drupal User ID.'),
+        ),
+      ),
+      '#return'   => 'struct',
+      '#help'     => t('Retrieves the number of points the user has.')
+		),
+  );
+}
+function myquiz_get($uid){
+  $output = "";
+	//$output .= "12345678";
+	//module_load_include('inc', 'quiz', 'pages');
+	$output .=  myquiz_get_user_results($uid);
+	//$output .= 'uid:'.$uid;
+	return $output;
+}
+function myquiz_service_access(){
+  return TRUE;
+}
+function  myquiz_get_user_results($user_id){
+  $results = array();
+  $sql = "SELECT n.nid, n.title, qnp.pass_rate, qnrs.result_id, qnrs.time_start, qnrs.time_end, qnrs.score, qnrs.is_evaluated
+    FROM {node} n
+    INNER JOIN {quiz_node_properties} qnp ON n.nid = qnp.nid
+    INNER JOIN {quiz_node_results} qnrs ON qnrs.nid = qnp.nid
+    INNER JOIN {users} u ON u.uid = qnrs.uid
+    WHERE n.type = 'quiz'
+      AND u.uid = %d
+    ORDER BY qnrs.result_id ASC";
+
+  $dbresult = db_query($sql, $user_id);
+  // Create an array out of the results.
+  while ($line = db_fetch_array($dbresult)) {
+    $results[$line['result_id']] = $line;
+  }
+  //return theme('quiz_get_user_results', $results);
+	return theme_myquiz_get_user_results($results);
+}
+
+/**
+ * Theme the user results page.
+ *
+ * @param $results
+ *  An array of quiz information.
+ * @return
+ *  Themed html.
+ *
+ * @ingroup themeable
+ */
+function theme_myquiz_get_user_results($results) {
+  $rows = array();
+
+  while (list($key, $result) = each($results)) {
+    $interval = _quiz_format_duration($result['time_end'] - $result['time_start']);
+    $passed = $result['score'] >= $result['pass_rate'];
+    $grade = $passed ? t('Passed') : t('Failed');
+    $passed_class = $passed ? 'quiz-passed' : 'quiz-failed';
+    if (!is_numeric($result['score']))
+      $score = t('In progress');
+    elseif (!$result['is_evaluated']) 
+      $score = t('Not evaluated');
+    else {
+      if (!empty($result['pass_rate']) && is_numeric($result['score'])) {
+        $pre_score = '<span class = "' . $passed_class . '">';
+        $post_score = ' %<br><em>'. $grade .'</em></span>';
+      }
+      else {
+        $post_score = ' %';
+      }
+      $score = $pre_score . $result['score'] . $post_score;
+    }
+    $rows[] = array(
+      'title'       => l($result['title'], 'http://quiz.2u4u.com.cn/user/quiz/'. $result['result_id'] .'/userresults'),
+      'time_start'  => format_date($result['time_start'], 'small'),
+      'time_end'    =>($result['time_end'] > 0) ? format_date($result['time_end'], 'small') . '<br />' . t('Duration :  @value', array('@value' => $interval)) : t('In Progress'),
+      
+      'score'       => $score,
+      'evaluated'   => $result['is_evaluated'] ? t('Yes') : t('No'),
+    );
+  
+  }
+
+  if (empty($rows)) {
+    return t('No @quiz results found.', array('@quiz' => QUIZ_NAME));
+  }
+
+  $header = array(
+    t('@quiz Title', array('@quiz' => QUIZ_NAME)),
+    t('Started'),
+    t('Finished'),
+    t('Score'),
+    t('Evaluated'),
+  );
+
+  $output = theme('table', $header, $rows);
+  $output .= '<p><em>' . t('@quiz that are not evaluated may have different score and grade when it is done.', array('@quiz' => QUIZ_NAME)) . '</em></p>';
+  return $output;
+}

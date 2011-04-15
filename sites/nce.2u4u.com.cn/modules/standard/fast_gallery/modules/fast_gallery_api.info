@@ -1,0 +1,14 @@
+; $Id: 
+name = Fast Gallery Public API
+description = Allows site owners to expose gallery via REST API -> DO NOT USE YET!!!
+core = 7.x
+package = "Fast Gallery"
+files[] = fast_gallery_api.module
+dependencies[] = fast_gallery
+
+; Information added by drupal.org packaging script on 2010-09-01
+version = "6.x-5.5"
+core = "6.x"
+project = "fast_gallery"
+datestamp = "1283371008"
+

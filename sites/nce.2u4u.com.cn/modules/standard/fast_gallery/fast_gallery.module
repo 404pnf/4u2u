@@ -1,0 +1,422 @@
+<?php
+// $Id: fast_gallery.module,v 1.66.2.28 2010/09/01 19:47:17 rapsli Exp $
+
+/**
+ * @file
+ * Fast Gallery allows you to build galleries based on your file
+ * system with folders and subfolders.
+ *
+ * This file is mainly used connecting the fast gallery module with drupal
+ * it though contains hardly any logic. This is being directed to either the
+ * Fast Gallery controller (fast_gallery.class.php) or the storage engine
+ *
+ * This module is sponsored by Schär Webdesign.
+ * Visit www.schaerwebdesign.ch or the Drupal-related blog www.rapsli.ch.
+ *
+ * Original version by Raphael Schär - www.schaerwebdesign.ch.
+ *
+ * @author Raphael Schär - www.schaerwebdesign.ch
+ */
+
+define('FG_DEFAULT_STORAGE_ENGINE', 'default');
+
+/**
+ * Implementation of hook_perm
+ * @return array
+ */
+function fast_gallery_perm() {
+  return array( 'administer fast gallery');
+}
+
+/**
+ * implementation of hook_help
+ * @param string $path
+ * @param array $arg
+ * @return html
+ */
+function fast_gallery_help($path, $arg) {
+  switch ($path) {
+    case 'admin/settings/fast_gallery':
+      $out = '<p>'. t('The Fast Gallery is a very simple yet powerful modul to display images. You can define multiple galleries and map them to a folder. Fast Gallery is putting the images into a nicely looking gallery, with respect to folder hierarchy. Either manually or via cron you can keep your gallery in sync with your filesystme.') .'</p>';
+      $out .= '<p>'. t('Fast Gallery gives other modules the chance to implement their own storage engine. By default it is being stored in the DB in it\'s own structure. It might though be possible to have a file storage engine or a node storage present.');
+      return $out;
+    case 'admin/settings/fast_gallery/general':
+      $out = '<p>'. t('The general settings the are independent of any storage engine');
+      return $out;
+  }
+
+}
+
+
+/**
+ * Implementation of hook_menu
+ * @return array
+ */
+function fast_gallery_menu() {
+  $items['admin/settings/fast_gallery'] = array(
+      'title' => 'Fast Gallery',
+      'description' => 'Configure the fast gallery module',
+      'page callback' => 'system_admin_menu_block_page',
+      'access callback' => 'user_access',
+      'file' => 'system.admin.inc',
+      'access arguments' => array('administer fast gallery'),
+      'file path' => drupal_get_path('module', 'system'),
+  );
+
+  $items['admin/settings/fast_gallery/general'] = array(
+      'title' => 'General configuration',
+      'description' => 'Configure the fast gallery module',
+      'page callback' => 'drupal_get_form',
+      'access callback' => 'user_access',
+      'page arguments' => array('fast_gallery_general_settings_form'),
+      'access arguments' => array('administer fast gallery'),
+      'file' => 'fast_gallery.admin.inc',
+      'file path' => drupal_get_path('module', 'fast_gallery'),
+  );
+
+  $items['fast_gallery/ajax/%'] = array(
+      'page callback' => 'fast_gallery_ajax_handler',
+      'access callback' => 'user_access',
+      'page arguments' => array(2),
+      'access arguments' => array('administer fast gallery'),
+      'file' => 'fast_gallery.admin.inc',
+      'file path' => drupal_get_path('module', 'fast_gallery'),
+  );
+
+  $fg_galleries = variable_get('fg_galleries', array());
+  foreach ($fg_galleries as $gallery) {
+    $items[$gallery['fg_alias']] = array(
+        'page callback' => 'fast_gallery_page_alias',
+        'page arguments' => array($gallery['fg_path']),
+        'access arguments' => array('access content'),
+        'title' => $gallery['fg_title'],
+    );
+  }
+
+  $engine = variable_get('fg_storage_engine', array());
+  if (isset($engine['config']) && $engine['config'] != '') {
+    $items[$engine['config']] = array(
+        'title' => $engine['name'] .' - Storage engine',
+        'page callback' => $engine['config_callback'],
+        'access arguments' => array('administer fast gallery'),
+        'file path' => $engine['path'],
+        'file' => $engine['config_file'],
+        'description' => 'Specific configuration options for this storage engine'
+        );
+  }
+  //exit();
+  return $items;
+}
+
+
+/**
+ * implementation of hook_fast_gallery_info()
+ * Let's Fast Gallery know that we are implementing a storage engine
+ * The following structure is needed
+ * array(
+ 'fg_version' => 2, the version of fast_gallery
+ 'storageengine' => array(
+ 'default' => array( //needs to be identical with the param key
+ 'key' => 'default', //just an identifier for this engine
+ 'name' => 'Default', //a human readable name
+ 'file' => 'default.storage.inc', //the file where the class is located
+ 'path' => drupal_get_path('module', 'fast_gallery') . '/storageengine', //the path where the file is located
+ 'config' => 'admin/config/fast_gallery/default', //the path where the config is going to be
+ 'config_callback' => 'fast_gallery_default_config', //callback for this path
+ 'config_file' => 'default.config.inc', //the file where this callback needs to be -> folder is same as path
+ ),
+ ),
+ );
+ * @return array
+ */
+function fast_gallery_fast_gallery_info() {
+  return array(
+    'fg_version' => 2,
+    'storageengine' => array(
+      'default' => array(
+        'key' => 'default',
+        'name' => 'Default',
+        'file' => 'default.storage.inc',
+        'path' => drupal_get_path('module', 'fast_gallery') .'/storageengine',
+        'config' => 'admin/settings/fast_gallery/default',
+        'config_callback' => 'fast_gallery_default_config',
+        'config_file' => 'default.config.inc',
+        'supported_files' => array('jpg', 'jpeg', 'png', 'gif', 'bmp', 'pdf'),
+      ),
+        'node' => array(
+          'key' => 'node',
+          'name' => 'Node',
+          'file' => 'node.storage.inc',
+          'path' => drupal_get_path('module', 'fast_gallery') .'/storageengine',
+          'config' => 'admin/settings/fast_gallery/node',
+          'config_callback' => 'fast_gallery_node_config',
+          'config_file' => 'node.config.inc',
+          'supported_files' => array('jpg', 'jpeg', 'png', 'gif', 'bmp', 'pdf'),
+      ),
+    ),
+    'presentation' => array(
+      'default' => array(
+        'key' => 'default',
+        'name' => 'Default',
+        'module' => 'fast_gallery',
+        'file' => 'default.presentation.inc',
+        'path' => drupal_get_path('module', 'fast_gallery') . '/presentation',
+      ),
+      'lightbox' => array(
+        'key' => 'lightbox',
+        'name' => 'Lightbox',
+        'module' => 'fast_gallery',
+        'file' => 'lightbox.presentation.inc',
+        'path' => drupal_get_path('module', 'fast_gallery') . '/presentation',
+      ),
+      'lightshow' => array(
+        'key' => 'lightshow',
+        'name' => 'Lightshow',
+        'module' => 'fast_gallery',
+        'file' => 'lightshow.presentation.inc',
+        'path' => drupal_get_path('module', 'fast_gallery') . '/presentation',
+      ),
+      'galleria' => array(
+        'key' => 'galleria',
+        'name' => 'Galleria (Does not support nested folders)',
+        'module' => 'fast_gallery',
+        'file' => 'galleria.presentation.inc',
+        'path' => drupal_get_path('module', 'fast_gallery') . '/presentation',
+      ),
+      'smoothgallery' => array(
+        'key' => 'smoothgallery',
+        'name' => 'Smoothgallery (not yet working)',
+        'module' => 'fast_gallery',
+        'file' => 'smoothgallery.presentation.inc',
+        'path' => drupal_get_path('module', 'fast_gallery') . '/presentation',
+      ),
+      'cooliris' => array(
+        'key' => 'cooliris',
+        'name' => 'Cooliris (Not yet working!)',
+        'module' => 'cooliris',
+        'type' => 'feed',
+        'source' => 'fast_gallery_api/get',
+        'file' => 'cooliris.presentation.inc',
+        'path' => drupal_get_path('module', 'fast_gallery') . '/presentation',
+      ),
+    ),
+  );
+}
+
+function _fast_gallery_get_alias_count($path) {
+  $ar = explode("/", $path);
+  if ($ar[count($ar)-1] == '') {
+    array_shift($ar);
+  }
+  return count($ar);
+}
+
+/**
+ * implementation of hook_block
+ * @param string $op
+ * @param int $delta
+ * @param array $edit
+ *
+ * @return array
+ */
+function fast_gallery_block($op = 'list', $delta = 0, $edit = array()) {
+  switch ($op) {
+    case 'list':
+      $blocks[0] = array(
+        'info' => t('Random image block'),
+        'cache' => BLOCK_NO_CACHE,
+      );
+      return $blocks;
+    case 'view':
+      $fg = fast_gallery_get_FastGallery();
+      if ($delta == 0) {
+
+        // we go through all the defined galleries and check if we find the image where the random image belongs to
+        $image = $fg->getRandomImage();
+
+        $galleries = variable_get('fg_galleries', array());
+        foreach ($galleries as $gallery) {
+          preg_match('|' . $gallery['fg_path'] . '|', $image->getFolder(), $matches);
+          if (count($matches) > 0) {
+            $path = str_replace($gallery['fg_path'], $gallery['fg_alias'] . '/', $image->getFolder());
+            break;
+          }
+        }
+
+        $block = array(
+          'subject' => t('Random image'),
+          'content' => l($image->renderHtml(), $path, array('html' => TRUE)),
+        );
+        return $block;
+      }
+      break;
+  }
+}
+
+/**
+ * Callbackfunction when hitting a gallery page
+ * @param $path
+ * @return html string
+ */
+function fast_gallery_page_alias($path) {
+  static $stored_title;
+  global $base_url;
+
+  $default_presentation = variable_get('fast_gallery_presentation', array());
+  if (empty($default_presentation)) {
+    drupal_set_message(t('You first need to configure the gallery. Incase you are updating to 5.4, just resave the configuration form. !link', array('!link' => l('Fast Gallery configuration', 'admin/settings/fast_gallery/general'))));
+    return '';
+  }
+  include_once($default_presentation['path'] . '/' . $default_presentation['file']);
+  module_invoke($default_presentation['module'], 'fast_gallery_load_requirements');
+  
+ 
+  $current_path_alias = check_plain($_GET['q']);
+  $fg = fast_gallery_get_FastGallery();
+  
+  $ar_bc = $fg->buildBreadCrumbs();
+  drupal_set_title(count($ar_bc) < 2 ? strip_tags(array_shift($ar_bc)) : array_shift($ar_bc));
+  
+  // we are going to cache the gallery content
+  // so it will be served faster the next time
+  $page = $_GET['page'];
+  if (($cache = cache_get('fast_gallery_'. $current_path_alias . '_page_' . $page, 'cache_fast_gallery')) && variable_get('fg_folder_cache', FALSE)) {
+    $html = $cache->data;
+  }
+  else {
+
+    $settings = variable_get('fg_galleries', array());
+
+    $start = strlen($settings[$path]['fg_alias']);
+    $path_new = substr($current_path_alias, ++$start);
+    $path_new  = $settings[$path]['fg_path'] . $path_new;
+
+    //fetching the needed objects
+    $storage = $fg->getStorageEngine();
+
+    $images = $storage->getImages($path_new);
+    $html = module_invoke($default_presentation['module'], 'fast_gallery_presentation', $images, $ar_bc);
+    
+    // store cache
+    if (variable_get('fg_folder_cache', TRUE)) {
+      cache_set('fast_gallery_'. $current_path_alias, $html, 'cache_fast_gallery');
+    }
+  }
+  return $html;
+}
+
+/**
+ * Implementation of hook_cron() to keep gallery up-to-date.
+ */
+function fast_gallery_cron() {
+  if (variable_get('fast_gallery_cron', '')) {
+    $fg = fast_gallery_get_FastGallery();
+    $fg->rescanGallery();
+  }
+}
+
+
+/**
+ * Implementation of hook_theme
+ * @return array
+ */
+function fast_gallery_theme() {
+  return array(
+    'fast_gallery_image_wrapper' => array(
+      'arguments' => array('image' => NULL, 'name' => NULL),
+      'template' => 'fast_gallery-image-wrapper',
+  ),
+    'fast_gallery_image' => array(
+      'arguments' => array('image' => FGImage, 'options' => array()),
+      'template' => 'fast_gallery-image',
+  ),
+    'fg_multiple_galleries' => array( //theming the admin gallery input
+      'arguments' => array(),
+  ),
+  );
+}
+
+/**
+ * Implementation of hook_flush_caches
+ */
+function fast_gallery_flush_caches() {
+  cache_clear_all('*', 'cache_fast_gallery', TRUE);
+}
+
+/**
+ * Implementation of hook_init
+ */
+function fast_gallery_init() {
+  drupal_add_css(drupal_get_path('module', 'fast_gallery') .'/fast_gallery.css');
+}
+
+
+/**
+ * helper function to return the controller class
+ * FastGallery
+ * @return FastGallery
+ */
+function fast_gallery_get_FastGallery() {
+  include_once('fast_gallery.class.php');
+  return FastGallery :: getInstance();
+}
+
+/**
+ * helper function to return the Cache
+ * @return FastGalleryCache
+ */
+function fast_gallery_get_cache() {
+  include_once('fast_gallery.cache.class.php');
+  return FastGalleryCache::getInstance();
+}
+
+/**
+ * Implementation of hook_features_api().
+ */
+function fast_gallery_features_api() {
+  return array(
+    'fast_gallery' => array(
+      'default_hook' => 'features_default_fast_gallery',
+      'features_source' => TRUE,
+      'file' => drupal_get_path('module', 'fast_gallery') .'/integrations/fast_gallery.features.inc',
+    ),
+  );
+}
+
+/**
+ * implementation of hook_rules_action_info()
+ */
+function fast_gallery_rules_action_info() {
+  return array(
+    'fast_gallery_flush_caches' => array(
+      'label' => t('Flush Fast Gallery Cache'),
+      'module' => 'Fast Gallery',
+    ),
+    'fast_gallery_wrapper_rescan' => array(
+      'label' => t('Rescan Fast Gallery'),
+      'module' => 'Fast Gallery',
+    ),
+    'fast_gallery_wrapper_flush_thumbs' => array(
+      'label' => t('Flush internal thumbs cache'),
+      'module' => 'Fast Gallery',
+    ),
+  );
+}
+
+/**
+ * This is a wrapper function so we can rescan the gallery from 
+ * rules module
+ */
+function fast_gallery_wrapper_rescan() {
+  module_load_include('inc', 'fast_gallery', 'admin');
+  fast_gallery_ajax_handler('rescan');
+}
+
+/**
+ * This is a wrapper function so we can flush thumbs from 
+ * rules module
+ */
+function fast_gallery_wrapper_flush_thumbs() {
+  module_load_include('inc', 'fast_gallery', 'admin');
+  fast_gallery_ajax_handler('flush-thumbs');
+}

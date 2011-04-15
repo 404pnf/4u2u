@@ -1,0 +1,120 @@
+<?php
+// $Id: fast_gallery.test,v 1.3.4.2 2010/03/15 18:38:08 rapsli Exp $ 
+
+/**
+ * @file
+ * Fast Gallery functionality tests.
+ */
+
+/**
+ * Base class for all Fast Gallery web test cases.
+ */
+class FastGalleryWebTestCase extends DrupalWebTestCase {
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Fast Gallery',
+      'description' => 'Create a gallery, scan it, delete it',
+      'group' => 'Z Fast Gallery',
+    );
+  }
+  
+  public function setUp() {
+    parent::setUp('fast_gallery');
+    
+    //create a user who can access the settings
+    $privileged_user = $this->drupalCreateUser(array('administer fast gallery'));
+    $this->drupalLogin($privileged_user);
+  }
+  
+  
+  public function testFastGalleryNewGallery() {
+    $gal_path = drupal_get_path('module', 'fast_gallery') .'/tests';
+    $edit = array(
+      'a_gallery[new:0][fg_alias]' => 'path_alias',
+      'a_gallery[new:0][fg_title]' => 'Hello World',
+      'a_gallery[new:0][fg_path]' => $gal_path,
+      'fg_storage_engine' => 'default',
+    );
+    
+    $path = 'admin/config/fast_gallery/general';
+    $this->drupalPost($path, $edit, 'Submit');
+    
+    $this->drupalGet($path);
+   
+   $this->assertFieldByName('a_gallery[chid:'. $gal_path .'/][fg_path]', $edit['a_gallery[new:0][fg_path]'] .'/', t('Path for gallery set'));
+   $this->assertFieldByName('a_gallery[chid:'. $gal_path .'/][fg_title]', $edit['a_gallery[new:0][fg_title]'], t('Title for gallery set'));
+   $this->assertFieldByName('a_gallery[chid:'. $gal_path .'/][fg_alias]', $edit['a_gallery[new:0][fg_alias]'], t('Alias for gallery set'));
+    
+    // rescan Gallery
+    $edit = array(
+      //'ajax_triggering_element' => 'fast_gallery_operations/fast_gallery_rescan',
+    );
+    
+    //$commands = $this->drupalPostAJAX(NULL, $edit, 'Rescan');
+    $this->cronRun();
+    //$this->drupalGet($path);
+
+    // incase we are using cvs -> exclude those folders
+    $row = db_query("SELECT * FROM {fast_gallery_hierarchy}", array(), array('fetch' => PDO::FETCH_ASSOC));
+    foreach ($row as $item) {
+      $ar_folder = explode('/', $item['folder']);
+      if (strtolower($ar_folder[count($ar_folder)-1]) == 'cvs') {
+        //TODO: Figure out, what the correct delete statement looks like
+        db_query("DELETE FROM {fast_gallery_hierarchy} WHERE foid=:foid", array(':foid' => $item['foid']));
+      }
+    }
+
+    //check if we found every folder
+    $foid = db_query("SELECT COUNT(foid) FROM {fast_gallery_hierarchy}")->fetchField();
+    $this->assertEqual($foid, '4', 'Check if we have found every folder', 'Fast Gallery');
+    
+    //we are going to check if the structure is set up correctly
+    $foid = $this->getPid('sites/all/modules/fast_gallery/tests/subfolder_1');
+    $this->assertEqual($foid, '0', 'Structure is correct.', 'Fast Gallery');
+    
+    $foid = $this->getPid('sites/all/modules/fast_gallery/tests/subfolder_1/subsub_1');
+    $this->assertEqual($foid, '1', 'Structure is correct.', 'Fast Gallery');
+    
+    $foid = $this->getPid('sites/all/modules/fast_gallery/tests/subfolder_1/subsub_1/subsubsub_1');
+    $this->assertEqual($foid, '2', 'Structure is correct.', 'Fast Gallery');
+    
+    $foid = $this->getPid('sites/all/modules/fast_gallery/tests/subfolder_2');
+    $this->assertEqual($foid, '0', 'Structure is correct.', 'Fast Gallery');
+    
+    $count = db_query("SELECT COUNT(foid) FROM {fast_gallery_file}")->fetchField();
+    $this->assertEqual($count, '3', 'All images found.', 'Fast Gallery');
+    
+    //we have a look at the gallery page
+    $path = 'path_alias';
+    $this->drupalGet($path);
+    $this->assertText('subfolder_1', 'Folder is being displayed');
+    $this->assertText('subfolder_2', 'Folder is being displayed');
+    
+    $this->clickLink('subfolder_1');
+    $this->assertText('subsub_1', 'Subfolder is being displayed.');
+    $this->assertText('druplicon.png', 'Image is being displayed.');
+    $this->clickLink('subsub_1');
+    $this->assertText('subsubsub_1', 'Subsubfolder is being displayed.');
+    $this->assertNoText('drupalicon.png', 'There is no image');
+    $this->clickLink('subsubsub_1');
+    $this->assertText('druplicon.png', 'Image is being displayed');
+    $this->assertNoText('drupalicon.png.thumb', 'There is no image');
+    
+    //TODO: rename file and see, if it's being synced correctly 
+  }
+
+  /**
+   * a little helper function fetching the parent folder id of a folder
+   * 
+   * @param string $folder
+   *  the name of a folder to get the pid (parend folder id)
+   * @return int
+   */
+  private function getPid($folder) {
+    return db_query("SELECT pid FROM {fast_gallery_hierarchy} WHERE folder=:folder", array(':folder' => $folder))->fetchField();
+  }
+  
+}
+
+

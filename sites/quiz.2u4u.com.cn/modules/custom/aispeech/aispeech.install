@@ -1,0 +1,50 @@
+<?php
+// $Id: uc_product.install,v 1.12.2.11 2009/09/23 15:45:56 islandusurper Exp $
+
+/**
+ * @file
+ * Database installation, uninstallation, and updates for the product module.
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function aispeech_schema() {
+	$schema = array();
+ 	$schema['wordlist'] = array(
+		'description' => t('Word list for aispeech.'),
+		'fields' => array(
+		  'wid' => array(
+		    'description' => t('word id.'),
+		    'type' => 'serial',
+		    'unsigned' => TRUE,
+		    'not null' => TRUE,
+		  ),
+		  'word' => array(
+		    'description' => t('word name.'),
+		    'type' => 'varchar',
+		    'length' => 64,
+		    'not null' => TRUE,
+		    'default' => '',
+		  ),
+		),
+		'primary key' => array('wid'),
+	);
+
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function aispeech_install() {
+  drupal_install_schema('aispeech');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function aispeech_uninstall() {
+  drupal_uninstall_schema('aispeech');
+  //db_query("DELETE FROM {variable} WHERE name LIKE 'uc_ismoney_%%'");
+}

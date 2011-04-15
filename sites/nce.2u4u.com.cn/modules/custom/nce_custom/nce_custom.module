@@ -53,6 +53,7 @@ function nce_custom_form_alter(&$form, &$form_state, $form_id){
 		$form['taxonomy']['4']['#attributes'] = array('disabled'=>TRUE,);	
 		
 		$form['field_name'][0]['#default_value']['value'] =  $name; 
+		$form['field_baominghao'][0]['#default_value']['value'] =  $user->uid; 
 		//$form['field_name'][0]['#attributes'] = array('disabled'=>TRUE,);	
 		$form['field_school'][0]['#default_value']['value'] =  $school; 
 		//$form['field_school'][0]['#attributes']['value']['disabled'] = 'disabled';	
@@ -105,6 +106,7 @@ function nce_custom_form_alter(&$form, &$form_state, $form_id){
 			$form['taxonomy']['4']['#attributes'] = array('disabled'=>TRUE,);	
 			
 			$form['field_name'][0]['#default_value']['value'] =  $name; 
+			$form['field_baominghao'][0]['#default_value']['value'] =  $user->uid; 
 			//$form['field_name'][0]['#attributes'] = array('disabled'=>TRUE,);	
 			$form['field_school'][0]['#default_value']['value'] =  $school; 
 			$form['field_school'][0]['#attributes']['value']['disabled'] = 'disabled';	

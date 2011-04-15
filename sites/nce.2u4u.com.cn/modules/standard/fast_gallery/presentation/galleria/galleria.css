@@ -1,0 +1,56 @@
+/* $Id: galleria.css,v 1.1.2.2 2010/08/28 09:29:57 rapsli Exp $ */
+
+.item-list .galleria {
+  list-style:none;
+}
+
+.item-list .galleria li {
+  display:block;
+  width:80px;
+  height:80px;
+  overflow:hidden;
+  float:left;
+  margin:0 10px 10px 0;
+  background: none;
+}
+
+.item-list .galleria li a {
+  display:none;
+}
+
+.item-list .galleria li div {
+  position:absolute;
+  display:none;
+  top:0;
+  left:180px;
+}
+
+.item-list .galleria li div img {
+  cursor:pointer;
+}
+
+.item-list .galleria li.active div img,
+.item-list .galleria li.active div {
+  display:block;
+}
+
+.item-list .galleria li img.thumb {
+  cursor:pointer;
+  top:auto;
+  left:auto;
+  display:block;
+  width:auto;
+  height:auto;
+}
+
+.item-list .galleria li .caption {
+  display:block;
+  padding-top:.5em;
+}
+
+* html .item-list .galleria li div span { width:400px } /* MSIE bug */
+
+.galleria-nav {
+  clear: both;
+  display: none;
+}

@@ -204,11 +204,11 @@
 		</div> 
 	</div>
 	
-                  <div id="ad2container">
+                  <!-- <div id="ad2container">
 				   <?php $block_search = module_invoke('block', 'block', 'view', 82); ?>
 				   <?php print $block_search['content'];?> 
 
-                  </div>	
+		  </div> -->	
 	
 		  <div id= "view_yuedu" class="clearfix library-bg">
 			<div id="yuedu_title" class="redline-title"><a href="http://ebook.2u4u.com.cn/" target="_blank" class="h">电子图书馆</a></div>
@@ -291,9 +291,11 @@
 		  <!--“通栏广告”的占位符-->		  
 		  <div id="guanggao" class=" clearfix">
 		  <div class="ad-kuang"><img src=" /sites/2u4u.com.cn/themes/stable/css/fp_images/BANNER.jpg" width="960" height="108" border="0" usemap="#Map" />
-<map name="Map" id="Map"><area shape="rect" coords="185,14,351,95" href="http://ebook.2u4u.com.cn/duhougan" target="_blank" />
+<map name="Map" id="Map">
+<area shape="rect" coords="185,14,351,95" href="http://dhg.2u4u.com.cn" target="_blank" /> 
 <area shape="rect" coords="373,14,540,95" href="http://babel.2u4u.com.cn" target="_blank" />
-<area shape="rect" coords="563,15,728,94" href="http://2u4u.com.cn/disney" target="_blank" /><area shape="rect" coords="754,15,920,95" href="http://dict.2u4u.com.cn/" target="_blank" />
+<area shape="rect" coords="563,15,728,94" href="http://nce.2u4u.com.cn" target="_blank" />
+<area shape="rect" coords="754,15,920,95" href="http://u.2u4u.com.cn/home/space.php?do=xfjd" target="_blank" />
 </map></div>
 		  </div>
 		  
@@ -559,15 +561,21 @@ $(function(){
 	$('a:[href^=http://u.]').attr('target','_blank');
 	$('a:[href^=http://frenchfriend.]').attr('target','_blank');
 
-			
 	$('#tonglan_gg').innerfade({
 		animationtype: 'slide',
 		speed: 1000,
 		timeout: 5000,
 		type: 'sequence',
 		containerheight: '110px'
-	});					
-	
+	});			
+					 
+	$('#huodong').innerfade({
+		animationtype: 'slide',
+		speed: 1000,
+		timeout: 5000,
+		type: 'sequence',
+		containerheight: '90px'
+	});	
 	tabs_click("#tabs0");
 	tabs_click("#tabs1");
 	tabs_hover("#yuedu_hover");

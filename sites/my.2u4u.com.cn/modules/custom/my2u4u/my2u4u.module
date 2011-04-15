@@ -1,0 +1,393 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * 2u4u用户中心.
+ */
+
+
+/**
+ * 实现hook_menu钩子，统一用户中心的URL
+ */
+function my2u4u_menu(){
+	//unset($items['user/%user/view']);  
+	
+	$items['user/%user_uid_optional/mypoints'] = array(
+                   'title' => '积分记录',
+                   'page callback' => 'my2u4u_my_pionts_page',
+	           'page arguments' => array(1),
+                   'access callback' => 'user_view_access',
+    	           'access arguments' => array(1),
+                   'type' => MENU_CALLBACK,
+                   'file' => 'my2u4u.pages.inc',
+        );
+  $items['user/%user_uid_optional/chongzhi'] = array(
+    'title' => '积分充值',
+    'page callback' => 'my2u4u_my_chongzhi_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+  $items['user/%user_uid_optional/buyuserpoints'] = array(
+    'title' => '积分购买',
+    'page callback' => 'my2u4u_my_buyuserpoints_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	
+	/*
+   $items['user/%user/mypoints'] = array(
+    'title' => '积分记录',
+    'page callback' => 'my2u4u_my_pionts_page',
+		'page arguments' => array(1),
+    'access callback' => 'my2u4u_access_my_account',
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+  $items['user/%user/chongzhi'] = array(
+    'title' => '积分充值',
+    'page callback' => 'my2u4u_my_chongzhi_page',
+		'page arguments' => array(1),
+    'access callback' => 'my2u4u_access_my_account',
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+  $items['user/%user/buyuserpoints'] = array(
+    'title' => '积分购买',
+    'page callback' => 'my2u4u_my_buyuserpoints_page',
+		'page arguments' => array(1),
+    'access callback' => 'my2u4u_access_my_account',
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+  $items['user/%user/comments'] = array(
+    'title' => '我的评论',
+    'page callback' => ' my2u4u_my_comments',
+		'page arguments' => array(1),
+    'access callback' => 'my2u4u_access_my_account',
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	$items['user/%user/profile'] = array(
+    'title' => '我的个人资料',
+    'page callback' => 'my2u4u_my_profile',
+		'page arguments' => array(1),
+    'access callback' => 'my2u4u_access_my_account',
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	*/
+	$items['user/%user/boughtbooks'] = array(
+    'title' => '购买的图书',
+    'page callback' => 'my2u4u_my_boughtbooks_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	$items['user/%user/readbooks'] = array(
+    'title' => '看过的图书',
+    'page callback' => 'my2u4u_my_readbooks_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	$items['user/%user/favoritebooks'] = array(
+    'title' => '收藏的图书',
+    'page callback' => 'my2u4u_my_favoritebooks_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	$items['user/%user/recommendbooks'] = array(
+    'title' => '推荐的图书',
+    'page callback' => 'my2u4u_my_recommendbooks_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	
+	$items['user/%user/boughtvideos'] = array(
+    'title' => '购买的视频',
+    'page callback' => 'my2u4u_my_boughtvideos_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	$items['user/%user/readvideos'] = array(
+    'title' => '看过的视频',
+    'page callback' => 'my2u4u_my_readvideos_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	$items['user/%user/favoritevideos'] = array(
+    'title' => '收藏的视频',
+    'page callback' => 'my2u4u_my_favoritevideos_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	$items['user/%user/recommendvideos'] = array(
+    'title' => '推荐的视频',
+    'page callback' => 'my2u4u_my_recommendvideos_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	
+	$items['user/%user/donequizs'] = array(
+    'title' => '做过的测试',
+    'page callback' => 'my2u4u_my_donequizs_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	$items['user/%user/recommendquizs'] = array(
+    'title' => '推荐的测试',
+    'page callback' => 'my2u4u_my_recommendquizs_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	
+	$items['user/%user/questions'] = array(
+    'title' => '我的提问',
+    'page callback' => 'my2u4u_my_questions_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	$items['user/%user/answers'] = array(
+    'title' => '我的回答',
+    'page callback' => 'my2u4u_my_answers_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	
+	$items['user/%user/unfinishedorders'] = array(
+    'title' => '未结算的订单',
+    'page callback' => 'my2u4u_my_unfinishedorders_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+	$items['user/%user/orders'] = array(
+    'title' => '订单记录',
+    'page callback' => 'my2u4u_my_orders_page',
+		'page arguments' => array(1),
+    'access callback' => 'user_view_access',
+    	'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+    'file' => 'my2u4u.pages.inc',
+  );
+
+  return $items;
+
+}
+
+/**
+ * 实现区块钩子，用户用户个人中心的各种区块
+ */
+function my2u4u_block($op = 'list', $delta = 0, $edit = array()){
+	switch ($op){
+		case 'list':
+			//我的悠游区快
+			$blocks[0]['info'] = t('我的悠游');
+			$blocks[0]['cache'] = BLOCK_NO_CACHE;
+
+			//我的图书馆区快
+			$blocks[1]['info'] = t('我的图书馆');
+			$blocks[1]['cache'] = BLOCK_NO_CACHE;
+			//我的多媒体课堂区快
+			$blocks[2]['info'] = t('我的多媒体课堂');
+			$blocks[2]['cache'] = BLOCK_NO_CACHE;
+			//我的测试中心区快
+			$blocks[3]['info'] = t('我的测试中心');
+			$blocks[3]['cache'] = BLOCK_NO_CACHE;
+			//我的问答区快
+			$blocks[4]['info'] = t('我的问答');
+			$blocks[4]['cache'] = BLOCK_NO_CACHE;
+			//我的订单区快
+			$blocks[5]['info'] = t('我的订单');
+			$blocks[5]['cache'] = BLOCK_NO_CACHE;
+                        //UCHOME
+                        $blocks[6]['info'] = t('UCHOME的个人信息');     
+                        $blocks[6]['cache'] = BLOCK_NO_CACHE;
+                        return  $blocks;               
+
+		case 'view':
+			global $user;
+			if ($delta == 0 ) {
+				$block['subject'] = t('我的悠游');
+                                $block['content'] = theme('my2u4u_my_account_block',array());
+			}
+
+			if($delta == 1 ){
+				$block['subject'] = t('我的图书馆');
+                                $block['content'] = theme('my2u4u_my_ebooks_block',array());
+			}
+			if($delta == 2 ){
+				$block['subject'] = t('我的多媒体课堂');
+                                $block['content'] = theme('my2u4u_my_videos_block',array());
+			}
+			if($delta == 3 ){
+				$block['subject'] = t('我的测试中心');
+                                $block['content'] = theme('my2u4u_my_quizs_block',array());
+			}
+			if($delta == 4 ){
+				$block['subject'] = t('我的问答');
+                                $block['content'] = theme('my2u4u_my_answers_block',array());
+			}
+			if($delta == 5 ){
+				$block['subject'] = t('我的订单');
+                                $block['content'] = theme('my2u4u_my_orders_block',array());
+			}
+                        if($delta == 6 ){
+                                $block['subject'] = t('UCHOME');
+                                $block['content'] = theme ('my2u4u_my_uchome_block',array());
+                        }
+			
+		/*
+		case 'view':
+			global $user;
+			if ($delta == 0 && my2u4u_access_my_account()) {
+				$block['subject'] = t('我的悠游');
+                                $block['content'] = theme('my2u4u_my_account_block',array());
+			}
+
+			if($delta == 1 && my2u4u_access_my_account()){
+				$block['subject'] = t('我的图书馆');
+                                $block['content'] = theme('my2u4u_my_ebooks_block',array());
+			}
+			if($delta == 2 && my2u4u_access_my_account()){
+				$block['subject'] = t('我的多媒体课堂');
+                                $block['content'] = theme('my2u4u_my_videos_block',array());
+			}
+			if($delta == 3 && my2u4u_access_my_account()){
+				$block['subject'] = t('我的测试中心');
+                                $block['content'] = theme('my2u4u_my_quizs_block',array());
+			}
+			if($delta == 4 && my2u4u_access_my_account()){
+				$block['subject'] = t('我的问答');
+                                $block['content'] = theme('my2u4u_my_answers_block',array());
+			}
+			if($delta == 5 && my2u4u_access_my_account()){
+				$block['subject'] = t('我的订单');
+                                $block['content'] = theme('my2u4u_my_orders_block',array());
+			}
+                        if($delta == 6 && my2u4u_access_my_account()){
+                                $block['subject'] = t('我的外语圈');
+                                $block['content'] = theme('my2u4u_my_uchome_block',array());
+                        }
+
+
+		*/
+			return $block;
+		
+	}	
+}
+
+/**
+ * 实现hook_theme钩子
+ */
+function my2u4u_theme(){
+	return array(
+	  //我的悠游主题函数
+    'my2u4u_my_account_block' => array(
+      'variables' => array(),
+			'file' => 'my2u4u.pages.inc',
+    ),
+    //我的图书馆主题函数
+		'my2u4u_my_ebooks_block' => array(
+      'variables' => array(),
+			'file' => 'my2u4u.pages.inc',
+    ),
+		//我的多媒体课堂主题函数
+		'my2u4u_my_videos_block' => array(
+      'variables' => array(),
+			'file' => 'my2u4u.pages.inc',
+    ),
+		//我的测试中心主题函数
+		'my2u4u_my_quizs_block' => array(
+      'variables' => array(),
+			'file' => 'my2u4u.pages.inc',
+    ),
+		//我的问答主题函数
+           		'my2u4u_my_answers_block' => array(
+                        'variables' => array(),
+			'file' => 'my2u4u.pages.inc',
+    ),
+		//我的订单主题函数
+		        'my2u4u_my_orders_block' => array(
+                        'variables' => array(),
+			'file' => 'my2u4u.pages.inc',
+    ),
+                //我的uchome下的信息
+                        'my2u4u_my_uchome_block' => array(
+                        'variables' => array(),
+                        'file' => 'my2u4u.pages.inc', 
+    ),
+  );             
+}
+
+/**/
+function my2u4u_access_my_account(){
+	global $user;
+	//当前用户为超级用户或者具有管理用户的权限,返回真
+  if ($user->uid === 1 || user_access('administer users')) {
+    return TRUE;
+  }
+	//当前用户为登录用户并且正在访问自己的账户页面,返回真
+	if(arg(0)=='user'&& arg(1) == $user->uid && user_is_logged_in()){
+		return TRUE;
+	}
+	return FALSE;
+}
+
+
+/*
+function user_view_access($account) {
+  return $account && $account->uid &&
+    (
+      // Always let users view their own profile.
+      ($GLOBALS['user']->uid == $account->uid) ||
+      // Administrators can view all accounts.
+      user_access('administer users') ||
+      // The user is not blocked and logged in at least once.
+      ($account->access && $account->status && user_access('access user profiles'))
+    );
+}
+*/

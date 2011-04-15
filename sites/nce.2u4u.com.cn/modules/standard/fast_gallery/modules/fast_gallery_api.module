@@ -1,0 +1,93 @@
+<?php
+
+/**
+ * implementation of hook_perm
+ * @return array
+ */
+function fast_gallery_api_perm() {
+  return array('use fast gallery api');
+}
+
+/**
+ * implementation of hook_menu
+ * @return array
+ */
+function fast_gallery_api_menu() {
+  $items['fast_gallery_api/%'] = array(
+    'type' => MENU_CALLBACK,
+    'access arguments' => array('use fast gallery api'),
+    'page callback' => 'fast_gallery_api_handler',
+    'page arguments' => array(1),
+  );
+
+  return $items;
+}
+
+/**
+ *
+ * @param $op
+ * @return unknown_type
+ */
+function fast_gallery_api_handler($op) {
+  $fgapi = fast_gallery_api_get_api();
+  $fg = fast_gallery_get_FastGallery();
+  $storage = $fg->getStorageEngine();
+  switch ($op) {
+    case 'get':
+      $params = $fgapi->transformParams($_GET);
+      if (!$params['status']) {
+        fast_gallery_api_message(t('Parameters are incomplete.'));
+        exit();
+      }
+      
+      $path_new = $fgapi->createFgGalleryPath($params['params']);
+      $images = $storage->getImages($path_new);
+      
+      if ($params['params']['type'] == 'html') {
+        $html = '';
+        foreach ($images as $image) {
+          if ($image->isDir()) {//incase of a subfolder -> make a different link
+            $image_html = $image->renderHtml() . '<br/>' . $image->getName();
+          }
+          else {
+            $image_html = $image->renderHtml() . '<br/>' . $image->getName();
+          }
+          //use .tpl file to output an image
+          $html .= theme('fast_gallery_image', array('image' => $image_html));
+        }
+        print $html;
+        exit;
+      }
+
+      // output the json version
+      if ($params['params']['type'] == 'json') {
+        $ar_version = array();
+        foreach ($images as $key => $image) {
+          $ar_version['image_'.$key] = $image->createArrayVersion();
+        }
+        print drupal_json_output($ar_version);
+        exit();
+      }
+      
+      // output the xml version
+      if ($params['params']['type'] = 'xml') {
+        $ar_version = array();
+        foreach ($images as $key => $image) {
+          $ar_version['image_'.$key] = $image->createArrayVersion();
+        }
+        print $fgapi->toXml($ar_version, 'root');
+        exit();
+      }
+      return 'test';
+      break;
+  }
+}
+
+function fast_gallery_api_message($message) {
+  print $message;
+}
+
+function fast_gallery_api_get_api() {
+  include_once('fg.api.php');
+  return FGApi::getInstance();
+}

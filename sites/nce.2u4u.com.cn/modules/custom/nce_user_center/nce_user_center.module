@@ -1,0 +1,115 @@
+<?php 
+
+/*新概念英语大赛用户中心
+ * 
+ */
+
+
+
+   function nce_user_center_block($op='list',$delta=0,$edit =array()){	
+     
+     switch ($op){
+     	case 'list':
+     		$blocks[0]['info'] = t('用户中心');
+     		$blocks[0]['title'] = t('用户中心');
+     		$blocks[0]['cache'] = BLOCK_NO_CACHE;
+     		
+     		return $blocks;
+     		
+     	case 'view' :
+     		switch ($delta){
+     			case 0:
+     				$block['subject']=t("用户中心");
+     				$block['content']= user_center_content();
+     		
+     		}	
+     		return $block;
+     
+     }    
+   } 
+
+ function nce_user_center_menu(){
+ 
+ 	$items['downloadpdf'] =array(
+ 	  'title'=>'下载/打印报名表(PDF)',  	
+ 	  'page callback'=>'redirect_to_downloadpdf',
+ 	  'access callback'=>TRUE,
+ 	);
+ 	
+    return $items;
+ }   
+
+ function redirect_to_downloadpdf(){
+  global $user;
+  $webform_nodeid =1 ;
+  $sql = "select * from {webform_submissions} where nid=%d and uid=%d";
+  $result =  db_query($sql,$webform_nodeid,$user->uid);
+  while ($data = db_fetch_object($result))
+  {
+    $submissionid = $data->sid;
+   }
+  if( isset( $submissionid) ){
+	$tempstring='';
+  	$tempstring.="node/1/submission/$submissionid/downloadpdf";
+     header("Location: $tempstring"); 
+   }
+   else {
+   
+      return t('没有找到您的报名表');
+   }
+   
+ }
+   
+
+ function user_center_content(){
+ //** 报名
+   global $user;
+  $tempstring = '';
+  $tempstring.='<div id="usercenter">';
+  $tempstring.='<div id="welcome">欢迎您，'.$user->name.'</div>';
+  $webform_nodeid =1 ;
+  $sql = "select * from {webform_submissions} where nid=%d and uid=%d";
+  $result =  db_query($sql,$webform_nodeid,$user->uid);
+  while ($data = db_fetch_object($result))
+  {
+    $submissionid = $data->sid;
+   }
+  $tempstring.='<ul>';
+  //$tempstring.='<li>';
+   if( !isset( $submissionid) ){
+      $tempstring.='<li>'.l('我要报名',"matcharea").'</li>';
+   }else
+  {
+     $tempstring.='<li>'.l('我提交的报名',"node/1/submission/$submissionid").'</li>';
+     $tempstring.='<li>'.l('下载/打印报名表(PDF)',"node/1/submission/$submissionid/downloadpdf",array('attributes'=>array('target'=>'_blank'))).'</li>';
+  }
+ //$tempstring.='</li>';
+
+//** 视频
+ $tempstring.='<li>';
+  $nodetype ='nce_video' ;
+  $sql = "select * from {node} where type='%s' and uid=%d";
+ $result =  db_query($sql,$nodetype,$user->uid);
+while ($data = db_fetch_object($result))
+{
+   $nid = $data->nid;
+}
+   if( is_null( $nid ) ){
+     $tempstring.=l('上传视频',"node/add/nce-video");
+   }else
+  {
+      $tempstring.=l('我提交的视频',"node/$nid");
+  }
+ $tempstring.='</li>';
+
+ $tempstring.='<li>';
+//** 登出
+if($user->uid>0){
+    $tempstring.=l('登出','logout');
+}
+ $tempstring.='</li>';
+ $tempstring.='</ul>';
+ $tempstring.='</div>';
+ 
+ return $tempstring;
+ }

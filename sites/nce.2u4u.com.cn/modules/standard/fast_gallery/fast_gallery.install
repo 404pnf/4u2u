@@ -1,0 +1,133 @@
+<?php
+// $Id$ 
+
+/**
+ * @file
+ * Setting up and tearing down the gallery
+ */
+
+/**
+ * implementation of hook_uninstall
+ */
+function fast_gallery_uninstall() {
+  variable_del('fast_gallery_cron');
+  variable_del('fast_gallery_ic_full');
+  variable_del('fast_gallery_ic_thumb');
+  variable_del('fast_gallery_runid');
+  variable_del('fg_folder_cache');
+  variable_del('fg_folder_first');
+  variable_del('fg_galleries');
+  variable_del('fg_iptc_settings');
+  variable_del('fg_pager_amount');
+  variable_del('fg_sort_order');
+  variable_del('fast_gallery_js_framework');
+  variable_del('fg_iptc_settings_title');
+  variable_del('fg_iptc_settings');
+  
+  drupal_uninstall_schema('fast_gallery');
+}
+
+/**
+ * implementation of hook_install
+ */
+function fast_gallery_install() {
+  $engine = array(
+        'key' => 'default',
+        'name' => 'Default',
+        'file' => 'default.storage.inc',
+        'path' => drupal_get_path('module', 'fast_gallery') .'/storageengine',
+        'config' => 'admin/settings/fast_gallery/default',
+        'config_callback' => 'fast_gallery_default_config',
+        'config_file' => 'default.config.inc',
+        'supported_files' => array('jpg', 'jpeg', 'png', 'gif', 'bmp', 'pdf'),
+       );
+  variable_set('fg_storage_engine', $engine); //save the storageengine
+
+  drupal_install_schema('fast_gallery');
+}
+
+/**
+ * implementation of hook_schema
+ * @return array
+ */
+function fast_gallery_schema() {
+  $schema['cache_fast_gallery'] = drupal_get_schema_unprocessed('system', 'cache');
+  $schema['cache_fast_gallery']['description'] = 'Cache for Fast Gallery Pages';
+  
+  $schema['fast_gallery_hierarchy'] = array(
+    'description' => 'store the hierarchy of folders',
+    'fields' => array(
+      'foid' => array(
+        'description' => 'Primary identifier for folders',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'folder' => array(
+        'description' => 'Folder URI',
+        'type' => 'text',
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'pid' => array(
+        'description' => 'Parent folder',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'primary key' => array('foid'),
+  );
+  
+  $schema['fast_gallery_file'] = array(
+    'description' => 'Store the path to the files',
+    'fields' => array(
+      /*'fid' => array(
+        'type' => 'serial',
+        'description' => 'Primary identifier for files',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),*/
+      'foid' => array(
+        'description' => 'Referencing the folder',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'filename' => array(
+        'description' => 'The actual filename',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'runid' => array(
+        'description' => 'Each time the update scriped is run we give an id -> easy to delete old entries',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'filecreated' => array(
+        'description' => 'Timestamp of creation of file',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      )
+    ),
+    'primary key' => array('foid', 'filename'),
+    'foreign keys' => array(
+      'foid' => array('fast_gallery_hierarchy' => 'foid'),
+    ),
+  );
+  
+  return $schema;
+}
+
+function fast_gallery_update_6001() {
+  $ret = array();
+  db_change_field($ret, 'fast_gallery_hierarchy', 'folder', 'folder', array('description' => 'Folder URI', 'type' => 'text', 'not null' => TRUE, 'default' => ''), $keys_new);
+  return $ret;
+}

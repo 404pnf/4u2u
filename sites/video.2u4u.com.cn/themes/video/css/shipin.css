@@ -24,13 +24,26 @@ display:inline;
 width:350px;
 clear:none;
 }
-.view-whx-shipin .view-display-id-attachment_2 {
+/*.view-whx-shipin .view-display-id-attachment_2 {
 float:left;
 display:inline; 
 width:340px;
 clear:none;
 margin-left:30px;
+} */
+
+.view-whx-shipin .view-display-id-attachment_8{
+  float:left;
+  display:inline;
+  width:340px;
+  clear:none;
+  margin-left:30px;
 }
+
+
+
+
+
 .view-whx-shipin .view-display-id-attachment_1  .views-field-title,.view-whx-shipin .view-display-id-attachment_2 .view-header p{
 font-weight:bold;
 font-size:1.2em;
@@ -365,6 +378,7 @@ margin:18px 0 0 10px;
 	overflow:hidden;
 	line-height:20px;
 	margin-top:5px;
+	width: 110px;
 }
 .imagecache-xinpianreyi{
 	width:68px;
@@ -446,8 +460,17 @@ clear:both;
 	white-space:nowrap; 
 	text-overflow:ellipsis; 
 	overflow:hidden;
-	width:100px;
+	width:110px;
 }
+/*右边栏中新片热译的上映日期调整*/
+#block-views-whx_shipin-block_8 .views-field-field-shipin-fubiaoti-value label{
+    display:block;
+}
+#block-views-whx_shipin-block_8 .views-field-field-shipin-fubiaoti-value .field-content{
+    display:block;
+    white-space: nowrap; 
+}
+
 .view-display-id-page_3 .views-field-title .field-content a, .view-display-id-page_2 .views-field-title .field-content a, .view-display-id-page_4 .views-field-title .field-content a, .section-mtag .view-media-taxonomy-term .views-field-title .field-content a, .section-mtag .view-taxonomy-term .views-field-title .field-content a, .section-taxonomy .view-taxonomy-term .views-field-title .field-content a{
 	font-size:16px;
 	font-weight:bold;
@@ -955,3 +978,4 @@ display:none;
 	padding-top:15px;
 }
 /* end 视频分类 */
+

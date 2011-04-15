@@ -1,0 +1,4 @@
+; $Id$
+name = 批量删除订单
+description = 快速批量删除订单
+core = 6.x

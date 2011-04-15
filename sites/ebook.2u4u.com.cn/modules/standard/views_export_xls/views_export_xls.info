@@ -1,0 +1,14 @@
+; $Id: views_export_xls.info,v 1.1.2.1 2009/11/04 17:22:39 jkarsum Exp $
+name = Views Export xls
+description = "Plugin to export views to XLS"
+dependencies[] = views 
+package = Views
+core = 6.x
+
+ 
+; Information added by drupal.org packaging script on 2009-11-04
+version = "6.x-1.1-beta1"
+core = "6.x"
+project = "views_export_xls"
+datestamp = "1257355999"
+

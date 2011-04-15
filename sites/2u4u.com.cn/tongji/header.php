@@ -1,4 +1,5 @@
 <link href='table.css' rel='stylesheet' type='text/css' >
+<a href="http://2u4u.com.cn/sites/2u4u.com.cn/tongji/index.html"> << 返回统计首页</a>
 <form action='' method='post'>
 请选择时间段:
 <select name='time'>

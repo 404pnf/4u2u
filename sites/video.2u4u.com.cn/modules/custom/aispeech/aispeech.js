@@ -6,15 +6,42 @@
         window.recorder1 = new aispeech.AiRecorder({
             id: "aiRecorder",
             serverList: serverList,
-						// showFlash: false,
-						height:200,
-            appKey: "1300675449010",
-            secretKey: "50b87599fcc2bd7bd27cb2799759eba59c56aaf8"
+						showFlash: true,
+						height:183,
+            appKey: "1298426941825",
+            secretKey: "595fd7706b9a96bd892a0c88a2e772b0d0565316",
+						onMicStatusChange: function(code, message){
+				    //alert(code);
+					  if(code == '50001'){
+					     recorder1.transparentFlash();
+							 recorder1.hideVolumeBar(); 
+							 $('#aiRecorder').css('height',1).css('width',1);
+					  }
+          //recorder1AiDebug.info("JS: onMicStatusChange callback. code=" + code + ", message=" + JSON.stringify(message));
+            }
         });
-				alert('开始录音！');
-				startRecord();
+				//alert('开始录音！');
+				//startRecord();
     }
-    
+		
+    function initPlayer(){
+			window.player1 = new aispeech.AiPlayer({
+				id: "aiPlayer1",
+				appKey: "1298426941825",
+				secretKey: "595fd7706b9a96bd892a0c88a2e772b0d0565316",
+				width: 1,
+				height: 1,
+				wmode:"Window",
+				onFlashLoad: function(code, message){
+						//player1AiDebug.info("JS: onFlashLoad callback, code=" + code + ", message=" + JSON.stringify(message));
+				},
+				onError: function(code, message){
+					 // player1AiDebug.info("JS: onError callback, code=" + code + ", message=" + JSON.stringify(message));
+				}
+			});
+				
+    }
+		
     function showChars(){
 		    //var word = $("#spell-wrapper").html();
         var html = '';
@@ -24,8 +51,8 @@
     }
     
     function showScore(r){
-        var html = '';
-        html += $("#charsContainer").html();
+        //var html = '';
+       // html += $("#charsContainer").html();
 				//alert(r.overall+ '123');
 				if(r.overall == 'A'){
 
@@ -44,34 +71,25 @@
 					}
 					$("#aispeech-result2").css('display','block');
 				}
-        html += "&nbsp;score: <b>" + r.overall + "</b>";
+        //html += "&nbsp;score: <b>" + r.overall + "</b>";
 				
-				$("#aispeech-center").css('display','none');
-				$("#aispeech-result").css('display','block');
+
 				if(r.overall =='A'){
 				  $("#aispeech-result-A").css('display','block');
-					$("#aispeech-result-B").css('display','none');
-					$("#aispeech-result-C").css('display','none');
-					$("#aispeech-result-D").css('display','none');
+
 				}else if(r.overall =='B'){
-				  $("#aispeech-result-A").css('display','none');
+
 					$("#aispeech-result-B").css('display','block');
-					$("#aispeech-result-C").css('display','none');
-					$("#aispeech-result-D").css('display','none');
+
 				}else if(r.overall =='C'){
-				   $("#aispeech-result-A").css('display','none');
-					$("#aispeech-result-B").css('display','none');
+
 					$("#aispeech-result-C").css('display','block');
-					$("#aispeech-result-D").css('display','none');
+
 				}else if(r.overall =='D'){
-				   $("#aispeech-result-A").css('display','none');
-					$("#aispeech-result-B").css('display','none');
-					$("#aispeech-result-C").css('display','none');
+
 					$("#aispeech-result-D").css('display','block');
 				}else{
-				  $("#aispeech-result-A").css('display','none');
-					$("#aispeech-result-B").css('display','none');
-					$("#aispeech-result-C").css('display','none');
+
 					$("#aispeech-result-D").css('display','block');
 				}
         //$("#charsContainer").html(html);
@@ -83,13 +101,13 @@
     function startRecord(){
     
         
-        //alert('showChars();');
+        //alert('startRecord');
         var refText = $("#aispeech-word").html();
         aispeech.SpeechResource.setScoreType("4");
         aispeech.SpeechResource.setCoreType("enword");
         aispeech.SpeechResource.setRefText(refText);
         recorder1.record({
-            duration: 3000,
+            duration: 3000 + 200 * refText.lenght,
             playNotifyAudio: true,
             serverParams: aispeech.SpeechResource.get(),
             onRecordIdGenerated: function(code, message){
@@ -106,7 +124,7 @@
     }
     
     function stopRecord(){
-		    alert('recorder1 stop');
+		    //alert('recorder1 stop');
         recorder1.stop();
     }
     
@@ -129,12 +147,20 @@
                             }
                             //window.R = r;
                             showScore(r);
-                        }
+                        }else{
+
+					                $("#aispeech-result-D").css('display','block');
+												}
                     } catch (e) {
+
+					            $("#aispeech-result-D").css('display','block');
                     }
                 }
             });
-        }
+        }else{
+
+					$("#aispeech-result-D").css('display','block');
+				}
     }
 		
 		function loadplayer(url){
@@ -146,7 +172,7 @@
 						//player1AiDebug.info("JS: player1.load-success callback, code=" + code + ", message=" + JSON.stringify(message));
 						//alert("JS: player1.load-success callback, code=" + code + ", message=" + JSON.stringify(message));
 				//}
-				success: playplayer,
+				success: playplayer
 			});
 			//alert('');
 			
@@ -193,21 +219,76 @@
 			$('#aispeech-table-step-3').css('display','none');
 			$('#aispeech-table-step-4').css('display','block');
 		}
-
+		
+		function autotestit(){
+		  $("#aispeech-center").css('display','none');
+		  $("#aispeech-result").css('display','block');
+		  $("#aispeech-result-A").css('display','none');
+		  $("#aispeech-result-B").css('display','none');
+		  $("#aispeech-result-C").css('display','none');
+		  $("#aispeech-result-D").css('display','none');
+			$('#defaultCountdown').removeClass('hasCountdown');
+			//$(this).removeClass("one");
+		  stopRecord();
+		  getScore();
+			showstep4button();
+		}
 if (Drupal.jsEnabled) {
 
  $(document).ready(function () { 
-	
+	window.recorder1 = undefined;
+	window.player1 = undefined;
 	showstep1button();
+	//initPlayer();
+	//initRecorder();
+	
+	$('.aispeech-tdbutton').mouseover(function(){	
+	    //alert('123456');
+      $(this).css("background-image","url(http://video.2u4u.com.cn/sites/video.2u4u.com.cn/modules/custom/aispeech/images/test3_light.jpg)");
+			//alert($(this).css('background-image'));
+	});
+	$('.aispeech-tdbutton').mouseout(function(){	
+	    //alert('123456');
+      $(this).css("background-image","url(http://video.2u4u.com.cn/sites/video.2u4u.com.cn/modules/custom/aispeech/images/test3.jpg)");
+			//alert($(this).css('background-image'));
+	});
+	  $('.aispeech-tdbutton2').mouseover(function(){	
+	    //alert('123456');
+      $(this).css("background-image","url(http://video.2u4u.com.cn/sites/video.2u4u.com.cn/modules/custom/aispeech/images/test5_light.jpg)");
+			//alert($(this).css('background-image'));
+	});
+	$('.aispeech-tdbutton2').mouseout(function(){	
+	    //alert('123456');
+      $(this).css("background-image","url(http://video.2u4u.com.cn/sites/video.2u4u.com.cn/modules/custom/aispeech/images/test5.jpg)");
+			//alert($(this).css('background-image'));
+	});
   
 	$('#followit').click(function(){	
-    initRecorder();	
-		
+    
+		startRecord();
 		showstep3button();
+		var refText = $("#aispeech-word").html();
+		$('#defaultCountdown').countdown({
+		  until: '+'+ Math.ceil(3+0.2*refText.length)+'s',
+			format: 'YOWDHMS',
+			significant: 1,
+			layout: '{d<}{dn} {dl} {d>}{h<}{hn} {hl} {h>}{m<}{mn} {ml} {m>}{s<}{sn} {sl}{s>}',
+			onExpiry: autotestit
+		}); 
 	});
 	$('#testit').click(function(){		
+		$("#aispeech-center").css('display','none');
+		$("#aispeech-result").css('display','block');
+		$("#aispeech-result-A").css('display','none');
+		$("#aispeech-result-B").css('display','none');
+		$("#aispeech-result-C").css('display','none');
+		$("#aispeech-result-D").css('display','none');
+		stopRecord();
 		getScore();
-		$('#aiRecorder-wrapper').html('<div id="aiRecorder"> </div>');
+		//$('#aiRecorder-wrapper').html('<div id="aiRecorder"> </div>');
+		//if($("#aispeech-result-A").css('display') == 'none' && $("#aispeech-result-B").css('display') == 'none' && $("#aispeech-result-C").css('display') == 'none'  && $("#aispeech-result-D").css('display') == 'none' ){
+		//  $("#aispeech-result-D").css('display','block');
+		//}
 		showstep4button();
 	});
 	
@@ -219,7 +300,7 @@ if (Drupal.jsEnabled) {
 		  $('#aispeech-word').html(data.word.spell);
 			$('#aispeech-explain').html(data.word.explaination);
 			//$('#chinese-wrapper').html(data.word.chinese);
-			$('#aiRecorder-wrapper').html('<div id="aiRecorder"> </div>');
+			//$('#aiRecorder-wrapper').html('<div id="aiRecorder"> </div>');
 			showChars();
 			showstep1button();
 		}
@@ -251,7 +332,7 @@ if (Drupal.jsEnabled) {
 		  $('#aispeech-word').html(data.word.spell);
 			$('#aispeech-explain').html(data.word.explaination);
 			//$('#chinese-wrapper').html(data.word.chinese);
-			$('#aiRecorder-wrapper').html('<div id="aiRecorder"> </div>');
+			//$('#aiRecorder-wrapper').html('<div id="aiRecorder"> </div>');
 			//showChars();
 			showstep1button();
 		}
@@ -269,21 +350,7 @@ if (Drupal.jsEnabled) {
 	});
 	$('#readit').click(function(){
 		//alert('read it');
-		
-		window.player1 = new aispeech.AiPlayer({
-			id: "aiPlayer1",
-			appKey: "1298426941825",
-			secretKey: "595fd7706b9a96bd892a0c88a2e772b0d0565316",
-			width: 10,
-			height: 10,
-			wmode:"Window",
-			onFlashLoad: function(code, message){
-					//player1AiDebug.info("JS: onFlashLoad callback, code=" + code + ", message=" + JSON.stringify(message));
-			},
-			onError: function(code, message){
-				 // player1AiDebug.info("JS: onError callback, code=" + code + ", message=" + JSON.stringify(message));
-			}
-	  });
+
 		
 		var getsessionkey = function(data){
 		  //alert(data.error);
@@ -311,8 +378,22 @@ if (Drupal.jsEnabled) {
 			
 			
 		}
+		//initRecorder();	
+		if(recorder1 === undefined){
+		 // alert('init');
+		   initRecorder();	
+			
+		}else{
+		  //alert("已经存在");
+		}
 		
-		
+		if(player1 === undefined){
+		 // alert('init');
+		   initPlayer();	
+			
+		}else{
+		  //alert("已经存在");
+		}
 		
 		
 		
@@ -324,6 +405,7 @@ if (Drupal.jsEnabled) {
 			data: 'js=1'
 		});
 		
+		return false;
 		
 	
 	});

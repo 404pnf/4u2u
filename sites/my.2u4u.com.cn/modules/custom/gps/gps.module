@@ -1,0 +1,120 @@
+<?php
+
+
+function gps_menu()
+{
+   $items['admin/settings/gps']=array(
+     'title' => 'GPS connection setting',
+     'description' =>'Please specify the domain name of the gps machine, which will be used to validate the soure of rpc request. Also set the url prefix',
+     'page callback' => 'drupal_get_form',
+     'page arguments' => array('gps_setting_form'),
+     'access callback' => true,
+
+   );
+   
+   // Test link
+   $items['gps/test']=array(
+     'title' => 'GPS xml-rpc test',
+     'page callback' => 'gps_test',
+     'access callback' => true,
+     'type' => MENU_CALLBACK,
+   );
+   
+   $items['gps/link']=array(
+     'title' => 'Go to GPS',
+     'page callback' => 'gps_url',
+     'access callback' => true,
+     'type' => MENU_CALLBACK,
+   );
+   return $items;
+
+}
+
+function gps_setting_form()
+{
+  drupal_set_message('Please specify the domain name of the gps machine, which will be used to validate the soure of rpc request. Also, set the entrance url prefix of the gps system.');
+  $form = array();
+  $form ['gps_domain'] = array(
+    '#title' => 'GPS Domain Name',
+    '#type' => 'textfield',
+    '#default_value' => variable_get('gps_domain',''),
+    '#description' => 'eg. gps.2u4u.cn',
+  );
+  $form ['gps_prefix']= array(
+    '#title' => 'GPS url prefix',
+    '#type' => 'textfield', 
+    '#default_value' => variable_get('gps_prefix',''),
+    '#description' => 'eg. http://gps.2u4u.cn/gps.php (goto http://2u4u.cn/gps/link, the user will be redirected to http://gps.2u4u.cn/gps.php?uname=username&session=234j23lk23ji)',
+  );
+  $form ['submit'] = array(
+    '#type' => 'submit',
+    '#value'=> 'Submit',
+  );
+  return $form;
+}
+
+
+function gps_setting_form_submit($form, &$form_state)
+{
+  $form_values = $form_state['values'];
+  variable_set('gps_domain',$form_values['gps_domain']);
+  variable_set('gps_prefix',$form_values['gps_prefix']);
+  
+
+}
+function gps_url()
+{
+   global $user;
+   $sql = "SELECT sid FROM {sessions} where uid = %d";
+   $sid = db_result(db_query($sql,$user->uid));
+   // url中的用户名需要encode，因为用户名可以是中文你的，有些浏览器会发生错误
+   $url = variable_get('gps_prefix','')."?uname=".urlencode($user->name).'&session='.$sid;
+
+   
+	$brow = browinfo();
+	if($brow == "Internet Explorer 6.0"){
+		echo   "<SCRIPT   LANGUAGE='javascript'>";  
+		echo   "window.open('$url')";    
+		echo   "</SCRIPT></head></html>";   
+	}else 
+	{
+		drupal_goto($url);
+	}
+   
+}
+
+function gps_xmlrpc()
+{
+   return array('validateUser'=>'gps_validate_user','setGpsGrade'=>'gps_set_grade');
+}
+
+function gps_validate_user($uname,$session)
+{
+
+   $user = user_load(array('name'=>$uname)); 
+   $sql = "SELECT * FROM {sessions} where uid = %d and sid = '%s'";
+   $data = db_result(db_query($sql,$user->uid,$session));
+   if($data)
+   {
+      return true;
+   }else
+      return $session;
+
+}
+
+function gps_set_grade($uname,$cat,$grade)
+{
+   $user = user_load(array('name'=>$uname));
+	$pfield='profile_gps_'.$cat;
+	user_save($user,array($pfield=>$grade));   
+return $uname;
+}
+
+function gps_test($uname){
+	global $user;
+//	print_r($user);
+    $result=xmlrpc('http://2u4u.com.cn/xmlrpc.php', 'vgame_get_cat','guanliyuan');
+	print_r($result);
+
+}
+

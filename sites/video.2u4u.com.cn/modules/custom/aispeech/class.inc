@@ -195,7 +195,7 @@ function get_result($word,$arr,$type,$ip){
 		 *   为法语单词找到原形
 		 */
 		
-	    $url = "http://129.0.0.6:8180/dictweb/".$word.".html?s=style.css&l=zh_CN&ip=".$ip."&".$str;
+	    $url = "http://124.193.83.241:8180/dictweb/".$word.".html?s=style.css&l=zh_CN&ip=".$ip."&".$str;
 //echo $url;
 
 		   
@@ -226,7 +226,7 @@ function get_result($word,$arr,$type,$ip){
 			
     //	$url = " http://192.168.16.101:8080/dictweb/".$word.".html?s=style.css&t=sameas&".$str;  //该单词相近的单词
 	
-		$url = "http://129.0.0.6:8180/dictweb/".$word.".html?s=style.css&t=sameas&l=zh_CN&ip=".$ip."&".$str;  //该单词相近的单词
+		$url = "http://124.193.83.241:8180/dictweb/".$word.".html?s=style.css&t=sameas&l=zh_CN&ip=".$ip."&".$str;  //该单词相近的单词
 	// $this->msg = file_get_contents($url);
 	 
 

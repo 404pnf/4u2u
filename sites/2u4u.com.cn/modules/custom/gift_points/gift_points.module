@@ -157,20 +157,26 @@ function gift_points_topup_form()
         '#type' => 'submit',
         '#value' => t('Submit'),
    );
-
+/*
 //占位给css用
   $form ['tips-tishi'] = array(
 '#value' => '<div id=tishi_title_img>tishi</div>',
 '#type' => 'item',
    );
 //占位结束 
-
+*/
    $path=drupal_get_path('module', 'gift_points');
 	$path=$path.'/caution.txt';
 	
 	$fh = fopen($path, "rb");
 	$data = fread($fh, filesize($path));
 	fclose($fh);
+	$form ['caution'] = array(
+	'#value' => $data,
+	'#type' => 'item',
+	'#title'=>'提示',
+   );
+	/*
    $form['caution']=array(
 	'#title'=>'提示',
    	'#type'=>'textarea',
@@ -178,6 +184,8 @@ function gift_points_topup_form()
    	'#rows' => 11,
    	'#value'=> $data,   
    );
+   
+   */
    return $form;
 
 }

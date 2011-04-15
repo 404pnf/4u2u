@@ -71,7 +71,18 @@
           <?php endif; ?>
 
           <div id="content-area">
+          <div id="front-zqy">
             <?php //print $content; ?>
+
+
+		<div class="news_list">
+			<?php 
+			   $video= module_invoke('block','block','view',18); 
+			   PRINT($video['content']); 
+			?>
+		</div>
+
+
 		   <div class="news_title">新闻动态</div>
 			<div class="news_list">
 			<?php 
@@ -81,7 +92,7 @@
 			   print views_embed_view($views_name, $display_id,$view_args); 
 			?>
 			</div>
-			<div class="news_more"><a href="news/1">更多</a></div>
+			<div class="news-more"><a href="news/1">更多</a></div>
 		<!-- 	
 	   <div class="news_title">各地分赛区
             </div>
@@ -95,7 +106,7 @@
 			</div>
 
 		--->
-	   <div class="news_title">选手参考</div>
+	 
 	   <div class="news_title_sub">专家评委指导</div>
 		<div class="news_list">
 		<?php 
@@ -115,10 +126,37 @@
 		</div>
 	 <div class="news-more"><a href="http://www.ncehome.com/dasai/news.asp?qtype=1&keywords=92:226" target="_blank">更多</a></div>
 
+        
+        <div id="review-videos">
+		   <div class="news_title">往届选手视频</div>
+			<div class="news_list">
+			<?php 
+			   $views_name = 'nce_shipin';
+			   $display_id = 'block_2';			
+			   print views_embed_view($views_name, $display_id); 
+			?>
+			</div>
+			<div class="news-more"><a href="shipin">更多</a></div>
+	</div>
+
+        <div id="review-photos">
+		   <div class="news_title">往届选手照片</div>
+			<div class="news_list">
+			<?php 
+			   $views_name = 'pic_news';
+			   $display_id = 'block_1';			
+			   print views_embed_view($views_name, $display_id); 
+			?>
+			</div>
+			
+	</div>
+
+
 			<!-- 中栏内容--->
 		
-          </div> <!-- /#content-area -->
 
+          </div> <!-- /#front-zqy -->
+          </div> <!-- /#content-area -->
           <?php// print $feed_icons; ?>
 
           <?php if ($content_bottom): ?>

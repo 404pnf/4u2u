@@ -1,0 +1,109 @@
+*{
+	padding:0px;
+	list-style-type:none;
+	margin:0px auto;
+	font-size: 12px;
+	font-weight: normal;
+	color: #4b4b4a;
+}
+
+img{border:0px;}
+
+ul{list-style-type:none}
+
+.ff1-czbz1 {background-image:url("images/image_23.gif");margin-left:8px;}
+
+#sidebar-first .block-subject{width:220px;height:32px;background-image:url("images/nav_bg.gif")}
+
+#sidebar-first .block-subject h3{line-height:32px;font-size:14px; margin-left:30px;}
+
+#block-my2u4u-0 .user_points{background:url("images/icon02.gif") no-repeat 0px 14px;padding-top:10px;text-indent:2em;}
+
+#block-my2u4u-0 .discuz_money{background:url("images/icon03.gif") no-repeat 0px 7px;padding-top:5px;text-indent:2em;}
+
+#block-my2u4u-0 .chongzhi{background:url("images/icon05.gif") no-repeat 0px 7px;padding-top:5px;text-indent:2em;}
+
+#block-my2u4u-0 .buy_points{background:url("images/icon06.gif") no-repeat 0px 7px;padding-top:5px;text-indent:2em;}
+
+#block-my2u4u-0 .discuz_exchange{background:url("images/icon07.gif") no-repeat 0px 7px;padding-top:5px;text-indent:2em;}
+
+#block-my2u4u-0 .mypoints{background:url("images/icon24.gif") no-repeat 0px 7px;padding-top:5px;text-indent:2em;}
+
+#block-my2u4u-0 .user_invites{background:url("images/icon08.gif") no-repeat 0px 7px;padding-top:5px;text-indent:2em;}
+
+#block-my2u4u-1 .boughtbooks{background:url("images/icon10.gif") no-repeat 0px 16px;padding-top:10px;text-indent:2em;}
+
+#block-my2u4u-1 .readbooks{background:url("images/icon11.gif") no-repeat 0px 11px;padding-top:5px;text-indent:2em;}
+
+#block-my2u4u-1 .favoritebooks{background:url("images/icon12.gif") no-repeat 0px 9px;padding-top:5px;text-indent:2em;}
+
+#block-my2u4u-1 .recommendbooks{background:url("images/icon13.gif") no-repeat 0px 9px;padding-top:5px;text-indent:2em;}
+
+#block-my2u4u-2 .boughtvideos{background:url("images/icon14.gif") no-repeat 0px 14px;padding-top:10px;text-indent:2em;}
+
+#block-my2u4u-2 .readvideos{background:url("images/icon15.gif") no-repeat 0px 7px;padding-top:5px;text-indent:2em;}
+
+#block-my2u4u-2 .favoritevideos{background:url("images/icon16.gif") no-repeat 0px 10px;padding-top:5px;text-indent:2em;}
+
+#block-my2u4u-2 .recommendvideos{background:url("images/icon17.gif") no-repeat 0px 9px;padding-top:5px;text-indent:2em;}
+
+#block-my2u4u-3 .donequizs{background:url("images/icon18.gif") no-repeat 0px 9px;padding-top:5px;text-indent:2em;}
+
+#block-my2u4u-3 .recommendquizs{background:url("images/icon19.gif") no-repeat 0px 9px;padding-top:5px;text-indent:2em;}
+
+#block-my2u4u-4 .questions{background:url("images/icon20.gif") no-repeat 0px 16px;padding-top:10px;text-indent:2em;}
+
+#block-my2u4u-4 .answers{background:url("images/icon21.gif") no-repeat 0px 9px;padding-top:5px;text-indent:2em;}
+
+#block-my2u4u-5 .unfinishedorders{background:url("images/icon22.gif") no-repeat 0px 14px;padding-top:10px;text-indent:2em;}
+
+#block-my2u4u-5 .orders{background:url("images/icon23.gif") no-repeat 0px 9px;padding-top:5px;text-indent:2em;}
+
+#content-area p,#content-area form{text-align:left;margin-left:10px;margin-bottom:20px;}
+
+#content-area .item-list{width:800px;height:190px;}
+
+#content-area .item-list h3{float:left;}
+
+#content-area .item-list ul{float:left;width:550px; margin-left:10px;}
+
+#block-my2u4u-0 .my_content li a:active,
+#block-my2u4u-1 .my_content li a:active,
+#block-my2u4u-2 .my_content li a:active,
+#block-my2u4u-3 .my_content li a:active,
+#block-my2u4u-4 .my_content li a:active,
+#block-my2u4u-5 .my_content li a:active{color:#a6017d;}
+
+#content-inner {float:left;width:690px;border:1px #cfcfcf solid;}
+
+table {margin-top:20px;width:90%;}
+
+#content-area .views-table tr th{font-size:14px;line-height:40px;background:#f3f1f2; padding-left:5px;}
+
+.title_bg .title{height:34px;background:url("images/video_titleall.jpg") repeat-x bottom;font-size:14px;line-height:30px;padding-left:10px;color:#92281a;}
+
+.title_bg  h1{padding:0px;border:0px;}
+
+#node-1 .ff1-js,
+#node-1 .ff1-czbz,
+#node-2,
+#my-points-total-points,
+#content-area,
+#content-area .views-field a{margin-left:7px;}
+
+#node-1 .ff1-czbz-arrow,#node-2 .ff1-czbz-arrow{width:35px;}
+
+td.active {background-color:#ffffff;text-align:left;}
+
+#content-area .views-table{margin-bottom:20px;}
+
+#sidebar-first li a.active {
+	color:red;
+}
+
+
+#content-inner{float:right;margin-right:30px;}
+
+.sidebar-left .center {margin-left:0;}
+
+

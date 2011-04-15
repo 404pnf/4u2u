@@ -1,0 +1,185 @@
+
+/* float menu link to vertical align */
+body{
+	background-color:#FFF;
+	line-height:25px;
+	}
+.front body {
+     background-color:#fff;
+}
+#primary .links clearfix main-menu{ margin:0 auto;}
+#primary li {
+	list-style:none;
+	float:left;
+	margin-right:2em;
+	font-size:16px;
+	font-weight:bold;
+	}
+
+.page-shumu .form-item-fenlei-op {
+	display:none;
+	}
+
+.page-shumu h3 {
+	font-size:1em;
+	}
+
+/* sometimes the title is too long so the bookcover doesn't align
+ use this to adjust */ 
+.page-shumu td {
+ vertical-align: top;}
+
+#navigation {
+         background-image: url("fp_images/duhougan_06.jpg"); 
+         line-height: 41px;
+         text-align: center;
+		 height:41px;
+		 margin:0px auto;
+	
+}
+
+#header{
+      height:223px;
+	  vertical-align:top;
+	  margin:0px;
+}
+
+#login_top .login_ic{
+width:260px;
+height:35px;
+line-height:35px;
+border:1px solid  #d5d5d5;  
+font-size:16px;
+text-align:center;
+font-weight:bold;
+background-image: url("fp_images/duhougan_44.jpg");
+
+}
+
+#faq_bottom .faq_ic{
+width:260px;
+height:35px;
+line-height:35px;
+border:1px solid  #d5d5d5;  
+font-size:16px;
+text-align:center;
+font-weight:bold;
+background-image: url("fp_images/duhougan_44.jpg");
+}
+
+#youxiu .youxiu_ic{
+width:412px;
+height:35px;
+line-height:35px;
+border:1px solid  #d5d5d5;  
+font-size:16px;
+text-align:center;
+font-weight:bold;
+background-image: url("fp_images/duhougan_44.jpg");
+}
+
+#cansaitushu .tushu_kuang{
+width:412px;
+height:35px;
+line-height:35px;
+border:1px solid  #d5d5d5;  
+font-size:16px;
+text-align:center;
+font-weight:bold;
+background-image: url("fp_images/duhougan_44.jpg");
+}
+
+#xinwen .xinwen_ic{
+width:260px;
+height:35px;
+line-height:35px;
+border:1px solid  #d5d5d5;  
+font-size:16px;
+text-align:center;
+font-weight:bold;
+background-image: url("fp_images/duhougan_44.jpg");}
+
+
+#tuijian .tuijian_ic{
+width:260px;
+height:35px;
+line-height:35px;
+border:1px solid  #d5d5d5;  
+font-size:16px;
+text-align:center;
+font-weight:bold;
+background-image: url("fp_images/duhougan_44.jpg");}
+
+
+#luntan .luntan_ic{
+width:260px;
+height:35px;
+line-height:35px;
+border:1px solid  #d5d5d5;  
+font-size:16px;
+text-align:center;
+font-weight:bold;
+background-image: url("fp_images/duhougan_44.jpg");}
+
+#zhuanjia .zhuanjia_ic{
+width:260px;
+height:35px;
+line-height:35px;
+border:1px solid  #d5d5d5;  
+font-size:16px;
+text-align:center;
+font-weight:bold;
+background-image: url("fp_images/duhougan_44.jpg");}
+
+
+#youhuannv{
+width:260px;
+margin:0auto;  
+padding:15px ;}
+
+#cansai{
+width:260px;
+padding:5px 0px;
+text-align:left;
+line-height:25px;
+font-size:12px;
+
+}
+	
+.font01{ 
+color:#C00;
+font-size:12px;
+line-height:25px;}
+
+#xuanshu{
+width:417px;
+}
+#gezu{
+width:201px;
+border:1px solid  #d5d5d5;  
+
+}
+#gezuming{
+height:35px;
+line-height:35px;
+font-size:16px;
+text-align:center;
+font-weight:bold;
+	}
+#tuijian{
+	width:260px;
+	padding:10px 0px;
+	font-size:12px;}
+.td01{ background-color:#f5f5f5;
+font-size:12px;
+padding:5px;
+line-height:20px;}
+
+.td02{
+	background-image: url("fp_images/duhougan_45.jpg");
+	height:1px;}
+
+.td03{ background-color:#fff;
+font-size:12px;
+padding:5px;
+line-height:20px;}

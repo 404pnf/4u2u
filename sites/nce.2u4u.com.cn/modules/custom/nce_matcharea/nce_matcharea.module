@@ -1,0 +1,63 @@
+<?php 
+
+/*新概念英语大赛赛区选择模块
+ * 
+ */
+
+
+
+   function nce_matcharea_menu(){	
+     
+      $items['matcharea'] =array( 
+        'title' => '新概念大赛赛区选择',
+      	'page callback' => 'matcharea',
+      	'access callback' =>TRUE,   
+            );
+
+      return $items;      
+   } 
+
+
+   function matcharea(){
+   	$tempstring='';
+   	$tempstring.="<div id='matcharea'>";
+    $tempstring.="<div id='matcharea-prompt'>请先选择您所在的分赛区：</div>";
+	$vid=3;
+	$taxonomy_tree = taxonomy_get_tree($vid);
+    $tempstring.="<ul>";
+	
+    foreach( $taxonomy_tree as $taxonomy ){
+	  $name = $taxonomy->name;
+  	  $depth = $taxonomy->depth;
+  
+      if($depth==0){
+        $province = $name;
+        if(strpos($province, '0')<=0){
+          $tempstring.="<li class='matcharea-province'>";
+          $tempstring.=$province;
+          $tempstring.="</li>";
+  	      $citycount=0;
+        }  
+      }
+     else{
+        $city = $name;
+        $url ="apply";
+        if(strpos($city, '0')<=0){
+          $tempstring.="<li class='matcharea-city'>";
+     	  //print( $citycount);
+          $tempstring.=l($city,$url,array('html' => true, 'query' => array('province'=>$province,'city'=>$city)));
+          $tempstring.="</li>";
+        }
+       }
+
+    }
+        $tempstring.="</ul>"; 
+
+
+  $tempstring.="<div id='matcharea-tips'>";
+  $tempstring.="注：如果您所在城市未在所列的分赛区范围内，请不要着急选择其他分赛区进行报名。我们会逐步开通其他分赛区的报名。";
+  $tempstring.="</div>";
+  $tempstring.="</div>";
+  
+  return $tempstring;
+   }

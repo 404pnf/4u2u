@@ -1,0 +1,45 @@
+// $Id;
+
+2010/08/28
+* better presentation layer
+
+2010/07/23
+* In place editing
+*
+2010/08/29
+* Possibility for custom folder labels
+* plugable frontends
+
+2010/05/31
+* Problems with Pager/Cache
+* Disabled Cache by default
+* Rules integration
+* Feature integration for configuration settings
+* Extended IPTC Support for Title
+
+2010/05/19
+* #807980 - Problem with the way images and folders are being handled. fixed
+
+2010/05/19
+* Don't allow spaces in alias
+
+2010/05/06
+* Lightbox slidshow support
+* Little Bug when in admin form
+
+2010/05/03
+* Implementation of a pager
+
+2010/03/19
+* IPTC Support for title
+
+2010/03/13
+* Better usage of fast gallery cache
+* support for lightbox
+
+2009/11/30
+* Added Blocksupport
+* Tests extended
+
+2009/11/12
+* Extended API: Possibility to specify supported filetypes

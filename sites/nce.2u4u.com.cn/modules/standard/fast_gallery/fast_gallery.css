@@ -1,0 +1,21 @@
+/* $Id: fast_gallery.css,v 1.21.2.4 2010/07/23 17:30:48 rapsli Exp $ */
+
+.fast-gallery-image{
+  float:left;
+  width: 155px;
+  height: 155px;
+  text-align:center;
+}
+
+
+.fast-gallery-image a:link, .fast-gallery-image a:visited, .fast-gallery-image a:hover {
+ text-decoration:none;
+}
+
+.fast-gallery-image a:hover img {
+  border:medium solid black;
+}
+
+#fg_breadcrumb {
+	margin-bottom:10px;
+}

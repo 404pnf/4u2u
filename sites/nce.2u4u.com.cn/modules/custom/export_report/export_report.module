@@ -1,0 +1,24 @@
+<?php
+// $Id$
+
+//实现hook_menu
+function export_report_menu() {
+  $items['report/%/%'] = array(
+    'title'            => '导出报名表',
+    'page callback'    => 'export_report_download_page',
+		'access callback' => TRUE,
+    'weight'           => 1,
+    'type'             => MENU_CALLBACK,
+		'file' => 'export_report.pages.inc',
+  );
+	$items['admin/content/reportlinks'] = array(
+    'title'            => '各省市生成报告的链接',
+    'page callback'    => 'export_report_generate_links_page',
+		'access callback' => TRUE,
+    'weight'           => 1,
+    'type'             => MENU_NORMAL_ITEM,
+		'file' => 'export_report.pages.inc',
+  );
+	
+	return $items;
+}

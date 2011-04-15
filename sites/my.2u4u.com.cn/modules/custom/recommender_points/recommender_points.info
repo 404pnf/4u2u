@@ -1,0 +1,5 @@
+name = 推荐人积分充值
+description = "用户充值后,为其推荐人添加积分"
+core = 6.x
+dependencies[] = gift_points
+package = 2u4u

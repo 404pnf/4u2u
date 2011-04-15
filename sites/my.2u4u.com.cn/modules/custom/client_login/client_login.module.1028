@@ -1,0 +1,51 @@
+<?php
+
+function client_login_menu() {
+	$items = array ();
+	$items ['client/login'] = array (
+	    'title' => '客户端用户登录', 
+	    'page callback' => 'client_login',
+	    'type' => MENU_CALLBACK,
+	    'access callback' => true );
+	return $items;
+}
+
+/*
+	要验证sessionid
+	要禁止管理员登录
+	要使用base64编码
+*/
+
+function client_login(){
+	global $user;
+	$name = $_REQUEST['source'];
+	$key  = $_REQUEST['dis'];
+	
+	$check = db_fetch_object(db_query("SELECT s.* FROM {sessions} s  WHERE s.sid = '%s'", $key));
+	
+	if($check->uid>0){
+		$user = user_load (array("name"=>$name));
+		// 这里肯定相等，不需要判断
+		// 尽量直接写那些role不能登录，因为如果从role的数量上来判断，购买包月看书和看视频的用户
+		// 也有多个role，因此按下面逻辑他们也不能登录了。
+		if($user->uid==$check->uid){
+			if($user->uid==11||($user->roles[2]!=''&&count($user->roles)<2&&$user->uid>0)){
+				// 重新生成session，让用户登录
+				// 参考： http://api.drupal.org/api/function/sess_regenerate/6
+				sess_regenerate();
+				//drupal_goto('');
+			}
+			// 如果你是管理员已经用ie登录在drupal上，此时你客户端发的session id是对的
+			// 但根据上一条规则管理员不能登录，因此你会被踢出来
+			else{ 
+				drupal_goto('logout');	
+			}	
+		}
+		else{ 
+			drupal_goto('logout');	
+		}	    
+	}
+	else{ 
+        echo "请重新登录";
+	}
+}

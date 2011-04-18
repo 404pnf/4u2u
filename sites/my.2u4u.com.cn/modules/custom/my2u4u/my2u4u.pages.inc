@@ -12,10 +12,16 @@
 	if(arg(0)=='user'&& arg(1)>0){
 		$uid = arg(1);
 	}
-        	
+        db_set_active('discuz');
+	$sql = "SELECT uid, username, extcredits2  FROM `uu_members` where username='%s' ";  //%s占位符
+	$rs = db_query($sql,$name);
+        db_set_active('default');
+        while($row = db_fetch_object($rs)){	
+	        $dz_points= $row->extcredits2 ;
+        }	
 	$output .= '<ul class="my_content">';
 		$output .= '<li class="user_points">'.  t('悠游积分：').userpoints_get_current_points($uid). '</li>';
-		$output .= '<li class="discuz_money">'.  t('论坛金钱：').$uid. '</li>';
+		$output .= '<li class="discuz_money">'.  t('论坛金钱：').$dz_points. '</li>';
 		$output .= '<li class="chongzhi">'.  l(t('积分充值'),'user/'.$uid.'/chongzhi') . '</li>';
 		$output .= '<li class="buy_points">'.  l(t('积分购买'),'user/'.$uid.'/buyuserpoints'). '</li>';
 		$output .= '<li class="discuz_exchange">'.  l(t('积分兑换'),'user/'.$uid.'/discuz'). '</li>';
@@ -322,9 +328,9 @@ function  my2u4u_my_recommendquizs_page($user){
 		$content_8587 = get_views_content('quiz','whx_frontpage','block_1',8587);
 		$content_1977 = get_views_content('quiz','whx_frontpage','block_1',1977);
 		
-	$output .= "<div class='content_1978'>".$title_1978.$content_1978."</div>";
-	$output .= "<div class='content_8587'>".$title_8587.$content_8587."</div>";
-	$output .= "<div class='content_1977'>".$title_1977.$content_1977."</div>";
+	$output .= "<div class='quiz_content quiz_content_1978'>".$title_1978.$content_1978."</div>";
+	$output .= "<div class='quiz_content quiz_content_8587'>".$title_8587.$content_8587."</div>";
+	$output .= "<div class='quiz_content quiz_content_1977'>".$title_1977.$content_1977."</div>";
 	
 	return $output;
 }

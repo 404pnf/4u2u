@@ -34,7 +34,7 @@ $i = 0;
 while($row = mysql_fetch_object($result))
 { 
 	$total_points += $row->num; 
-  	if($i<20){		
+  	if($i<200){		
 		$table.= "<tr><td class='row'>".$row->description."</td>";
 		$table.="<td class='row'>".$row->num."</td>";
 		$table.= "</tr>";			

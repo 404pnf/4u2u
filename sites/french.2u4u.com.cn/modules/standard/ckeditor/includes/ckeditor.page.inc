@@ -1,8 +1,7 @@
 <?php
-// $Id: ckeditor.page.inc,v 1.1.2.3 2010/09/15 15:03:33 wwalc Exp $
 /**
- * CKEditor - The text editor for Internet - http://ckeditor.com
- * Copyright (c) 2003-2009, CKSource - Frederico Knabben. All rights reserved.
+ * CKEditor - The text editor for the Internet - http://ckeditor.com
+ * Copyright (c) 2003-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * == BEGIN LICENSE ==
  *
@@ -190,8 +189,8 @@ function ckeditor_filter_xss() {
 
   foreach ($_POST['filters'] as $module_delta) {
     if (!is_string($module_delta)) {
-	  continue;
-	}
+      continue;
+    }
     $module = strtok($module_delta, "/");
     $delta = strtok("/");
     $format = strtok("/");

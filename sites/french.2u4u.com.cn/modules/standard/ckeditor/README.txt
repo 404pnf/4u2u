@@ -1,4 +1,3 @@
-$Id: README.txt,v 1.3.2.11 2010/07/05 15:04:50 wwalc Exp $
 
 CONTENTS OF THIS FILE
 ---------------------
@@ -34,8 +33,8 @@ http://ckeditor.com/
 
 More information and licence
 ----------------------------
-CKEditor - The text editor for internet
-Copyright (C) 2003-2010 CKSource - Frederico Knabben
+CKEditor - The text editor for the Internet
+Copyright (c) 2003-2011, CKSource - Frederico Knabben. All rights reserved.
 
 Licensed under the terms of the GNU Lesser General Public License:
     http://www.opensource.org/licenses/lgpl-license.php
@@ -377,6 +376,6 @@ Credits
  - CKEditor for Drupal is currently maintained by CKEditor team and Jorrit Schippers.
      http://ckeditor.com/
 
- - CKEditor - The text editor for internet
-     Copyright (C) 2003-2009 CKSource - Frederico Knabben
+ - CKEditor - The text editor for the Internet
+     Copyright (C) 2003-2011 CKSource - Frederico Knabben
      http://cksource.com/

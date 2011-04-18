@@ -1,4 +1,54 @@
-$Id: CHANGELOG.txt,v 1.6.2.62 2010/09/29 09:22:45 dczepierga Exp $
+-----------------------------
+ 2011-03-17
+ New stable release: 6.x-1.3
+-----------------------------
+-- 2011-03-16
+- [#1050118] by dczepierga: Added better support for Line break converter. CKEditor is now able to load properly content where new line characters were used to create new lines
+  Improve syntax with Coder module
+  
+-- 2011-03-15
+- [#1050118] by dczepierga: Added better support for Line break converter. CKEditor is now able to load properly content where new line characters were used to create new lines
+
+-- 2011-02-22
+- [#960576] by rjacobs: Add loading ckeditor.css from theme
+
+-- 2011-02-21
+- [#1068026] by dczepierga: Added support for CKEditor Link (http://drupal.org/project/ckeditor_link) module
+- [#695264] by dczepierga: Added support for CKEditor SWF  (http://drupal.org/project/ckeditor_swf) module
+
+-- 2011-02-17
+- [#1037882] by dczepierga: Add admin/build/views/* to 'Fields to exclude/include' section in Global Profile
+- [#1050118] by jcisio: Added better support for Line break converter. CKEditor is now able to load properly content where new line characters were used to create new lines
+
+-- 2011-02-15
+- [#906846] by jcisio: Support the Features module API (http://drupal.org/project/features) to allow bundling of CKEditor's visibility settings
+
+-- 2011-02-14
+- [#969486] by dczepierga: Added support for elFinder (http://drupal.org/project/elfinder) file manager support
+
+-- 2011-02-04
+- [#1011178] by dczepierga: Added support for the 'drush make' command
+
+-- 2011-01-25
+- [#1019950] by dczepierga: CKEditor Will Not Load - remove CKEditor is not defined
+- [#1022208] by dczepierga: 'Send to rich text editor' fails with latest WebFM
+
+-- 2011-01-24
+- [#751672] by dczepierga: Table top border creates unwanted borderline
+
+-- 2011-01-20
+- [#1015822] by dczepierga: IMCE button in not visible in toolbar with CKEditor 3.5
+
+-- 2011-01-17
+- [#940376] by dczepierga: Added schema version 6202 from FCKeditor module during migration
+- [#964556] by jcisio: Fix Drupal.ckeditorCompareVersion does not check properly version number
+
+-- 2011-01-13
+- [#921826] by dczepierga: CKEditor indenting and aligning problems
+- [#865710] by dczepierga: Provide a " Drupal.ckeditorActiveId" variable for tracking the active editor
+
+-- 2010-10-11
+- [#935566] by altavis: Added Media Embed translation
 
 -----------------------------
  2010-09-29

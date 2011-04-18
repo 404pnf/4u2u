@@ -33,7 +33,9 @@ function convert_pdf(&$node) {
     # from a ubutntu to here, /usr/share/fonts /usr/share/xpdf /etc/xpdf/
     # /home/myapp/swftools/bin/pdf2swf $f -o tmp/$f.%.swf -s languagedir=/home/myapp/xpdf/etc/
     # /home/myapp/swftools/bin/pdf2swf $dest -o $swfDir/%.ds -s languagedir=/home/myapp/xpdf/etc/ >>/tmp/output
-    $out = exec("/home/myapp/swftools/bin/pdf2swf $dest -o $swfDir/%.ds -s languagedir=/home/myapp/xpdf/etc/ >>/tmp/outpu");
+    #$out = exec("/home/myapp/swftools/bin/pdf2swf $dest -o $swfDir/%.ds -s languagedir=/home/myapp/xpdf/etc/ >>/tmp/outpu");
+    # 似乎不加 -s languagedir 工作起来更好？！
+    $out = exec("/home/myapp/swftools/bin/pdf2swf $dest -o $swfDir/%.ds");
   }
   
   $domain = $_SERVER ['SERVER_NAME'];

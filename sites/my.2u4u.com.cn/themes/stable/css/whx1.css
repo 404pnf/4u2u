@@ -188,3 +188,48 @@ margin-top:17px;
 	font-weight: bold;
 	color: #CA0000;
 }
+
+
+/*------------------推荐的测试-----------------*/
+
+/* 标题与连接、摘要、点击率的颜色、大小 */
+.view-whx-frontpage .view-header  a  ,
+.view-whx-frontpage .view-header a:visited,
+.view-whx-frontpage .views-field-title  a  ,
+.view-whx-frontpage .views-field-title  a:visited{
+color:#911D2B;
+cursor:pointer;
+text-decoration:none;
+font-weight:700;
+}
+.view-whx-frontpage .view-header h1{
+padding-bottom:0px;
+}
+h1 span {
+color:#666666;
+font-size:12px;
+font-weight:400;
+margin-left:10px;
+}
+.view-whx-frontpage .views-row{
+margin-bottom:20px;
+clear:both;
+}
+.view-whx-frontpage  .attachment-before .views-field-teaser {
+min-height:60px;
+overflow:hidden;
+}
+.view-whx-frontpage .views-field-totalcount {
+color:#999999;
+float:right;
+margin-top:-22px;
+}
+.view-whx-frontpage .views-field-totalcount *{
+	color:#999999;
+}
+/* 内容中的小图 */
+.view-whx-frontpage .views-field-field-quiz-tuijian-pic-fid {
+float:right;
+margin:0 0 20px 10px;
+}
+/* quiz 结束 */

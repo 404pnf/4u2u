@@ -1,8 +1,7 @@
 <?php
-// $Id: ckeditor.admin.inc,v 1.2.2.19 2010/09/15 15:23:36 wwalc Exp $
 /**
- * CKEditor - The text editor for Internet - http://ckeditor.com
- * Copyright (c) 2003-2009, CKSource - Frederico Knabben. All rights reserved.
+ * CKEditor - The text editor for the Internet - http://ckeditor.com
+ * Copyright (c) 2003-2011, CKSource - Frederico Knabben. All rights reserved.
  *
  * == BEGIN LICENSE ==
  *
@@ -582,7 +581,7 @@ function ckeditor_admin_profile_form($form_state, $profile = NULL) {
   );
 
   if (!empty($profile->settings['formatting']['custom_formatting_options']))
-  foreach( $profile->settings['formatting']['custom_formatting_options'] as $k => $v ) {
+  foreach ($profile->settings['formatting']['custom_formatting_options'] as $k => $v) {
     if ($v === 0) {
       unset($profile->settings['formatting']['custom_formatting_options'][$k]);
     }
@@ -696,7 +695,7 @@ function ckeditor_admin_profile_form($form_state, $profile = NULL) {
     '#title' => t('File browser settings'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
-    '#description' => t('Set file browser settings. A file browser will allow you to explore the files contained on the server and embed them as links, images or flash movies. CKEditor is compatible with contributed modules like <a href="!imce">IMCE</a>, <a href="!ib">Image Browser</a> or <a href="!webfm">Web File Manager</a>. CKEditor can be also integrated with <a href="!ckfinder">CKFinder</a>.', array('!imce' => url('http://drupal.org/project/imce'), '!ib' => url('http://drupal.org/project/imagebrowser'), '!webfm' => url('http://drupal.org/project/webfm'), '!readme' => url('admin/help/ckeditor'), '!ckfinder' => url('http://ckfinder.com')))
+    '#description' => t('Set file browser settings. A file browser will allow you to explore the files contained on the server and embed them as links, images or flash movies. CKEditor is compatible with contributed modules like <a href="!imce">IMCE</a>, <a href="!ib">Image Browser</a>, <a href="!webfm">Web File Manager</a> or <a href="!elfinder">elFinder</a>. CKEditor can be also integrated with <a href="!ckfinder">CKFinder</a>.', array('!imce' => url('http://drupal.org/project/imce'), '!ib' => url('http://drupal.org/project/imagebrowser'), '!webfm' => url('http://drupal.org/project/webfm'), '!readme' => url('admin/help/ckeditor'), '!ckfinder' => url('http://ckfinder.com'), '!elfinder' => url('http://drupal.org/project/elfinder')))
   );
 
   $filebrowsers = array(
@@ -727,6 +726,11 @@ function ckeditor_admin_profile_form($form_state, $profile = NULL) {
   if (module_exists('webfm_popup')) {
     $filebrowsers['webfm'] = t('Web File Manager');
     $filebrowsers_dialogs['webfm'] = t('Web File Manager');
+  }
+
+  if (module_exists('elfinder')) {
+    $filebrowsers['elfinder'] = t('elFinder');
+    $filebrowsers_dialogs['elfinder'] = t('elFinder');
   }
 
   $form['ckeditor_upload_settings']['filebrowser'] = array(
@@ -908,7 +912,7 @@ function ckeditor_admin_profile_form_validate($form, &$form_state) {
     form_set_error('name', t('You must give a profile name.'));
   }
   elseif (!preg_match('/^[A-Za-z0-9_]+$/', $edit['name'])) {
-	form_set_error('name', t('Enter valid profile name. Only alphanumeric and underscore characters are allowed.'));
+    form_set_error('name', t('Enter valid profile name. Only alphanumeric and underscore characters are allowed.'));
   }
   elseif ($edit['name'] == 'CKEditor Global Profile') {
     form_set_error('name', t('This profile name is reserved. Please choose a different name.'));

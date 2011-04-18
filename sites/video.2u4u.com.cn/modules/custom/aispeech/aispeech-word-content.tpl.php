@@ -29,6 +29,7 @@
 <div id="aiPlayer1-wrapper"><div id="aiPlayer1" ><a href="http://www.adobe.com/go/getflashplayer"></a></div></div>
 
 <div id="charsContainer" style="display:none"> </div>
+<div id="aispeech-user-login" style="display:none"><?php global $user; print $user->uid ?></div>
 
 <div id="aispeech-button">
 	<table border="0" cellspacing="0" cellpadding="0" id="aispeech-table-step-1" >

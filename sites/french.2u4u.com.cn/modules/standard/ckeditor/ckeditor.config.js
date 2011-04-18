@@ -1,4 +1,7 @@
-// $Id: ckeditor.config.js,v 1.2.2.10 2010/09/27 12:37:20 dczepierga Exp $
+/*
+Copyright (c) 2003-2011, CKSource - Frederico Knabben. All rights reserved.
+For licensing, see LICENSE.html or http://ckeditor.com/license
+*/
 
 /*
  WARNING: clear browser's cache after you modify this file.
@@ -123,7 +126,14 @@ CKEDITOR.editorConfig = function(config) {
     CKEDITOR.plugins.addExternal('linktonode', Drupal.settings.ckeditor.module_path + '/plugins/linktonode/');
     Drupal.settings.ckeditor.linktonode_basepath = Drupal.settings.basePath;
   }
-
+  if (Drupal.settings.ckeditor_swf) {
+    config.extraPlugins += (config.extraPlugins) ? ',swf' : 'swf';
+    CKEDITOR.plugins.addExternal('swf', Drupal.settings.ckeditor_swf.module_path + '/plugins/swf/');
+  }
+  if (Drupal.settings.ckeditor_link) {
+    config.extraPlugins += (config.extraPlugins) ? ',drupal_path' : 'drupal_path';
+    CKEDITOR.plugins.addExternal('drupal_path', Drupal.settings.ckeditor_link.module_path + '/plugins/link/');
+  }
   // 'MediaEmbed' plugin. To enable it, uncomment lines below and add 'MediaEmbed' button to selected toolbars.
   //config.extraPlugins += (config.extraPlugins ? ',mediaembed' : 'mediaembed' );
   //CKEDITOR.plugins.addExternal('mediaembed', Drupal.settings.ckeditor.module_path + '/plugins/mediaembed/');

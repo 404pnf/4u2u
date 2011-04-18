@@ -229,9 +229,9 @@
 		  $("#aispeech-result-D").css('display','none');
 			$('#defaultCountdown').removeClass('hasCountdown');
 			//$(this).removeClass("one");
-		  stopRecord();
-		  getScore();
+		  stopRecord();  
 			showstep4button();
+			getScore();
 		}
 if (Drupal.jsEnabled) {
 
@@ -350,7 +350,12 @@ if (Drupal.jsEnabled) {
 	});
 	$('#readit').click(function(){
 		//alert('read it');
-
+    if($('#aispeech-user-login').html() > 0){
+		  //alert('登录用户');
+		}else{
+		  alert('只有登录用户才能测评，请现在登录。');
+		  window.location.href = 'http://2u4u.com.cn/user/login';
+		}
 		
 		var getsessionkey = function(data){
 		  //alert(data.error);

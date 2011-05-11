@@ -102,12 +102,18 @@ while ($data = db_fetch_object($result))
   }
  $tempstring.='</li>';
 
- $tempstring.='<li>';
+
 //** 登出
 if($user->uid>0){
+ $tempstring.='<li>';
+ $tempstring.=l('修改密码',"user/$user->uid/edit");
+  $tempstring.='</li>';
+   $tempstring.='<li>';
     $tempstring.=l('登出','logout');
+      $tempstring.='</li>';
+
 }
- $tempstring.='</li>';
+
  $tempstring.='</ul>';
  $tempstring.='</div>';
  

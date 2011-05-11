@@ -6,7 +6,7 @@ body {
 #main {
  	background-color: #ffffff;
 }
-#content-area{ height:500px; }
+#content-area{ margin: 0 auto;}
 p{ margin:0}
 
 #sidebar-second {
@@ -32,7 +32,7 @@ p{ margin:0}
 #supporters-title{ font-size:16px; font-weight:bold;}
 #user-login-form .item-list ul li { float:left; font-size:1em; list-style-type: none; padding:4px;
 }
-#user-register{ padding-left:80px;}
+#user-register{ padding-left:80px; height:350px;}
 .form-submit {   background-image: url("http://preview.zcool.com.cn/png_download/042/botton_025.gif");
     border: 0 none;
     color: #FFFFFF;

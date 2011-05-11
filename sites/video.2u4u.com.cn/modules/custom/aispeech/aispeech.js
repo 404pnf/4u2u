@@ -8,8 +8,8 @@
             serverList: serverList,
 						showFlash: true,
 						height:183,
-            appKey: "1298426941825",
-            secretKey: "595fd7706b9a96bd892a0c88a2e772b0d0565316",
+            appKey: "1300675449010",
+            secretKey: "50b87599fcc2bd7bd27cb2799759eba59c56aaf8",
 						onMicStatusChange: function(code, message){
 				    //alert(code);
 					  if(code == '50001'){
@@ -27,8 +27,8 @@
     function initPlayer(){
 			window.player1 = new aispeech.AiPlayer({
 				id: "aiPlayer1",
-				appKey: "1298426941825",
-				secretKey: "595fd7706b9a96bd892a0c88a2e772b0d0565316",
+				appKey: "1300675449010",
+				secretKey: "50b87599fcc2bd7bd27cb2799759eba59c56aaf8",
 				width: 1,
 				height: 1,
 				wmode:"Window",
@@ -132,11 +132,13 @@
     
     function getScore(){
         var recordId = lastRecordId;
-				//alert(recordId);
+				
         if (recordId != null) {
+				    
             recorder1.getScores({
                 recordId: recordId,
                 success: function(data){
+								    // alert(recorder1);
                     try {
                         if (typeof recordId === "string" && recordId != "") {
                             var r = "";
@@ -146,6 +148,7 @@
                                 r = data[recordId].result;
                             }
                             //window.R = r;
+														// alert("show Scroe");
                             showScore(r);
                         }else{
 
@@ -200,6 +203,7 @@
 			$('#aispeech-table-step-2').css('display','none');
 			$('#aispeech-table-step-3').css('display','none');
 			$('#aispeech-table-step-4').css('display','none');
+			$('#aispeech-footer').css('display','none');
 		}
 		function showstep2button(){
 		  $('#aispeech-table-step-1').css('display','none');
@@ -218,6 +222,7 @@
 			$('#aispeech-table-step-2').css('display','none');
 			$('#aispeech-table-step-3').css('display','none');
 			$('#aispeech-table-step-4').css('display','block');
+			$('#aispeech-footer').css('display','block');
 		}
 		
 		function autotestit(){
@@ -367,8 +372,8 @@ if (Drupal.jsEnabled) {
 			//alert('session:'+sessionkey);
 			
 			//alert(getsessionkey);
-			var appKey = "1298426941825";
-			var secretkey = "595fd7706b9a96bd892a0c88a2e772b0d0565316";
+			var appKey = "1300675449010";
+			var secretkey = "50b87599fcc2bd7bd27cb2799759eba59c56aaf8";
 			var apiHost = "http://sandbox.api.aispeech.com";
 			var apiVersion = "v1.0";
 			//var apiSessionKey = null;

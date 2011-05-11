@@ -97,6 +97,6 @@
 	</table>
 </div>
 
-<div id="aispeech-footer" align="center"><a href="http://www.askform.cn/3381-43724.aspx" target="_blank"><img src="<?php print base_path().drupal_get_path('module', 'aispeech') ?>/images/test6.jpg" width="208" height="42" /></a>
+<div id="aispeech-footer" align="center" style="display:none" ><a href="http://cn.aispeech.com" target="_blank"><img src="<?php print base_path().drupal_get_path('module', 'aispeech') ?>/images/aispeech-small.jpg" width="100" height="42" /></a>
 </div>
 <div id="aispeech-foot"></div>

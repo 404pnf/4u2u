@@ -106,8 +106,8 @@ function aispeech_oral_test_point_add(){
 }
 function aispeech_oral_test_get_session_key(){
 	
-	$appKey = "1298426941825";
-	$secretkey = "595fd7706b9a96bd892a0c88a2e772b0d0565316";
+	$appKey = "1300675449010";
+	$secretkey = "50b87599fcc2bd7bd27cb2799759eba59c56aaf8";
 	$apiHost = "http://sandbox.api.aispeech.com";
 	$apiVersion = "v1.0";
 	$apiSessionKey = null;

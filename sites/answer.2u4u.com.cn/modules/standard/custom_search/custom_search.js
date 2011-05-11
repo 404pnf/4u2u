@@ -1,10 +1,10 @@
-// $Id: custom_search.js,v 1.1.2.7 2010/05/25 13:42:12 jdanthinne Exp $
+// $Id: custom_search.js,v 1.1.2.15 2010/12/22 13:36:36 jdanthinne Exp $
 
 Drupal.behaviors.custom_search = function (context) {
 
-  // Check if the search box is not empty on submit
-  $('form.search-form')
-    .submit(function(){
+  if (!Drupal.settings.custom_search.solr) {
+    // Check if the search box is not empty on submit
+    $('form.search-form', context).submit(function(){
       var box = $(this).find('input.custom-search-box');
       if (box.val() != undefined && (box.val() == '' || box.val() == $(this).find('input.default-text').val())) {
         $(this).find('input.custom-search-box').addClass('error');
@@ -16,25 +16,39 @@ Drupal.behaviors.custom_search = function (context) {
         $(this).find('#edit-or').val('');
       }
       return true;
-    }
-  );
+    });
+  }
 
-  // Clear default text on focus, and put it back on blur.
-  $('input.custom-search-box')
-    .blur(function(){
-      if ($(this).val() == '') {
-        $(this).addClass('custom-search-default-value');
-        $(this).val($(this).parents('form').find('input.default-text').val());
+  // Search from target
+  $('form.search-form').attr('target', Drupal.settings.custom_search.form_target);
+
+  // Clear default text on focus, and put it back on blur. Also displays Popup.
+  $('input.custom-search-box', context)
+    .blur(function(e){
+      $this = $(this);
+      $parentForm = $this.parents('form');
+      if ($this.val() == '') {
+        $this.addClass('custom-search-default-value');
+        $this.val($parentForm.find('input.default-text').val());
       }
     })
-    .focus(function(){
-      if ($(this).val() == $(this).parents('form').find('input.default-text').val()) $(this).val('');
-      $(this).removeClass('custom-search-default-value');
+    .bind('click focus', function(e){
+      $this = $(this);
+      $parentForm = $this.parents('form');
+      if ($this.val() == $parentForm.find('input.default-text').val()) $this.val('');
+      $this.removeClass('custom-search-default-value');
+      // check if there's something in the popup and displays it
+      var popup = $parentForm.find('fieldset.custom_search-popup');
+      if (popup.find('input,select').length && !popup.hasClass('opened')) popup.fadeIn().addClass('opened');
+      e.stopPropagation();
     }
   );
+  $(document).bind('click focus', function(){
+    $('fieldset.custom_search-popup').hide().removeClass('opened');
+  });
 
   // Handle checkboxes
-  $('.custom-search-selector input:checkbox').each(function(){
+  $('.custom-search-selector input:checkbox', context).each(function(){
     var el = $(this);
     if (el.val() == 'c-all') {
       el.change(function(){
@@ -83,5 +97,15 @@ Drupal.behaviors.custom_search = function (context) {
       }
     }
   }
+
+  var popup = $('fieldset.custom_search-popup:not(.custom_search-processed)', context).addClass("custom_search-processed");
+  popup.click(function(e){
+    e.stopPropagation();
+  })
+  popup.append('<a class="custom_search-popup-close" href="#">' + Drupal.t('Close') + '</a>');
+  $('a.custom_search-popup-close').click(function(e){
+    $('fieldset.custom_search-popup.opened').hide().removeClass('opened');
+    e.preventDefault();
+  });
 
 }

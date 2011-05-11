@@ -7,12 +7,20 @@
  */
  ?>
 
-<div id="node-<?php print $node->nid; ?>" class="node<?php if ($sticky) { print ' sticky'; } ?><?php if (!$status) { print ' node-unpublished'; } ?>">
+<div id="comment-<?php print $node->nid; ?>" class="node<?php if ($sticky) { print ' sticky'; } if (!$status) { print ' node-unpublished'; } if (!empty($new_class)) { print ' ' . $new_class; } ?>">
+  <?php if ($first_new): ?>
+    <?php print $first_new; ?>
+  <?php endif; ?>
 
-<?php print $picture ?>
+  <?php if ($new_output): ?>
+    <?php print $new_output; ?>
+  <?php endif; ?>
 
-  <div class="subject"><?php print l($node->title, $_GET['q'], NULL, NULL, "comment-$node->nid") . ' ' . theme('mark', $node->new); ?></div>
+  <?php print $picture ?>
 
+  <div class="subject">
+    <?php print $comment_link; ?>
+  </div>
   <?php if ($submitted): ?>
     <span class="submitted"><?php print t('!date — !username', array('!username' => theme('username', $node), '!date' => format_date($node->created))); ?></span>
   <?php endif; ?>
@@ -20,6 +28,11 @@
   <div class="content">
     <?php print $content ?>
   </div>
+  <?php if ($signature): ?>
+  <div class="user-signature clear-block">
+    <?php print $signature ?>
+  </div>
+  <?php endif; ?>
 
   <div class="clear-block clear">
     <div class="meta">

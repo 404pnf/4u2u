@@ -1,5 +1,4 @@
 <?php
-// $Id: r4032login.install,v 1.1.4.3 2009/07/13 15:14:18 deekayen Exp $
 
 /**
  * Implementation of hook_enable().
@@ -21,4 +20,5 @@ function r4032login_disable() {
 function r4032login_uninstall() {
   variable_del('r4032login_display_denied_message');
   variable_del('r4032login_user_register_message');
+  variable_del('r4032login_redirect_authenticated_users_to');
 }

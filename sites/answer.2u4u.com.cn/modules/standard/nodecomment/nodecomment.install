@@ -1,26 +1,12 @@
 <?php
-// $Id: nodecomment.install,v 1.1.2.4.2.3 2008/10/05 15:41:34 sirkitree Exp $
+// $Id: nodecomment.install,v 1.1.2.4.2.6.2.10 2010/07/19 14:09:33 crea Exp $
 
 /**
  * @file
  * Install file for nodecomment
  */
- 
-/**
- * Implementation of hook_enable().
- */
-function nodecomment_enable() {
-  $t = get_t();
-  // Disable comment.module since it is incompatible with nodecomment
-  $result = db_query("UPDATE {system} SET status = 0 WHERE type = 'module' AND name = 'comment' AND status = 1");
-  if (db_affected_rows()) {
-    drupal_set_message($t('Comment module has been deactivated -- it is incompatible with Node Comment module.'));
-  }
-}
 
 function nodecomment_install() {
-  $t = get_t();
-  drupal_set_message($t('Installing Node Comments.'));  
   drupal_install_schema('nodecomment');
   _nodecomment_install_type_create();
 }
@@ -28,8 +14,8 @@ function nodecomment_install() {
 function _nodecomment_install_type_create() {
   // During install profiles, node and user modules aren't yet loaded.
   // Ensure they're loaded before calling node_get_types().
-  include_once './'. drupal_get_path('module', 'node') .'/node.module';
-  include_once './'. drupal_get_path('module', 'user') .'/user.module';
+  drupal_load('module', 'node');
+  drupal_load('module', 'user');
   $types = node_get_types();
   $types = array_change_key_case($types, CASE_LOWER);
 
@@ -51,7 +37,12 @@ function _nodecomment_install_type_create() {
 
     // Default to not promoted.
     variable_set('node_options_comment', array('status'));
+
+    // Default to not allowing comments.
+    variable_set('comment_comment', 0);
+
     cache_clear_all();
+    module_load_include('inc', 'system', 'system.admin');
     system_modules();
     menu_rebuild();
     node_types_rebuild();
@@ -80,11 +71,116 @@ function nodecomment_schema() {
 
 function nodecomment_uninstall() {
   drupal_uninstall_schema('nodecomment');
+  db_query("DELETE FROM {variable} WHERE name LIKE 'node_comment_%'");
+}
+
+/**
+ * Implementation of hook_requirements().
+ */
+function nodecomment_requirements($phase) {
+  $requirements = array();
+
+  if ($phase == 'runtime') {
+    module_load_include('inc', 'nodecomment', 'nodecomment.convert');
+    if ($count = nodecomment_convert_count_total()) {
+      $requirements['nodecomment_convert'] = array(
+        'title' => t('Node comment conversions'),
+        'description' => t('There are @count comments currently not displaying on the site because their comment type has been changed, but the values have not yet been updated in the database. Run the <a href="@url">Node comment conversion tool</a> to update these comments.', array('@count' => $count, '@url' => url('admin/content/nodecomment-convert'))),
+        'severity' => REQUIREMENT_ERROR,
+      );
+    }
+
+    $errors = _nodecomment_get_config_errors();
+    if ($errors) {
+      $errors = theme('item_list', $errors);
+      $requirements['nodecomments_configuration'] = array();
+      $requirements['nodecomments_configuration']['title'] = t('Node Comments');
+      $requirements['nodecomments_configuration']['description'] = $errors;
+      $requirements['nodecomments_configuration']['severity'] = REQUIREMENT_ERROR;
+    }
+  }
+
+  return $requirements;
 }
 
 function nodecomment_update_6000() {
   // adding uid to schema. this is needed to avoid the (not verified) that theme_user now implements
   $ret = array();
   db_add_field($ret, 'node_comments', 'uid', array('type' => 'int', 'not null' => TRUE, 'default' => 0, 'disp-width' => '11'));
+  return $ret;
+}
+
+function nodecomment_update_6001() {
+  // the node_comments view changed to nodecomments.  update any node types that
+  // use this view for comments.
+  foreach(node_get_types() as $type) {
+    if(variable_get('comment_view_'. $type->type, '') == 'node_comments') {
+      variable_set('comment_view_'. $type->type, 'nodecomments');
+    }
+  }
+  return array();
+}
+
+/**
+ * Move comment settings into per content-type settings.
+ */
+function nodecomment_update_6002() {
+  $ret = array();
+
+  $comment_anonymous = variable_get('comment_anonymous', NULL);
+  $comment_preview = variable_get('comment_preview', NULL);
+  $comment_form_location = variable_get('comment_form_location', NULL);
+
+  foreach(node_get_types() as $type) {
+    if (!is_null($comment_anonymous)) {
+      variable_set('comment_anonymous_'. $type->type, $comment_anonymous);
+    }
+    if (!is_null($comment_preview)) {
+      variable_set('comment_preview_'. $type->type, $comment_preview);
+    }
+    if (!is_null($comment_form_location)) {
+      variable_set('comment_form_location_'. $type->type, $comment_preview);
+    }
+    $ret[] = array('success' => TRUE, 'query' => t('Updated comment settings for %node_type.', array('%node_type' => $type->name)));
+  }
+
+  variable_del('comment_anonymous');
+  variable_del('comment_preview');
+  variable_del('comment_form_location');
+
+  return $ret;
+}
+
+/**
+ * Update 6001 added a uid column but didn't populate it.
+ */
+function nodecomment_update_6003() {
+  $ret = array();
+  $ret[] = update_sql('UPDATE {node_comments} c INNER JOIN {node} n ON c.cid = n.nid SET c.uid = n.uid');
+  return $ret;
+}
+
+// update 6200 needs to update settings from the old nodecomment style to the
+// new style so that comment.module is not confused.
+
+/**
+ * Update our variables to proper namespace.
+ */
+function nodecomment_update_6201() {
+  $ret = array();
+  variable_del('default_comment_type');
+  $types = node_get_types();
+  foreach ($types as $type => $info) {
+    foreach (array('comment_type', 'comment_view', 'comment_plural') as $var) {
+      $value = variable_get($var . '_' . $type, NULL);
+      if (isset($value)) {
+        variable_set('node_' . $var . '_' . $type, $value);
+      }
+      variable_del($var . '_' . $type);
+    }
+  }
+
+  drupal_install_modules(array('comment'));
+
   return $ret;
 }

@@ -1,22 +1,10 @@
 <?php
-// $Id: custom_search.admin.inc,v 1.1.2.17 2010/06/01 09:46:16 jdanthinne Exp $
+// $Id: custom_search.admin.inc,v 1.1.2.19 2010/11/01 17:07:43 jdanthinne Exp $
 
 /**
  * @file
  * Admin settings for custom search
  */
-
-/**
- * Implementation of hook_help().
- */
-function custom_search_help($path, $arg) {
-  switch ($path) {
-    case 'admin/settings/custom_search/content':
-      $output = t('Select the search types to present as search options in the search block. If none is selected, no selector will be displayed. <strong>Note</strong>: if there\'s only one type checked, the selector won\'t be displayed BUT only this type will be searched.');
-    break;
-  }
-  return $output;
-}
 
 function custom_search_admin() {
   $directory_path = file_directory_path() . '/custom_search';
@@ -133,53 +121,8 @@ function custom_search_admin() {
 
   // Custom search paths
   $form = array_merge($form, custom_search_custom_paths_admin_form());
-
   // Ordering.
-  $form['order'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Elements ordering'),
-  );
-  $form['order']['custom_search_order'] = array(
-    '#tree'   => TRUE,
-    '#theme'  => 'custom_search_sort_form',
-  );
-  $form['order']['custom_search_order']['search_box'] = array(
-    '#title'  => t('Search Box'),
-    'sort'    => array('#type' => 'weight', '#default_value' => variable_get('custom_search_search_box_weight', -1)),
-    '#weight' => variable_get('custom_search_search_box_weight', -1),
-  );
-  if (count(array_filter(array_merge(variable_get('custom_search_node_types', array()), variable_get('custom_search_other', array()))))) {
-    $form['order']['custom_search_order']['content_types'] = array(
-      '#title'  => t('Content Types'),
-      'sort'    => array('#type' => 'weight', '#default_value' => variable_get('custom_search_content_types_weight', 0)),
-      '#weight' => variable_get('custom_search_content_types_weight', 0),
-    );
-  }
-  $form['order']['custom_search_order']['criteria_or'] = array(
-    '#title'  => t('Advanced search criterion: Or'),
-    'sort'    => array('#type' => 'weight', '#default_value' => variable_get('custom_search_criteria_or_weight', 6)),
-    '#weight' => variable_get('custom_search_criteria_or_weight', 6),
-  );
-  $form['order']['custom_search_order']['criteria_phrase'] = array(
-    '#title'  => t('Advanced search criterion: Phrase'),
-    'sort'    => array('#type' => 'weight', '#default_value' => variable_get('custom_search_criteria_phrase_weight', 7)),
-    '#weight' => variable_get('custom_search_criteria_phrase_weight', 7),
-  );
-  $form['order']['custom_search_order']['criteria_negative'] = array(
-    '#title'  => t('Advanced search criterion: Negative'),
-    'sort'    => array('#type' => 'weight', '#default_value' => variable_get('custom_search_criteria_negative_weight', 8)),
-    '#weight' => variable_get('custom_search_criteria_negative_weight', 8),
-  );
-  $form['order']['custom_search_order']['custom_paths'] = array(
-    '#title'  => t('Custom search paths'),
-    'sort'    => array('#type' => 'weight', '#default_value' => variable_get('custom_search_custom_paths_weight', 9)),
-    '#weight' => variable_get('custom_search_custom_paths_weight', 9),
-  );
-  $form['order']['custom_search_order']['submit_button'] = array(
-    '#title'  => t('Submit button'),
-    'sort'    => array('#type' => 'weight', '#default_value' => variable_get('custom_search_submit_button_weight', 10)),
-    '#weight' => variable_get('custom_search_submit_button_weight', 10),
-  );
+  $form = array_merge($form, custom_search_ordering_admin_form());
 
   $form['#attributes'] = array('enctype' => 'multipart/form-data');
   $form['#submit'][] = 'custom_search_admin_submit';
@@ -192,26 +135,8 @@ function custom_search_admin() {
 function custom_search_admin_submit($form, &$form_state) {
   foreach ($form_state['values']['custom_search_order'] as $key => $data) {
     variable_set('custom_search_' . $key . '_weight', $data['sort']);
+    variable_set('custom_search_' . $key . '_region', $data['region']);
   }
-}
-
-/**
- * Theme the re-ordering form.
- */
-function theme_custom_search_sort_form($form) {
-  drupal_add_tabledrag('custom-search-sort', 'order', 'sibling', 'sort');
-  $header = array(t('Elements'), 'sort');
-  foreach (element_children($form) as $key) {
-    // Add class to group weight fields for drag and drop.
-    $form[$key]['sort']['#attributes']['class'] = 'sort';
-    $row = array();
-    $row[] = $form[$key]['#title'];
-    $row[] = drupal_render($form[$key]['sort']);
-    $rows[] = array('data' => $row, 'class' => 'draggable');
-  }
-  $output = theme('table', $header, $rows, array('id' => 'custom-search-sort'));
-  $output .= drupal_render($form);
-  return $output;
 }
 
 function custom_search_content_admin() {

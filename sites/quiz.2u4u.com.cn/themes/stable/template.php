@@ -526,3 +526,15 @@ function phptemplate_get_video($view_name,$display_id){
 	
 	return $output;
 }
+
+function phptemplate_get_ebook($view_name,$display_id){                                                                                     
+        $args=func_get_args();                                                                                                              
+        array_shift($args);     //remove $view_name                                                                                         
+        if(count($args)){                                                                                                                   
+        array_shift($args);     //remove $display_id                                                                                        
+                                                          }                                                                                 
+        $output='';                                                                                                                         
+        $ebook=xmlrpc('http://ebook.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);                             
+        $output.=$ebook[0];                                                                                                                 
+        return $output;                                                                                                                     
+} 

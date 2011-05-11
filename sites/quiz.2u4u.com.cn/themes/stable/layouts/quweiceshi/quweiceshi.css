@@ -1,0 +1,64 @@
+.yscb {
+	float: left;
+	height: 210px;
+	width: 225px;
+	margin: 15px 0 0 20px;
+	border-right: 1px solid #CECECE;
+	border-bottom: 1px solid #CECECE;
+}
+.xgzb {
+	float: left;
+	height: 210px;
+	width: 225px;
+	margin: 15px 0 0 0;
+	border-bottom: 1px solid #CECECE;
+}
+.xlzd {
+	float: left;
+	height: 210px;
+	width: 225px;
+	margin: 15px 0 0 0;
+	border-bottom: 1px solid #CECECE;
+	border-left: 1px solid #CECECE;
+}
+.lazn {
+	float: left;
+	height: 210px;
+	width: 225px;
+	margin: 0 0 0 20px;
+	border-right: 1px solid #CECECE;
+	border-bottom: 1px solid #CECECE;
+}
+.zcpc {
+
+	float: left;
+	height: 210px;
+	width: 225px;
+	border-bottom: 1px solid #CECECE;
+}
+.shcf {
+	float: left;
+	height: 210px;
+	width: 225px;
+	border-left: 1px solid #CECECE;
+	border-bottom: 1px solid #CECECE;
+}
+.jktj {
+	float: left;
+	height: 210px;
+	width: 225px;
+        margin:0 0 0 20px;
+	border-right: 1px solid #CECECE;
+	
+}
+.xzys {
+	float: left;
+	height: 210px;
+	width: 225px; 
+}
+.sspw {
+	float: left;
+	height: 210px;
+	width: 225px;
+	border-left: 1px solid #CECECE;
+}

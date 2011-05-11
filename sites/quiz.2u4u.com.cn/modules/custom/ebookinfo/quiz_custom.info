@@ -1,0 +1,5 @@
+; $Id$
+name = ebook info
+description = quiz中获得ebook的相关电子书
+core = 6.x
+php = 5.0

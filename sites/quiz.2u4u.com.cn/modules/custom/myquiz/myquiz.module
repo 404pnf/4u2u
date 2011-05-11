@@ -119,3 +119,4 @@ function theme_myquiz_get_user_results($results) {
   $output .= '<p><em>' . t('@quiz that are not evaluated may have different score and grade when it is done.', array('@quiz' => QUIZ_NAME)) . '</em></p>';
   return $output;
 }
+

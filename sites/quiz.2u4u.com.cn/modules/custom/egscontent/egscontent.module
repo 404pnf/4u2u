@@ -1,0 +1,206 @@
+<?php
+
+
+
+/**
+ * 实现区块钩子，测试中心EGS的各种区块
+ */
+function egscontent_block($op = 'list', $delta = 0, $edit = array()){
+	switch ($op){
+		case 'list':
+		
+		//EGS 题库
+			//大学四级题库
+			$blocks[0]['info'] = t('EGS:大学英语四级题库');
+			//$blocks[0]['cache'] = BLOCK_NO_CACHE;
+			$blocks[0]['cache'] = BLOCK_CACHE_GLOBAL;
+			//大学六级题库
+			$blocks[1]['info'] = t('EGS:大学英语六级题库');
+			$blocks[1]['cache'] = BLOCK_CACHE_GLOBAL;
+			//专业四级题库
+			$blocks[2]['info'] = t('EGS:英语专业四级题库');
+			$blocks[2]['cache'] = BLOCK_CACHE_GLOBAL;
+			//专业八级题库
+			$blocks[3]['info'] = t('EGS:英语专业八级题库');
+			$blocks[3]['cache'] = BLOCK_CACHE_GLOBAL;
+			//高校英语应用能力考试题库
+			$blocks[4]['info'] = t('EGS:高校英语应用能力考试题库');
+			$blocks[4]['cache'] = BLOCK_CACHE_GLOBAL;
+			//全国英语等级考试题库
+			$blocks[5]['info'] = t('EGS:全国英语等级考试题库');
+			$blocks[5]['cache'] = BLOCK_CACHE_GLOBAL;
+			
+		//EGS 得分排行榜
+			//大学四级
+			$blocks[6]['info'] = t('EGS:四级排行');
+			//$blocks[6]['cache'] = BLOCK_CACHE_GLOBAL;
+			$blocks[6]['cache'] = BLOCK_CACHE_GLOBAL;
+			//大学六级
+			$blocks[7]['info'] = t('EGS:六级排行');
+			$blocks[7]['cache'] = BLOCK_CACHE_GLOBAL;
+			//专业四级
+			$blocks[8]['info'] = t('EGS:专四排行');
+			$blocks[8]['cache'] = BLOCK_CACHE_GLOBAL;
+			//专业八级
+			$blocks[9]['info'] = t('EGS:专八排行');
+			$blocks[9]['cache'] = BLOCK_CACHE_GLOBAL;
+			//高校英语应用能力考试
+			$blocks[10]['info'] = t('EGS:PRETCO排行');
+			$blocks[10]['cache'] = BLOCK_CACHE_GLOBAL;
+			//全国英语等级考试
+			$blocks[11]['info'] = t('EGS:PETS排行');
+			$blocks[11]['cache'] = BLOCK_CACHE_GLOBAL;
+			//专项训练
+			$blocks[12]['info'] = t('EGS:专项排行');
+			$blocks[12]['cache'] = BLOCK_CACHE_GLOBAL;
+			//英语水平定位测试
+			$blocks[13]['info'] = t('EGS:水平排行');
+			$blocks[13]['cache'] = BLOCK_CACHE_GLOBAL;
+			return $blocks;
+		
+		case 'view':
+			//global $user;
+			if ($delta == 0) {
+				//$block['subject'] = t('大学英语四级');
+        		$block['content'] = theme('egscontent_CET4_block',array());
+			}
+
+			if($delta == 1){
+				//$block['subject'] = t('大学英语六级');
+        		$block['content'] = theme('egscontent_CET6_block',array());
+			}
+			if($delta == 2){
+				//$block['subject'] = t('英语专业四级');
+       		 	$block['content'] = theme('egscontent_TEM4_block',array());
+			}
+			if($delta == 3){
+				//$block['subject'] = t('英语专业八级');
+        		$block['content'] = theme('egscontent_TEM8_block',array());
+			}
+			if($delta == 4){
+				//$block['subject'] = t('高校英语应用能力考试');
+        		$block['content'] = theme('egscontent_PRETCO_block',array());
+			}
+			if($delta == 5){
+				//$block['subject'] = t('全国英语等级考试');
+        		$block['content'] = theme('egscontent_PETS_block',array());
+			}
+			
+			
+			if ($delta == 6) {
+				$block['subject'] = t('四级');
+        		$block['content'] = theme('egscontent_userscore_CET4_block',array());
+			}
+			if($delta == 7){
+				$block['subject'] = t('六级');
+        		$block['content'] = theme('egscontent_userscore_CET6_block',array());
+			}
+			if($delta == 8){
+				$block['subject'] = t('专四');
+       		 	$block['content'] = theme('egscontent_userscore_TEM4_block',array());
+			}
+			if($delta == 9){
+				$block['subject'] = t('专八');
+        		$block['content'] = theme('egscontent_userscore_TEM8_block',array());
+			}
+			if($delta == 10){
+				$block['subject'] = t('PRETCO');
+        		$block['content'] = theme('egscontent_userscore_PRETCO_block',array());
+			}
+			if($delta == 11){
+				$block['subject'] = t('PETS');
+        		$block['content'] = theme('egscontent_userscore_PETS_block',array());
+			}
+			if($delta == 12){
+				$block['subject'] = t('专项');
+        		$block['content'] = theme('egscontent_userscore_zhuanxiang_block',array());
+			}
+			if($delta == 13){
+				$block['subject'] = t('水平');
+        		$block['content'] = theme('egscontent_userscore_shuipin_block',array());
+			}
+			return $block;
+		
+	}	
+}
+
+/**
+ * 实现hook_theme钩子
+ */
+function egscontent_theme(){
+	return array(
+		  //大学英语四级主题函数
+		'egscontent_CET4_block' => array(
+		  'variables' => array(),
+				'file' => 'egscontent.pages.inc',
+		),
+		//大学英语六级主题函数
+			'egscontent_CET6_block' => array(
+		  'variables' => array(),
+				'file' => 'egscontent.pages.inc',
+		),
+		//英语专业四级主题函数
+			'egscontent_TEM4_block' => array(
+		  'variables' => array(),
+				'file' => 'egscontent.pages.inc',
+		),
+		//英语专业八级主题函数
+			'egscontent_TEM8_block' => array(
+		  'variables' => array(),
+				'file' => 'egscontent.pages.inc',
+		),
+		//高校英语应用能力考试主题函数
+			'egscontent_PRETCO_block' => array(
+		  'variables' => array(),
+				'file' => 'egscontent.pages.inc',
+		),
+		//全国英语等级考试主题函数
+			'egscontent_PETS_block' => array(
+		  'variables' => array(),
+				'file' => 'egscontent.pages.inc',
+		),
+    
+    //得分排行榜
+      //四级主题函数
+		'egscontent_userscore_CET4_block' => array(
+		  'variables' => array(),
+				'file' => 'egscontent.pages.inc',
+		),
+		//六级主题函数
+			'egscontent_userscore_CET6_block' => array(
+		  'variables' => array(),
+				'file' => 'egscontent.pages.inc',
+		),
+		//专四主题函数
+			'egscontent_userscore_TEM4_block' => array(
+		  'variables' => array(),
+				'file' => 'egscontent.pages.inc',
+		),
+		//专八主题函数
+			'egscontent_userscore_TEM8_block' => array(
+		  'variables' => array(),
+				'file' => 'egscontent.pages.inc',
+		),
+		//高校英语应用能力考试主题函数
+			'egscontent_userscore_PRETCO_block' => array(
+		  'variables' => array(),
+				'file' => 'egscontent.pages.inc',
+		),
+		//全国英语等级考试主题函数
+			'egscontent_userscore_PETS_block' => array(
+		  'variables' => array(),
+				'file' => 'egscontent.pages.inc',
+		),
+       //专项训练函数
+		'egscontent_userscore_zhuanxiang_block' => array(
+		  'variables' => array(),
+				'file' => 'egscontent.pages.inc',
+		),
+		//英语水平定位测试函数
+			'egscontent_userscore_shuipin_block' => array(
+		  'variables' => array(),
+				'file' => 'egscontent.pages.inc',
+		),
+  );
+}
+

@@ -1,0 +1,23 @@
+.zuo{   
+    border-right: 1px dashed #CECECE;
+    float: left;
+    height: 310px;
+    margin: 20px 0 0 15px; 
+    width: 200px;  
+}
+
+.zhong{
+    border-right: 1px dashed #CECECE;
+    float: left; 
+    height: 310px;
+    margin: 20px 0 0 5px; 
+    width: 460px;
+}
+
+
+.you{
+    float: left; 
+    height: 310px;
+    margin: 20px 0 0 15px; 
+    width: 200px;
+}

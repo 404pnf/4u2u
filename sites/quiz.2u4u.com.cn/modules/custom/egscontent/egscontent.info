@@ -1,0 +1,4 @@
+name = EGS content
+description = EGS 跨域访问，以及处理EGS站内链接
+core = 6.x
+package = Other

@@ -23,7 +23,7 @@ $p = drupal_get_path('module', 'quiz') .'/theme/';
 $q_image = $p. 'question_bg.png';
 ?>
 
-<h2><?php print t('Question Results');?></h2>
+<h2><?php print t('测试报告');?></h2>
 
 <dl class="quiz-report">
 
@@ -49,7 +49,7 @@ foreach ($form as $key => $sub_form):
 	</dt>
 
     <dd>
-	  <p><strong><?php print t('Response')?>: </strong></p>
+	  <div class="response"><p><strong><?php print t('Response')?>: </strong></p></div>
 
 
       <?php print drupal_render($sub_form['response']); ?>

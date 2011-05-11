@@ -1,0 +1,119 @@
+<?php
+function quiz_custom_block($op = 'list', $delta = 0, $edit = array()){
+  if ($op == 'list') {
+    $blocks[0]['info'] = t('ebook 4');
+    $blocks[0]['cache'] = BLOCK_CACHE_GLOBAL;
+    
+    $blocks[1]['info'] = t('ebook 6');
+    $blocks[1]['cache'] = BLOCK_CACHE_GLOBAL;
+    
+    $blocks[2]['info'] = t('ebook e4');
+    $blocks[2]['cache'] = BLOCK_CACHE_GLOBAL; 
+    
+    $blocks[3]['info'] = t('ebook e8');
+    $blocks[3]['cache'] = BLOCK_CACHE_GLOBAL; 
+     
+    $blocks[4]['info'] = t('ebook pets');
+    $blocks[4]['cache'] = BLOCK_CACHE_GLOBAL; 
+    
+    $blocks[5]['info'] = t('ebook pretco');
+    $blocks[5]['cache'] = BLOCK_CACHE_GLOBAL; 
+    return $blocks; 
+  }
+	
+  if($op == 'view'){
+  	$block = array();
+    switch ($delta) {
+      case 0:
+	      	$block['subject'] = t('');
+           	$block['content'] = quiz_custom_4();
+	  	return $block;
+      case 1:
+	      	$block['subject'] = t('');
+	   	$block['content'] = quiz_custom_6();
+		return $block;
+      case 2:
+	      	$block['subject'] = t('');
+	    	$block['content'] = quiz_custom_e4();
+		return $block;
+      case 3:
+	      	$block['subject'] = t('');
+	    	$block['content'] = quiz_custom_e6();
+		return $block; 	          
+      case 4:
+	      	$block['subject'] = t('');
+	    	$block['content'] = quiz_custom_pets();
+		return $block; 	
+      case 5:
+	      	$block['subject'] = t('');
+	    	$block['content'] = quiz_custom_pretco();
+		return $block; 	
+
+    }
+  }   
+}
+function quiz_custom_4(){
+    $output ="";
+    $ebook_content = quiz_custom_ebookinfo('yuedu_taxonomy_term','block_4',10627);
+    $output.= $ebook_content;
+    $output.="<div class='exam4_more'><a href='http://ebook.2u4u.com.cn/taxonomy/term/10627'>>>更多</a>
+              </div>";
+
+    return $output;
+}
+function quiz_custom_6(){
+    $output ="";
+    $ebook_content = quiz_custom_ebookinfo('yuedu_taxonomy_term','block_4',22);
+    $output.= $ebook_content;
+    $output.="<div class='exam6_more'><a href='http://ebook.2u4u.com.cn/taxonomy/term/22'>>>更多</a>
+              </div>";
+    return $output;
+}
+function quiz_custom_e4(){
+    $output ="";
+    $ebook_content = quiz_custom_ebookinfo('yuedu_taxonomy_term','block_4',11063);
+    $output.= $ebook_content;
+    $output.="<div class='expert4_more'><a href='http://ebook.2u4u.com.cn/taxonomy/term/11063'>>>更多</a>
+              </div>";
+    return $output;
+}
+function quiz_custom_e6(){
+    $output ="";
+    $ebook_content = quiz_custom_ebookinfo('yuedu_taxonomy_term','block_4',11215);
+    $output.= $ebook_content;
+    $output.="<div class='expert6_more'><a href='http://ebook.2u4u.com.cn/taxonomy/term/11215'>>>更多</a>
+              </div>";
+    return $output;
+}
+function quiz_custom_pets(){
+    $output ="";
+    $ebook_content = quiz_custom_ebookinfo('yuedu_taxonomy_term','block_4',11215);
+    $output.= $ebook_content;
+    $output.="<div class='pets_more'><a href='http://ebook.2u4u.com.cn/taxonomy/term/10627'>>>更多</a>
+              </div>";
+    return $output;
+}
+function quiz_custom_pretco(){
+    $output ="";
+    $ebook_content = quiz_custom_ebookinfo('yuedu_taxonomy_term','block_4',8629);
+    $output.= $ebook_content;
+    $output.="<div class='pretco_more'><a href='http://ebook.2u4u.com.cn/taxonomy/term/8629'>>>更多</a>
+              </div>";
+    return $output;
+}
+function quiz_custom_ebookinfo($view_name,$display_id){
+        $args=func_get_args();
+        array_shift($args);     //remove $view_name
+        if(count($args)){
+            array_shift($args);     //remove $display_id
+        }
+        $output='';
+        $ebook=xmlrpc('http://ebook.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);
+        $output.=$ebook[0];
+        return $output;
+} 
+
+
+
+
+

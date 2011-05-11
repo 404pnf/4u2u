@@ -48,3 +48,6 @@ core = "6.x"
 project = "stable"
 datestamp = "1256756703"
 
+; Panels layouts. You can place multiple layouts under the "layouts" folder.
+plugins[panels][layouts] = layouts
+

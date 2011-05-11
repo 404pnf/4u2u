@@ -186,7 +186,7 @@ function quiz_question_answering_form($form_state, $node, $include_nid_in_id = F
   if (!empty($quiz->backwards_navigation) && !empty($node->question_number)) {
     $form['navigation']['back'] = array(
       '#type' => 'submit',
-      '#value' => t('Back'),
+      '#value' => t('上一题'),
       '#attributes' => array('class' => 'q-back-button'),
     );
     if ($is_last) {

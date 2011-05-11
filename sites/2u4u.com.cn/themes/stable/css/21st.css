@@ -1,0 +1,70 @@
+/* Edit By Zhao */
+
+/* 左中右三块儿结构 */
+#left_21st{width: 272px;float:left; }
+#middle_21st{ float:left; width:436px; margin:0 10px 0 10px;}
+#right_21st{float:right; width:232px;}
+
+/* 各个模块结构分布 */
+#zhichang,#translate{border: 1px solid #D6DEE0;width: 270px; margin-bottom:10px;}
+#focus,#englishlearning,#englishquiz{ width:434px;border: 1px solid #D6DEE0;margin-bottom:10px; overflow:auto}
+#RSS,#baowanglianxian{width: 230px;border: 1px solid #D6DEE0;margin-bottom:10px;}
+
+/* 全页公用样式布局 */
+#zhichang h2,#translate h2,#RSS h2,#baowanglianxian h2,#englishlearning h2,#englishquiz h2{ background-image: url("images/back01.gif");color: #990000;font-size: 14px;line-height:33px; text-indent:2em;}
+.view-content{ padding:10px 0 20px 0}
+.view-content .views-row{ width:84%; height:23px; line-height:23px; overflow:hidden; margin:auto;}
+.view-content .views-row a{ color:#3d3d3d}
+.view-content .views-row .views-label-title{ color:#c60100; font-weight:700; margin-right:2px;}
+body{font-size:13px; background:#FFF}
+/* focus 局部布局 */
+    #focus .view-dom-id-4 .attachment-before{ float:right; margin-right:6px; display:inline}	
+    #focus .view-dom-id-4 .view-content{ width:200PX; height:240PX; float:left;margin:6PX; position:relative;overflow:hidden; display:inline;}
+	#focus .view-dom-id-4 .view-content .views-row{ width:200PX; height:240PX;}
+	#focus .view-dom-id-4 .attachment-before .view-content .views-row{background:#FFF; line-height:18px; text-indent:1.4em; height:39px; margin-bottom:14px;}
+	#focus .view-dom-id-4 .attachment-before .view-content .views-row .views-field-title{ height:20PX;background:url("images/style.gif") no-repeat scroll 2px -250px transparent;overflow:hidden; }
+	#focus .view-dom-id-4 .attachment-before .view-content .views-row .views-field-title a{ color:#B40000}
+	#focus .view-dom-id-4 .attachment-before .view-content .views-row .views-field-body p{ color:#535353}
+	#focus .view-dom-id-4 .attachment-before .view-content .views-row-1{ height:69PX; background:#FFF; text-indent:0; line-height:20px;}
+	#focus .view-dom-id-4 .attachment-before .view-content .views-row-1 .views-field-title{ height:20px; margin-bottom:6px; overflow:hidden; width:100%; font-weight:700 ; background:none}
+	#focus .view-dom-id-4 .attachment-before .view-content .views-row-1 .views-field-title a{color:#535353}
+	
+/* 英语学习和英语考试局部布局 */
+
+#englishlearning .view-content .views-row,
+#englishquiz .view-content .views-row{ width:280px; margin-top:1px;}
+#englishlearning .view-content .views-row-first,
+#englishquiz .view-content .views-row-first{ float:left; width:114px; height:200px; margin:10px 10px 10px 16px; display:inline}
+#englishlearning .view-content .views-row-first .views-field-field-21st-pic-fid,
+#englishquiz .view-content .views-row-first .views-field-field-21st-pic-fid{ border: 1px solid #DBE1E6; text-align:center; height:82px;}
+#englishlearning .view-content .views-row-first .views-field-field-21st-pic-fid img,
+#englishquiz .view-content .views-row-first .views-field-field-21st-pic-fid img{margin:5px;}
+#englishlearning .view-content .views-row-first .views-field-title,
+#englishquiz .view-content .views-row-first .views-field-title{ padding:4px 0px}
+#englishlearning .view-content .views-row-2,
+#englishquiz .view-content .views-row-2{ padding-top:10px;}
+#englishlearning .view-content,
+#englishquiz .view-content{ padding:0}
+#englishlearning .view-content .views-row .views-field-title .field-content p,
+#englishquiz .view-content .views-row .views-field-title .field-content p{ float:left}
+#englishlearning .view-content .views-row .views-field-title .field-content p a,
+#englishquiz .view-content .views-row .views-field-title .field-content p a{ display:block; margin-right:4px; color:#C60100}
+
+/* 热点翻译局部布局 */
+#translate .view-content label { display:none}
+#translate .views-row{ height:50px; line-height:18px; text-indent:1em;}
+#translate .views-row .views-field-title{ background:url("images/style.gif") no-repeat scroll 0px -250px transparent; }
+#translate .views-row .views-field-title a{color:#B40000}
+#translate .views-row .views-field-body p{color:#535353}
+
+/* 报网连线局部布局 */
+
+#baowanglianxian .attachment-before .views-row-last{ height:84px;}
+#baowanglianxian .attachment-before .views-row-last .views-field-field-21st-pic-fid{border: 1px solid #DBE1E6; text-align:center; height:82px; width:110px; }
+#baowanglianxian .attachment-before .views-row-last .views-field-field-21st-pic-fid img{margin:5px;}
+#baowanglianxian .view-dom-id-7 .view-content{ padding-bottom:0}
+
+
+	
+	
+

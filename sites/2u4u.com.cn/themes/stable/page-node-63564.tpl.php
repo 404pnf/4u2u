@@ -1,0 +1,155 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print $language->language ?>" lang="<?php print $language->language ?>" dir="<?php print $language->dir ?>">
+
+  <head>
+    <title><?php print $head_title; ?></title>
+    <?php print $head; ?>
+    <?php print $styles; ?>
+    <link type="text/css" rel="stylesheet" media="all" href="/sites/2u4u.com.cn/themes/stable/css/21st.css" />
+
+    <!--[if lte IE 6]><style type="text/css" media="all">@import "<?php print $base_path . path_to_theme() ?>/css/ie6.css";</style><![endif]-->
+    <!--[if IE 7]><style type="text/css" media="all">@import "<?php print $base_path . path_to_theme() ?>/css/ie7.css";</style><![endif]-->
+	
+	<?php print $scripts; ?>
+	
+  <body class="<?php print $body_classes; ?>">
+    
+    <div id="skip"><a href="#content">Skip to Content</a> <a href="#navigation">Skip to Navigation</a></div>  
+    <div id="page">
+
+	
+    <div id="header">
+	<div id="header-middle">
+      <div id="logo-title">
+	
+        <?php if (!empty($logo)): ?>
+		  <a href="<?php print $front_page; ?>" title="<?php print $site_name; ?>" rel="home" id="logo">
+            <img src="<?php print $logo; ?>" alt="<?php print $site_name; ?>"/>
+          </a>
+        <?php endif; ?>
+
+      </div> <!-- /logo-title -->
+
+      <?php if ($header): ?>
+        <div id="header-region">
+          <?php print $header; ?>
+        </div>
+      <?php endif; ?>
+
+      <?php print $search_box; ?>
+	</div>
+	
+	
+	    <?php if (!empty($primary_links) or !empty($secondary_links)): ?>
+          <div id="navigation" class="menu <?php if (!empty($primary_links)) { print "with-main-menu"; } if (!empty($secondary_links)) { print " with-sub-menu"; } ?>">
+            <?php if (!empty($primary_links)){ print theme('links', $primary_links, array('id' => 'primary', 'class' => 'links main-menu')); } ?>
+            <?php if (!empty($secondary_links)){ print theme('links', $secondary_links, array('id' => 'secondary', 'class' => 'links sub-menu')); } ?>
+          </div> <!-- /navigation -->
+        <?php endif; ?>
+    </div> <!-- /header -->
+
+    <!-- ______________________ MAIN _______________________ -->
+
+    <div id="main" class="clearfix">
+    
+      <div id="content">
+        <div id="content-inner" class="inner column center">
+
+            </div> <!-- /#content-header -->
+
+          <div id="content-area">
+
+	<div id="left_21st">
+		<div class="21st" id="zhichang">
+                <h2>zhichang</h2>
+                <?php print views_embed_view('21st_page', $display_id = 'block_1');?>
+                </div>
+
+		<div class="21st" id="translate">
+                <h2>translate</h2>
+                <?php print views_embed_view('21st_page', $display_id = 'block_2');?>
+                </div>
+
+	</div>
+
+
+	 <div id="middle_21st">
+
+		<div class="21st" id="focus">
+                <?php print views_embed_view('21st_page', $display_id = 'block_3');?>
+                </div>
+
+		<div class="21st" id="englishlearning">
+                <h2>englishlearning</h2>
+                <?php print views_embed_view('21st_page', $display_id = 'block_5');?>
+                </div>
+
+		 <div class="21st" id="englishquiz">
+                <h2>englishquiz</h2>
+                <?php print views_embed_view('21st_page', $display_id = 'block_6');?>
+                </div>
+
+	</div> 
+
+
+	<div id="right_21st">
+	
+		<div class="21st" id="RSS">
+                <h2>RSS</h2>
+                </div>
+
+		<div class="21st" id="baowanglianxian">
+                <h2>baowanglianxian</h2>
+                <?php print views_embed_view('21st_page', $display_id = 'block_7');?>
+                </div>
+
+
+	</div>
+		
+			
+		
+		
+          </div>
+        </div> <!-- /content-inner /content -->
+
+        <?php if ($right): ?>
+          <div id="sidebar-second" class="column sidebar second">
+            <div id="sidebar-second-inner" class="inner">
+              <?php print $right; ?>
+            </div>
+          </div>
+        <?php endif; ?> <!-- /sidebar-second -->
+
+      </div> <!-- /main -->
+
+      <!-- ______________________ FOOTER _______________________ -->
+
+      <?php if(!empty($footer_message) || !empty($footer_block)): ?>
+        <div id="footer">
+          <?php print $footer_message; ?>
+          <?php print $footer_block; ?>
+        </div> <!-- /footer -->
+      <?php endif; ?>
+
+    </div> <!-- /page -->
+	
+	
+	<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F116fea821e3bfb6c5a7d4b187a50b502' type='text/javascript'%3E%3C/script%3E"));
+</script>
+        <SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery-ui.min.js"></SCRIPT>
+	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.spasticNav.js"></SCRIPT>
+	
+	<?php if($closure_region): ?>
+		<div id="closure_region">
+			<?php print $closure_region; ?>
+			<script type="text/javascript">
+				$(function(){$('a:[href^=http][href*=2u4u.com.cn]').attr('target','_blank');});
+			</script>
+		</div>
+	<?php endif; ?>
+	<?php print $closure; ?>
+  </body>
+</html>

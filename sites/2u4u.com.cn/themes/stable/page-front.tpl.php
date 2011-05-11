@@ -127,7 +127,7 @@
                 </div>
             </div>
 		</div> 
-		        <div class="recommend">用户积分中心</div>
+		        <div class="recommend"><a href="http://my.2u4u.com.cn">用户中心</a></div>
       
        <!--积分中心标签页-->
         <div class="jifen">

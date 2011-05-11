@@ -328,6 +328,7 @@ top:243px;
     font-weight:normal;
     color:#797979;
     line-height:2em;
+    height:110px;overflow:hidden;
 }
 /* 系列图书描述布局 end*/
 
@@ -450,7 +451,7 @@ display:none;
 	height:99px;
 	margin-bottom:3px;
 }
-.node-type-ebook .relatebox .view-media-taxonomy-term .imagecache-vedio_125_94{
+.node-type-ebook .relatebox .view-media-taxonomy-term img{
 	margin:5px 0 0 4px;
 }
 .node-type-ebook .relatebox .more-link{

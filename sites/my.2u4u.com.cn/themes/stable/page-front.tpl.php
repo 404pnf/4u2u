@@ -67,11 +67,11 @@
 			  <?php if(!empty($node) && $node->type == 'readthink'): ?>
 				<?php print $breadcrumb; ?>
 			  <?php endif; ?>
-
+<!--
               <?php if(!empty($title)): ?>
                 <div class="title_bg"><h1 class="title"><?php print $title; ?></h1></div>
               <?php endif; ?>
-
+-->
               <?php print $messages; ?>
 
               <?php print $help; ?> 
@@ -85,7 +85,14 @@
 
           <div id="content-area">
         
-	    <?php print $content; ?>
+	   
+            <div class="personal">
+                <?php
+                   $personal = module_invoke('my2u4u','block','view','6');
+                   PRINT($personal['content']);
+                 ?>
+
+            </div>
             <?php 
                 global $user;
                 if ($user->uid>0){
@@ -147,6 +154,83 @@
 					$('#primary li.menu-174 a').addClass('active');
 				});
 			</script>
+			
+	<script type="text/javascript">
+		$(function(){
+		
+			//$('.feed a:[href^=space.php]').each(function(i){
+			$('.feed a[href*=.php?]').not('[href^=http://]').each(function(i){
+				//alert($(this).attr('href'));
+				var uchome_href = 'http://u.2u4u.com.cn/home/'+$(this).attr('href');
+				$(this).attr('href',uchome_href);
+			});//用户名的链接
+			
+			$('.feed img[src*=image]').not('[src*=http://u.2u4u.com.cn]').each(function(i){
+				var uchome_src = 'http://u.2u4u.com.cn/home/'+$(this).attr('src');
+				$(this).attr('src',uchome_src);
+			});//调用的图片img的链接src
+			
+			$('.feed a[id^=feedcomment_a_op]').each(function(i){
+				var uchome_href = $(this).parent().find(".feed_content .detail a").attr('href');
+				$(this).attr('href',uchome_href);
+			});//评论链接
+			
+			$('.feed a[id^=do_a_op_]').each(function(i){
+				//$(this).next().wrap('<div />').attr('style','display:none');
+				$(this).attr('style','display:none');
+				
+			});//回复链接隐藏
+			
+			$('a#a_feed_more').attr('href','http://u.2u4u.com.cn/home/');//查看更多动态链接到全站动态
+			
+		});
+         function feed_more_show(feedid) {
+      
+             var showid = '#feed_more_'+feedid;
+             var opid = '#feed_a_more_'+feedid;
+             
+ 		 $(opid).removeAttr("onclick");
+ 		 
+	     $(showid).attr({style:"display:block"});
+	     $(showid).addClass('sub_doing');
+	     $(opid).removeClass('close_class');
+		 $(opid).addClass('show_class');
+		
+	     $(opid).html('<< 收起列表');
+	     $(opid+".show_class").click(function(event) {
+	     	if(this.className == "show_class")
+		     	feed_more_close(feedid);
+		     
+		     //alert(this.className);
+	     });
+	     return false;
+	 }
+         
+     function feed_more_close(feedid) {
+     	
+	     var showid = '#feed_more_'+feedid;
+	     var opid = '#feed_a_more_'+feedid;
+			       
+		$(opid).removeAttr("onclick");
+				          
+	     $(showid).attr({style:"display:none"});
+	     $(showid).removeClass('sub_doing');
+	     $(opid).removeClass('show_class');
+		 $(opid).addClass('close_class');
+		 
+	     $(opid).html('>> 更多动态');
+	      $(opid+".close_class").click(function(event) {
+	     	if(this.className == "close_class")
+	            feed_more_show(feedid);
+	             return false;
+   	      });
+   	      
+   	      return false;
+   }
+   function feedcomment_get(feedid) {
+   		//http://u.2u4u.com.cn/home/space.php?uid=78293&do=blog&id=43829
+	}
+</script>
 	<script type="text/javascript">
 var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
 document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F116fea821e3bfb6c5a7d4b187a50b502' type='text/javascript'%3E%3C/script%3E"));

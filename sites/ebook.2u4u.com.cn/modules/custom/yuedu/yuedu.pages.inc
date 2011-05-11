@@ -31,11 +31,15 @@ function yuedu_transfer_page($nid, $page) {
   }
 	elseif ($flag && $flag->is_flagged($node->nid)) {
 		//如果是匿名用户,并且页码超过了匿名用户页码限制,那么显示内容拒绝页面
+		/*
 		if($user->uid ==0 && $page > $anonymous_limit){
 			 file_transfer(file_directory_path() . '/access.ds', array ());
 		}else{
 			file_transfer(file_directory_path() . '/pdf/swf/' . $nid . '/' . $page . ".ds", array ());
 		}
+		*/
+		//对于标记为免费的图书,匿名用户也可以查看全文,最新修改2011-5-11
+		file_transfer(file_directory_path() . '/pdf/swf/' . $nid . '/' . $page . ".ds", array ());
   }
 	else{
 	  if(yuedu_check_access($nid)){

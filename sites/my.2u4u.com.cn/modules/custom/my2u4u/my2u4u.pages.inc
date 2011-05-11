@@ -8,20 +8,20 @@
 	$output = "";
 	global $user;
 	$uid = $user->uid;
-	
 	if(arg(0)=='user'&& arg(1)>0){
 		$uid = arg(1);
 	}
+	$name = $user->name;
         db_set_active('discuz');
 	$sql = "SELECT uid, username, extcredits2  FROM `uu_members` where username='%s' ";  //%s占位符
 	$rs = db_query($sql,$name);
         db_set_active('default');
         while($row = db_fetch_object($rs)){	
-	        $dz_points= $row->extcredits2 ;
+	        $dz_money= $row->extcredits2;
         }	
 	$output .= '<ul class="my_content">';
 		$output .= '<li class="user_points">'.  t('悠游积分：').userpoints_get_current_points($uid). '</li>';
-		$output .= '<li class="discuz_money">'.  t('论坛金钱：').$dz_points. '</li>';
+		$output .= '<li class="discuz_money">'.  t('论坛金钱：').$dz_money. '</li>';
 		$output .= '<li class="chongzhi">'.  l(t('积分充值'),'user/'.$uid.'/chongzhi') . '</li>';
 		$output .= '<li class="buy_points">'.  l(t('积分购买'),'user/'.$uid.'/buyuserpoints'). '</li>';
 		$output .= '<li class="discuz_exchange">'.  l(t('积分兑换'),'user/'.$uid.'/discuz'). '</li>';
@@ -153,7 +153,7 @@ function theme_my2u4u_my_orders_block(){
  * 我的积分回调函数
  */
 function  my2u4u_my_pionts_page($user){
-	$output ="";
+	$output ='<div id = "my_points">';
 	$output .= '<div id="my-points-total-points">';
 	//$output .= '您的当前总积分：';
 	$output .= '您的当前总积分：'.userpoints_get_current_points($user->uid);
@@ -201,7 +201,7 @@ $header = array(
 	$output  .= theme('table', $header, $rows);
 	$output .= theme('pager', NULL, $pager_limit, 0);
 	
-	
+	$output .='</div>';
 	return $output;
 }
 
@@ -210,8 +210,9 @@ $header = array(
  */
 function  my2u4u_my_chongzhi_page($user){
 	$node = node_load(1); 	
-	$output ="";
+	$output ='<div id = "my_chongzhi">';
 	$output .= node_view($node);
+	$output .='</div>';
 	return $output;
 }
 
@@ -221,8 +222,9 @@ function  my2u4u_my_chongzhi_page($user){
  */
 function  my2u4u_my_buyuserpoints_page($user){
 	$node = node_load(2); 	
-	$output ="";
+	$output ='<div id = "my_buyuserpoints">';
 	$output .= node_view($node);
+	$output .='</div>';
 	return $output;
 }
 
@@ -231,35 +233,39 @@ function  my2u4u_my_buyuserpoints_page($user){
  * 购买的图书回调函数
  */
 function  my2u4u_my_boughtbooks_page($user){
-	$output ="";
+	$output ='<div id = "my_boughtbooks">';
+	
 	$output .= get_views_content('ebook','flag_bookmarks_tab','block_2',$user->uid);
 
+	$output .='</div>';
 	return $output;
 }
 /**
  * 看过的图书回调函数
  */
 function  my2u4u_my_readbooks_page($user){
-	$output ="";
-	$output .= '正在建设中';
+	$output ='<div id = "my_readbooks">';
+	
+	$output .= get_views_content('ebook','flag_bookmarks_tab','block_3',$user->uid);
+	$output .='</div>';
 	return $output;
 }
 /**
  * 收藏的图书回调函数
  */
 function  my2u4u_my_favoritebooks_page($user){
-	$output ="";
+	$output ='<div id = "my_favoritebooks">';
 	$output .= get_views_content('ebook','flag_bookmarks_tab','block_1',$user->uid);
-	
+	$output .='</div>';
 	return $output;
 }
 /**
  * 推荐的图书回调函数
  */
 function  my2u4u_my_recommendbooks_page($user){
-	$output ="";
+	$output ='<div id = "my_recommendbooks">';
 	$output .= get_views_content('ebook','whx_frontpage','attachment_1');
-	
+	$output .='</div>';
 	return $output;
 }
 
@@ -268,38 +274,41 @@ function  my2u4u_my_recommendbooks_page($user){
  * 购买的视频回调函数
  */
 function  my2u4u_my_boughtvideos_page($user){
-	$output ="";
+	$output ='<div id = "my_boughtvideos">';
 	//$output .= get_views_content('video','flag_bookmarks_tab','block_1',$user->uid);
 
 	$video_content = xmlrpc('http://video.2u4u.com.cn/xmlrpc.php', 'myvideo.get', $user->uid);
 	$output.= $video_content;
-
+	$output .='</div>';
 	return $output;
 }
 /**
  * 看过的视频回调函数
  */
 function  my2u4u_my_readvideos_page($user){
-	$output ="";
-	$output .= '正在建设中';
+	$output ='<div id = "my_readvideos">';
+	
+	$output .= get_views_content('video','flag_bookmarks_tab','block_2',$user->uid);
+	$output .='</div>';
 	return $output;
 }
 /**
  * 收藏的视频回调函数
  */
 function  my2u4u_my_favoritevideos_page($user){
-	$output ="";
+	$output ='<div id = "my_favoritevideos">';
+	
 	$output .= get_views_content('video','flag_bookmarks_tab','block_1',$user->uid);
-
+	$output .='</div>';
 	return $output;
 }
 /**
  * 推荐的视频回调函数
  */
 function  my2u4u_my_recommendvideos_page($user){
-	$output ="";
+	$output ='<div id = "my_recommendvideos">';
 	$output .= get_views_content('video','whx_frontpage','attachment_6');
-
+	$output .='</div>';
 	return $output;
 }
 
@@ -308,31 +317,50 @@ function  my2u4u_my_recommendvideos_page($user){
  * 做过的测试回调函数
  */
 function  my2u4u_my_donequizs_page($user){
-	$output ="";
-	
+	$output ='<div id = "my_donequizs">';
+	$output .= '<div class = "egs user_result"><img src = "/sites/my.2u4u.com.cn/themes/stable/css/images/redjiantou.gif"/>&nbsp;&nbsp;<a href = "http://test.2u4u.com.cn/html/www/main.html?op=user_result">查看考试测试历史记录</a></div>';
 	$quiz_content = xmlrpc('http://quiz.2u4u.com.cn/xmlrpc.php', 'myquiz.get', $user->uid);
 	$output.= $quiz_content;
-	//drupal_set_message(print_r($quiz_content));
+	$output .='</div>';
 	return $output;
 }
 /**
  * 推荐的测试回调函数
  */
 function  my2u4u_my_recommendquizs_page($user){
-	$output ="";
+
+	$output ='<div id = "my_recommendquizs">';
 		$title_1978 = "<div class='block_title title'> 主题测试 </div>";
 		$title_8587 = "<div class='block_title title'> 考试测试 </div>";
 		$title_1977 = "<div class='block_title title'> 趣味测试 </div>";
 		
 		$content_1978 = get_views_content('quiz','whx_frontpage','block_1',1978);
-		$content_8587 = get_views_content('quiz','whx_frontpage','block_1',8587);
+		//$content_8587 = get_views_content('quiz','whx_frontpage','block_1',8587);
+		
 		$content_1977 = get_views_content('quiz','whx_frontpage','block_1',1977);
 		
+		$content_8587 = '';
+		$content_8587 .='<div class="floatl">';
+		$content_8587 .= '<div class="dxyy_lv4_content"><ul>'.egscontent('paper_list', 1,2).'</ul></div>';	//四级
+	   $content_8587 .= '<div class="dxyy_lv4_content"> <ul>'.egscontent('paper_list', 4,2).'</ul></div>';	//六级
+	   $content_8587 .='</div><div class="floatl">';
+	   
+	   $content_8587 .= '<div class="dxyy_lv4_content"> <ul>'.egscontent('paper_list', 21,2).'</ul></div>';	//专六
+	   $content_8587 .= '<div class="dxyy_lv4_content"> <ul>'.egscontent('paper_list', 22,2).'</ul></div>';	//专八
+	   
+	   $content_8587 .='</div><div class="floatl">';
+	   $content_8587 .= '<div class="dxyy_lv4_content"> <ul>'.egscontent('paper_list', 25,2).'</ul></div>';	//PRETCO高校英语应用能力
+		 $content_8587 .='</div>';
+		 
+	$output .= "<div class='quiz_content quiz_content_8587'>".$title_8587.$content_8587."</div>";	
 	$output .= "<div class='quiz_content quiz_content_1978'>".$title_1978.$content_1978."</div>";
-	$output .= "<div class='quiz_content quiz_content_8587'>".$title_8587.$content_8587."</div>";
+	
 	$output .= "<div class='quiz_content quiz_content_1977'>".$title_1977.$content_1977."</div>";
 	
+	$output .='</div>';
 	return $output;
+	
+	
 }
 
 
@@ -340,18 +368,18 @@ function  my2u4u_my_recommendquizs_page($user){
  * 提出的问题回调函数
  */
 function  my2u4u_my_questions_page($user){
-	$output ="";
+	$output ='<div id = "my_questions">';
 	$output .= get_views_content('answer','my_answer','page_4',$user->uid);
-
+	$output .='</div>';
 	return $output;
 }
 /**
  * 回复的问题回调函数
  */
 function  my2u4u_my_answers_page($user){
-	$output ="";
+	$output ='<div id = "my_answers">';
 	$output .= get_views_content('answer','my_answer','attachment_1',$user->uid);
-
+	$output .='</div>';
 	return $output;
 }
 
@@ -359,16 +387,18 @@ function  my2u4u_my_answers_page($user){
  * 未结算的订单回调函数
  */
 function  my2u4u_my_unfinishedorders_page($user){
-	$output ="";
+	$output ='<div id = "my_unfinishedorders">';
 	$output .= get_views_content('store','service_orders','default',$user->uid);
+	$output .='</div>';
 	return $output;
 }
 /**
  * 订单记录回调函数
  */
 function  my2u4u_my_orders_page($user){
-	$output ="";
+	$output ='<div id = "my_orders">';
 	$output .= get_views_content('store','service_orders','block_1',$user->uid);
+	$output .='</div>';
 	return $output;
 }
 
@@ -406,43 +436,88 @@ function theme_my2u4u_my_uchome_block(){
     	  $photo = '';
     	  $photo = ckavatar($row->uid) ? avatar($row->uid, 'big',true) : UC_API.'/images/noavatar_big.gif';
     	  $content .= "<div class='avt'><a href='".$discuz_url."home/space.php?uid=".$row->uid."'  target='_blank'><img src ='".$photo."'></a></div>";
-   	  $content .= "<div class='myname'><a href='".$discuz_url."home/space.php?uid=".$row->uid."'  target='_blank'>".$row->username."</a></div>";
-	  $content .= "<div class='personal-info'>"."我的积分:".$row->credit ."我的经验:".$row->experience ."我的访问次数:".$row->viewnum."</div>";
-	  $content .= "<div class='myadress'>我的主页:<a href='".$discuz_url."home/space.php?uid=".$row->uid."'  target='_blank'>".$discuz_url."home/?".$row->uid."</a></div>";
+   	  $content .= "<div class='jibenxinxi'><div class='myname'><a href='".$discuz_url."home/space.php?uid=".$row->uid."'  target='_blank'>".$row->username."</a></div>";
+	  $content .= "<div class='personal-info'>"."我的经验:".$row->experience ."我的访问次数:".$row->viewnum."</div>";
+	  $content .= "<div class='myadress'>我的主页:<a href='".$discuz_url."home/space.php?uid=".$row->uid."'  target='_blank'>".$discuz_url."home/?".$row->uid."</a></div></div>";
        }      
 	  return $content;	    
 }		    
 
 
-//function avatar($uid, $size='big', $returnsrc = FALSE) {
-//	$size = in_array($size, array('big', 'middle', 'small')) ? $size : 'big';
-//	$avatarfile = avatar_file($uid, $size);
-//	return $returnsrc ? UC_API.'/data/avatar/'.$avatarfile : '<img src="'.UC_API.'/data/avatar/'.$avatarfile.'" onerror="this.onerror=null;this.src=\''.UC_API.'/images/noavatar_'.$size.'.gif\'">';
-//}
+/*
+ * PHP 获取url输出的jSON内容，解决jSON跨域访问问题
+ * @author whx 
+ *
+ */
+function getURLjSON($url){
+//根据URL获取jSON数据
 
-//function avatar_file($uid, $size) {
-//	global $_SGLOBAL, $_SCONFIG;
-
-//	$type = empty($_SCONFIG['avatarreal'])?'virtual':'real';
-//	$var = "avatarfile_{$uid}_{$size}_{$type}";
-//	if(empty($_SGLOBAL[$var])) {
-//		$uid = abs(intval($uid));
-//		$uid = sprintf("%09d", $uid);
-//		$dir1 = substr($uid, 0, 3);
-//		$dir2 = substr($uid, 3, 2);
-//		$dir3 = substr($uid, 5, 2);
-//		$typeadd = $type == 'real' ? '_real' : '';
-//		$_SGLOBAL[$var] = $dir1.'/'.$dir2.'/'.$dir3.'/'.substr($uid, -2).$typeadd."_avatar_$size.jpg";
-//	}
-//	return $_SGLOBAL[$var];
-//}
-
-//function ckavatar($uid) {
-//	    $_SCONFIG['uc_dir'] = '/home/apache/data/html/ucenter/ucenter';
-//		$file = $_SCONFIG['uc_dir'].'./data/avatar/'.avatar_file($uid, 'big');
-//		return file_exists($file)?1:0;
+	$result	= '';
+	try{
+		$fp=fopen($url,'r');
+		stream_get_meta_data($fp);
+		while(!feof($fp)){
+			$result.=fgets($fp,1024);
+		}
+		
+		fclose($fp);
+		$result = json_decode($result);
+  	}
+  	catch(Exception $e){
+  		return 'Message: ' .$e->getMessage();
+  	}
+	/**/
 	
-//}
+	return $result;
+}
+
+
+
+/*
+ * EGS 试卷或者模板列表
+ * @author whx 
+ *
+ */
+
+function egscontent($type = 'module_list', $id = '',$num = 5) {
+
+//判断获取模板或者试卷列表的URL
+
+	if($type == 'module_list')
+		$url = 'http://test.2u4u.com.cn/html/egs/index.php?op=exam_structure_list&type=simple&num='.$num.'&id='.$id;
+		//$url = 'http://test.2u4u.com.cn/html/egs/index.php?op=exam_structure_list&type=simple&num=5';
+	else if($type == 'paper_list')
+		$url = 'http://test.2u4u.com.cn/html/egs/index.php?op=paper_info_by_term_id&type=simple&num='.$num.'&id='.$id;
+  	else 
+  		$url = 'http://test.2u4u.com.cn/html/egs/index.php?op=exam_structure_list&type=simple&num='.$num.'&id='.$id;
+  	
+  	$result = getURLjSON($url);
+  	
+if($result != null && $result != ''){
+
+//处理获取的jSON数据，输出到页面上。输出的链接地址在EGS系统中处理显示结果  	
+  	if($type == 'module_list')
+  		foreach ( $result as $index => $value ) {
+  		
+  			$sid = $value -> sid;
+  			$name = $value -> title;
+			$output .= ' <li><a href="http://test.2u4u.com.cn/html/www/main.html?op=create_paper_by_module&id='.$sid.'" >'.$name. "</a></li>";
+			//$output .= ' <li><a href="http://test.2u4u.com.cn/html/www/index.html?op=create_paper_by_module&id='.$sid.'" onclick="egs_paper('.$sid.')" >'.$name. "</a></li>";
+		}
+	else if($type == 'paper_list')
+		foreach ( $result as  $index => $value ) {
+  			$sid = $value-> paper_id;
+  			$name = $value-> paper_name;
+			$output .= ' <li><a href="http://test.2u4u.com.cn/html/www/main.html?op=paper_info&id='.$sid.'" >'.$name. "</a></li>";
+		}
+
+	return $output;
+}
+else
+	return null;
+/*
+return 'abc';*/
+}
 
 
 

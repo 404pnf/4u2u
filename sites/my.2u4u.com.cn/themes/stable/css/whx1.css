@@ -212,24 +212,29 @@ font-weight:400;
 margin-left:10px;
 }
 .view-whx-frontpage .views-row{
-margin-bottom:20px;
 clear:both;
+ position: relative;
 }
-.view-whx-frontpage  .attachment-before .views-field-teaser {
+.view-whx-frontpage  .views-field-teaser {
 min-height:60px;
 overflow:hidden;
 }
+
 .view-whx-frontpage .views-field-totalcount {
-color:#999999;
+/*color:#999999;
 float:right;
-margin-top:-22px;
+margin-top:-36px;*/
+    position: absolute;
+    right: 10px;
+    top: 20px;
 }
+
 .view-whx-frontpage .views-field-totalcount *{
 	color:#999999;
 }
 /* 内容中的小图 */
 .view-whx-frontpage .views-field-field-quiz-tuijian-pic-fid {
 float:right;
-margin:0 0 20px 10px;
+/*margin:0 0 20px 10px;*/
 }
 /* quiz 结束 */

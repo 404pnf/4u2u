@@ -16,6 +16,7 @@ $db_prefix = array(
    'authmap'   => '2u4u.',
    'userpoints' => '2u4u.',
    'userpoints_txn' => '2u4u.',
+   'invite' => '2u4u.',
 );
 
 /**

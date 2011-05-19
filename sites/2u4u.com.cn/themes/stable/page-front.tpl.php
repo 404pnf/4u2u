@@ -221,13 +221,13 @@
                           </ul>
                           <div id="dl-panes0" class="dl-panes clear">
 							<div id="pane_tab4" class="pane on">
-                             <? print phptemplate_get_ebook('whx_frontpage','attachment_1');?>
+                             <? print phptemplate_get_ebook('whx_frontpage','attachment_2');?>
 							  <div id="yuedu_xinshu">
 								<? print phptemplate_get_ebook('whx_frontpage','attachment_4');?>
 							  </div>
                             </div>
 							<div id="pane_tab5" class="pane">
-                              <? print phptemplate_get_ebook('whx_frontpage','attachment_2');?>
+                              <? print phptemplate_get_ebook('whx_frontpage','attachment_1');?>
 							  <div id="yuedu_xinshu">
 								<? print phptemplate_get_ebook('whx_frontpage','attachment_5');?>
 							  </div>

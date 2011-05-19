@@ -22,3 +22,6 @@ del/*
 */bak/*
 */backup/*
 player/
+# symbolic link to whx and zym 's home page
+whx
+zym

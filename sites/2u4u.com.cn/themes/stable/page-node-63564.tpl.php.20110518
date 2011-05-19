@@ -24,50 +24,35 @@
     <div id="page">
 
 	
-<!-- 21sst使用的header，删除了默认的header和primary links的输出 -->
-<div id="header_title"> 
-    <style type="text/css"> 
-.top-text{
-        margin: 0px;
-        font:"宋体";
-        font-size:12px;
-        color: #000;
-}
-.head-text {
-        font-family: "宋体";
-        font-size: 12px;
-        line-height: 16px;
-        color: #000;
- 
-}
-.top-text a{color:#000;}
-.top-text a:link{color:#000;}
-.top-text a:visited {color:#000;}
-.top-text a:hover{color:#FFFF00;}
-.top-text a:active{color:#000;}
- 
-body {
-	background-color: #F5F5F5;
-}
-</style> 
-</head> 
-<center> 
-<div style="width:960px;"> 
-<table width="960" border="0" align="center" cellpadding="0" cellspacing="0" style="width:960px;"> 
-  <tr> 
-    <td width="142" height="45" bgcolor="#ff7f07" style="width:142px;"><a href="http://2u4u.com.cn/" target="_blank"><img src="http://cdn1.2u4u.com.cn/duhougan/images/images_02.gif" width="142" height="41" border="0" /></a></td> 
-    <td width="818" bgcolor="#ff7f07" style="width:818px;"><div align="center" class="top-text">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="http://ebook.2u4u.com.cn" target="_blank">电子图书馆</a><span class="head-text">|</span> 
-<a href="http://2u4u.com.cn/chongzhi" target="_blank">积分充值</a><span class="head-text">|</span> 
-<a href="http://shop.2u4u.com.cn/libao" target="_blank">积分换礼</a><span class="head-text">|</span> 
-<a href="http://quiz.2u4u.com.cn" target="_blank">测试中心</a><span class="head-text">|</span> 
-<a href="http://group.2u4u.com.cn" target="_blank">小组</a><span class="head-text">|</span> 
-<a href="http://video.2u4u.com.cn" target="_blank">多媒体课堂</a><span class="head-text">|</span> 
-<a href="http://test.2u4u.com.cn/online/" target="_blank">在线词典</a><span class="head-text">|</span> 
-<a href="http://2u4u.com.cn/wenda" target="_blank">有问有答</a><span class="head-text">|</span></div></td> 
-</tr> 
-</table></div></center> 
- </div> 
+    <div id="header">
+	<div id="header-middle">
+      <div id="logo-title">
+	
+        <?php if (!empty($logo)): ?>
+		  <a href="<?php print $front_page; ?>" title="<?php print $site_name; ?>" rel="home" id="logo">
+            <img src="<?php print $logo; ?>" alt="<?php print $site_name; ?>"/>
+          </a>
+        <?php endif; ?>
+
+      </div> <!-- /logo-title -->
+
+      <?php if ($header): ?>
+        <div id="header-region">
+          <?php print $header; ?>
+        </div>
+      <?php endif; ?>
+
+      <?php print $search_box; ?>
+	</div>
+	
+	
+	    <?php if (!empty($primary_links) or !empty($secondary_links)): ?>
+          <div id="navigation" class="menu <?php if (!empty($primary_links)) { print "with-main-menu"; } if (!empty($secondary_links)) { print " with-sub-menu"; } ?>">
+            <?php if (!empty($primary_links)){ print theme('links', $primary_links, array('id' => 'primary', 'class' => 'links main-menu')); } ?>
+            <?php if (!empty($secondary_links)){ print theme('links', $secondary_links, array('id' => 'secondary', 'class' => 'links sub-menu')); } ?>
+          </div> <!-- /navigation -->
+        <?php endif; ?>
+    </div> <!-- /header -->
 
     <!-- ______________________ MAIN _______________________ -->
 

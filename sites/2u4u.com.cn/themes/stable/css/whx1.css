@@ -1297,3 +1297,22 @@ width:120px;
 	clear:both;
 }
  
+ 
+#focus #coin-slider .views-row{
+	display:none;
+}
+#focus #coin-slider .views-row-1{
+	display:block;
+	height: 242px;
+	margin: 10px 0 6px 6px;
+}
+#focus .coin-slider {
+    clear: none;
+    float: left;
+}
+#focus .cs-buttons {
+	top:0;
+} 
+#focus {
+	height: 258px;
+}

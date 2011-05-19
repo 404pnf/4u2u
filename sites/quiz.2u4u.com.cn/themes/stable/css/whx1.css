@@ -23,16 +23,13 @@ margin-bottom:40px;
 background:none repeat scroll 0 0 #FFF7F7;
 margin-right:10px;
 }
-/* 标题与连接、摘要、点击率的颜色、大小 */
-.view-whx-quiz .view-header  a  ,
+/* 标题与连接、摘要、点击率的颜色、大小 *.view-whx-quiz .view-header  a  ,
 .view-whx-quiz .view-header a:visited,
 .view-whx-quiz .views-field-title  a  ,
 .view-whx-quiz .views-field-title  a:visited{
+font-weight:normal;
+}/
 
-cursor:pointer;
-text-decoration:none;
-font-weight:700;
-}
 .view-whx-quiz .view-header h1{
 padding-bottom:0px;
 }
@@ -213,7 +210,7 @@ display:none;
 	width:218px;
 	height:340px;
 }
-.csfl .view-display-id-block_1  .view-header{
+.csfl .view-display-id-block_1 .view-header{
 	background-image:url("fp_images/gracy-right-bg.gif");
 	background-repeat:repeat-x;
 	color:#961F1F;
@@ -224,6 +221,7 @@ display:none;
 }
 .zdtj{
 	height:310px;
+	width:370px;
 }
 
 .csfl .view-display-id-block_1 .view-content{
@@ -246,12 +244,12 @@ display:none;
 	background-position:0 4px;
 	padding-left:30px;
 }
-.csfl .view-content .shuang{
+.view-content .shuang{
 	margin-left:5px;
 	margin-right:5px;
 }
 
-.csfl .view-content .views-row-last .shuang{
+.view-content .views-row-last .shuang{
 	 color: #FFFFFF;
 }
 .csfl .field-content a:hover{
@@ -271,23 +269,21 @@ display:none;
 .view-display-id-block_1 .view-content{
 	margin:0 10px 0 10px;
 }
-.view-display-id-block_1 .view-content .views-row-last{
-	padding-bottom:15px;
+
+.zuo .view-display-id-block_1 .view-content{
+	margin:0px;
+}
+.zuo .item-list ul{
+	padding:0px;
 }
 
 .view-display-id-block_1 .field-content a:hover{
-	background-color:#970606;
-	color:#FFFFFF;
+	text-decoration:underline;
 }
 
 .view-display-id-block_1 .field-content a:active{
 	background-color:#970606;
 	color:#FFFFFF;
-}
-
-.view-display-id-block_1  .view-header{
-	padding-left:10px;
-	padding-top:6px;
 }
 
 
@@ -393,6 +389,12 @@ ul{
 	height:200px;
 }
 
+.view-display-id-block_1 a.active{
+background-color:#870606;
+	color:#FFFFFF;	
+}
+
+
 
 /* -----------------------------专趣味测试 开始-------------------------- */
 .qwcs .qwcs_kuang{
@@ -493,6 +495,7 @@ ul.quicktabs_tabs.quicktabs-style-zen{
 	height:35px;
 	background-image:url("http://2u4u.com.cn/sites/2u4u.com.cn/themes/stable/css/fp_images/bg-7.gif");
 	background-repeat:repeat-x;
+	margin:0px;
 	
 }
 .zxlx .pane-35{
@@ -594,6 +597,10 @@ tbody th.user_rate{
 }
 tbody td.user_name{
 	text-align:left;
+	display:block;
+	overflow:hidden;
+	white-space:nowrap;
+	width:60px;
 }
 tbody td.user_score{
 	text-align:center;
@@ -773,7 +780,7 @@ tbody td.noresult{
 }
 
 #sidebar-second .block-inner .view-content, #sidebar-first .block-inner .view-content{
-	padding-left:10px;
+	padding:5px 0 0 0;
 }
 
 
@@ -1288,8 +1295,8 @@ ul,li{
 	float: left;
 	height: 310px;
 	width: 500px;
-	border-right:1px dashed #CECECE;
-	margin: 20px 0 0 0;
+	/*border-right:1px dashed #CECECE;
+	margin: 20px 0 0 0; */
 }
 .kszx-fl-kuang {
 	float: left;
@@ -1347,7 +1354,7 @@ ul,li{
 	text-decoration:underline;
 }
 
-#quicktabs-2 .qtab-0{
+#quicktabs-4 .qtab-0{
 	margin-left:220px;
 	height:27px;
 	margin-top:10px;
@@ -1608,6 +1615,10 @@ ul, ol, li{
 }
 .view-id-whx_quiz .views-field-title{
 	font-size:14px;
+	font-weight:normal;
+}
+
+.section-quiz #content-area .view-id-whx_quiz .views-field-title{
 	font-weight:bold;
 }
 
@@ -1641,6 +1652,7 @@ ul, ol, li{
     /* 右侧排行 CSS 修正*/
 #content-area .view-whx-quiz .item-list li{width: 170px;margin:0; }
 #content-area .view-whx-quiz .item-list li .field-content a{font-size:12px;}
+#content-area .view-whx-quiz .item-list li .field-content a:hover{text-decoration:underline;}
 .qwcsphb .pane-whx-quiz .pane-content .view-dom-id-11 .view-header{ padding:0;}
 .zxtk .pane-panels-mini .gyyy .yingyong_content .yingyong_more a{ float:right; padding-right:10px;}
 #quicktabs-2 ul.quicktabs_tabs.quicktabs-style-zen li {margin: 14px 0 0 3px;}
@@ -1835,29 +1847,25 @@ dl.quiz-report dt{
 .home-shareto{float:right;margin-right:20px;margin-bottom:10px;}
 
  .zuo .more-link{clear:left;}
- .zuo .item-list li{ margin-top:1px; *width:100%; *margin-left:-14px; position:relative;_margin-left:-7px; }
+ .zuo .item-list li{ 
+	width:170px; 
+	*margin-left:-14px; 
+	position:relative;_margin-left:-7px; 
+	line-height:25px;
+	overflow: hidden;
+ 	white-space: nowrap;
+	background:url("images/dot.jpg") no-repeat scroll 0 8px transparent;
+	text-indent:15px;
+
+}
  .zuo .more-link{ padding-right:10px;} 
- .you .item-list li{*width:100%;}
+ .you .item-list li{*width:100%; line-height:25px;}
 .you .exam4_more,.expert4_more,.expert6_more,.pets_more,.pretco_more,.exam6_more{ padding-right:10px; text-align:right;overflow:auto; clear:left;}
 #quicktabs-4 .quicktabs_tabs li a{ _background:url("/sites/quiz.2u4u.com.cn/modules/standard/quicktabs/tabstyles/zen/images/tab-right-ie6.png") no-repeat scroll right -32px transparent;_line-height:34px; _height:28px; _overflow:hidden; _text-align:center;}
 #quicktabs-4 .quicktabs_tabs li{ _background:url("/sites/quiz.2u4u.com.cn/modules/standard/quicktabs/tabstyles/zen/images/tab-left-ie6.png") no-repeat scroll left -32px transparent;_width:80px;}
 #quicktabs-4 ul.quicktabs-style-zen { _margin-top:-42px; _width:760px; }
 
 .zuo .view-display-id-block_1 {margin-top:20px;}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 .view-id-whx_quiz .view-content a img{
 	border-color:#F2EDDB;
@@ -1873,7 +1881,7 @@ dl.quiz-report dt{
 /*@表示chrome下的css,_表示IE6下的css */
 #content-area .view-display-id-page_3 .views-row .views-field-teaser{ *clear:left; *width:360px;}
 #block-views-quiz_term_name-block_1 .block-inner .view-content .views-row .field-content{*width:60px; *display:block;}
-#block-views-quiz_term_name-block_1 .block-inner .content{*background:#FFF;}
+#block-views-quiz_term_name-block_1 .block-inner .content{*background:#FFF;height:340px;}
 #block-views-whx_quiz-block_5 ol li .views-field-title .field-content a{font-size:12px;}
 .block-inner .view-id-whx_quiz .item-list .views-row .views-field-title .field-content a{font-size:12px;!important;}
 #block-views-whx_quiz-block_5 .field-content{font-size:12px;}
@@ -1890,3 +1898,12 @@ dl.quiz-report dt{
 #block-views-quiz_term_name-block_1 .block-inner .view-content .views-row .field-content h3{_background:#FFF;}
 .section-dhgps .view-header{ text-indent:1em; padding-left:10px;}
 .qwcs .pane-content .item-list ul li span{ _margin-left:50px;_display:block;_width:90%;}
+
+
+.zuo .view-display-id-block_1 {padding-top:10px; line-height:22px}
+.you .view-display-id-block_4 {padding-top:10px;line-height:22px}
+.you{ margin-left:20px; width:220px; padding-bottom:20px;}
+.zhong .kszx-fl-kuang2{ margin-left:20px;_margin-left:12px}
+#content-area .zxlx{ height:395px;}
+.qwcsphb{ height:430px}
+.view-display-id-block_1 .view-header{ padding:0;*padding:6px 0 0 10px;}

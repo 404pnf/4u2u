@@ -138,12 +138,18 @@ function yuedu_get_new_books() {
 	    	if($fileparts[count($fileparts)-1]=='pdf'){
 	    	$sql = "select * from {content_type_erp} where field_erp_wuliaohao_value =%d";
 	      $result = db_fetch_object(db_query(db_rewrite_sql($sql), $fileparts[0]));
-		if($result != null){
+		// bxy, 404: 即使数据库中没有该pdf信息，也显示出来，以便导入
+		// 因为我需要帮助资源库导书，也因为我们要导入一些没有物料号的书
+		//if($result != null){
 			$newBook = array ();
 	        $newBook ['sku'] = $fileparts[0];
-	        $newBook ['title'] =$result->field_erp_shuming_value;
-	        array_push($newBooks, $newBook);
+		if($result != null){
+			$newBook ['title'] =$result->field_erp_shuming_value; } 
+		else{
+			$newBook ['title'] = $fileparts[0];
 		}
+	        array_push($newBooks, $newBook);
+		//}
 	    	}
 	    }
 	  
@@ -226,6 +232,16 @@ function yuedu_create_node_from_sku_array($skuArray) {
 			    $node->status = 1;
 			    $node->uid = $user->uid;
 			    $node->title = $erp->field_erp_shuming_value;
+			    //bxy 如果导入的pdf没有物料号，就无法从erp中获得其题目
+			    //这时我们用该pdf文件的文件名做为title
+			    //而且把文件名都改为小写并去除后缀.pdf
+			    if ($node->title == null) {
+				    $node->title = $file->filename; 
+				    $node->title = strtolower ($node->title);
+				    // str_ireplace是不区分大小写的。
+				    // 上一步已经把标题都转为小写了，因此这里有些多余：）
+				    $node->title = str_ireplace (".pdf", "", $node->title);
+			    }
 			    $node->field_yuedu_author [0] ['value'] = $erp->field_erp_zhuzuozhe_value;
 			    $node->field_yuedu_summary [0] ['value'] = $erp->field_erp_neirongtiyao_value;
 			    $node->field_yuedu_sku [0] ['value'] = $sku;

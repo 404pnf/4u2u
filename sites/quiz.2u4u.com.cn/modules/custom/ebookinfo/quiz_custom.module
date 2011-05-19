@@ -87,17 +87,17 @@ function quiz_custom_e6(){
 }
 function quiz_custom_pets(){
     $output ="";
-    $ebook_content = quiz_custom_ebookinfo('yuedu_taxonomy_term','block_4',11215);
+    $ebook_content = quiz_custom_ebookinfo('yuedu_taxonomy_term','block_4',8629);
     $output.= $ebook_content;
-    $output.="<div class='pets_more'><a href='http://ebook.2u4u.com.cn/taxonomy/term/10627'>>>更多</a>
+    $output.="<div class='pets_more'><a href='http://ebook.2u4u.com.cn/taxonomy/term/8629'>>>更多</a>
               </div>";
     return $output;
 }
 function quiz_custom_pretco(){
     $output ="";
-    $ebook_content = quiz_custom_ebookinfo('yuedu_taxonomy_term','block_4',8629);
+    $ebook_content = quiz_custom_ebookinfo('yuedu_taxonomy_term','block_4',8626);
     $output.= $ebook_content;
-    $output.="<div class='pretco_more'><a href='http://ebook.2u4u.com.cn/taxonomy/term/8629'>>>更多</a>
+    $output.="<div class='pretco_more'><a href='http://ebook.2u4u.com.cn/taxonomy/term/8626'>>>更多</a>
               </div>";
     return $output;
 }

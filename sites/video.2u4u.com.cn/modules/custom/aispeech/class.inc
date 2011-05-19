@@ -198,9 +198,26 @@ function get_result($word,$arr,$type,$ip){
 	    $url = "http://124.193.83.241:8180/dictweb/".$word.".html?s=style.css&l=zh_CN&ip=".$ip."&".$str;
 //echo $url;
 
-		   
-		$this->msg .= @file_get_contents($url);
-
+		$fp = fsockopen("124.193.83.241", 8180, $errno, $errstr, 3);     
+		if (!$fp) {  
+		  $this->msg .= "当前服务不可用.";
+		}else{
+		  $this->msg .= @file_get_contents($url);
+    }
+	/*
+		$opts = array(  
+      'http'=>array(  
+       'method'=>"GET",  
+        'timeout'=>3,  
+      )  
+		);  
+		$context = stream_context_create($opts);  
+		ob_start();  
+		   $this->msg .= file_get_contents($url, false, $context);  
+		ob_end_clean(); 
+			*/
+		
+		
 
 
 	    

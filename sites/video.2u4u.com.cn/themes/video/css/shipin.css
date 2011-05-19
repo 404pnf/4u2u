@@ -979,3 +979,15 @@ display:none;
 }
 /* end 视频分类 */
 
+.jplayer{
+	width:0px;
+	height:0px;
+}
+
+
+#smart_everyday .view-display-id-page_3 .views-row, .view-display-id-page_2 .views-row, .view-display-id-page_4 .views-row, .section-mtag #content-area .views-row, .section-taxonomy #content-area .views-row {
+    border-bottom: 0;
+    height: auto;
+    margin-left: 0;
+    width: auto;
+}

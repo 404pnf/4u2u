@@ -36,8 +36,8 @@ stylesheets[all][] = css/shipin.css
 ;stylesheets[print][] = css/print.css
 
 ; Optionally add some jquery scripts to your theme.
-scripts[] = js/jquery.tools.min.js 	
-    
+; scripts[] = js/jquery.tools.min.js 	
+     
 settings[video_zen_tabs]             = 1
 settings[video_wireframe]            = 0
 settings[video_block_editing]        = 1
@@ -47,4 +47,8 @@ version = "6.x-2.9"
 core = "6.x"
 project = "video"
 datestamp = "1256756703"
+
+
+; Panels layouts. You can place multiple layouts under the "layouts" folder.
+plugins[panels][layouts] = layouts
 

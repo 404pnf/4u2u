@@ -1,0 +1,88 @@
+@charset "utf-8";
+
+/* header 右侧用户功能区域 */
+#block-block-1 .content{float:right; padding: 5px;}
+#block-block-1{margin-bottom:0}
+
+/* header 为导航预定义样式
+ul#primary li a {color: #961F1F;display: block;float: left;height: 53px;line-height: 40px;position: relative;z-index: 5;}
+ul#primary li.blob {background: url("../images/bg-6.gif") no-repeat scroll 0 -1px transparent;padding: 0 0 0 12px;position: absolute;top: 0;z-index: 1;}
+ul#primary li.blob a {background: url("../images/bg-6.gif") no-repeat scroll right -1px transparent;cursor: default;display: block;position: absolute;top: 0;z-index: 1;}
+ul#primary li a:hover {color: #FFFFFF;text-decoration: none;}
+*/
+
+/*  */
+#block-views-tuijianxiazai-block_1 .view-content{background:#fffdee;border:1px solid #CCCCCC; overflow:auto; margin:10px 0 0px 10px;*+margin:10px 0 16px 10px; _height:250px; _overflow:hidden;_margin:10px 0 0px 10px}
+#block-views-tuijianxiazai-block_1 .view-content ul{ list-style:none; margin-left:15px;background: url("../images/tuijian.gif") no-repeat scroll -1em 0 transparent; height:100%; padding:45px 0 20px 0; height:190px;}
+#block-views-tuijianxiazai-block_1 .view-content ul li{ background: url("../images/mobile2.gif") no-repeat scroll 0 0 transparent;float: left;width: 123px; margin-right:10px;_margin-right:9px;}
+#block-views-tuijianxiazai-block_1 .view-content ul li .imagecache{ display:block; margin:12px 0 0 5px;}
+#block-views-tuijianxiazai-block_1 .view-content ul li .imagecache img{ width:101px; height:135px}
+#block-views-tuijianxiazai-block_1 .view-content ul li h2{font-size: 12px;font-weight: normal;line-height: 17px; text-align:center; padding-top:20px; height:17px; overflow:hidden;}
+
+/* sidebar 左侧区域 */
+#sidebar-first{ padding-left:10px; width:210px;}
+#block-views-fenlei-block_1 ul{list-style:none;margin:0;padding:0}
+#block-views-fenlei-block_1 .item-list ul li{list-style:none}
+#block-views-fenlei-block_1 ul li{height:32px;background:url('../images/dl_sidebar_bg20110427.jpg') repeat scroll 0 32px transparent;text-align:center;line-height:32px;}
+#block-views-fenlei-block_1 ul li.views-row-first{height:32px;background:url('../images/dl_sidebar_bg20110427.jpg') repeat scroll 0 0px transparent;text-align:center;line-height:32px;}
+#block-views-fenlei-block_1 ul li a{color:#5e5d13;font-size:1.1em;}
+#block-views-fenlei-block_1{border:1px solid #CCCCCC;width:196px;}
+#block-views-download_count_files-block_1{border:1px solid #CCCCCC;width:196px;}
+#block-views-download_count_files-block_1 h2{height:32px;background:url('../images/dl_sidebar_bg20110427.jpg');line-height:32px;color:#80040e; font-size:14px; text-indent:.8em;}
+#block-views-download_count_files-block_1 ul{ margin-bottom:0; margin-left:1.3em;}
+#block-views-download_count_files-block_1 .view-content li{ _text-indent:0;background:none; height:36px; border-bottom:1px solid #CCC; width:168px; line-height:36px; display:block; position:relative;background:url('../images/dl_reddot20110518.gif') no-repeat 0 11px; text-indent:1.6em; overflow:hidden; list-style:none}
+#block-views-download_count_files-block_1 .view-content li a{ text-align:left; font-size:12px; font-weight:400; color:#000;overflow:hidden; height:36px; display: block}
+#block-views-download_count_files-block_1 .content .more-link{ background:#FFF; margin:10px 12px 10px 0;}
+
+
+/* 右侧内容区域 */
+#main-group{border:1px solid #CCCCCC; width:738px;}
+#content-top,#content-group{width:100%;}
+#content-inner-inner{ margin:20px 40px 0 26px;}
+#sub-category{ line-height:1.7em;}
+#sub-category .view-content{ margin-top:2px; text-indent:3.3em;}
+#sub-category a:hover{ background:#d3031a; color:#FFF}
+#filetype{ height:14px;}
+#filetype ul{ list-style:none;margin:0; padding:0;}
+#filetype ul li{ float:left; margin:6px 6px 0 0; }
+#filetype ul li a:hover{ background:#d3031a; color:#FFF}
+        /* 右侧内容区域 -- search */
+		#block-views--exp-ziyuanjianjie-page_1{ margin:20px 20px 0 30px;}
+        #content-top-inner .views-exposed-widgets{ background:url('../images/dl_search_bg20110427.jpg') no-repeat; height:46px; overflow:hidden;}
+        #content-top-inner .views-exposed-form .views-exposed-widget{margin:10px 0 0 4px; line-height:25px; float:left; overflow:auto; display:inline; padding:0}
+        #content-top-inner .views-exposed-form .views-exposed-widget label{ float:left; font-size:14px; color:#FFF; margin-left:22px;}
+        #content-top-inner .views-exposed-form .views-exposed-widget .views-widget{float:left; width:460px;}
+		#content-top-inner .views-exposed-form .views-exposed-widget #edit-submit-ziyuanjianjie{ margin:0;}
+		#edit-keys{ margin-left:12px; border:1px solid #666; width:400px; background:#FFF; margin-left:50px;height:21px; line-height:21px;}
+		#edit-submit-ziyuanjianjie{background:url('../images/cd-bottom2.gif'); width:63px; height:28px; border:0; text-indent:-99em; overflow:hidden; border-bottom:1px solid #600; *display:block;*border:none}
+		#current-category .view-header{ float:left}
+		#current-category .view-header p{ margin:0; color:#930; font-weight:500; padding:0}
+		#sub-category .view-header{position:absolute;*top:22px;*left:0px;}
+		#sub-category .view-header p{color:#930;font-weight:500; margin:0}
+		#filetype .label{ float:left; color:#930; margin-top:6px; font-weight:500}
+		#filetype ul{ float:left}
+		/* 右侧内容区域 -- list */
+		#resources-list .view-content{ margin-top:20px; border-top:3px solid #FFC3DC; padding-top:30px;}
+		#resources-list .view-content ul{ margin:0; padding:0; list-style:none; }
+		#resources-list .view-content ul li{ color: #0b43b6; margin-bottom:20px; border-bottom:1px dashed #CCC; padding-bottom:16px; width:590px;}
+		#resources-list .view-content ul li h2{ font-size:13px;background:url('../images/dl_reddot20110427.gif') no-repeat -2px 2px ; text-indent:1.2em;}
+		#resources-list .view-content ul li p{ margin:2px 0 6px; color: #666666;}
+		/* 右侧内容区域 -- 分页控制 */
+		#resources-list .pager li.pager-current{ background:#c70000;border-color:#ccc;font-size:12px;}
+		#resources-list .pager li a{ border-color:#ccc; font-size:12px;}
+		#resources-list .pager li a:hover{background:#c70000;}
+
+/* footer 区域 */
+#footer {font-size: 100%;width:100%; }
+#block-block-2 .content{padding: 5px;}
+#footer-wrapper{background:#FFF;height:140px;}
+#footer .block {margin-bottom: -8px;}
+
+
+/* -------------------------------download 二级 node 分类展示  ---------------------------------------*/
+#content-inner-inner h1.title{font-size:14px; border-bottom:1px solid #CCC; width:600px; line-height:30px;}
+#content-content{ margin-top:20px;}
+#content-content .filefield-file img{ float:left; margin:1px 3px 0 0;}
+
+
+

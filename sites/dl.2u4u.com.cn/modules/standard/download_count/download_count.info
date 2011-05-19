@@ -1,0 +1,11 @@
+; $Id: download_count.info,v 1.4.2.1 2010/12/20 18:41:47 worldfallz Exp $
+name = Download Count
+description = Tracks file downloads for files stored in the drupal files table.
+core = 6.x
+
+; Information added by drupal.org packaging script on January 1, 1970 - 00:00
+version = "6.x-2.0-beta1"
+core = "6.x"
+project = "download_count"
+datestamp = "1295646121"
+

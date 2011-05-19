@@ -1,0 +1,43 @@
+.dy4 {
+	float: left;
+	height: 230px;
+	width: 225px;
+	margin: 15px 0 0 20px;
+	border-right: 1px solid #CECECE;
+	border-bottom: 1px solid #CECECE;
+}
+.dy6 {
+	float: left;
+	height: 230px;
+	width: 225px;
+	margin: 15px 0 0 0;
+	border-bottom: 1px solid #CECECE;
+}
+.zy4 {
+	float: left;
+	height: 210px;
+	width: 225px;
+	margin: 15px 0 0 0;
+	border-bottom: 1px solid #CECECE;
+	border-left: 1px solid #CECECE;
+}
+
+.zy8 {
+	float: left;
+	height: 230px;
+	width: 225px;
+	margin: 0 0 0 20px;
+	border-right: 1px solid #CECECE;
+}
+.gyyy {
+
+	float: left;
+	height: 230px;
+	width: 225px;
+}
+.pets {
+	float: left;
+	height: 230px;
+	width: 225px;
+	border-left: 1px solid #CECECE;
+}

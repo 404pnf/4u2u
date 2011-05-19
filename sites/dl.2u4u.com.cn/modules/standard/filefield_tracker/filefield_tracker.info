@@ -1,0 +1,12 @@
+; \$Id\$
+name = "Filefield download tracker"
+description = "Track filefield downloads"
+core = 6.x
+dependencies[] = filefield
+package = CCK
+; Information added by drupal.org packaging script on 2010-06-26
+version = "6.x-1.0-beta3"
+core = "6.x"
+project = "filefield_tracker"
+datestamp = "1277571630"
+

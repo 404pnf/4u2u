@@ -1,0 +1,81 @@
+<?php
+// $Id: filefield_tracker.install,v 1.2 2010/06/26 16:44:23 xeniox Exp $
+
+/**
+ * @file
+ * Module installation file
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function filefield_tracker_install() {
+  drupal_install_schema('filefield_tracker');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function filefield_tracker_uninstall() {
+  drupal_uninstall_schema('filefield_tracker');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function filefield_tracker_schema() {
+  $schema['filefield_tracker'] = array(
+    'description' => '',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier for tracking entry',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      ),
+      'fid' => array(
+        'type' => 'int',
+        'description' => '{files} table fid',
+        'not null' => TRUE,
+      ),
+      'uid' => array(
+        'type' => 'int',
+        'description' => 'The downloading user {users} uid',
+        'not null' => TRUE,
+      ),
+      'nid' => array(
+        'type' => 'int',
+        'description' => 'The {node} nid the file belongs to',
+        'not null' => TRUE,
+      ),
+      'download_time' => array(
+        'type' => 'int',
+        'description' => 'Unix timestamp of time of download',
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'fid' => array('fid'),
+      'nid' => array('nid'),
+    ),
+  );
+  return $schema;
+}
+
+function filefield_tracker_update_1() {
+  $ret = array();
+  // First add the field as an int
+  $definition = array(
+    'description' => 'The primary identifier for tracking entry',
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => TRUE
+  );
+  db_add_field($ret, 'filefield_tracker', 'id', $definition);
+  // Now convert it to a serial field
+  db_change_field($ret, 'filefield_tracker', 'id', 'id',
+  array('type' => 'serial', 'not null' => TRUE),
+  array('primary key' => array('id')));
+  return $ret;
+}

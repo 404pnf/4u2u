@@ -1,0 +1,12 @@
+; $Id: download_count_statistics.info,v 1.1.2.1 2010/12/27 19:08:15 worldfallz Exp $
+name = Download Count Statistics
+description = Provides daily, weekly, monthly, and yearly statistics for download_count module data.
+core = 6.x
+dependencies[] = download_count
+
+; Information added by drupal.org packaging script on January 1, 1970 - 00:00
+version = "6.x-2.0-beta1"
+core = "6.x"
+project = "download_count"
+datestamp = "1295646121"
+

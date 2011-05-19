@@ -1,0 +1,44 @@
+.swyy {
+	float: left;
+	height: 200px;
+	width: 225px;
+	margin: 15px 0 0 20px;
+	border-right: 1px dashed #CECECE;
+	border-bottom: 1px solid #CECECE;
+}
+.kjyy {
+	float: left;
+	height: 200px;
+	width: 225px;
+	margin: 15px 0 0 0;
+	border-bottom: 1px solid #CECECE;
+}
+.gqwh {
+	float: left;
+	height: 200px;
+	width: 225px;
+	margin: 15px 0 0 0;
+	border-bottom: 1px solid #CECECE;
+	border-left: 1px dashed #CECECE;
+}
+
+.tyyy {
+	float: left;
+	height: 200px;
+	width: 225px;
+	margin: 0 0 0 20px;
+	border-right: 1px dashed #CECECE;
+}
+.yyxzs {
+  
+	float: left;
+	height: 200px;
+	width: 225px;
+}
+.kongde {
+
+	float: left;
+	height: 200px;
+	width: 225px;
+	border-left: 1px dashed #CECECE;
+}

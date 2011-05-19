@@ -1,0 +1,11 @@
+; $Id:
+name = Public Download Count
+description = "Provides file download counter for the Drupal's public file system."
+core = 6.x
+
+; Information added by drupal.org packaging script on 2009-12-31
+version = "6.x-1.0-beta5"
+core = "6.x"
+project = "pubdlcnt"
+datestamp = "1262266255"
+

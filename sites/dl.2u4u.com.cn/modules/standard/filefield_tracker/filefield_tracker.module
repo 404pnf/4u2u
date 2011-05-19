@@ -1,0 +1,201 @@
+<?php
+// $Id: filefield_tracker.module,v 1.2 2010/06/26 16:44:23 xeniox Exp $
+
+/**
+ * @file
+ * The filefield_tracker module allows you to track the download of private filefields.
+ * This module depends on the Filefield module and requires the private download method to be set.
+ */
+
+/**
+ * @TODO:
+ * - add table with counts per fid
+ */
+
+include_once 'filefield_tracker.formatters.inc';
+
+/**
+ * Implementation of hook_menu().
+ */
+function filefield_tracker_menu() {
+  $items = array();
+
+  $items['download/%field_file/%/%'] = array(
+    'page callback' => 'filefield_tracker_download',
+    'page arguments' => array(1, 2),
+    'access callback' => 'filefield_tracker_access_check',
+    'access arguments' => array(1),
+    'type' => MENU_CALLBACK,
+  );
+
+  $items['node/%node/filefield_tracker'] = array(
+    'title' => 'File download tracker',
+    'page callback' => 'filefield_tracker_tab_page',
+    'page arguments' => array(1),
+    'access callback' => 'filefield_tracker_tab_access',
+    'access arguments' => array(1),
+    'type' => MENU_LOCAL_TASK,
+    'weight' => 10,
+    'file' => 'filefield_tracker.pages.inc',
+  );
+
+  $items['admin/reports/filefield_tracker'] = array(
+    'title' => 'File download report',
+    'page callback' => 'filefield_tracker_report_page',
+    'access callback' => 'user_access',
+    'access arguments' => array('view filefield_tracker reports'),
+    'type' => MENU_NORMAL_ITEM,
+    'file' => 'filefield_tracker.pages.inc',
+  );
+
+  $items['admin/settings/filefield_tracker'] = array(
+    'title' => 'Filefield download tracker',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('filefield_tracker_admin_settings'),
+    'access callback' => 'user_access',
+    'access arguments' => array('administer filefield_tracker'),
+    'file' => 'filefield_tracker.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function filefield_tracker_perm() {
+  return array('administer filefield_tracker', 'view filefield_tracker reports', 'bypass filefield_tracker tracking');
+}
+
+/**
+ * Access callback function
+ */
+function filefield_tracker_access_check($file) {
+  // trigger filefield's hook_file_download method, to check if user actually has access
+  $result = filefield_file_download($file['filepath']);
+  return (is_array($result)) ? TRUE : FALSE;
+}
+
+/**
+ *  Access callback for tracking tab
+ */
+function filefield_tracker_tab_access($node) {
+  // Check if this node type should be tracked.
+  $all_types = array_keys(node_get_types('names'));
+  $trackable_types = variable_get('filefield_tracker_types', $all_types);
+  if (!in_array($node->type, array_filter($trackable_types))) {
+    return FALSE;
+  }
+
+  // Check if this node type has filefields & user has permission to view tab
+  $fields = filefield_get_field_list($node->type);
+  $has_filefields = (!empty($fields)) ? TRUE : FALSE;
+  return $has_filefields && user_access('view filefield_tracker reports');
+}
+
+/**
+ * Tracking menu callback function
+ */
+function filefield_tracker_download($file, $nid) {
+  $path = $file['filepath'];
+  // track download
+  if (!user_access('bypass filefield_tracker tracking')) {
+    filefield_tracker_track_download($file, $nid);
+  }
+  //redirect to real file url
+  $url = file_create_url($path);
+  drupal_goto($url);
+  exit;
+}
+
+/**
+ * Track a download by storing an entry in the DB
+ */
+function filefield_tracker_track_download($file, $nid) {
+  global $user;
+  $fid = $file['fid'];
+  $entry = new stdClass;
+  $entry->fid = $file['fid'];
+  $entry->uid = $user->uid;
+  $entry->nid = $nid;
+  $entry->download_time = time();
+  drupal_write_record('filefield_tracker', $entry);
+  module_invoke_all('filefield_tracker', $entry);
+}
+
+/**
+ * Implements hook_theme().
+ */
+function filefield_tracker_theme() {
+  return array(
+    'filefield_tracker_formatter_filefield_tracker' => array(
+      'arguments' => array('element' => NULL),
+    ),
+    'filefield_tracker_item' => array(
+      'arguments' => array('file' => NULL, 'field' => NULL, 'downloadpath' => NULL),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_requirements().
+ */
+function filefield_tracker_requirements($phase) {
+  $requirements = array();
+  $t = get_t();
+
+  if ($phase == 'runtime') {
+    $requirements['filefield_tracker'] = array(
+      'title' => $t('Filefield download tracking'),
+    );
+
+    $filesystem = variable_get('file_downloads', FILE_DOWNLOADS_PUBLIC);
+    if ($filesystem == FILE_DOWNLOADS_PUBLIC) {
+      $requirements['filefield_tracker']['value'] = $t('Download method is set to <em>Public</em>');
+      $requirements['filefield_tracker']['description'] = $t('Filefield download tracking only works with the private download method. Go to the <a href="!url">File system settings page</a> to change your settings.', array('!url' => url('admin/settings/file-system')));
+      $requirements['filefield_tracker']['severity'] = REQUIREMENT_WARNING;
+    }
+    else {
+      $requirements['filefield_tracker']['value'] = $t('Download method is set to <em>Private</em>');
+      $requirements['filefield_tracker']['severity'] = REQUIREMENT_OK;
+    }
+  }
+  return $requirements;
+}
+
+/**
+ * Get the logs from the filefield_tracker database
+ */
+function filefield_tracker_get_logs($nid = NULL) {
+  $entries = array();
+  if (!$nid) {
+    $result = db_query("SELECT fid, nid, uid, download_time FROM {filefield_tracker} ORDER BY download_time DESC");
+  }
+  else {
+    $result = db_query("SELECT fid, nid, uid, download_time FROM {filefield_tracker} WHERE nid = %d ORDER BY download_time DESC", $nid);
+  }
+  while ($row = db_fetch_object($result)) {
+    $entries[] = $row;
+  }
+  return $entries;
+}
+
+/**
+ * Generate the trackable URL for a file
+ */
+function filefield_tracker_create_url($fid, $nid, $filename) {
+  if (is_numeric($fid) && is_numeric($nid)) {
+    return 'download/' . $fid . '/' . $nid . '/' . $filename;
+  }
+  return FALSE;
+}
+
+/**
+ * Implementation of hook_views_api().
+ */
+function filefield_tracker_views_api() {
+  return array(
+    'api' => 2,
+    'path' => drupal_get_path('module', 'filefield_tracker') . '/views',
+  );
+}

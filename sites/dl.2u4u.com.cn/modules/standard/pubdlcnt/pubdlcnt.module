@@ -1,0 +1,1031 @@
+<?php
+// $id:
+
+/**
+ * @file
+ * 
+ * public file download count module (for Drupal's public file system)
+ *
+ * @ingroup pubdlcnt
+ *
+ * Copyright 2009 Hideki Ito <hide@pixture.com> Pixture Inc. All rights reserved.
+ */
+
+define("MODE_TOTAL",   0);
+define("MODE_DETAIL",  1);
+define("MODE_CONFIRM", 2);
+define("MODE_RESET",   3);
+
+define("NUM_FILES_PER_PAGE", 100);
+
+define("DAILY", 1);
+define("MONTHLY", 2);
+
+/**
+ * API for external modules and themes
+ */
+function pubdlcnt_filter($text, $nid) {
+  // return if $nid is not specified
+  if(!$nid) return $text;
+
+  return _filter_pubdlcnt($text, $nid);
+}
+
+/**
+ * Parse whole node data and filter valid anchor tags
+ */
+function _filter_pubdlcnt($text, $nid) {
+  // return if $nid is not specified
+  if(!$nid) return $text;
+ 
+  // 1. cross-platform line breaks to UNIX line breaks
+  $text = str_replace(array("\r\n", "\r"), "\n", $text);
+
+  // 2. convert anchor tag
+  $text = preg_replace('/(<a.*?>)(.*?)(<\/a>)/ise', "_pubdlcnt_replace_anchor_url('$0', '$1', '$2', '$3', $nid)", $text);
+
+  return $text;
+}
+
+/**
+ * Convert one anchor tag
+ *
+ * Following types of anchor tags are excluded from this conversion
+ *  1. URL without file name           - http://server/dir1/dir2/
+ *  2. URL without file name extension - http://server/dir/filename
+ *  3. URL with query string           - http://server/dir/program?arg1=XXX&arg2=YYY
+ *  4. URL with file name + invalid extension
+ *  5. URL wilth private file system path - http://server/system/files/dir/filename
+ *
+ * So, only the URLs with file name with valid extension can be processed.
+ *
+ *  -- case 1: absolute URL --
+ *  IN:  <a href="http://server/dir1/dir2/sample.zip" title="sample">Sample</a>
+ *  OUT: <a href="http://drupalserver/path/pubdlcnt.php?file=http://server/dir1/dir2/sample.zip" title="sample">Sample</a>
+ *
+ *  -- case 2: relative URL (based on DocumentRoot) --
+ *  IN:  <a href="/dir1/dir2/sample.zip" title="sample">Sample</a>
+ *  OUT: <a href="http://drupalserver/path/pubdlcnt.php?file=/dir1/dir2/sample.zip" title="sample">Sample</a>
+ */
+function _pubdlcnt_replace_anchor_url($all, $str1, $str2, $str3, $nid) {
+
+  // Example: <a href=\"http://www.pixture.com/files/sample.zip\" title=\"Sample\">sample.zip</a>
+  // $all:  entire string
+  // $str1: start anchor tag:  <a href=\"www.pixutre.com/files ... \"title=\"Sample\">
+  // $str2: inbetween content: sample.zip
+  // $str3: end anchor tag:    </a>
+
+  global $user;
+
+  // remove backslash before the double-quote
+  $all   = str_replace('\"','"',$all);
+  $str1  = str_replace('\"','"',$str1); 
+  $str2  = str_replace('\"','"',$str2); 
+  $str3  = str_replace('\"','"',$str3); 
+
+  // if (preg_match('/\s*?rel=["\']lightbox.*["\']/i', $str1)) {
+  if (preg_match('/\s*?rel=["\'](lightbox|thickbox|shadowbox).*["\']/i', $str1)) {
+    // skip lightbox handled image file anchor tag
+    return $all;
+    // the line below disables lightbox and enable pubdlcnt
+    // $str1 = preg_replace('/\s*?rel=["\'](lightbox|thickbox|shadowbox).*["\']/i', '', $str1);
+  }
+
+  preg_match('/(<a.*?href=["\'])(.*?)(["\'].*?>)/ise', $str1, $matches);
+  // Example: <a href=\"http://www.pixture.com/files/sample.zip\" title=\"Sample\">
+  // $matches[0]: entire str1
+  // $matches[1]: first part of anchor: <a href=\"
+  // $matches[2]: href content(URL)   : http://www.pixture.com/files/sample.zip
+  // $matches[3]: remainign part:       \" title=\"Sample\">
+
+  // extract file name and file extension from the URL
+  $path = explode("?", $matches[2]);
+  if (isset($path[1])) {
+    // URL has query string -- skip conversion
+    return $all;
+  }
+  if (preg_match('/\/$/', $matches[2])) {
+    // URL does not has file name (URL end with /)
+    return $all;
+  }
+  if (strstr($matches[2], "/system/files")) {
+    // anchor to a file under private file system
+    return $all;
+  }
+
+  $filename = basename($matches[2]);
+
+  $extension = explode(".", $filename);
+  $num = count($extension);
+  if ($num > 1) {
+    $ext = $extension[$num-1];
+  }
+  else {
+    // No extension
+    return $all;
+  }
+
+  $valid_extensions = variable_get('pubdlcnt_valid_extensions', '7z bz bz2 gz gzip hqx iso lha lzh pkg pdf rpm sea sit tar tbz tgz zip');
+
+  // check if the extension is a valid extension or not (case insensitive)
+  $s_valid_extensions = strtolower($valid_extensions);
+  $s_ext = strtolower($ext);
+  $s_valid_ext_array = explode(" ", $s_valid_extensions);
+  if (!in_array($s_ext, $s_valid_ext_array)) {
+    return $all;
+  }
+  
+  // show total download count in nodes
+  if (user_access('view total download count in nodes')) {
+    if (user_access('administer public download count')) {
+      // total count with link to statistics page
+      $cnt = pubdlcnt_get_total_counter($filename);
+      $str3 = $str3 . ' <a href="' . base_path() . _pubdlcnt_language_prefix()
+            . 'admin/reports/pubdlcnt/counter?file='
+            . $filename . '&mode=1">(' . $cnt . ')</a>';
+    }
+    else { // non admin
+      // total count only (no link)
+      $cnt = pubdlcnt_get_total_counter($filename);
+      $str3 = $str3 . ' (' . $cnt . ')';
+    }
+  }
+  $matches[2] = base_path() . drupal_get_path('module', 'pubdlcnt') .
+          "/pubdlcnt.php?file=$matches[2]&nid=$nid";
+
+  $out = $matches[1] . $matches[2] . $matches[3] . $str2 . $str3;
+
+  return $out;  
+}
+
+/**
+ * Get the download counter of the specific file
+ */
+function pubdlcnt_get_total_counter($name)
+{
+  $result = db_query("SELECT SUM(count) FROM {pubdlcnt} WHERE name = '%s'", $name);
+  if ($result) {
+    $count = db_result($result);
+    if (empty($count)) return 0;
+    else return $count;
+  }
+  else {
+    return 0; // no counter
+  }
+}
+
+/**
+ * Generate horizontal bar 
+ */
+function _pubdlcnt_count_bar($count, $max) {
+  $width = (int)((100 / $max) * $count); 
+  if ($count && $width == 0) $width = 1;
+
+  $output  = '<div style="width:100px; background-color:#eee;">';
+  $output .= '<div style="width:' . $width 
+              . 'px; background-color:#88aaff; font-size:9px">';
+  $output .= '&nbsp;';
+  $output .= '</div></div>';
+  return $output;
+}
+
+/**
+ * Implementation of hook_nodeapi()
+ */
+function pubdlcnt_nodeapi(&$node, $op, $a3, $a4) {
+  switch ($op) {
+    case 'alter':
+      if($node->nid == '') {
+        // preview - we do nothing and just return
+        return;
+      }
+      $node->body = _filter_pubdlcnt($node->body, $node->nid);
+      $node->teaser  = _filter_pubdlcnt($node->teaser, $node->nid);
+      break;
+  }
+}
+
+/**
+ * Form: General Configutation Settings
+ *
+ * @see pubdlcnt_general_form_validate()
+ */
+function pubdlcnt_general_form() {
+
+  $valid_extensions = variable_get('pubdlcnt_valid_extensions', '7z bz bz2 gz gzip hqx iso lha lzh pkg pdf rpm sea sit tar tbz tgz zip');
+
+  $form['pubdlcnt_valid_extensions'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Valid file name extensions'),
+    '#default_value' => $valid_extensions,
+    '#size' => 80,
+    '#maxlength' => 255,
+    '#description' => t('Separate extensions with a space and do not include the leading dot.'),
+  );
+  $form['pubdlcnt_num_blocks'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Number of blocks'),
+    '#description' => t('The total number of independent blocks you want. Enter a number between 0 to 99. If you set this to 0, you will have no blocks created.'),
+    '#default_value' => variable_get('pubdlcnt_num_blocks', 1),
+    '#size' => 3,
+  );
+  return system_settings_form($form);
+}
+
+/**
+ * Form validation: General Configuration Settings
+ */
+function pubdlcnt_general_form_validate($form, &$form_state) {
+  $number = $form_state['values']['pubdlcnt_num_blocks'];
+  if(!is_numeric($number) || strlen($number) > 2) {
+    form_set_error('pubdlcnt_num_blocks', t('You must enter a number from 0 to 99.'));
+  }
+}
+
+/**
+ * Form: Download Counts Form
+ *
+ * @see pubdlcnt_counter_form_submit()
+ */
+function pubdlcnt_counter_form(&$form_state) {
+
+  global $paper_page_array, $pager_total;
+
+  $mode = MODE_TOTAL;
+
+  // check if this is the detail mode or not
+  $url = check_url(request_uri());
+  if (preg_match("/(\/counter\?)(.*)/", $url, $match)) {
+    $params = explode("&", $match[2]);
+    $tgt_y = $tgt_m = $name = '';
+    foreach ($params as $param) {
+      if (preg_match("/file=(.*)/", $param, $match)) {
+        $name = check_url($match[1]);
+        // convert '%20' back to space characters
+        $name = preg_replace('/%20/', ' ', $name);
+      }
+      if (preg_match("/year=(.*)/", $param, $match)) {
+        $tgt_y = (int)($match[1]);
+      }
+      if (preg_match("/month=(.*)/", $param, $match)) {
+        $tgt_m = (int)($match[1]);
+      }
+      if (preg_match("/mode=(.*)/", $param, $match)) {
+        $mode = (int)($match[1]);
+        if ($mode < MODE_TOTAL || $mode > MODE_RESET) {
+          $mode = MODE_TOTAL; // invalid mode: use default mode
+        }
+      }
+    }
+    if (empty($name)) {
+      // no file name --> total file list
+      $mode = MODE_TOTAL;
+    }
+    else {
+      // file name is specified --> MODE_DETAIL, MODE_CONFIRM, MODE_RESET
+      if ($mode == MODE_TOTAL) $mode = MODE_DETAIL;
+      if (empty($tgt_y)) $tgt_y = (int)(date("Y"));
+      if (empty($tgt_m)) $tgt_m = (int)(date("n"));
+    }
+  }
+
+  // first, obtain the max download count for any file
+  $result = db_query("SELECT SUM(count) as max_count FROM {pubdlcnt} GROUP BY name ");
+  $max = 0;
+  while ($rec = db_fetch_object($result)) {
+    if ($max < $rec->max_count) {
+      $max = $rec->max_count;
+    }
+  }
+
+  /**
+   *------------------------------------------------------------------
+   * Mode: Total (with pager and sortable table)
+   *------------------------------------------------------------------
+   */
+  if ($mode == MODE_TOTAL) {
+    // sortable table: default sort by count (DESC)
+    $header = array(
+      array('data' => t('Count'), 'field' => 'total', 'sort' => 'desc'),
+      array('data' => t(' ')),
+      array('data' => t('File Name'), 'field' => 'name'),
+      array('data' => t('Last Download'), 'field' => 'date'),
+      array('data' => t('Operation')),
+    );
+    // get total number of files and total download counts
+    $result = db_query("SELECT COUNT(DISTINCT(name)) FROM {pubdlcnt}");
+    $total_files = db_result($result);
+    $result = db_query("SELECT SUM(count) FROM {pubdlcnt}");
+    $total_counts = db_result($result);
+
+    // show list with pager
+    $query = "SELECT name, nid, SUM(count) AS total, MAX(date) AS last FROM {pubdlcnt} GROUP BY name ";
+    // create 'ORDER BY xxxx' string
+    $query .= tablesort_sql($header); 
+    $count_query = "SELECT COUNT(DISTINCT(name)) FROM {pubdlcnt}";
+
+    $result = pager_query($query, NUM_FILES_PER_PAGE, 0, $count_query);
+
+    $rows = array();
+    while ($rec = db_fetch_object($result)) {
+      $dateonly = date('Y-m-d (D)', strtotime($rec->last)); 
+      $row = array();
+      $row[] = array('data' => $rec->total, 'align' => 'right');
+      $row[] = array('data' => _pubdlcnt_count_bar($rec->total, $max), 'align' => 'left');
+      $nid = _pubdlcnt_get_translated_node_id($nid);
+      $row[] = array('data' => '<a href="' . base_path() . _pubdlcnt_language_prefix() . 'node/' . $nid . '">' . $rec->name, 
+                               'align' => 'left', 'style' => 'padding-right: 20px');
+      $row[] = array('data' => $dateonly,   'align' => 'left', 'style' => 'padding-right: 20px');
+      $row[] = array('data' => '<a href="' 
+            . base_path()
+            . _pubdlcnt_language_prefix()
+            . 'admin/reports/pubdlcnt/counter?file='
+            . $rec->name
+            . '&mode=1' // MODE_DETAIL
+            . '">'
+            . t('Detail')
+            . '</a>' 
+            . '&nbsp;&nbsp;|&nbsp;&nbsp;'
+            . '<a href="'
+            . base_path()
+            . _pubdlcnt_language_prefix()
+            . 'admin/reports/pubdlcnt/counter?file='
+            . $rec->name
+            . '&mode=2' // MODE_CONFIRM
+            . '">'
+            . t('Reset')
+            . '</a>', 
+            'align' => 'left', 'style' => 'padding: 2px 10px');
+      $rows[] = $row;
+    }
+    if (count($rows)) {
+      $output = theme('table', $header, $rows);
+      $output .= '<br />';
+      $output .= theme('pager', NULL, NUM_FILES_PER_PAGE);
+      $output .= '<br />' . t('Number of files: %num1, Total downloads: %num2',
+            array('%num1' => $total_files, '%num2' => $total_counts));
+    }
+    else {
+      $output = t('No download count records are found for the file.');
+    }
+    $form['total_list'] = array(
+      '#type' => 'markup',
+      '#value' => '<p>' . $output . '</p>',
+    );
+  }
+  /**
+   *---------------------------------------------------------------
+   * Mode: Confirm (confirm to reset the counter)
+   *       $name - file name 
+   *---------------------------------------------------------------
+   */
+  else if ($mode == MODE_CONFIRM) {
+    $form['confirm'] = array(
+    '#type' => 'hidden',
+    '#value' => 1,
+    );
+    $form = array();
+    $output = t('Are you sure you want to reset the counter of the file %name?',
+      array('%name' => $name));
+    $output .= '<br />' . t('This action cannot be undone!') . '<br /><br />';
+    $form_state['reset_target'] = $name;  
+    return confirm_form($form, 
+      NULL, // title
+      'admin/reports/pubdlcnt/counter',
+      $output,
+      t('Proceed'),
+      t('Cancel'));
+  }
+  /**
+   *---------------------------------------------------------------
+   * Mode: Reset (delete counter data for the specified file)
+   *       $name - file name 
+   *---------------------------------------------------------------
+   */
+  else if ($mode == MODE_RESET) {
+    // reset counter
+    $result = db_query("SELECT * FROM {pubdlcnt} WHERE name = '%s'", $name);
+    if ($result) {
+      $result = db_query("DELETE FROM {pubdlcnt} WHERE name = '%s'", $name);
+      $output = t('The counter of the file %name is reset to 0',
+        array('%name' => $name));
+      drupal_set_message($output);
+    }
+    drupal_goto('admin/reports/pubdlcnt/counter'); // go back to file list
+  }
+  /**
+   *------------------------------------------------------------------
+   * Mode: Detail
+   *       $name - file name 
+   *       $tgt_y - show daily stastic of a specific period (or empty)
+   *       $tgt_m - show daily stastic of a specific period (or empty)
+   *------------------------------------------------------------------
+   */
+  else if ($mode == MODE_DETAIL) {
+
+    //
+    // Check all counter data for the file and construct $counts array
+    //
+
+    $counts = array();
+    $result = db_query("SELECT * FROM {pubdlcnt} WHERE name = '%s' ORDER BY date DESC", $name);
+    while ($rec = db_fetch_object($result)) {
+      $unixtime = strtotime($rec->date);
+      // accumulate counter for yearly and monthly 
+      $y = date('Y', $unixtime);
+      $m = date('n', $unixtime);
+      $d = date('j', $unixtime);
+      $counts[$y][0][0]   += $rec->count;
+      $counts[$y][$m][0]  += $rec->count;
+      $counts[$y][$m][$d]  = $rec->count;
+    }
+    if (!count($counts)) {
+      $output = t('No download count records are found for the file.');
+      $form['daily']['counts'] = array(
+        '#type' => 'markup',
+        '#value' => $output,
+      );
+      return $form;
+    }
+    $min_y = $y;
+    $min_m = $m;
+    $min_d = $d;
+    $cur_y = date("Y");
+    $cur_m = date("n");
+    $cur_d = date("j");
+
+    //
+    // File name and grand total counts
+    //
+    $total = pubdlcnt_get_total_counter($name);
+    $form['name'] = array(
+      '#type' => 'markup',
+      '#value' => '<p align="left"><b>' . $name 
+            . '</b> (' . t('Total downloads: ') 
+            . '<b>' . $total . '</b>)</p>',
+    );
+    //
+    // Daily Counts
+    //
+    $header = array(
+      t('Date'),
+      t('Count'),
+      t(''),
+    );
+    // check the last day of the target month (28?29?30?31?)
+    $lastday = date('t', mktime(0, 0, 0, $tgt_m, 1, $tgt_y));
+    $rows = array();
+    for ($d = $lastday ; $d >= 1 ; $d--) {
+      // skip the future date
+      if ($tgt_y == $cur_y && $tgt_m == $cur_m && $d > $cur_d) continue;
+      // reached the date older than the oldest date - exit
+      if ($tgt_y == $min_y && $tgt_m == $min_m && $d < $min_d) break;
+      if (isset($counts[$tgt_y][$tgt_m][$d])) {
+        $count = $counts[$tgt_y][$tgt_m][$d];
+      }
+      else {
+        $count = 0;
+      }
+      $dateonly = date('Y-m-d (D)', mktime(0, 0, 0, $tgt_m, $d, $tgt_y));
+      $row = array();
+      $row[] = array('data' => $dateonly,   'align' => 'left');
+      $row[] = array('data' => $count, 'align' => 'right');
+      $row[] = array('data' => _pubdlcnt_count_bar($count, $max), 'align' => 'left');
+      $rows[] = $row;
+    }
+    $output = theme('table', $header, $rows, array('style' => 'margin: 5px'));
+
+    $form['daily'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Daily Counts') . ' (' . $tgt_y . '-' . $tgt_m . ')',
+      '#collapsible' => FALSE,
+      '#collapsed' => FASLE,
+    );
+    $form['daily']['counts'] = array(
+      '#type' => 'markup',
+      '#value' => $output,
+    );
+
+    //
+    // Monthly Counts
+    //
+    $rows = array();
+    $header = array(
+      t('Year'),
+      t('Month'),
+      t('Count'),
+      t(''),
+      t('Operation'),
+    );
+    for ($y = $cur_y ; $y >= $min_y ; $y--) {
+      for ($m = 12 ; $m >= 1 ; $m--) {
+        // skip the future month
+        if ($y == $cur_y && $m > $cur_m) continue;
+        // reached the month older than the oldest month - exit
+        if ($y == $min_y && $m < $min_m) break;
+        if (isset($counts[$y][$m][0])) $count = $counts[$y][$m][0];
+        else $count = 0;
+        $row = array();
+        $row[] = array('data' => $y,     'align' => 'left');
+        $row[] = array('data' => $m,     'align' => 'left');
+        $row[] = array('data' => $count, 'align' => 'right');
+        $row[] = array('data' => _pubdlcnt_count_bar($count, $max), 'align' => 'left');
+        $row[] = array('data' => '<a href="' 
+            . base_path()
+            . _pubdlcnt_language_prefix()
+            . 'admin/reports/pubdlcnt/counter?file='
+            . $name
+            . '&year='
+            . $y
+            . '&month='
+            . $m
+            . '&mode=1' // MODE_DETAIL
+            . '">'
+            . t('Detail')
+            . '</a>', 'align' => 'left');
+        $rows[] = $row;
+      }
+    }
+    $output2 = theme('table', $header, $rows, array('style' => 'margin: 5px'));
+
+    $form['monthly'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Monthly Counts'),
+      '#collapsible' => FALSE,
+      '#collapsed' => FASLE,
+    );
+    $form['monthly']['counts'] = array(
+      '#type' => 'markup',
+      '#value' => $output2,
+    );
+
+    //
+    // Yearly Counts
+    //
+    $rows = array();
+    $header = array(
+      t('Year'),
+      t('Count'),
+    );
+    for ($y = $cur_y ; $y >= $min_y ; $y--) {
+      if (isset($counts[$y][0][0])) $count = $counts[$y][0][0];
+      else $count = 0;
+      $row = array();
+      $row[] = array('data' => $y,     'align' => 'left');
+      $row[] = array('data' => $count, 'align' => 'right');
+      $rows[] = $row;
+    }
+    $output3 = theme('table', $header, $rows, array('style' => 'margin: 5px'));
+
+    $form['yearly'] = array(
+      '#type' => 'fieldset',
+      '#title' => t('Yearly Counts'),
+      '#collapsible' => FALSE,
+      '#collapsed' => FASLE,
+    );
+    $form['yearly']['counts'] = array(
+      '#type' => 'markup',
+      '#value' => $output3,
+    );
+
+    // pressing button will redirect to the file list page
+    $form['button_total'] = array(
+      '#type' => 'submit',
+      '#value' => t('Go back to the file list'),
+    );
+    $form['#redirect'] = 'admin/reports/pubdlcnt/counter';
+  }
+
+  return $form;
+}
+
+/**
+ * Implementation of hook_submit().
+ */
+function pubdlcnt_counter_form_submit($form, &$form_state) {
+/*
+  print_r($form);
+  print "<br><br>";
+  print_r($form_state);
+  return;
+*/
+  $op = $form_state['values']['op'];
+  if ($op == t('Proceed')) {
+    $path = 'admin/reports/pubdlcnt/counter';
+    $query = '';
+    if (isset($form_state['reset_target'])) {
+      $query = 'file=' . $form_state['reset_target']
+        . '&mode=3';  // MODE_RESET
+    }
+    drupal_goto($path, $query);
+  }
+}
+
+
+/**
+ * Form: Export form
+ *
+ * @see pubdlcnt_export_form_submit()
+ */
+function pubdlcnt_export_form() {
+  $form['pubdlcnt_export_mode'] = array(
+    '#type' => 'radios',
+    '#title' => t('Export mode'),
+    '#options' => array(
+      t('export entire counter data'),
+      t('export summary by file'),
+    ),
+    '#default_value' => variable_get('pubdlcnt_export_mode', 0),
+  );
+  $form['export_note'] = array(
+    '#type' => 'markup',
+    '#value' => t('The exported file has the following four columns.') 
+      . '<ul>'
+      . '<li>' . t('File name')
+      . '<li>' . t('Date (YYYY-MM-DD)')
+      . '<li>' . t('Day of the week (Sun-Sat)')
+      . '<li>' . t('Download count')
+      . '</ul>'
+      . '<br />',
+  );
+  $form['export_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Export'),
+  );
+  return $form;
+}
+
+/**
+ * Implementation of hook_submit().
+ */
+function pubdlcnt_export_form_submit($form, &$form_state) {
+
+  $op = $form_state['values']['op'];
+  if ($op == t('Export')) {
+    $export_mode = $form_state['values']['pubdlcnt_export_mode'];
+    // save the export mode
+    variable_set('pubdlcnt_export_mode', $export_mode);
+
+    $file_path = file_directory_temp() . '/public_download_count_' 
+            . date('Y-m-d') . '.txt';
+    export_counter_file($file_path, $export_mode);
+    if (!file_exists($file_path)) {
+      die("Error: File $file_path does not exists.");
+    }
+    if (!($fp = fopen($file_path, "r"))) {
+      die("Error: Can not open file $file_path for reading.");
+    }
+    if (($file_size = filesize($file_path)) == 0) {
+      die("Error: File $file_path is empty.");
+    }
+
+    // download (open dialog and let user save a file)
+    header("Content-Disposition: attachment; filename=\"" 
+      . basename($file_path) . "\"");
+    header("Content-Length: $file_size");
+    header("Content-Type: application/octet-stream"); readfile($file_path); 
+    // delete the temporary file
+    unlink($file_path);
+    return;
+  }
+}
+
+/**
+ * Export - Export counter file as a tab separated text file
+ */
+function export_counter_file($file_path, $export_mode) {
+  // $export_mode - 0:entire counter data, 1:summary by file
+
+  // open the temporary file
+  if (!($fp = fopen($file_path, "w"))) {
+    die("Error: Can not open file $file_path for writing.");
+  }
+  if ($export_mode == 0) {
+    $result = db_query("SELECT * FROM {pubdlcnt} ORDER BY name, date DESC");
+    while ($rec = db_fetch_object($result)) {
+      $unixtime = strtotime($rec->date);
+      $dateonly = date('Y-m-d', $unixtime);
+      $dow      = date('D', $unixtime);
+      $row = $rec->name . "\t" . $dateonly . "\t" . $dow 
+            . "\t" . $rec->count . "\n";
+      fwrite($fp, $row);
+    }
+  }
+  else if ($export_mode == 1) {
+    $result = db_query("SELECT name, SUM(count) AS total, MAX(date) AS last FROM {pubdlcnt} GROUP BY name %s", $sort_sql);
+    while ($rec = db_fetch_object($result)) {
+      $unixtime = strtotime($rec->last);
+      $dateonly = date('Y-m-d', $unixtime);
+      $dow      = date('D', $unixtime);
+      $row = $rec->name . "\t" . $dateonly . "\t" . $dow 
+            . "\t" . $rec->total . "\n";
+      fwrite($fp, $row);
+    }
+  }
+  // close the temporary file
+  fclose($fp);
+}
+
+/**
+ * Implementation of hook_menu
+ */
+function pubdlcnt_menu() {
+  $items = array();
+
+  // settings section
+  $items['admin/settings/pubdlcnt'] = array(
+    'title' => t('Public Download Count'),
+    'description' => t('Provides file download counter for the public file system.'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('pubdlcnt_general_form'),
+  'access arguments' => array('administer public download count'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  // report section
+  $items['admin/reports/pubdlcnt'] = array(
+  'title' => t('Public Download Count'),
+  'description' => t('Allow users to see the file download count'),
+  'page callback' => 'drupal_get_form',
+  'page arguments' => array('pubdlcnt_counter_form'),
+  'access arguments' => array('administer public download count'),
+  'type' => MENU_NORMAL_ITEM,
+  );
+  $items['admin/reports/pubdlcnt/counter'] = array(
+  'title' => t('Download Counts'),
+  'description' => t('Allow users to see the file download count'),
+  'page callback' => 'drupal_get_form',
+  'page arguments' => array('pubdlcnt_counter_form'),
+  'access arguments' => array('administer public download count'),
+  'type' => MENU_DEFAULT_LOCAL_TASK,
+  'weight' => 0,
+  );
+  $items['admin/reports/pubdlcnt/export'] = array(
+  'title' => t('Export'),
+  'description' => t('Allow users to export the download count data as a file'),
+  'page callback' => 'drupal_get_form',
+  'page arguments' => array('pubdlcnt_export_form'),
+  'access arguments' => array('administer public download count'),
+  'type' => MENU_LOCAL_TASK,
+  'weight' => 2,
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_perm()
+ */
+function pubdlcnt_perm() {
+  $perms = array();
+  $perms[] = 'administer public download count';
+  $perms[] = 'view total download count in nodes';
+  $perms[] = 'view total download count in block';
+  return $perms;
+}
+
+/**
+ * Implementation of hook_theme()
+ *
+ * This will apply pubdlcnt filter to Views field
+ */
+function pubdlcnt_theme($existing, $type, $theme, $path) {
+  return array(
+    'views_view_field' => array(
+      'arguments' => array('view' => NULL, 'field' => NULL, 'row' => NULL),
+      'template' => 'views-view-field',
+      'original hook' => 'views_view_field',
+      'path' => drupal_get_path('module', 'pubdlcnt') . '/views',
+    ),
+    'top_download_list' => array(
+      'arguments' => array('count' => NULL, 'link' => NULL, 'period' => NULL),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_block()
+ */
+function pubdlcnt_block($op = 'list', $delta = 0, $edit = array()) {
+  if ($op == 'list') {
+    for ($i = 1 ; $i <= variable_get('pubdlcnt_num_blocks', 1) ; $i++) {
+      $blocks[$i]['info'] = t('Top Download !num', array('!num' => $i)); 
+      $blocks[$i]['cache'] = BLOCK_NO_CACHE;
+    }
+    return $blocks;
+  }
+  else if ($op == 'configure') {
+    $form['block_count_' . $delta] = array(
+      '#type' => 'textfield',
+      '#title' => t('Item count'),
+      '#default_value' => variable_get('pubdlcnt_block_count_' . $delta, 10),
+      '#size' => 3,
+      '#description' => t('The maxmum number of items to display. Use 0 to unlimit.'),
+    );
+    $form['block_link_' . $delta] = array(
+      '#type' => 'select',
+      '#title' => t('Item link'),
+      '#default_value' => variable_get('pubdlcnt_block_link_' . $delta, 1),
+      '#options' => array(
+        0 => t('No link'), 
+        1 => t('Link to node'),
+      ),
+      '#description' => t('Determines how the list of downloadable files are displayed'),
+    );
+    $form['block_period_' . $delta] = array(
+      '#type' => 'select',
+      '#title' => t('Counting Period'),
+      '#default_value' => variable_get('pubdlcnt_block_period_' . $delta, 0),
+      '#options' => array(
+        0 => t('All time'), 
+        1 => t('Last year'),
+        2 => t('This year'),
+        3 => t('Last month'),
+        4 => t('This month'),
+        5 => t('Last week'),
+        6 => t('This week'),
+        7 => t('Yesterday'),
+        8 => t('Today'),
+      ),
+      '#description' => t('Determines the time period of counting'),
+    );
+    return $form;
+  }
+  else if ($op == 'save') {
+    variable_set('pubdlcnt_block_count_'  . $delta, $edit['block_count_' . $delta]);
+    variable_set('pubdlcnt_block_link_'   . $delta, $edit['block_link_' . $delta]);
+    variable_set('pubdlcnt_block_period_' . $delta, $edit['block_period_' . $delta]);
+  }
+  else if ($op == 'view') {
+    $count  = variable_get('pubdlcnt_block_count_'  . $delta, 10);
+    $link   = variable_get('pubdlcnt_block_link_'   . $delta, 1);
+    $period = variable_get('pubdlcnt_block_period_' . $delta, 0);
+
+    $period_title = array(
+      t(''), 
+      t('Last year'),
+      t('This year'),
+      t('Last month'),
+      t('This month'),
+      t('Last week'),
+      t('This week'),
+      t('Yesterday'),
+      t('Today'),
+    );
+
+    $block['subject'] = t('Top Download') . ' ' . $period_title[$period];
+    $block['content'] = theme('top_download_list', $count, $link, $period);
+    return $block;
+  }
+}
+
+/**
+ * Theme function for block
+ */
+function theme_top_download_list($count = 10, $link = 1, $period = 0) {
+  $items = array();
+
+  $query = "SELECT name, nid, SUM(count) AS total FROM {pubdlcnt} ";
+  switch ($period) {
+    case 1: // Last year
+      $from = date("Y-m-d H:i:s", mktime(0, 0, 0, 1, 1, date("Y")-1));
+      $to   = date("Y-m-d H:i:s", mktime(0, 0, 0, 12, 31, date("Y")-1));
+      $query .= "WHERE date >= '" . $from . "' AND date <= '" . $to . "'";
+      break;
+    case 2: // This year
+      $from = date("Y-m-d H:i:s", mktime(0, 0, 0, 1, 1, date("Y")));
+      $query .= "WHERE date >= '" . $from . "'";
+      break;
+    case 3: // Last month
+      $from = date("Y-m-d H:i:s", mktime(0, 0, 0, date("m")-1, 1, date("Y")));
+      $to   = date("Y-m-d H:i:s", mktime(0, 0, 0, date("m")-1, 31, date("Y")));
+      $query .= "WHERE date >= '" . $from . "' AND date <= '" . $to . "'";
+      break;
+    case 4: // This month
+      $from = date("Y-m-d H:i:s", mktime(0, 0, 0, date("m"), 1, date("Y")));
+      $query .= "WHERE date >= '" . $from . "'";
+      break;
+    case 5: // Last week
+      $base = strtotime("-1 week");
+      $dow = date("w"); // 0=Sunday - 6=Saturday
+      $from = date("Y-m-d", $base - ((int)$dow * 86400)) . ' 00:00:00';
+      $to   = date("Y-m-d", $base + ((6 - (int)$dow) * 86400)) . ' 00:00:00';
+      $query .= "WHERE date >= '" . $from . "' AND date < '" . $to . "'";
+      break;
+    case 6: // This week
+      $dow = date("w"); // 0=Sunday - 6=Saturday
+      $from = date("Y-m-d", time() - ((int)$dow * 86400)) . ' 00:00:00';
+      $to   = date("Y-m-d", time() + ((6 - (int)$dow) * 86400)) . ' 00:00:00';
+      $query .= "WHERE date >= '" . $from . "' AND date < '" . $to . "'";
+      break;
+    case 7: // Yesterday
+      $from = date("Y-m-d H:i:s", mktime(0, 0, 0, date("m"), date("d")-1, date("Y")));
+      $query .= "WHERE date = '" . $from . "'";
+      break;
+    case 8: // Today
+      $from = date("Y-m-d") . ' 00:00:00';
+      $query .= "WHERE date = '" . $from . "'";
+      break;
+    case 0: // All time
+    default: 
+      break;
+  }
+  $query .= " GROUP BY name ORDER BY total DESC";
+  $result = db_query($query);
+
+  if ($count == 0) $count = 1000000; // no limit
+  for ($i = 0 ; $i < $count ; $i++) {
+    if ($rec = db_fetch_object($result)) {
+      $name = $rec->name;
+      if ($link == 1) {
+        $nid = _pubdlcnt_get_translated_node_id($rec->nid);
+        $name = '<a href="' . base_path() . _pubdlcnt_language_prefix() . 'node/' . $nid . '">' . $name . '</a>';
+      }
+      if (user_access('view total download count in block')) {
+        if (user_access('administer public download count')) {
+          // total count with link to statistics page
+          $name .= ' <a href="' . base_path() . _pubdlcnt_language_prefix() 
+                  . 'admin/reports/pubdlcnt/counter?file='
+                  . $rec->name . '&mode=1">(' . $rec->total . ')</a>';
+        }
+        else { // non admin
+          // total count only (no link)
+          $name .= ' (' . $rec->total . ')';
+        }
+      }
+      $item = array(
+        'data' => $name,
+        'class' => 'pubdlcnt_file',
+      );
+      $items[] = $item;
+    }
+    else {
+      break; // no more items
+    }
+  }
+  $output = theme('item_list', $items);
+  return $output;
+
+
+  $output = '<table id="pubdlcnt">';
+
+  $result = db_query("SELECT name, nid, SUM(count) AS total FROM {pubdlcnt} GROUP BY name ORDER BY total DESC");
+  for ($i = 0 ; $i < $count ; $i++) {
+    if ($rec = db_fetch_object($result)) {
+      $output .= '<tr>';
+      $output .= '<td class="pubdlcnt_file">' . $rec->name . '</td>';
+      $output .= '<td class="pubdlcnt_count">' . $rec->total . '</td>';
+      $output .= '</tr>';
+    }
+    else {
+      break; // no more items
+    }
+  }
+  $output .= '</table>';
+  return $output;
+}
+
+/**
+ * Returns languae prefix
+ */
+function _pubdlcnt_language_prefix() {
+  global $language;
+
+  if ($language->prefix != '' && variable_get('language_negotiation', LANGUAGE_NEGOTIATION_NONE) != LANGUAGE_NEGOTIATION_NONE) {
+    return $language->prefix . '/';
+  }
+  return '';
+}
+
+/**
+ * Get node id of the current language (if any) 
+ */
+function _pubdlcnt_get_translated_node_id($nid) {
+  global $language;
+  $current_lang = $language->language;
+
+  $result = db_query(db_rewrite_sql('SELECT n.nid, n.tnid, n.language FROM {node} n WHERE n.nid = %d OR n.tnid = %d'), $nid, $nid);
+  if (db_affected_rows() > 1) {
+    // found multiple nodes
+    //   which means that the $nid was the node id of the primary language node
+    //   so the $result has nodes of all languages 
+  }
+  else {
+    // found only one page
+    //   which means that the $nid was the node id of the translated node
+    //   or the node id of a neutral language node (= no translation)
+    $node = db_fetch_object($result);
+    if($node->tnid == 0 || $node->language == '') {
+      // this is newtral language node
+      return $node->nid;
+    }
+    // now $node->tnid is the node id of the primary language node
+    // let's get nodes of all languages
+    $result = db_query(db_rewrite_sql('SELECT n.nid, n.tnid, n.language FROM {node} n WHERE n.tnid = %d'), $node->tnid);
+  }
+  while ($node = db_fetch_object($result)) {
+    if ($node->language == $current_lang) {
+      return $node->nid;
+    }
+  }
+  return $nid; // not found - return original $nid
+}

@@ -1,0 +1,119 @@
+body {
+	font-family: "宋体";
+	font-size: 12px;
+	margin: 0px;
+	padding: 0px;
+}
+.lunbo {
+	float: left;
+	width: 315px;
+	height: 400px;
+	border: 1px solid #CECECE;
+	padding: 6px;
+}
+.zdtj {
+	height: 340px;
+	width: 358px;
+	float: left;
+	margin-left: 20px;
+}
+.csfl {
+	height: 380px;
+	width: 220px;
+	float: left;
+	margin-left: 20px;
+}
+.ad_1 {
+	height: 82px;
+	width: 960px;
+	float: left;
+	margin-top: 15px;
+}
+.ad_2 {
+	height: 82px;
+	width: 960px;
+	float: left;
+	margin-top: 15px;
+}
+.ad_3 {
+	height: 82px;
+	width: 960px;
+	float: left;
+	margin-top: 15px;
+}
+.zxtk {
+	float: left;
+	height: 497px;
+	width: 720px;
+	margin-top: 15px;
+	border: 1px solid #CECECE;
+}
+.kuang {
+	float: left;
+	width: 220px;
+	height: 479px;
+	margin: 15px 0 0 18px;
+}
+.ksrl {
+	height: 245px;
+	width: 218px;
+	/*background-color: #F5F5F5;*/
+	border-left: 1px solid #CECECE;
+	border-right: 1px solid #CECECE;
+	border-bottom: 1px solid #CECECE;
+}
+.dfphb {
+	height: 229px;
+	width: 220px;
+	margin-top: 15px;
+	border: 1px solid #CECECE;
+}
+
+.zxlx {
+	float: left;
+	height: 410px;
+	width: 960px;
+	margin-top: 15px;
+	border-top: 1px solid #CECECE;
+	border-left: 1px solid #CECECE;
+	border-right: 1px solid #CECECE;
+	border-bottom: 1px solid #CECECE;
+}
+.ztcs {
+
+	float: left;
+	height: 465px;
+	width: 720px;
+	margin-top: 15px;
+	border: 1px solid #CECECE;
+}
+.ztcsphb {
+
+	float: left;
+	height: 465px;
+	width: 218px;
+	margin: 15px 0 0 16px;
+	border-bottom: 1px solid #CECECE;
+	border-left: 1px solid #CECECE;
+	border-right: 1px solid #CECECE;
+}
+.qwcs {
+
+
+	float: left;
+	height:auto;
+	width: 720px;
+	margin-top: 15px;
+	border: 1px solid #CECECE;
+}
+.qwcsphb {
+
+
+	float: left;
+	height: 465px;
+	width: 218px;
+	margin: 15px 0 0 16px;
+	border-bottom: 1px solid #CECECE;
+	border-left: 1px solid #CECECE;
+	border-right: 1px solid #CECECE;
+}

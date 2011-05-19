@@ -1,0 +1,84 @@
+<?php
+// $Id: 
+
+/**
+ * @file
+ *
+ * module install/uninstall script
+ *
+ * @ingroup pubdlcnt
+ *
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function pubdlcnt_install() {
+
+  $valid_extensions = '7z bz bz2 gz gzip hqx iso lha lzh pkg pdf rpm sea sit tar tbz tgz zip';
+
+  // Create database table
+  drupal_install_schema('pubdlcnt');
+
+  // Set valid extentions to database
+  variable_set('pubdlcnt_valid_extensions', $valid_extensions);
+
+  // Change module's weight 
+  db_query("UPDATE {system} SET weight = 100 WHERE name = 'pubdlcnt'");
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function pubdlcnt_schema() {
+  $schema['pubdlcnt'] = array(
+		'fields' => array(
+			'id' => array(
+				'description' => 'The record ID (unique number)',
+				'type' => 'serial', // start from 1
+				'unsigned' => FALSE,
+				'not null' => TRUE),
+			'name' => array(
+				'description' => 'The file name',
+				'type' => 'varchar',
+				'length' => 255,
+				'not null' => TRUE,
+				'default' => ''),
+            'nid' => array(
+                'description' => 'The node ID of which the file exists',
+                'type' => 'int',
+                'unsigned' => FALSE,
+                'not null' => TRUE),
+			'date' => array(
+				'description' => 'The date of the download',
+				'type' => 'datetime',
+				'not null' => TRUE),
+			'count' => array(
+				'description' => 'Download count',
+				'type' => 'int',
+				'unsigned' => FALSE,
+				'not null' => TRUE,
+				'default' => 0),
+		),
+		'primary key' => array('id'),
+	);
+	return $schema;
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function pubdlcnt_uninstall() {
+  // Remove tables.
+  drupal_uninstall_schema('pubdlcnt');
+  db_query("DELETE FROM {variable} WHERE name LIKE 'pubdlcnt%'");
+  cache_clear_all('variables', 'cache');
+}
+
+/**
+ * Module update functions
+ */
+function pubdlcnt_update_6101() {
+  // Change module's weight 
+  db_query("UPDATE {system} SET weight = 100 WHERE name = 'pubdlcnt'");
+}

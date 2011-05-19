@@ -1,0 +1,11 @@
+function egs_paper(id){
+	//window.location.href = 'http://test.2u4u.com.cn/html/www/index.html';
+	window.open('http://test.2u4u.com.cn/html/www/index.html');
+	window.setTimeout(function(){	
+		$('#mainContent').html('<div id="mainContentInner"><div class="paper_title title"></div><div class="messages" id="globalmessage"></div><div class="paper_content content">loading</div></div>');
+		//$('#mainContent').load("manage_all_tags.html");
+		$(".paper_content").create_paper(id,{titleContent:".paper_title",user_id:user_id});
+			
+	},3000);
+	
+}

@@ -1,0 +1,47 @@
+<?php
+function get_quiz_block($op = 'list', $delta = 0, $edit = array()){
+  if ($op == 'list') {
+    $blocks[0]['info'] = t('quiz文学常识分类');
+    $blocks[0]['cache'] = BLOCK_CACHE_GLOBAL;
+    
+    return $blocks; 
+  }
+	
+  if($op == 'view'){
+  	$block = array();
+    switch ($delta) {
+      case 0:
+	      	$block['subject'] = t('趣味文学测试');
+           	$block['content'] = get_quiz_wenxue();
+	  	return $block;
+
+    }
+  }   
+}
+
+function get_quiz_wenxue(){
+    $output ="";
+    $ebook_content = babel_custom_quizinfo('new_quiz','block_2');
+    $output.= $ebook_content;
+    $output.="<div class='wenxue_more'><a href='http://quiz.2u4u.com.cn/quiz/10406'>>>更多</a>
+              </div>";
+
+    return $output;
+}
+
+function babel_custom_quizinfo($view_name,$display_id){
+        $args=func_get_args();
+        array_shift($args);     //remove $view_name
+        if(count($args)){
+            array_shift($args);     //remove $display_id
+        }
+        $output='';
+        $quiz=xmlrpc('http://quiz.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);
+        $output.=$quiz[0];
+        return $output;
+} 
+
+
+
+
+

@@ -1,0 +1,64 @@
+<?php
+function uchome_xfjd_block($op = 'list', $delta = 0, $edit = array()){
+  if ($op == 'list') {
+   
+    $blocks[0]['info'] = t('uchome西方经典翻译大赛');
+    $blocks[0]['cache'] = BLOCK_CACHE_GLOBAL; 
+    return $blocks;
+  }
+	
+  if($op == 'view'){
+  	$block = array();
+    switch ($delta) {
+      case 0:
+	      	$block['subject'] = t('');
+		  	$block['content'] = uchome_xfjd_post();
+		  	return $block;
+    }
+  }   
+}
+
+
+
+
+function uchome_xfjd_post(){		
+     $discuz_url = "http://u.2u4u.com.cn/";
+     db_set_active('uchome');
+     //$time = strtotime("today");
+     $sql="SELECT bid,xb.pic,enname,introduction
+           FROM `uchome_xfjd_book` as xb
+	   LEFT JOIN `uchome_xfjd_p` as xp
+	   ON xb.pid=xp.pid
+	   LIMIT 0,4";
+     /*$sql = "SELECT blogid,uid,username,subject 
+		    FROM `uchome_blog` 
+		     GROUP BY uid ORDER BY hot DESC,viewnum DESC 
+		     LIMIT $num";*/
+    $rs = db_query($sql);
+    $xfjd_address = "http://u.2u4u.com.cn/home/attachment/";
+    //DEFINE('UC_API',"http://u.2u4u.com.cn/home/attachment"); 
+    while($row = db_fetch_object($rs)){
+    	$photo = '';
+    	$photo = $xfjd_address.$row->pic;
+    	$content .= "<div class='uchome_xfjd_row'>
+	             <div class='uchome_xfjd_content'>
+	             <div class='uchome_xfjd_pic'><a href='".$discuz_url."home/space.php?do=xfjd&view=show&bookid=".$row->bid."'  target='_blank'>
+		     <img width=100 height=120 src ='".$photo."'></a></div>";
+    	$content .= "<div class='uchome_xfjd_title'>
+	             <a href='".$discuz_url."home/space.php?do=xfjd&view=show&bookid=".$row->bid."' target='_blank'>".$row->enname."</a>
+		     </div>";
+        $content .= "<div class='uchome_xfjd_intro'>".$row->introduction."</div>";
+	$content .= "<div class='uchome_xfjd_rl'><a href='".$discuz_url."home/space.php?do=xfjd&view=show&bookid=".$row->bid."' target='_blank'>认领</div>
+	             </div>
+		     </div>";
+	
+    	
+    }
+    
+	db_set_active('default');
+	return $content;	    
+		    
+}
+
+
+?>

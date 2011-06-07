@@ -1,0 +1,4 @@
+name = uchome西方经典
+description = 获取翻译大赛信息
+core = 6.x
+package = 2u4u

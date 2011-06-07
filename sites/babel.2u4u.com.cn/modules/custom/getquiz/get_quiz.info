@@ -1,0 +1,5 @@
+; $Id$
+name = get quiz 
+description = babel首页获取quiz文学常识分类
+core = 6.x
+php = 5.0

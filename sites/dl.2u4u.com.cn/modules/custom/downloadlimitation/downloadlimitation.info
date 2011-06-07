@@ -1,0 +1,8 @@
+; $Id$
+name = downloadlimitation
+description = 限制只有注册用户才能下载.
+package =dl.2u4u.com.cn
+
+project = 2u4u
+core = 6.x
+php = 5.0

@@ -1,0 +1,97 @@
+<?php
+// $Id$
+
+
+/**
+ * @file
+ * 对下载做用户相关的限制.
+ */
+function downloadlimitation_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+	global $user;
+	
+	if ($node->type == 'download') {
+		
+		switch ($op) {
+			case 'view' :
+				
+				if (! in_array ( "authenticated user", $user->roles )) {
+					
+					//$node->field_ziyuanwenjian[0]['data']['description']="请登陆后再下载";	
+					$node->field_ziyuanwenjian [0] ['data'] ['description'] = "";
+					$node->field_ziyuanwenjian [0] ['filename'] = '';
+					$node->content ['extra_form'] = array ('#value' => "<a href='/user?destination=/node/$node->nid'>请登录后再下载</a>", '#weight' => 5 );
+				} else {
+					//				print ('<pre>') ;
+					//				print_r($_COOKIE['answer']);
+					//			    print ('</pre>') ;
+					
+
+					$require_answer = $node->field_require_answer [0] ['value'];
+					
+					if ($require_answer == 1) {
+						if (isset ( $_COOKIE ['answer'] )) {
+							if (! in_array ( $node->nid, $_COOKIE ['answer'] )) {
+								$node->field_ziyuanwenjian [0] ['data'] ['description'] = "";
+								//$node->field_ziyuanwenjian[0]['filepath'] ='';
+								$question = $node->field_question [0] ['value'];
+								$node->field_ziyuanwenjian [0] ['filename'] = '';
+								$node->content ['extra_form'] = array ('#value' => drupal_get_form ( 'downloadlimitation_answerform', $question, $node->nid ), '#weight' => 5 );
+							}
+						}
+						else{
+						        $node->field_ziyuanwenjian [0] ['data'] ['description'] = "";
+								//$node->field_ziyuanwenjian[0]['filepath'] ='';
+								$question = $node->field_question [0] ['value'];
+								$node->field_ziyuanwenjian [0] ['filename'] = '';
+								$node->content ['extra_form'] = array ('#value' => drupal_get_form ( 'downloadlimitation_answerform', $question, $node->nid ), '#weight' => 5 );
+						}
+					}
+				
+				}
+				
+				//				print ('<pre>') ;
+				//				print_r ( $node );
+				//			    print ('</pre>') ;
+				
+
+				break;
+		
+		}
+	}
+
+}
+
+function downloadlimitation_answerform($form_state, $question, $nid) {
+	
+	$form ['description'] = array ('#type' => 'item', '#title' => t ( '请先回答问题，再进行下载' ) );
+	// This is the first form element. It's a textfield with a label, "Name"
+	$form ['question'] = array ('#type' => 'item', '#title' => t ( '问题:' . $question ) );
+	
+	$form ['answer'] = array ('#type' => 'textfield', '#title' => t ( '答案' ), '#required' => TRUE );
+	
+	$form ['nid'] = array ('#type' => 'hidden', '#value' => $nid );
+	
+	$form ['submit'] = array ('#type' => 'submit', '#value' => t ( '提交' ) );
+	
+	return $form;
+}
+
+function downloadlimitation_answerform_submit($form_id, $form_state) {
+	$nid = $form_state ['values'] ['nid'];
+	$node = node_load ( array ("nid" => $nid ) );
+	$myanswer = $form_state ['values'] ['answer'];
+	$answer = $node->field_answer [0] ['value'];
+	if ($myanswer == $answer) {
+		drupal_set_message ( t ( '恭喜您!答对了!' ) );
+		setcookie ( "answer['$nid']", $nid, time () + 3600 );
+	} else {
+		drupal_set_message ( t ( '答案错误，请重新回答' ) );
+	}
+
+		//				print ('<pre>') ;
+//				print_r ( $node );
+//			    print ('</pre>') ;
+
+
+}
+

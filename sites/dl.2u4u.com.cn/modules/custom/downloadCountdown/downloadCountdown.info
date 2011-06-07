@@ -1,0 +1,7 @@
+﻿; $Id$
+name = downloadCountdown
+description = 下载排行
+package = dl.2u4u.com.cn
+project = 2u4u
+core = 6.x
+php = 5.0

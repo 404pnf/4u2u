@@ -1,0 +1,12 @@
+<?php 
+
+ function downloadCountdown_install(){
+  variable_set('max_show_countdown_number',20);
+  variable_set('if_show_countdown_details','show');
+  variable_set('countdown_ballot_style','orderlist');
+ }
+ 
+ function downloadCountdown_uninstall(){
+     variable_del('max_show_countdown_number');
+     variable_del('if_show_countdown_details');
+  }

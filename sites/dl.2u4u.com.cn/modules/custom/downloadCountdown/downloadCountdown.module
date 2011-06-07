@@ -1,0 +1,125 @@
+<?php 
+
+/*下载中心下载次数
+ * 
+ */
+
+  function downloadCountdown_menu(){
+     $items['admin/settings/downloadCountdown'] = array(
+       'title' =>'下载排行设置',
+       'description' => t('下载排行设置'),
+       'page callback' => 'drupal_get_form',
+       'page arguments' => array('downloadCountdown_settings'),
+       'access arguments' =>array('administer site configuration'),    
+     );
+   	
+     
+     
+      return $items;      
+   } 
+   
+   
+
+
+   function downloadCountdown_settings(){
+     $form['max_show_countdown_number'] =array(
+       '#type' => 'textfield',
+       '#title' => t('下载排行最大显示数'),     
+       '#description' => t('设置下载排行最大显示数'),
+       '#default_value' => variable_get('max_show_countdown_number',20),
+     );
+     
+     $options = array('show' => t('显示具体下载次数'),'unshow' => t('不显示具体下载次数'));
+          
+     $form['if_show_countdown_details'] = array(
+       '#type' => 'radios',
+       '#title' => t('是否显示具体下载次数'),     
+       '#description' => t('设置下载排行是否显示具体下载次数'),
+       '#options'  => $options,
+       '#default_value' => variable_get('if_show_countdown_details','show'), 
+     );
+     
+     $options = array('orderlist' => t('有序列表'),'unorderlist' => t('无序列表'),);
+          
+     $form['countdown_ballot_style'] = array(
+       '#type' => 'radios',
+       '#title' => t('是否显示具体下载次数'),     
+       '#description' => t('设置下载排行是否显示具体下载次数'),       
+       '#options'  => $options, 
+       '#default_value' => variable_get('countdown_ballot_style','orderlist'),
+     );   
+     return system_settings_form($form);
+   }
+   
+
+   function downloadCountdown_block($op='list',$delta=0,$edit =array()){	
+     
+     switch ($op){
+     	case 'list':
+     		$blocks[0]['info'] = t('下载排行');
+     		$blocks[0]['title'] = t('下载排行');
+     		$blocks[0]['cache'] = BLOCK_NO_CACHE;
+     		
+     		return $blocks;
+     		
+     	case 'view' :
+     		switch ($delta){
+     			case 0:
+     				$block['subject']=t("下载排行");
+     				$block['content']= downloadCountdown_content();
+     		
+     		}	
+     		return $block;
+     
+     }    
+   } 
+
+
+
+ function downloadCountdown_content(){
+ //** 报名
+   global $user;
+   $max_show_countdown_number = variable_get('max_show_countdown_number',20);
+   $if_show_countdown_details = variable_get('if_show_countdown_details','show');
+   $countdown_ballot_style = variable_get('countdown_ballot_style','orderlist');
+   
+   
+  $tempstring = '';
+  $tempstring.='<div id="downloadCountdown">';
+  $tempstring.=($countdown_ballot_style=='orderlist')?'<ol>':'<ul>';
+  $sql = "SELECT files.fid AS fid, node_node_data_field_ziyuanwenjian.title AS node_node_data_field_ziyuanwenjian_title,
+    node_node_data_field_ziyuanwenjian.nid AS node_node_data_field_ziyuanwenjian_nid,
+files_downloads
+  FROM files files
+  LEFT JOIN content_field_ziyuanwenjian node_data_field_ziyuanwenjian 
+ON files.fid = node_data_field_ziyuanwenjian.field_ziyuanwenjian_fid
+  LEFT JOIN node node_node_data_field_ziyuanwenjian ON 
+node_data_field_ziyuanwenjian.vid = node_node_data_field_ziyuanwenjian.vid
+  LEFT JOIN  (SELECT fid,COUNT(dc.fid) files_downloads FROM download_count dc  group by  fid) ct
+ on files.fid=ct.fid
+ ORDER BY files_downloads DESC
+  LIMIT 0, $max_show_countdown_number ";
+  $result =  db_query($sql);
+
+  while ($data = db_fetch_object($result))
+  {
+    $fid = $data->fid;
+    $title = $data->node_node_data_field_ziyuanwenjian_title;
+    $nid = $data->node_node_data_field_ziyuanwenjian_nid;
+    $files_downloads =  $data->files_downloads;
+    
+     
+    $tempstring.='<li>';
+    $tempstring.="<span class='download-countdown-title'>".l($title,"node/$nid")."</span>"; 
+    if($if_show_countdown_details=='show'){
+       $tempstring.="<span class='download-countdown-number'>$files_downloads</span>"; 
+    }
+    $tempstring.='</li>';
+      
+   }
+
+$tempstring.=($countdown_ballot_style=='orderlist')?'</ol>':'</ul>';
+ $tempstring.='</div>';
+ 
+ return $tempstring;
+ }

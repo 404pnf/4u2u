@@ -110,6 +110,13 @@
 	   <div class="news_title_sub">专家评委指导</div>
 		<div class="news_list">
 		<?php 
+			   $views_name = 'news';
+			   $display_id = 'page_1';
+			   $view_args = 3;
+			   print views_embed_view($views_name, $display_id,$view_args); 
+			?>
+		
+		<?php 
          	   $rss = module_invoke('aggregator','block','view','feed-3'); 
 		   PRINT($rss['content']);
 		   

@@ -9,6 +9,15 @@
                         
 </div>                                                                                                       
 
+<div id="smart_category" class="section">
+
+    <?php print $content['smart_category']; ?>
+
+</div>
+
+
+
+
 <div id="smart_qa" class="section">                                                                                      
                         
     <?php print $content['smart_qa']; ?>                                                                                     

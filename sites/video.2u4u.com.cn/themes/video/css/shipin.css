@@ -446,8 +446,8 @@ clear:both;
 .view-display-id-page_3 .views-row, .view-display-id-page_2 .views-row, .view-display-id-page_4 .views-row, .section-mtag #content-area .views-row, .section-taxonomy #content-area .views-row{
 	border-bottom:1px dashed #D1D1D1;
 	height:180px;
-	margin-left:15px;
-	width:685px;
+	margin-left: 25px;
+	width: 680px;
 }
 
 .section-mtag #content-area .views-row-last, .section-taxonomy #content-area .views-row-last{
@@ -474,7 +474,6 @@ clear:both;
 .view-display-id-page_3 .views-field-title .field-content a, .view-display-id-page_2 .views-field-title .field-content a, .view-display-id-page_4 .views-field-title .field-content a, .section-mtag .view-media-taxonomy-term .views-field-title .field-content a, .section-mtag .view-taxonomy-term .views-field-title .field-content a, .section-taxonomy .view-taxonomy-term .views-field-title .field-content a{
 	font-size:16px;
 	font-weight:bold;
-	color:#515151;
 	display:block;
 	float:left;
 	padding:15px 0 0 10px;
@@ -979,15 +978,87 @@ display:none;
 }
 /* end 视频分类 */
 
-.jplayer{
-	width:0px;
-	height:0px;
+
+/*=============== 司马丽霞专题 =================*/
+
+/*========= 播放器 ==========*/
+#smart_everyday  .view-display-id-page_2 .views-row {border-bottom: 0;height: auto;margin-left: 0;width: auto;clear:both;float:none;}
+.subtitles div,.anniu{cursor:pointer;}
+
+/*========= Logo 和 导航 ==========*/
+#smart_pic{ position:relative; border:none; height:223px; width:960px;*width:959px; overflow:hidden;*border-right:1px solid #d4d4d4}
+#smart_pic img{ width:960px;*width:961px; }
+#smart_pic ul.menu,#content-top ul.menu{ position:absolute; right:10px; top:197px; padding:0; margin:0;}
+#smart_pic ul.menu li,#content-top ul.menu li{float:left;list-style:none;padding:0 20px 0 15px;background:url(images/icon_20110517.gif) no-repeat 0 -117px transparent;}
+#smart_pic ul.menu li.home,#content-top ul.menu li.home{ background:url(images/icon_20110517.gif) no-repeat 0 -36px transparent; padding-left:22px;}
+#smart_pic ul.menu li a,#content-top ul.menu li a{ font-weight:700; color:#333;font-size:14px;}
+#smart_pic ul.menu li a:hover,#content-top ul.menu li a:hover{ color:#F00; text-decoration:none}
+
+/*========= 司马丽霞 Everyday  ==========*/
+#smart_everyday{ height:100%; overflow:auto; border-left:1px solid #d4d4d4; border-right:1px solid #d4d4d4;}
+#smart_everyday .views-row{width:100%;background:url(images/bg_line20110517.jpg) repeat-y 0 0; overflow:auto; padding-bottom:30px;_background:none; _margin-bottom:30px;}
+#smart_everyday .views-row .smart_left{float:left;width:700px; overflow:hidden}
+.smart_first{height:54px; margin:12px 0 0 12px;}
+.smart_date{display:block; float:left; width:175px; background:url(images/button_20110517.gif) no-repeat scroll 0 -42px transparent; height:42px;line-height:42px;text-align:right; font-family:Arial; font-size:16px;}
+.views-row-1 .smart_date{display:block; float:left; width:175px; background:url(images/button_20110517.gif); color:#FFF;}
+.smart_date span{ padding-right:40px; font-weight:700}
+.smart_blog_title{float:right; height:40px;line-height:40px; background:#f5f5f5; border:1px solid #d4d4d4; font-size:24px; margin:0 12px; width:487px; overflow:hidden; text-indent:.4em;}
+.smart_secend{margin-left:12px;overflow: auto;}
+.smart_secend .smart_blog_image{width:302px; height:223px; overflow:hidden; border:1px solid #000; float:left}
+.smart_secend .smart_blog_teaser{float:right;width:318px; margin:0 12px;background:#f5f5f5; border:1px solid #d4d4d4; padding:20px; border-bottom:none;}
+.anniu{float:right; width:318px; margin:0 12px;background:#f5f5f5; border:1px solid #d4d4d4;padding:20px;border-top:none;}
+.anniu .anniuback{width:175px; background:url(images/button_20110517.gif) no-repeat 0 -84px;height:45px;text-indent:-99em; margin:10px 0 10px 142px;}
+.anniu_up .anniuback{width:175px;background:url(images/button_20110517.gif) no-repeat 0 -84px;height:45px;text-indent:-99em; margin:10px 0 10px 142px;}
+.anniu_down .anniuback{width:175px;background:url(images/button_20110517.gif) no-repeat 0 -129px;height:45px;text-indent:-99em;margin:10px 0 10px 142px;}
+.smart_audio_button{float:right; width:318px; margin:0 12px;background:#f5f5f5; border:1px solid #d4d4d4; padding:20px;border-top:none; overflow:hidden;}
+.smart_blog_audio{ margin:10px 0 20px 0}
+  /* Everyday 右侧 */
+#smart_everyday .views-row .smart_right{width:258px; float:right}
+#smart_everyday .smart_word_title{background:url(images/icon_20110517.gif) no-repeat 5px -146px; height:30px; margin:20px 10px 20px; font-size:14px; border-bottom:3px solid #CCC; line-height:30px; text-indent:1.4em; font-weight:700}
+#smart_everyday .smart_right ul{ margin:0; padding:0px 1em;}
+#smart_everyday .smart_right ul li{ margin:10px 0 10px 13px;} 
+
+/*========= 司马丽霞 idioms & slang  ==========*/
+#smart_category{background:#f5f5f5; border-top:1px solid #d4d4d4; padding:20px; overflow:auto; height:100%; border-left:1px solid #d4d4d4; border-right:1px solid #d4d4d4;}
+#category_idioms{ float:left; width:40%; margin:20px 40px; display:inline; overflow:hidden}
+#category_slang{ float:left; width:40%; margin:15px 40px 20px 40px; display:inline; overflow:hidden}
+#category_slang .view-display-id-block_1{ margin-top:-6px;}
+#category_idioms .views-row,#category_slang .views-row{ padding-left:10px;}
+#category_idioms .views-row .views-field-title a,#category_slang .views-row .views-field-title a{ padding:16px 0 0 0; font-weight:700; display:block;}
+#smart_category .more-link{ margin:26px 26px 0px 0}
+#smart_category .more-link a{font-weight:700;background:url(images/icon_20110517.gif) no-repeat 0 3px transparent; padding:0 20px;}
+/*========= 司马丽霞Q&A  ==========*/
+#smart_qa{border:1px solid #d4d4d4; padding:0 20px 30px 20px; overflow:auto;_height:350px;}
+#footer_avatar{ width:260px; margin-top:50px; margin-left:20px; display:inline}
+#footer_faq{ margin:0 0 0 20px; border-left:1px solid #d4d4d4; height:280px; padding-left:24px; width:206px; margin-top:50px;overflow:hidden; }
+#footer_news{ width:360px;margin-top:40px; line-height:2.2em; margin-right:18px}
+#edit-submitted-email{ height:30px; font-size:18px;width:200px;border:1px solid #d4d4d4;}
+#ask_felicia{font-weight:700;background:url(images/icon_20110517.gif) no-repeat 0 -80px transparent; padding:0 24px;}
+#edit-submit{ display:block; float:right;}
+.form-textarea{border:1px solid #d4d4d4;width:200px;}
+.form-item label{ margin:6px 0 }
+#edit-submit{ padding:0 3px;}
+#footer { position:relative}
+#webform-client-form-63294 .textarea-identifier{ display:none}
+
+/*========= 司马丽霞分页  ==========*/
+#block-menu-menu-zhuantidaohang{ height:223px;background:url(images/banner20110517.jpg);}
+.view-display-id-page_3 .views-row{ width:90%; margin:0 auto;height:auto; border:none;}
+.view-display-id-page_3 .views-row .views-field-title a{ width:100%; padding:10px 20px;background:url(images/audio_icon20110525.gif) no-repeat 0 13px transparent; font-size:12px; color:#000; text-indent:.5em;}
+#content-area .views-row .views-field-field-subtitles-value{ padding:20px;}
+.page-smartcategory-10780 .title_bg h1.title{ background:url(images/idioms_s.gif) no-repeat; text-indent:-99em; margin:30px 20px 10px 20px; height:32px;}
+.page-smartcategory-10781 .title_bg h1.title{ background:url(images/slang_s.gif) no-repeat; text-indent:-99em; margin:30px 20px 10px 20px; height:32px;}
+.node-inner .taxonomy{ display:none;}
+.node-inner .links ul.links .comment_add a{ color:#06C}
+/*========= 修正IE6导航  ==========*/
+ul#primary li.blob{ _background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/bg-6.gif") no-repeat scroll 0 -4px transparent;}
+ul#primary li.blob a{ _background:url("/sites/2u4u.com.cn/themes/stable/css/fp_images/bg-6.gif") no-repeat scroll right -4px transparent;}
+
+/*------------ google提供的广告 -------*/
+#block-block-82 .content {
+    padding: 0;
 }
-
-
-#smart_everyday .view-display-id-page_3 .views-row, .view-display-id-page_2 .views-row, .view-display-id-page_4 .views-row, .section-mtag #content-area .views-row, .section-taxonomy #content-area .views-row {
-    border-bottom: 0;
-    height: auto;
-    margin-left: 0;
-    width: auto;
+.google_gg ins{
+	top:3px;
+	border:1px solid #ddd;
 }

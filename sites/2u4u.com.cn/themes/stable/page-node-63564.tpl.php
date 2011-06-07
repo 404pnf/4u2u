@@ -61,12 +61,12 @@ body {
 <a href="http://2u4u.com.cn/chongzhi" target="_blank">积分充值</a><span class="head-text">|</span> 
 <a href="http://shop.2u4u.com.cn/libao" target="_blank">积分换礼</a><span class="head-text">|</span> 
 <a href="http://quiz.2u4u.com.cn" target="_blank">测试中心</a><span class="head-text">|</span> 
-<a href="http://group.2u4u.com.cn" target="_blank">小组</a><span class="head-text">|</span> 
 <a href="http://video.2u4u.com.cn" target="_blank">多媒体课堂</a><span class="head-text">|</span> 
 <a href="http://test.2u4u.com.cn/online/" target="_blank">在线词典</a><span class="head-text">|</span> 
 <a href="http://2u4u.com.cn/wenda" target="_blank">有问有答</a><span class="head-text">|</span></div></td> 
 </tr> 
-</table></div></center> 
+</table></div></center>
+<div style="width:960px;margin:auto"><a href="http://www.i21st.cn/" target="_blank"><img src="http://2u4u.com.cn/sites/2u4u.com.cn/themes/stable/css/images/banner_21st.gif"></a></div> 
  </div> 
 
     <!-- ______________________ MAIN _______________________ -->
@@ -85,6 +85,11 @@ body {
                 <a href="http://www.i21st.cn/job/" target="_blank"><h2>职场直通车</h2></a>
                 <?php print views_embed_view('21st_page', $display_id = 'block_1');?>
                 </div>
+
+		<div class="21st" id="AD1">
+                <?php print views_embed_view('21st_page', $display_id = 'block_8');?>
+                </div>
+
 
 		<div class="21st" id="translate">
                 <a href="http://www.i21st.cn/translate/" target="_blank"><h2>热点翻译</h2></a>
@@ -131,16 +136,20 @@ body {
 			print $block['content'];
 			?>
 		</div>
-		
-		<!--
-		<div class="21st" id="Rss">
-                <h2>RSS</h2>
+	<!--
+		<div class="21st" id="newspaper">
+                <?php print views_embed_view('21st_page', $display_id = 'block_10');?>
                 </div>
-			-->
+	-->		
 		<div class="21st" id="baowanglianxian">
                 <h2>报网连线</h2>
                 <?php print views_embed_view('21st_page', $display_id = 'block_7');?>
                 </div>
+		
+		<div class="21st" id="AD2">
+                <?php print views_embed_view('21st_page', $display_id = 'block_9');?>
+                </div>
+
 
 
 	</div>

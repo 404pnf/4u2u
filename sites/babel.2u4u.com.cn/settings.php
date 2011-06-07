@@ -4,7 +4,8 @@
 /**
  *   $db_url = 'pgsql://username:password@localhost/databasename';
  */
-$db_url = 'mysql://woshiguanliyuan:ef5abfb553fab28a3d9@localhost/babel';
+$db_url['default'] = 'mysql://woshiguanliyuan:ef5abfb553fab28a3d9@localhost/babel';
+$db_url['uchome'] = 'mysql://woshiguanliyuan:ef5abfb553fab28a3d9@localhost/uchome';
 $db_prefix = array(
   'default'   => '',
   'users'     => '2u4u.',

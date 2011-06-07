@@ -7,7 +7,7 @@
 
 /* 各个模块结构分布 */
 #zhichang,#translate{border: 1px solid #D6DEE0;width: 270px; margin-bottom:10px;font-size:13px; }
-#focus,#englishlearning,#englishquiz{ width:434px;border: 1px solid #D6DEE0;margin-bottom:10px; overflow:auto;font-size:13px; }
+#focus,#englishlearning,#englishquiz{ width:434px;border: 1px solid #D6DEE0;margin-bottom:10px; overflow:auto;font-size:13px;}
 #RSS,#baowanglianxian{width: 230px;border: 1px solid #D6DEE0;margin-bottom:10px; overflow:auto;}
 
 /* 全页公用样式布局 */
@@ -16,24 +16,21 @@
 .view-content .views-row{ width:84%; height:24px; line-height:24px; overflow:hidden; margin:auto;}
 .view-content .views-row a{ color:#3d3d3d}
 .view-content .views-row .views-label-title{ color:#c60100; font-weight:700; margin-right:2px;}
-body{background:#FFF}
 /* focus 局部布局 */
-    #focus .view-dom-id-4 .attachment-before{ float:right; margin-right:6px; display:inline}	
-    #focus .view-dom-id-4 .view-content{ width:200PX;float:left;margin:6PX; position:relative;overflow:hidden; display:inline;}
-	#focus .view-dom-id-4 .view-content .views-row{ width:200PX; height:240PX;}
-	#focus .view-dom-id-4 .attachment-before .view-content .views-row{background:#FFF; line-height:18px; text-indent:1.4em; height:39px; margin-bottom:14px;}
-	#focus .view-dom-id-4 .attachment-before .view-content .views-row .views-field-title{ height:20PX;background:url("images/style.gif") no-repeat scroll 2px -250px transparent;overflow:hidden; }
-	#focus .view-dom-id-4 .attachment-before .view-content .views-row .views-field-title a{ color:#B40000}
-	#focus .view-dom-id-4 .attachment-before .view-content .views-row .views-field-body p{ color:#535353}
-	#focus .view-dom-id-4 .attachment-before .view-content .views-row-1{ height:69PX; background:#FFF; text-indent:0; line-height:20px;}
-	#focus .view-dom-id-4 .attachment-before .view-content .views-row-1 .views-field-title{ height:20px; margin-bottom:6px; overflow:hidden; width:100%; font-weight:700 ; background:none}
+    #focus .view-display-id-block_3 .attachment-before{ float:right; margin-right:6px; display:inline}	
+    #focus .view-display-id-block_3 .view-content{ width:200PX;float:left;margin:6PX; position:relative;overflow:hidden; display:inline;}
+	#focus .view-display-id-block_3 .view-content .views-row{ width:200PX; height:240PX; background:none;}
+	#focus .view-display-id-block_3 .attachment-before .view-content .views-row{line-height:18px; text-indent:1.4em; height:39px; margin-bottom:14px;}
+	#focus .view-display-id-block_3 .attachment-before .view-content .views-row .views-field-title{ height:20PX;background:url("images/style.gif") no-repeat scroll 2px -250px transparent;overflow:hidden; }
+	#focus .view-display-id-block_3 .attachment-before .view-content .views-row .views-field-title a{ color:#B40000}
+	#focus .view-display-id-block_3 .attachment-before .view-content .views-row .views-field-body p{ color:#535353}
+	#focus .view-display-id-block_3 .attachment-before .view-content .views-row-1{ height:69PX;text-indent:0; line-height:20px;}
+	#focus .view-display-id-block_3 .attachment-before .view-content .views-row-1 .views-field-title{ height:20px; margin-bottom:6px; overflow:hidden; width:100%; font-weight:700 ; background:none}
 	#coin-slider-coin-slider{ margin:10px 0 6px 6px; overflow:hidden; display:inline}
 	#cs-buttons-coin-slider a{ _overflow:hidden; _height:10px;}
-	#focus .view-dom-id-4 .attachment-before .view-content .views-row-1 .views-field-title a{color:#535353}
+	#focus .view-display-id-block_3 .attachment-before .view-content .views-row-1 .views-field-title a{color:#535353}
 	
 /* 英语学习和英语考试局部布局 */
-
-
 #englishlearning .attachment-before .view-content .views-row-first,
 #englishquiz .attachment-before .view-content .views-row-first{ float:left; width:114px; height:200px; margin:0 10px 10px 16px; display:inline; width:114px;}
 #englishlearning .view-content .views-row,
@@ -53,7 +50,7 @@ body{background:#FFF}
 
 /* 热点翻译局部布局 */
 #translate .view-content label { display:none}
-#translate .views-row{ height:44px; line-height:18px; text-indent:1em;}
+#translate .views-row{ height:46px; line-height:20px; text-indent:1em;}
 #translate .views-row .views-field-title{ background:url("images/style.gif") no-repeat scroll 0px -250px transparent; }
 #translate .views-row .views-field-title a{color:#B40000}
 #translate .views-row .views-field-body p{color:#535353}
@@ -69,6 +66,7 @@ body{background:#FFF}
 #RSS h2{ margin-bottom:4px;}
 #RSS_text{ width:116px; float:left;background: url("images/rss20110512.gif") no-repeat scroll 2px 0 transparent; overflow:hidden}
 #RSS_text a{color: #1D77A0;display: block;font-size: 12px;font-weight: bold;line-height: 32px;overflow: hidden;padding-left: 38px;text-align: left;text-decoration: none;width: 116px;}
+#RSS .view-content,#RSS .view-content .views-row{ width:110px; height:150px; padding:0px 0 10px 0;_padding:0 0 5px 0;}
 #RSS_text a:hover{ text-decoration:underline; color:#990000}
 #RSS_pic{float:right}
 #RSS_pic2{ padding:10px 0 0 0; border-top:1px dashed #CCC;}
@@ -87,7 +85,12 @@ body{background:#FFF}
 ul#primary li.blob{ _background:url("fp_images/bg-6.gif") no-repeat scroll 0 -4px transparent;}
 ul#primary li.blob a{ _background:url("fp_images/bg-6.gif") no-repeat scroll right -4px transparent;}
 
-	
+/* AD 广告 */
+#AD1{ margin-bottom:10px;}
+#AD1 .view-content,#AD2 .view-content{ padding:0;}
+#AD1 .views-row{ width:270px; height:126px; border:1px solid #D6DEE0}
+#AD2 .views-row{ width:233px; _width:232px; height:96px; overflow:hidden;}
+#AD2 .views-row img{ _width:231px;}
 	
 	
 

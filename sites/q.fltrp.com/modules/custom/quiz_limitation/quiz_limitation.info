@@ -1,0 +1,7 @@
+﻿; $Id$
+name = quiz_limitation
+description = 对quiz做特定限制
+package = q.fltrp.com
+project = 2u4u
+core = 6.x
+php = 5.0

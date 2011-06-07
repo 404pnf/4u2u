@@ -1,4 +1,3 @@
-
 body {
  	background-color: #ccc;
 }
@@ -13,19 +12,23 @@ p{ margin:0}
  	background-color: #ffffff;
 }
 
-/*header高度与图片 这样两者才不会有白的空*/
+
+/*header高度与图片相同 这样两者才不会有白的空*/
 #header {
 	   height: 258px;
    }
 #content-area .swftools-flowplayer3-processed{ text-align:center;}
 .views-view-grid{ text-align:center;}
-.views-field-title{}
+.views-field-title{ height:30px}
 .with-navigation #front-zqy ul li{ list-style-type:none;
- background:url(http://preview.zcool.com.cn/pic/gif/gif_43/01/arrow_004.gif) no-repeat 0px 9px;
+ background:url(http://preview.zcool.com.cn/pic/gif/gif_43/01/arrow_004.gif) no-repeat 0px 10px;
  line-height:30px;
- padding-left:17px;
+ padding-left:17px; 
  }
-.view-content{ padding-top:10PX;}
+ .view-dom-id-3 .item-list ul li.views-row-last,
+ .view-dom-id-1 .view-content .item-list ul li.views-row{background:url(http://preview.zcool.com.cn/pic/gif/gif_43/01/arrow_004.gif) no-repeat 0px 15px!important;}
+
+.view-content #front-zqy { padding-top:0px;}
 #block-block-9 .content{ background-color:#fffeef;}
 .news-more { text-align:right; padding-right: 5em; margin-top: 1em; margin-bottom:2em;}
 #content-area .news_title_sub{ padding:0.3em  ; font-weight:bold; background-color: #F3F3F3;}
@@ -47,7 +50,7 @@ h2 { font-size:1.15em; font-weight:bold; padding-top:7px; margin-bottom: 0;}
 h3 { font-size:1.1em;  margin-bottom: 0;  margin-top: 0.5em;}
 .col-1{ padding-bottom:10px;}
 #front-zqy .views-field-title{ padding-top:5px;}
-#front-zqy .item-list{ padding-top:10px;}
+#front-zqy .item-list{ padding-top:0px;}
 #content-area{padding:1em;}
 #video_related{
 	padding:3em;}
@@ -224,12 +227,16 @@ padding: 0.2em;
 	
 	}
 #edit-submit .first ul{list-style:none;} 
-#edit-submit .first  li{float:left;width:100px;background:#CCC;margin-left:3px;line-height:30px;} 
+#edit-submit .first  li{float:left;width:100px;background:#CCC;margin-left:3px;line-height:30px;}
+.views-row-1{height:30px;} 
+.views-row-2{height:30px;}
+.views-row-3{height:30px;}
+.views-row-1 .views-field-title .field-content{height:30px;} 
 #edit-submit .first a{display:block;text-align:center;height:30px;} 
 #edit-submit .first  a:link{color:#666;background-color:#CCC;text-decoration:none;} 
 #edit-submit .first  a:visited{color:#666;text-decoration:underline;} 
 #edit-submit .first  a:hover{color:#FFF;   font-weight:bold;text-decoration:none;background-color:#F00;} 
-
+#front-zqy .field-content{ line-height:30px;} 
 #review .li{ }
 #block-aggregator-feed-1  .title block-title{
 	
@@ -258,15 +265,15 @@ padding: 0.2em;
 }
 #block-aggregator-feed-1 .content ul li{
 	list-style-type:none;
- background:url(http://preview.zcool.com.cn/pic/gif/gif_43/01/arrow_004.gif) no-repeat 0px 9px;
+ background:url(http://preview.zcool.com.cn/pic/gif/gif_43/01/arrow_004.gif) no-repeat 0px 10px;
  line-height:30px;
- padding-left:8px;}
+ padding-left:8px; margin-left:0;text-indent:0.8em;}
  
 #block-aggregator-feed-4 .content ul li{
 	list-style-type:none;
- background:url(http://preview.zcool.com.cn/pic/gif/gif_43/01/arrow_004.gif) no-repeat 0px 9px;
+ background:url(http://preview.zcool.com.cn/pic/gif/gif_43/01/arrow_004.gif) no-repeat 0px 10px;
  line-height:30px;
- padding-left:8px;}
+ padding-left:8px; text-indent:0.8em; margin-left:0;}
  
 
 
@@ -291,7 +298,7 @@ padding: 0.2em;
 
 #content-inner .news_title{ font-size:1.2em; font-weight:bold;}
 .news_list .more-link {visibility:hidden;}
-
+#front-zqy .news_list { padding-top:1px; margin:0;}
 #review ul {list-style:none; margin: 0; padding: 0;}
 #review li {float:left; margin: 0.5em 0.61em 0 0;}
 #skip{
@@ -299,7 +306,7 @@ padding: 0.2em;
 	font-size:18px;
 
 	}
-
+.view-dom-id-3{ margin:0;}
 .news_title {
 	background: url("../images/news_bg.gif"); 
 	height: 34px;
@@ -320,20 +327,12 @@ padding: 0.2em;
 #content-area .view view-nce-video view-id-nce_video view-display-id-page_3 view-dom-id-1{padding:1em 2em 1em 3em;}
 #content-inner #content-header{padding:1em 2em 1em 3em;}
 .section-news #content-area {padding:1em 2em 1em 3em;}
-#content-area #node-2{padding:1em 2em 1em 3em;}
-#content-area #node-6{padding:1em 2em 1em 3em;}
-#content-area #node-4{padding:1em 2em 1em 3em;}
-#content-area #node-5{padding:1em 2em 1em 3em;}
-#content-area #node-7{padding:1em 2em 1em 3em;}
-#content-area #node-8{padding:1em 2em 1em 3em;}
-#content-area #node-19{padding:1em 2em 1em 3em;}
+
+/* page内容类型给予更多的pading，好和题目对齐，和右边栏保持距离 */
+#content-area .node-type-page{padding:1em 2em 1em 3em;}
 
 .form-item label {
 	display: inline;}
-
-
-
-
 
 #footer .content {
 	text-align: center;
@@ -594,4 +593,8 @@ a:hover,a:active {
 	line-height: 26px;
 	font-weight: bold;
 	padding-left: 0.5em;
+
 }
+.views-field-title .view-display-id-page_1{ padding-top:0px;}
+#footer{float:left; width:100%;}
+.page-news-1 #content-area .view-content .item-list ul li{ background:none!important; line-height:30px;}

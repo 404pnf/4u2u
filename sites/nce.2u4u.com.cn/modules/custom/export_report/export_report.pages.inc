@@ -21,6 +21,8 @@ function export_report_download_page(){
 	}else{
 	  $term= taxonomy_get_term($tid);
 		$city = $term->name;
+		//"-0"表示关闭的赛区，但是这个应该可以导出。
+		$city = str_replace("-0","",$city);
 		_export_report_webform_results_download($node,'excel',array(),$city);
 	}
 
@@ -51,13 +53,16 @@ function export_report_generate_links_page(){
      else{
         $city = $name;
         //$url ="apply";
-        if(strpos($city, '0')<=0){
+				//为关闭的赛区也生成链接
+				//"-0"表示关闭的赛区，但是这个应该可以导出。
+		    $city = str_replace("-0","",$city);
+        //if(strpos($city, '0')<=0){
           $tempstring.="<li class='matcharea-city'>";
      	  //print( $citycount);
 				$base_path = 'http://'.$_SERVER['HTTP_HOST'].base_path();
           $tempstring.= $city . " : " .$base_path. 'report/'.$taxonomy->tid.'/'.md5($taxonomy->tid.'2u4u');
           $tempstring.="</li>";
-        }
+        //}
        }
 
     }

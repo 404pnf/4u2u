@@ -1,7 +1,3 @@
-.section{;border:1px solid #CCC}
-#smart_pic,#smart_everyday,#smart_qa{height:auto;}
-.smart_dayone_left,.smart_qa_left{ width:690px; float:left; border:1px solid #CCC}
-.smart_dayone_right,.smart_qa_right{ width:256px; float:right; border:1px solid #CCC}
-.smart_idioms{border:1px solid #CCC; float:left; width:49%;}
-.smart_slang{border:1px solid #CCC; float:right; width:49%;}
-
+/*.section{;border:1px solid #CCC} */
+#smart_pic,#smart_everyday,#smart_category,#smart_qa{height:auto;}
+#smart_qa{clear:both;}

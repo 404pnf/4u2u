@@ -343,27 +343,28 @@
 				</div>
 			</div>
 		  </div>
-		  
+		   
 		  
 		  <!--通栏广告2-->
-               <div class=tonglanall>
+            <div class=tonglanall>
 	            <div id="tonglan_gg" class="tonglan_gg">
 		 		<?php $block = module_invoke('block', 'block', 'view', 78); ?>
 				<?php print $block['content']; ?>
-		<!--上线时把此内容放在上面的区块里
-		<div class="ad_row ad_row1"><a target="_black" href="http://www.fltrp.com/scrp/bookdetail.cfm?iBookNo=49867&sYc=1-1"><img border="0" src="/zhuanti/link_img/cidian-1.jpg"></a></div>
-		
-		<div class="ad_row ad_row2"><a target="_black" href="http://www.fltrp.com/scrp/bookdetail.cfm?iBookNo=31281&sYc=1"><img  border="0" src="/zhuanti/link_img/cidian-2.jpg"></a></div>
-		
-		<div class="ad_row ad_row3"><a target="_black" href="http://www.fltrp.com/scrp/bookdetail.cfm?iBookNo=50058&sYc=1-1"><img border="0" src="/zhuanti/link_img/cidian-3.jpg"></a></div>
-		-->
 		    </div>	
 		    <div class="tonglan2">
-                         <?php $block = module_invoke('block', 'block', 'view', 81); ?>
-                         <?php print $block['content']; ?>
+				 <?php $block = module_invoke('block', 'block', 'view', 81); ?>
+				 <?php print $block['content']; ?>
 
-                    </div>       
-                </div>
+			</div>       
+		</div>
+		<div class="front21st">
+				<?php $block = module_invoke('panels_mini','block','view','shiji') ?>
+				<?php print $block['content']; ?>
+		</div>
+        <div class=tonglanall>
+        	<?php $block = module_invoke('block', 'block', 'view', 84); ?>
+			<?php print $block['content']; ?>
+        </div>
 		<div class="qz">
 			
 			<div class="qz-head"> 

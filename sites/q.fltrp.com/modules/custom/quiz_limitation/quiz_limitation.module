@@ -1,0 +1,63 @@
+<?php
+
+/*对quiz的特定限定
+ * 
+ */
+
+function quiz_limitation_menu() {
+	
+	$items ['take'] = array ('title' => '题型选择', 'page callback' => 'quiz_select', 'access callback' => TRUE );
+	
+	return $items;
+}
+
+function quiz_select() {
+	
+	global $user;
+	
+	profile_load_profile ( $user );
+	
+	print ($user->profile_group) ;
+	
+	$usergroup = $user->profile_group;
+	
+	$tempstring = "";
+	$tempstring .= '<div id="quiz-select">';
+	
+	$result = db_query ( "SELECT * FROM {quiz_node_results} WHERE nid in(select nid from {node}  where type='quiz') and is_evaluated=1 and uid = %d", $user->uid );
+	if ($field = db_fetch_object ( $result )) {
+		$tempstring .= "您已经参加过测试，无法重复参加测试。";
+	
+	} else {
+		
+		switch ($usergroup) {
+			case "外语" :
+				$tempstring .= l ( "外语试题部分，点击开始测试", "http://q.fltrp.com/node/22/take" );
+				break;
+			case "少儿" :
+				$tempstring .= l ( "少儿试题部分，点击开始测试", "http://q.fltrp.com/node/43/take" );
+				break;
+			
+			case "工具书" :
+				$tempstring .= l ( "工具书试题部分，点击开始测试", "http://q.fltrp.com/node/1/take" );
+				break;
+			
+			default :
+				$tempstring .= "请选择您要参加的测试（注意，每个人只能参加一次测试）";
+				$tempstring .= "<h2>";
+				$tempstring .= l ( "外语试题部分，点击开始测试", "http://q.fltrp.com/node/22/take" );
+				$tempstring .= "</h2>";
+				$tempstring .= "<h2>";
+				$tempstring .= l ( "少儿试题部分，点击开始测试", "http://q.fltrp.com/node/43/take" );
+				$tempstring .= "</h2>";
+				$tempstring .= "<h2>";
+				$tempstring .= l ( "工具书试题部分，点击开始测试", "http://q.fltrp.com/node/1/take" );
+				$tempstring .= "</h2>";
+		
+		}
+	}
+	
+	$tempstring .= "</div>";
+	
+	return $tempstring;
+}

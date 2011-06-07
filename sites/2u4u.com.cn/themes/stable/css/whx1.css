@@ -1316,3 +1316,23 @@ width:120px;
 #focus {
 	height: 258px;
 }
+
+/* 21ST */
+.front21st{ background:#FFF;border:1px solid #9F9D9D;margin-top:10px; padding-bottom:20px; }
+.zhuanqu_21st{ background:url("fp_images/bg-2.gif") repeat-x scroll 0 0 transparent; }
+.zq_title_21st{ border:none; height:33px;background: url("fp_images/red.gif") no-repeat 0 10px;line-height: 35px;margin-left: 20px; text-indent:1.6em; color:#750404; font-weight:700; margin-bottom:20px;}
+.zq_content_21st{ width:100%; overflow:auto}
+.box_21st{ float:left; width:800px; font-size:12px;}
+.front21st .box_21st .views-field-title{ line-height:26px; height:26px;}
+.box_21st .column_21st_l1,.column_21st_l2,.column_21st_r1,.column_21st_r2{ width:336px; padding:0 30px; float:left; border-right:1px  dashed #999; overflow:hidden; white-space:nowrap}
+.box_21st .pane-21st-page{ float:left}
+.box_21st img{ margin:10px 24px 0 0; border:1px solid #999}
+.dl_21st{ width:138px; float:right; padding-left:8px}
+
+/*google 提供的广告*/
+.egs_gg{
+	float:left;
+}
+.google_gg{
+	float:right;
+}

@@ -7,9 +7,6 @@
 
 (function ($) {
 
-$.jPlayer.timeFormat.showHour = true;
-$.jPlayer.timeFormat.padHour = true;
-
 Drupal.jPlayer = Drupal.jPlayer || { active: false };
 
 Drupal.behaviors.jPlayer = function(context) {
@@ -95,15 +92,17 @@ Drupal.behaviors.jPlayer = function(context) {
     .jPlayer('cssId', 'volumeBarValue', playerId + '-volume-bar-value')
     // Register progress functions.
     .jPlayer('onProgressChange', function(loadPercent, playedPercentRelative, playedPercentAbsolute, playedTime, totalTime) {
-      $(playerPlayTime).text($.jPlayer.convertTime(playedTime));
+      $(playerPlayTime).text($.jPlayer.convertTime(playedTime));  
       if (totalTime != 0 && totalTime != Number.POSITIVE_INFINITY) {
         $(playerTotalTime).text($.jPlayer.convertTime(totalTime));
       }
-      
+     
       	mytime = $.jPlayer.convertTime(playedTime);
 		mytime = mytime.replace(/:/g, "");
-		//$('.mytime').text(mytime); 
-		highlight(mytime);
+		
+		findsubtitles = this.element.parents('.smart_blog_audio').next('.smart_blog_subtitle').children('.subtitles');
+		
+		highlight(findsubtitles,mytime);
       
     })
     .jPlayer('onSoundComplete', function() {
@@ -112,6 +111,7 @@ Drupal.behaviors.jPlayer = function(context) {
       }
     });
     $.jPlayer.timeFormat.showHour = true;
+    $.jPlayer.timeFormat.padHour = true;
   });
 };
 
@@ -152,15 +152,66 @@ Drupal.jPlayer.previous = function(wrapper, player, playlist, current) {
 
 })(jQuery);
 
-
-function highlight(id){
+$(document).ready(function(){
 	
-	var spanid='#subtitles .time_'+id;
-	//$("#myid").length > 0
-	if($(spanid).length > 0)
+		
+		$('.subtitles span').click(function(event){
+			//	alert('456');
+			var thisclass = $(event.target).attr('class');
+			thisclass = thisclass.replace("time_", "");
+	
+			thishours = thisclass.substring(0,2);
+			thisminutes = thisclass.substring(2,4);
+			thisseconds = thisclass.substring(4,6);
+			thistime = (thishours*60*60 + thisminutes*60 + thisseconds)*1000;
+			
+			findjPlayer = $(event.target).parents('.smart_blog_subtitle').prev('.smart_blog_audio').children('.jplayer');
+			
+			//alert(thisclass+"time:::"+thistime);
+			//$('#'+findjPlayer.attr('id')).jPlayer("playHeadTime", thistime); 
+			findjPlayer.jPlayer("play").jPlayer("playHeadTime", thistime);
+		});
+		
+		
+		
+	
+	$('.anniu').toggle(
+		function(){
+			$(this).next('.smart_audio_button').slideUp('slow');
+			$(this).removeClass('anniu_up');
+			$(this).addClass('anniu_down');
+			$(this).next('.smart_audio_button').children('.smart_blog_subtitle').find('.highlight').removeClass('highlight');
+
+			//findjPlayer.jPlayer("stop"); 
+		},
+		function(){
+			$(this).next('.smart_audio_button').slideDown('slow');
+			$(this).removeClass('anniu_down');
+			$(this).addClass('anniu_up');
+
+		}
+	);
+	$('.views-row-2 .anniu').click();
+	$('.views-row-3 .anniu').click();
+	
+	$('.subtitles span').hover(function(event){
+			$('.hover').removeClass('hover');	
+			$(event.target).addClass('hover');
+		},function(event){
+			//$('.hover').removeClass('hover');	
+			
+	});
+	
+});
+
+
+function highlight(findsubtitles,id){
+	var subtitle_line = findsubtitles.children('.time_'+id);
+
+	if(subtitle_line.length > 0)
 	{
-		$('.highlight').removeClass("highlight");
-		$(spanid).addClass("highlight");
+		findsubtitles.children('.highlight').removeClass("highlight");
+		subtitle_line.addClass("highlight");
 	}
 	
 		

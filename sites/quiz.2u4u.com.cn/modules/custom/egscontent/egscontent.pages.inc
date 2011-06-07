@@ -369,6 +369,9 @@ function egsUserScore_byTid($tid = 1,$num = 7){
 				foreach ( $info as $info_id => $info_name ) {
 					$id = $info_id;
 					$name = $info_name;
+					if(strlen($info_name)>12)
+						$name = substr($info_name,0,9).'⋯';
+					
 				}
 				$content .='<tr ><td class="user_name">'.$name.'</td><td class="user_score">'.$score.'</td><td class="user_rate">'.$rate.'</td></tr>';
 			}

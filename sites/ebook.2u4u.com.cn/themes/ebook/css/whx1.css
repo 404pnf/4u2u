@@ -476,3 +476,10 @@ display:none;
 	height:30px;
 }
 /*----------- //end 相关 ------*/
+
+/*------google 提供的广告----*/
+.google_gg{
+    padding:9px 9px 2px;
+    background-color:#dddddd;
+    border-top:1px solid #CECECE;
+}

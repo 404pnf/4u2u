@@ -27,12 +27,13 @@ ul#primary li a:hover {color: #FFFFFF;text-decoration: none;}
 #block-views-fenlei-block_1 ul li.views-row-first{height:32px;background:url('../images/dl_sidebar_bg20110427.jpg') repeat scroll 0 0px transparent;text-align:center;line-height:32px;}
 #block-views-fenlei-block_1 ul li a{color:#5e5d13;font-size:1.1em;}
 #block-views-fenlei-block_1{border:1px solid #CCCCCC;width:196px;}
-#block-views-download_count_files-block_1{border:1px solid #CCCCCC;width:196px;}
-#block-views-download_count_files-block_1 h2{height:32px;background:url('../images/dl_sidebar_bg20110427.jpg');line-height:32px;color:#80040e; font-size:14px; text-indent:.8em;}
-#block-views-download_count_files-block_1 ol{ margin-bottom:0; margin:0 1.3em;*margin:0 2em 0 1em;}
-#block-views-download_count_files-block_1 .view-content li{ background:none; height:36px; border-bottom:1px solid #CCC; line-height:36px;list-style:decimal inside;display:list-item; *text-indent:0.2em;}
-#block-views-download_count_files-block_1 .view-content li a{ text-align:left; font-size:12px; font-weight:400; color:#000;}
-#block-views-download_count_files-block_1 .content .more-link{ background:#FFF; margin:10px 12px 10px 0;}
+#block-downloadCountdown-0{border:1px solid #CCCCCC;width:196px;}
+#block-downloadCountdown-0 h2{height:32px;background:url('../images/dl_sidebar_bg20110427.jpg');line-height:32px;color:#80040e; font-size:14px; text-indent:.8em;}
+#block-downloadCountdown-0 #downloadCountdown ol{ margin-bottom:0; margin:0 1.3em;*margin:0 2em 0 1em; list-style:none;}
+#block-downloadCountdown-0 #downloadCountdown li{ background:none; border-bottom:1px solid #CCC; line-height:22px; padding:6px 0}
+#block-downloadCountdown-0 #downloadCountdown li.last{ border:none;}
+#block-downloadCountdown-0 #downloadCountdown li a{ text-align:left; font-size:12px; font-weight:400; color:#000; height:20px;}
+#block-downloadCountdown-0 #downloadCountdown .more-link{ background:#FFF; margin:10px 12px 10px 0;}
 
 
 /* 右侧内容区域 */

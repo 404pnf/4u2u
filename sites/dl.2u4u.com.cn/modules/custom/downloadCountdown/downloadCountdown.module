@@ -13,7 +13,13 @@
        'access arguments' =>array('administer site configuration'),    
      );
    	
-     
+     $items['admin/reports/downloadCountdown'] = array(
+       'title' =>'下载排行统计',
+       'description' => t('下载排行统计'),
+       'page callback' => 'downloadCountdown_admin_content',
+       'type' => MENU_NORMAL_ITEM, 
+       'access arguments' =>array('access site reports'),    
+     ); 
      
       return $items;      
    } 
@@ -101,6 +107,7 @@ node_data_field_ziyuanwenjian.vid = node_node_data_field_ziyuanwenjian.vid
   LIMIT 0, $max_show_countdown_number ";
   $result =  db_query($sql);
 
+  $i = 1;
   while ($data = db_fetch_object($result))
   {
     $fid = $data->fid;
@@ -109,13 +116,21 @@ node_data_field_ziyuanwenjian.vid = node_node_data_field_ziyuanwenjian.vid
     $files_downloads =  $data->files_downloads;
     
      
-    $tempstring.='<li>';
-    $tempstring.="<span class='download-countdown-title'>".l($title,"node/$nid")."</span>"; 
+    $tempstring.='<li';
+    if($i==1)
+      $tempstring.=" class='first' ";
+    if($i==$max_show_countdown_number)
+      $tempstring.=" class='last' ";
+    $tempstring.=' >';    
+    $tempstring.=($countdown_ballot_style=='orderlist')?$i.'.':'';
+    $tempstring.="<span class='download-countdown-title'>";
+    $tempstring.=l($title,"node/$nid")."</span>"; 
     if($if_show_countdown_details=='show'){
        $tempstring.="<span class='download-countdown-number'>$files_downloads</span>"; 
     }
     $tempstring.='</li>';
-      
+
+     $i++;
    }
 
 $tempstring.=($countdown_ballot_style=='orderlist')?'</ol>':'</ul>';
@@ -123,3 +138,73 @@ $tempstring.=($countdown_ballot_style=='orderlist')?'</ol>':'</ul>';
  
  return $tempstring;
  }
+ 
+ 
+ 
+ function downloadCountdown_admin_content(){
+ //** 报名
+   global $user;
+   
+   $max_show_countdown_number = variable_get('max_show_countdown_number',20);
+   
+  $tempstring = '';
+  $tempstring.='<div id="downloadCountdown">';
+  $tempstring.=($countdown_ballot_style=='orderlist')?'<ol>':'<ul>';
+  $sql = "SELECT files.fid AS fid, node_node_data_field_ziyuanwenjian.title AS node_node_data_field_ziyuanwenjian_title,
+    node_node_data_field_ziyuanwenjian.nid AS node_node_data_field_ziyuanwenjian_nid,
+files_downloads
+  FROM files files
+  LEFT JOIN content_field_ziyuanwenjian node_data_field_ziyuanwenjian 
+ON files.fid = node_data_field_ziyuanwenjian.field_ziyuanwenjian_fid
+  LEFT JOIN node node_node_data_field_ziyuanwenjian ON 
+node_data_field_ziyuanwenjian.vid = node_node_data_field_ziyuanwenjian.vid
+  LEFT JOIN  (SELECT fid,COUNT(dc.fid) files_downloads FROM download_count dc  group by  fid) ct
+ on files.fid=ct.fid
+ WHERE title is not null
+ ORDER BY files_downloads DESC ";
+  
+  $count_sql="SELECT COUNT(1)  FROM files files
+  LEFT JOIN content_field_ziyuanwenjian node_data_field_ziyuanwenjian 
+ON files.fid = node_data_field_ziyuanwenjian.field_ziyuanwenjian_fid
+  LEFT JOIN node node_node_data_field_ziyuanwenjian ON 
+node_data_field_ziyuanwenjian.vid = node_node_data_field_ziyuanwenjian.vid
+  LEFT JOIN  (SELECT fid,COUNT(dc.fid) files_downloads FROM download_count dc  group by  fid) ct
+ on files.fid=ct.fid 
+ WHERE title is not null ";
+  $page=0;
+  $result = pager_query($sql,$max_show_countdown_number , $page, $count_sql);
+  //$result = pager_query($sql, $max_show_countdown_number, $pager_num, $count_sql);
+  
+
+  $i = 1;
+  while ($data = db_fetch_object($result))
+  {
+    $fid = $data->fid;
+    $title = $data->node_node_data_field_ziyuanwenjian_title;
+    $nid = $data->node_node_data_field_ziyuanwenjian_nid;
+    $files_downloads =  $data->files_downloads;
+    
+     
+    $tempstring.='<li';
+    if($i==1)
+      $tempstring.=" class='first' ";
+    if($i==$max_show_countdown_number)
+      $tempstring.=" class='last' ";
+    $tempstring.=' >';    
+    $tempstring.=$i.'.';
+    $tempstring.="<span class='download-countdown-title'>";
+    $tempstring.=l($title,"node/$nid")."</span>"; 
+    //if($if_show_countdown_details=='show'){
+       $tempstring.="<span class='download-countdown-number'>$files_downloads</span>"; 
+    //}
+    $tempstring.='</li>';
+
+     $i++;
+   }
+
+$tempstring.=($countdown_ballot_style=='orderlist')?'</ol>':'</ul>';
+ $tempstring.='</div>';
+ $tempstring.=theme('pager', NULL, $max_show_countdown_number, $page);
+ return $tempstring;
+ }
+ 

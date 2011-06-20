@@ -13,7 +13,7 @@ $sql = "SELECT ub.blogid,ub.uid,ub.username,ub.subject,uf.message
                FROM `uchome_blog` ub
 	       LEFT JOIN `uchome_blogfield` uf
                ON ub.blogid=uf.blogid
-	       WHERE dateline>$time-86400*7 GROUP BY uid ORDER BY hot DESC,viewnum DESC
+	       GROUP BY uid ORDER BY hot DESC,viewnum DESC
 	       LIMIT 4";
 /*$sql = "SELECT blogid,uid,username,subject 
 	       FROM `uchome_blog` 
@@ -21,29 +21,27 @@ $sql = "SELECT ub.blogid,ub.uid,ub.username,ub.subject,uf.message
 	       LIMIT 4";*/		    
 $rs =  mysql_query($sql);
 $fic = fopen("export.xml","w");    
-/*fwrite($fic, '<?xml version="1.0"encoding="ISO-8859-1"?>');
-fwrite($fic, '<!-- DB to XML -->');*/
+fwrite($fic, '<?xml version="1.0" encoding="utf-8" ?>');
+/*fwrite($fic, '<!-- DB to XML -->');*/
+/*fwrite($fic ,'<?xml version="1.0" encoding="UTF-8"?>');*/
 fwrite($fic, '<xml>');
 
 DEFINE('UC_API',"http://u.2u4u.com.cn/ucenter");
     while($row = mysql_fetch_object($rs)){
-	fwrite($fic, "<node>");      
     	$photo = '';
 	$photo = ckavatar($row->uid) ? avatar($row->uid, 'small',true) : UC_API.'/images/noavatar_small.gif';
-	$message = substr(trim(strip_html_tags($row->message)),0,50);
+	$message = csubstr(trim(strip_html_tags($row->message)));
 	fwrite($fic,'<avatar>'.$photo.'</avatar>');
 	fwrite($fic,'<id>'.$row->username.'</id>');
 	fwrite($fic,'<title>'.$row->subject.'</title>');
 	fwrite($fic,'<content>'.$message.'</content>');
 	fwrite($fic,'<url>'.$discuz_url."home/space.php?uid=".$row->uid.'</url>');
-      	fwrite($fic,'</node>');
     }
 fwrite($fic,'</xml>');     
 fclose($fic);  	 	    
 
 
-function avatar($uid, $size='small', $returnsrc = FALSE) {
-	
+function avatar($uid, $size='small', $returnsrc = FALSE) {	
 	$size = in_array($size, array('big', 'middle', 'small')) ? $size : 'small';
 	$avatarfile = avatar_file($uid, $size);
 	return $returnsrc ? UC_API.'/data/avatar/'.$avatarfile : '<img src="'.UC_API.'/data/avatar/'.$avatarfile.'" onerror="this.onerror=null;this.src=\''.UC_API.'/images/noavatar_'.$size.'.gif\'">';
@@ -68,10 +66,41 @@ function avatar_file($uid, $size) {
 
 function ckavatar($uid) {
 	    $_SCONFIG['uc_dir'] = '/home/apache/data/html/ucenter/ucenter';
-		$file = $_SCONFIG['uc_dir'].'./data/avatar/'.avatar_file($uid, 'middle');
-		return file_exists($file)?1:0;
+            $file = $_SCONFIG['uc_dir'].'/data/avatar/'.avatar_file($uid, 'middle');
+            	return file_exists($file)?1:0;
 	
 }
+
+/*
+        * 中文截取，支持gb2312,gbk,utf-8,big5
+        *
+        * @param string $str 要截取的字串
+        * @param int $start 截取起始位置
+        * @param int $length 截取长度
+        * @param string $charset utf-8|gb2312|gbk|big5 编码
+        * @param $suffix 是否加尾缀
+        */
+       function csubstr($str, $start=0, $length=40, $charset="utf-8", $suffix=true)
+       {
+               if(function_exists("mb_substr"))
+               {
+                       if(mb_strlen($str, $charset) <= $length) return $str;
+                       $slice = mb_substr($str, $start, $length, $charset);
+               }
+               else
+               {
+                       $re['utf-8']   = "/[\x01-\x7f]|[\xc2-\xdf][\x80-\xbf]|[\xe0-\xef][\x80-\xbf]{2}|[\xf0-\xff][\x80-\xbf]{3}/";
+                       $re['gb2312'] = "/[\x01-\x7f]|[\xb0-\xf7][\xa0-\xfe]/";
+                       $re['gbk']          = "/[\x01-\x7f]|[\x81-\xfe][\x40-\xfe]/";
+                       $re['big5']          = "/[\x01-\x7f]|[\x81-\xfe]([\x40-\x7e]|\xa1-\xfe])/";
+                       preg_match_all($re[$charset], $str, $match);
+                       if(count($match[0]) <= $length) return $str;
+                       $slice = join("",array_slice($match[0], $start, $length));
+               }
+               if($suffix) return $slice."…";
+               return $slice;
+       }
+
 
 /**
  * Remove HTML tags, including invisible text such as style and

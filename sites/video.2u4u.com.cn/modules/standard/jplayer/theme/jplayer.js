@@ -102,6 +102,7 @@ Drupal.behaviors.jPlayer = function(context) {
 		
 		findsubtitles = this.element.parents('.smart_blog_audio').next('.smart_blog_subtitle').children('.subtitles');
 		
+		//console.log('onProgressChange');
 		highlight(findsubtitles,mytime);
       
     })
@@ -155,26 +156,33 @@ Drupal.jPlayer.previous = function(wrapper, player, playlist, current) {
 $(document).ready(function(){
 	
 		
-		$('.subtitles span').click(function(event){
+	$('.subtitles span').click(function(event){
 			//	alert('456');
-			var thisclass = $(event.target).attr('class');
-			thisclass = thisclass.replace("time_", "");
+		that = $(event.target);
+		if(!$(event.target).is('span')){
+			that = $(event.target).parent('span');
+		}
 	
-			thishours = thisclass.substring(0,2);
-			thisminutes = thisclass.substring(2,4);
-			thisseconds = thisclass.substring(4,6);
-			thistime = (thishours*60*60 + thisminutes*60 + thisseconds)*1000;
-			
-			findjPlayer = $(event.target).parents('.smart_blog_subtitle').prev('.smart_blog_audio').children('.jplayer');
-			
-			//alert(thisclass+"time:::"+thistime);
-			//$('#'+findjPlayer.attr('id')).jPlayer("playHeadTime", thistime); 
-			findjPlayer.jPlayer("play").jPlayer("playHeadTime", thistime);
-		});
+		var thisclass = that.attr('class');
+		thisclass = thisclass.replace("time_", "");
+
+		thishours = parseInt(thisclass.substring(0,2), 10);
+		thisminutes = parseInt(thisclass.substring(2,4), 10);
+		thisseconds = parseInt(thisclass.substring(4,6), 10);
+		thistime = (thishours*60*60 + thisminutes*60 + thisseconds)*1000;
 		
+		findjPlayer = that.parents('.smart_blog_subtitle').prev('.smart_blog_audio').children('.jplayer');
 		
+		//thistime = 0;
 		
-	
+		//$('#'+findjPlayer.attr('id')).jPlayer("play").jPlayer("stop").jPlayer("playHeadTime", thistime); 
+		findjPlayer.jPlayer("playHeadTime", thistime);
+		//findjPlayer.playHeadTime(thistime);
+		//alert(thisclass+"time:::"+thistime);
+		
+	});
+		
+	/*
 	$('.anniu').toggle(
 		function(){
 			$(this).next('.smart_audio_button').slideUp('slow');
@@ -193,10 +201,39 @@ $(document).ready(function(){
 	);
 	$('.views-row-2 .anniu').click();
 	$('.views-row-3 .anniu').click();
+	*/	
+	
+	$('.anniu').toggle(
+		function(){
+			$(this).next('.smart_audio_button').slideDown('slow');
+			$(this).removeClass('anniu_down');
+			$(this).addClass('anniu_up');
+
+		},function(){
+			$(this).next('.smart_audio_button').slideUp('slow');
+			$(this).removeClass('anniu_up');
+			$(this).addClass('anniu_down');
+			$(this).next('.smart_audio_button').children('.smart_blog_subtitle').find('.highlight').removeClass('highlight');
+
+			//findjPlayer.jPlayer("stop"); 
+		}
+		
+	);
+	//$('.views-row-1 .anniu').click();
+	//$('.views-row-1 .anniu').next('.smart_audio_button').slideDown('slow');
+	//$('.views-row-1 .anniu').removeClass('anniu_down');
+	$('.views-row-1 .anniu').addClass('anniu_up');
+	//$('.views-row-3 .anniu').click();
 	
 	$('.subtitles span').hover(function(event){
+			that = $(event.target);
+			if(!$(event.target).is('span')){
+				that = $(event.target).parent('span');
+			}
+				
 			$('.hover').removeClass('hover');	
-			$(event.target).addClass('hover');
+			that.addClass('hover');
+			
 		},function(event){
 			//$('.hover').removeClass('hover');	
 			

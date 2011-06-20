@@ -148,9 +148,9 @@ function aispeech_get_next_word(){
 	  'lang' => 'en',
 		'word' => $word_result->word,
 	);
-	$str = $t->get_result($word_result->word, $ar, "normal", $ip);
+	//$str = $t->get_result($word_result->word, $ar, "normal", $ip);
 	
-	$word->explaination =  $str;
+	//$word->explaination =  $str;
 	//$word->explaination =  'test';
 	
 	

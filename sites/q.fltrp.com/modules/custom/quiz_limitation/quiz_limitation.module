@@ -17,7 +17,7 @@ function quiz_select() {
 	
 	profile_load_profile ( $user );
 	
-	print ($user->profile_group) ;
+	//print ($user->profile_group) ;
 	
 	$usergroup = $user->profile_group;
 	
@@ -44,15 +44,9 @@ function quiz_select() {
 			
 			default :
 				$tempstring .= "请选择您要参加的测试（注意，每个人只能参加一次测试）";
-				$tempstring .= "<h2>";
 				$tempstring .= l ( "外语试题部分，点击开始测试", "http://q.fltrp.com/node/22/take" );
-				$tempstring .= "</h2>";
-				$tempstring .= "<h2>";
 				$tempstring .= l ( "少儿试题部分，点击开始测试", "http://q.fltrp.com/node/43/take" );
-				$tempstring .= "</h2>";
-				$tempstring .= "<h2>";
 				$tempstring .= l ( "工具书试题部分，点击开始测试", "http://q.fltrp.com/node/1/take" );
-				$tempstring .= "</h2>";
 		
 		}
 	}

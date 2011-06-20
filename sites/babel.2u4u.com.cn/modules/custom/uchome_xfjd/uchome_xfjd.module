@@ -48,7 +48,7 @@ function uchome_xfjd_post(){
 	             <a href='".$discuz_url."home/space.php?do=xfjd&view=show&bookid=".$row->bid."' target='_blank'>".$row->enname."</a>
 		     </div>";
         $content .= "<div class='uchome_xfjd_intro'>".$row->introduction."</div>";
-	$content .= "<div class='uchome_xfjd_rl'><a href='".$discuz_url."home/space.php?do=xfjd&view=show&bookid=".$row->bid."' target='_blank'>认领</div>
+	$content .= "<div class='uchome_xfjd_rl'><a href='".$discuz_url."home/space.php?do=xfjd&view=show&bookid=".$row->bid."' target='_blank'>认领</a></div>
 	             </div>
 		     </div>";
 	

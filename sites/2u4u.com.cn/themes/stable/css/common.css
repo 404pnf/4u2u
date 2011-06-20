@@ -130,7 +130,7 @@ div.block:hover .edit {
 *  do not change if you're not sure you know what you're doing
 */
 
-#main,#header-middle,#navigation{ width: 960px; margin: 0 auto; }
+#main,#header-middle,#navigation{ width: 960px; margin: 0 auto; position:relative;}
 #content {   float: left;   width: 960px;   margin-right: -100%;   padding-top:0px; }
 #sidebar-first { float: left; }
 #sidebar-second { float: right; }
@@ -437,16 +437,28 @@ text-decoration:none;
 /* logo 左飘*/
 #logo-title {
 	height: 60px;
-	width: 340px;
+	width: 300px;
 	float: left;
 	/* margin-top: 5px; */
 }
-/* logo右侧的区域 */
+/* logo右侧的区域 
+
 #header-region {
     float: right;
     padding-top: 20px;
-    width: 620px;
+    width: 660px;
+    
+}*/
+#header-region {
+    float: right;
+    padding-top: 20px;
+    position: absolute;
+    right: 0;
+    vertical-align: middle;
+    white-space: nowrap;
+    width: 660px;
 }
+
 /* 具体内容 */
 /* #block-block-73,#block-block-77 */
 #header-region .block-header{

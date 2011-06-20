@@ -1007,11 +1007,13 @@ display:none;
 .smart_secend .smart_blog_image{width:302px; height:223px; overflow:hidden; border:1px solid #000; float:left}
 .smart_secend .smart_blog_teaser{float:right;width:318px; margin:0 12px;background:#f5f5f5; border:1px solid #d4d4d4; padding:20px; border-bottom:none;}
 .anniu{float:right; width:318px; margin:0 12px;background:#f5f5f5; border:1px solid #d4d4d4;padding:20px;border-top:none;}
-.anniu .anniuback{width:175px; background:url(images/button_20110517.gif) no-repeat 0 -84px;height:45px;text-indent:-99em; margin:10px 0 10px 142px;}
+.anniu .anniuback{width:175px; background:url(images/button_20110517.gif) no-repeat 0 -129px;height:45px;text-indent:-99em; margin:10px 0 10px 142px;}
 .anniu_up .anniuback{width:175px;background:url(images/button_20110517.gif) no-repeat 0 -84px;height:45px;text-indent:-99em; margin:10px 0 10px 142px;}
 .anniu_down .anniuback{width:175px;background:url(images/button_20110517.gif) no-repeat 0 -129px;height:45px;text-indent:-99em;margin:10px 0 10px 142px;}
-.smart_audio_button{float:right; width:318px; margin:0 12px;background:#f5f5f5; border:1px solid #d4d4d4; padding:20px;border-top:none; overflow:hidden;}
+.smart_audio_button{float:right; width:318px; margin:0 12px;background:#f5f5f5; border:1px solid #d4d4d4; padding:20px;border-top:none; overflow:hidden;display:none;}
 .smart_blog_audio{ margin:10px 0 20px 0}
+.views-row-1 .smart_audio_button{display:block;}
+
   /* Everyday 右侧 */
 #smart_everyday .views-row .smart_right{width:258px; float:right}
 #smart_everyday .smart_word_title{background:url(images/icon_20110517.gif) no-repeat 5px -146px; height:30px; margin:20px 10px 20px; font-size:14px; border-bottom:3px solid #CCC; line-height:30px; text-indent:1.4em; font-weight:700}

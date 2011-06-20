@@ -164,7 +164,7 @@ function theme_egscontent_PETS_block(){
 function theme_egscontent_userscore_CET4_block(){
 	$output = '';
 	//egsUserScore_byTid(分类id,个数)
-	$output .= egsUserScore_byTid(1);
+	$output .= egsUserScore_byTid(19);
 	
 	return $output;
 }
@@ -176,7 +176,7 @@ function theme_egscontent_userscore_CET4_block(){
 function theme_egscontent_userscore_CET6_block(){
 	$output = '';
 	//egsUserScore_byTid(分类id,个数)
-	$output .= egsUserScore_byTid(4);
+	$output .= egsUserScore_byTid(20);
 	
 	return $output;
 }

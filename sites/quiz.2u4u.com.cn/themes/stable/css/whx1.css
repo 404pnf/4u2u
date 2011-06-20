@@ -557,6 +557,9 @@ tbody th.user_name{
 	padding:0px;
 	width:65px;
 }
+.block-egscontent  .block-inner .content {
+    padding: 3px;
+}
 tbody th.user_score{
 	padding:0px;
 }

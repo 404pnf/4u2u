@@ -19,7 +19,7 @@ function downloadlimitation_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
 					//$node->field_ziyuanwenjian[0]['data']['description']="请登陆后再下载";	
 					$node->field_ziyuanwenjian [0] ['data'] ['description'] = "";
 					$node->field_ziyuanwenjian [0] ['filename'] = '';
-					$node->content ['extra_form'] = array ('#value' => "<a href='/user?destination=/node/$node->nid'>请登录后再下载</a>", '#weight' => 5 );
+					$node->content ['extra_form'] = array ('#value' => "<a href='/user/login?destination=/node/$node->nid'>请登录后再下载</a>", '#weight' => 5 );
 				} else {
 					//				print ('<pre>') ;
 					//				print_r($_COOKIE['answer']);
@@ -37,6 +37,10 @@ function downloadlimitation_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
 								$node->field_ziyuanwenjian [0] ['filename'] = '';
 								$node->content ['extra_form'] = array ('#value' => drupal_get_form ( 'downloadlimitation_answerform', $question, $node->nid ), '#weight' => 5 );
 							}
+							else
+							{
+								$node->field_ziyuanwenjian [0] ['data'] ['description'] = $node->title.'(点击此处下载)';
+							}
 						}
 						else{
 						        $node->field_ziyuanwenjian [0] ['data'] ['description'] = "";
@@ -45,6 +49,11 @@ function downloadlimitation_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
 								$node->field_ziyuanwenjian [0] ['filename'] = '';
 								$node->content ['extra_form'] = array ('#value' => drupal_get_form ( 'downloadlimitation_answerform', $question, $node->nid ), '#weight' => 5 );
 						}
+					}
+					else
+					{
+					      $node->field_ziyuanwenjian [0] ['data'] ['description']= $node->title.'(点击此处下载)';
+
 					}
 				
 				}

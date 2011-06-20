@@ -117,7 +117,7 @@
                       <div id="current-category">
 	                        <?php
                         $upid =$_GET['c'];
-			             $views_name = 'zifenlei';
+                        $views_name = 'zifenlei';
                         $display_id = 'block_2';
                         $view_args = $upid;
                         print views_embed_view($views_name, $display_id,$view_args);

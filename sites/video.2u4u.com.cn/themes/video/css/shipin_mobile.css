@@ -1,0 +1,150 @@
+@charset "utf-8"; /* CSS Document */
+body {
+    font-size: 18px;
+    line-height: 1.6em;
+}
+.views-hide{
+	display:none;
+}
+a:link {
+    color: #272727;
+    text-decoration: none;
+}
+a:visited {
+    color: #272727;
+    text-decoration: none;
+}
+a:hover {
+    color: #272727;
+    text-decoration: underline;
+}
+p{
+	margin:0;
+}
+.clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+.clearfix { display: inline-block; }
+
+/* Hides from IE-mac \*/
+* html .clearfix { height: 1%; }
+.clearfix { display: block; }
+/* End hide from IE-mac */
+
+/* clear classes */
+
+.clearleft, .clearl, .cleft { clear: left; }
+.clearright, .clearr, .cright { clear: right; }
+.clear, .clearboth, .clearall{ clear: both; }
+
+.highlight{
+	color:red;
+}
+
+/*=============== 司马丽霞专题 =================*/
+
+/*========= 播放器 ==========*/
+.page-smartfp  .view-display-id-page_2 .views-row {border-bottom: 0;margin-left: 0;clear:both;}
+.subtitles div,.anniu{cursor:default;}
+.anniu .anniuback{cursor:pointer;}
+
+/*========= 司马丽霞 Everyday  ==========*/
+.page-smartfp{ border-left:1px solid #d4d4d4; border-right:1px solid #d4d4d4;}
+.page-smartfp .views-row{ padding-bottom:30px;}
+.smart_first{ margin:10px 8px 5px;}
+.smart_date{ width:175px; background:url(images/button_20110517.gif) no-repeat scroll 0 -42px transparent; height:42px;line-height:42px;text-align:right; font-family:Arial; font-size: 16px;}
+.views-row-1 .smart_date{background:url(images/button_20110517.gif); color:#FFF;}
+.smart_date span{ padding-right:40px; font-weight:700}
+.smart_blog_title{line-height:40px; background:#f5f5f5; border:1px solid #d4d4d4; font-size: 1.4em;     line-height: 1.3em;    margin: 15px 0 0;    padding: 10px;}
+.smart_secend .smart_blog_image{height:223px;   border: 1px solid #000000;  width: 302px;margin: 0px auto 10px;}
+.smart_secend .smart_blog_teaser{background:#f5f5f5; border:1px solid #d4d4d4; padding:20px; border-bottom:none;}
+.anniu{background:#f5f5f5; border:1px solid #d4d4d4;padding:10px;border-top:none;}
+.anniu .anniuback{width:175px; background:url(images/button_20110517.gif) no-repeat 0 -129px;height:45px;text-indent:-99em; margin:10px 0 10px 5px;}
+.anniu_up .anniuback{background:url(images/button_20110517.gif) no-repeat 0 -84px;}
+.anniu_down .anniuback{background:url(images/button_20110517.gif) no-repeat 0 -129px;}
+.smart_audio_button{background:#f5f5f5; border:1px solid #d4d4d4; padding:20px 15px;border-top:none; display:none;}
+.smart_blog_audio{ margin:10px 0 20px 0;height: 45px;}
+.views-row-1 .smart_audio_button{display:block;}
+
+  /* Everyday 右侧 */
+.page-smartfp .smart_word_title{background:url(images/icon_20110517.gif) no-repeat 5px -146px; height:30px; margin:20px 10px 20px; font-size: 1.2em; border-bottom:3px solid #CCC; line-height:30px; text-indent:1.4em; font-weight:700}
+.page-smartfp .smart_right ul{ margin:0; padding:0px 1em;}
+.page-smartfp .smart_right ul li{ margin:10px 0 10px 13px;} 
+
+
+/* 不显示调节声音 */
+div.jp-type-single div.jp-volume-bar,div.jp-audio div.jp-type-single a.jp-mute, div.jp-audio div.jp-type-single a.jp-unmute {
+    display: none;
+}
+
+/* 外观调整 —— 整体缩小*/
+div.jp-audio {
+    width: 282px; 
+}
+div.jp-audio div.jp-type-single div.jp-interface {
+	width: 280px;
+	height: 45px;
+	border: 1px solid #009BE3;
+}
+div.jp-audio div.jp-type-single div.jp-progress {
+    height: 10px;
+    top: 18px;
+    width: 172px;
+    left:90px;
+}
+div.jp-audio div.jp-type-single div.jp-load-bar,div.jp-audio div.jp-type-single div.jp-play-bar{
+	height: 10px;
+	top: 18px;
+}
+div.jp-audio div.jp-type-single div.jp-current-time, div.jp-audio div.jp-type-single div.jp-duration {
+    font-size: 10px;
+    left: 90px;
+    top: 26px;
+    width: 170px;
+}
+div.jp-audio div.jp-type-single a.jp-play, div.jp-audio div.jp-type-single a.jp-pause {
+    top: 2px;
+    left:10px;
+}
+div.jp-audio div.jp-type-single a.jp-stop {
+    top: 10px;
+    left:55px;
+}
+
+.subtitles span{
+	cursor:pointer;
+}
+.subtitles span.hover {
+    background-color: #CCCCCC;
+}
+/*    字幕    
+.subtitles{
+	height:200px;
+	overflow-y:scroll;
+}
+.smart_blog_audio{
+	position:fixd;
+}
+*/
+
+/*   翻页样式  */
+.item-list .pager li {
+    border: 1px solid #CECECE;
+    color: #FFFFFF;
+    margin: 0;
+    padding: 1px 5px;
+    font-size: 10px;
+}
+.pager-current {
+    background-color: #CECECE;
+}
+.item-list ul {
+    margin: 15px 0;
+    text-align: center;
+    padding: 0;
+}

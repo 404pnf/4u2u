@@ -1,0 +1,97 @@
+<?php
+
+/**
+ * @file
+ * Handles AdvAgg CSS compress installation and upgrade tasks.
+ */
+
+/**
+ * Implementation of hook_enable().
+ */
+function advagg_css_compress_enable() {
+  // Flush advagg caches.
+  $cache_tables = advagg_flush_caches();
+  foreach ($cache_tables as $table) {
+    cache_clear_all('*', $table, TRUE);
+  }
+}
+
+/**
+ * Implementation of hook_disable().
+ */
+function advagg_css_compress_disable() {
+  // Flush advagg caches.
+  $cache_tables = advagg_flush_caches();
+  foreach ($cache_tables as $table) {
+    cache_clear_all('*', $table, TRUE);
+  }
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function advagg_css_compress_install() {
+  drupal_install_schema('advagg_css_compress');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function advagg_css_compress_uninstall() {
+  // Flush advagg caches.
+  $cache_tables = advagg_flush_caches();
+  foreach ($cache_tables as $table) {
+    cache_clear_all('*', $table, TRUE);
+  }
+
+  // Remove variables.
+  variable_del('advagg_css_compress_compressor_level');
+  variable_del('advagg_css_compress_preserve_css');
+  variable_del('advagg_css_compress_inline_cache');
+  variable_del('advagg_css_compress_agg_files');
+  variable_del('advagg_css_compress_inline');
+  variable_del('advagg_css_compressor');
+
+  // Remove our cache table.
+  cache_clear_all('*', 'cache_advagg_css_compress_inline', TRUE);
+  drupal_uninstall_schema('advagg_css_compress');
+}
+
+/**
+ * Implementation of hook_requirements().
+ */
+function advagg_css_compress_requirements($phase) {
+  $requirements = array();
+  // Ensure translations don't break at install time
+  $t = get_t();
+
+  if ($phase == 'runtime') {
+  }
+  return $requirements;
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function advagg_css_compress_schema() {
+  $schema = array();
+
+  // Create cache tables.
+  $schema['cache_advagg_css_compress_inline'] = drupal_get_schema_unprocessed('system', 'cache');
+  $schema['cache_advagg_css_compress_inline']['description'] = t('Cache table for Advanced CSS/JS Aggregations CSS Compress module. Used to keep inline versions of compressed CSS.');
+
+  return $schema;
+}
+
+/**
+ * Update 6100 - Create the cache_advagg_css_compress_inline cache table.
+ */
+function advagg_css_compress_update_6100() {
+  $ret = array();
+
+  // Create cache table.
+  $schema = advagg_css_compress_schema();
+  db_create_table($ret, 'cache_advagg_css_compress_inline', $schema['cache_advagg_css_compress_inline']);
+
+  return $ret;
+}

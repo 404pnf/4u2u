@@ -1,6 +1,6 @@
 
 function submit(name0,name1,name2){
-	   var url ="http://cdn1.2u4u.com.cn:8080/disney/"; 
+	   var url ="http://cdn1.2u4u.com.cn/disney/"; 
 	   image = url+'img/o/'+name1+'.jpg';   
 	   if(name2!=null)	
 	      audio = url+'mp3/'+name2+'.mp3';         

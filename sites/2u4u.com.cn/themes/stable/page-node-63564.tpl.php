@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print $language->language ?>" lang="<?php print $language->language ?>" dir="<?php print $language->dir ?>">
 
   <head>
-    <title><?php print $head_title; ?></title>
+    <title>21st | 悠游网 最权威的多语种学习网站</title>
     <?php print $head; ?>
     
 	<link href="<?php print $base_path . path_to_theme() ?>/js/coin-slider/coin-slider-styles.css" media="all" rel="stylesheet" type="text/css">

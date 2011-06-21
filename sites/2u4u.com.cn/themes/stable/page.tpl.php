@@ -11,11 +11,7 @@
 	
 	<?php print $scripts; ?>
 	
-<?php $node_url=drupal_get_path_alias($_GET['q']);?>
-<?php $pos=strpos($node_url,'disney');?>
-<?php if($pos!== false ): ?>
-<script type="text/javascript" src="http://cdn1.2u4u.com.cn/disney/js/submit.js"></script>
-<?php endif;?>
+
   </head>
 
   <body class="<?php print $body_classes; ?>">

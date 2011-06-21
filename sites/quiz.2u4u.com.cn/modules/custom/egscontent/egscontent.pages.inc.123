@@ -9,7 +9,7 @@ function theme_egscontent_CET4_block(){
 	
 	global $user;
 	if($user->uid<0)
-		$loginUrl = 'http://2u4u.com.cn/user/login?destination=';
+		$loginUrl = 'http://2u4u.com.cn/user?destination=';
 		
 	$output = '  	<div class="dxyy_lv4_title"></div>
 <div class="dxyy_lv4_content">
@@ -21,18 +21,11 @@ function theme_egscontent_CET4_block(){
 	$output .= $moduleresult;
 	$output .= $paperresult;
 	
-	if($user->uid<0)
-  		$url = urlencode('http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=19&tid=1');
-	
-  	else
-  		$url = 'http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=19&tid=1';
-  				
-	
 	if($moduleresult == null && $paperresult == null)
 		$output .='</ul></div>';		
 	else
 		$output .='</ul>
-			<div class="dxyy_lv4_more"><a href='.$loginUrl.$url.'>>>更多</a></div>
+			<div class="dxyy_lv4_more"><a href="'+$loginUrl+'http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=19&tid=1">>>更多</a></div>
 		</div>';
 
 	
@@ -49,7 +42,7 @@ function theme_egscontent_CET6_block(){
 	
 	global $user;
 	if($user->uid<0)
-		$loginUrl = 'http://2u4u.com.cn/user/login?destination=';
+		$loginUrl = 'http://2u4u.com.cn/user?destination=';
 		
 	$output = '<div class="dxyy_lv6_title"></div>
 					<div class="dxyy_lv6_content">
@@ -61,17 +54,11 @@ function theme_egscontent_CET6_block(){
 	$output .= $moduleresult;
 	$output .= $paperresult;
 	
-	if($user->uid<0)
-  		$url = urlencode('http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=20&tid=4');
-	
-  	else
-  		$url = "http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=20&tid=4";
-	
 	if($moduleresult == null && $paperresult == null)
 		$output .='</ul></div>';		
 	else
 		$output .='</ul>
-			 <div class="dxyy_lv6_more"><a href='.$loginUrl.$url.'>>>更多</a></div>
+			 <div class="dxyy_lv6_more"><a href="'+$loginUrl+'http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=20&tid=4">>>更多</a></div>
 			</div>';
 	
 	return $output;
@@ -86,7 +73,7 @@ function theme_egscontent_TEM4_block(){
 	
 	global $user;
 	if($user->uid<0)
-		$loginUrl = 'http://2u4u.com.cn/user/login?destination=';
+		$loginUrl = 'http://2u4u.com.cn/user?destination=';
 		
 	$output = '<div class="zy_pf4_title"></div>
 		<div class="zy_pf4_content">
@@ -98,17 +85,13 @@ function theme_egscontent_TEM4_block(){
 	
 	$output .= $moduleresult;
 	$output .= $paperresult;
-	if($user->uid<0)
-  		$url = urlencode('http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=18&tid=21');
 	
-  	else
-  		$url = 'http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=18&tid=21';
 	
 	if($moduleresult == null && $paperresult == null)
 		$output .='</ul></div>';		
 	else
 		$output .='</ul>
-			<div class="dxyy_lv4_more"><a href='.$loginUrl.$url.'>>>更多</a></div>
+			<div class="dxyy_lv4_more"><a href="'+$loginUrl+'http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=18&tid=21">>>更多</a></div>
 		</div>';
 	return $output;
 }
@@ -122,7 +105,7 @@ function theme_egscontent_TEM8_block(){
 	
 	global $user;
 	if($user->uid<0)
-		$loginUrl = 'http://2u4u.com.cn/user/login?destination=';
+		$loginUrl = 'http://2u4u.com.cn/user?destination=';
 		
 	$output = '<div class="zy_pf8_title"></div>
 		<div class="zy_pf8_content">
@@ -134,17 +117,12 @@ function theme_egscontent_TEM8_block(){
 	
 	$output .= $moduleresult;
 	$output .= $paperresult;
-	if($user->uid<0)
-  		$url = urlencode('http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=23&tid=22');
-	
-  	else
-  		$url = 'http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=23&tid=22';
 	
 	if($moduleresult == null && $paperresult == null)
 		$output .='</ul></div>';		
 	else
 		$output .='</ul>
-			 <div class="zy_pf8_more"><a href='.$loginUrl.$url.'>>>更多</a></div>
+			 <div class="zy_pf8_more"><a href="'+$loginUrl+'http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=23&tid=22">>>更多</a></div>
 			</div>';
 		
 	return $output;
@@ -159,7 +137,7 @@ function theme_egscontent_PRETCO_block(){
 	
 	global $user;
 	if($user->uid<0)
-		$loginUrl = 'http://2u4u.com.cn/user/login?destination=';
+		$loginUrl = 'http://2u4u.com.cn/user?destination=';
 		
 	$output = '<div class="yingyong_title"></div>
 <div class="yingyong_content">
@@ -170,17 +148,12 @@ function theme_egscontent_PRETCO_block(){
 	$paperresult = egscontent('paper_list', 25,3);
 	$output .= $moduleresult;
 	$output .= $paperresult;
-	if($user->uid<0)
-  		$url = urlencode('http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=26&tid=25');
-	
-  	else
-  		$url = 'http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=26&tid=25';
 	
 	if($moduleresult == null && $paperresult == null)
 		$output .='</ul></div>';		
 	else
 		$output .='</ul>
-			<div class="yingyong_more"><a href='.$loginUrl.$url.'>>>更多</a></div>
+			<div class="yingyong_more"><a href="'+$loginUrl+'http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=26&tid=25">>>更多</a></div>
 		</div>';
 	
 	
@@ -196,7 +169,7 @@ function theme_egscontent_PETS_block(){
 	
 	global $user;
 	if($user->uid<0)
-		$loginUrl = 'http://2u4u.com.cn/user/login?destination=';
+		$loginUrl = 'http://2u4u.com.cn/user?destination=';
 		
 	$output = '<div class="quanguo_title"></div>
 <div class="quanguo_content">
@@ -207,17 +180,12 @@ function theme_egscontent_PETS_block(){
 	//$paperresult = egscontent('paper_list', 4,4);
 	$output .= $moduleresult;
 	//$output .= $paperresult;
-	if($user->uid<0)
-  		$url = urlencode('http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=24');
-	
-  	else
-  		$url = 'http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=24';
 	
 	if($moduleresult == null && $paperresult == null)
 		$output .='</ul></div>';		
 	else
 		$output .='</ul>
-			 <div class="quanguo_more"><a href='.$loginUrl.$url.'>>>更多</a></div>
+			 <div class="quanguo_more"><a href="'+$loginUrl+'http://test.2u4u.com.cn/html/www/main.html?op=paper_list&stid=24">>>更多</a></div>
 			</div>';
 	
 		
@@ -364,7 +332,7 @@ function egscontent($type = 'module_list', $id = '',$num = 5) {
 	
 	global $user;
 	if($user->uid<0)
-		$loginUrl = 'http://2u4u.com.cn/user/login?destination=';
+		$loginUrl = 'http://2u4u.com.cn/user?destination=';
 //判断获取模板或者试卷列表的URL
 
 	if($type == 'module_list')
@@ -382,27 +350,17 @@ if($result != null && $result != ''){
 //处理获取的jSON数据，输出到页面上。输出的链接地址在EGS系统中处理显示结果  	
   	if($type == 'module_list')
   		foreach ( $result as $index => $value ) {
-  			
+  		
   			$sid = $value -> sid;
   			$name = $value -> title;
-  			if($user->uid<0)
-  				$url = urlencode('http://test.2u4u.com.cn/html/www/main.html?op=create_paper_by_module&id='.$sid);
-  			else
-  				$url = 'http://test.2u4u.com.cn/html/www/main.html?op=create_paper_by_module&id='.$sid;
-  				
-			$output .= ' <li><a href='.$loginUrl.$url.' >'.$name. "</a></li>";
+			$output .= ' <li><a href="'+loginUrl+'http://test.2u4u.com.cn/html/www/main.html?op=create_paper_by_module&id='.$sid.'" >'.$name. "</a></li>";
 			//$output .= ' <li><a href="http://test.2u4u.com.cn/html/www/index.html?op=create_paper_by_module&id='.$sid.'" onclick="egs_paper('.$sid.')" >'.$name. "</a></li>";
 		}
 	else if($type == 'paper_list')
 		foreach ( $result as  $index => $value ) {
-			
   			$sid = $value-> paper_id;
   			$name = $value-> paper_name;
-  			if($user->uid<0)
-  				$url = urlencode('http://test.2u4u.com.cn/html/www/main.html?op=paper_info&id='.$sid);
-  			else 
-  				$url = 'http://test.2u4u.com.cn/html/www/main.html?op=paper_info&id='.$sid;
-			$output .= ' <li><a href="'.$loginUrl.$url.'" >'.$name. "</a></li>";
+			$output .= ' <li><a href="'+loginUrl+'http://test.2u4u.com.cn/html/www/main.html?op=paper_info&id='.$sid.'" >'.$name. "</a></li>";
 		}
 
 	return $output;

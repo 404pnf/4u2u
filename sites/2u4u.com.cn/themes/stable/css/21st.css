@@ -7,7 +7,7 @@
 
 /* 各个模块结构分布 */
 #zhichang,#translate{border: 1px solid #D6DEE0;width: 270px; margin-bottom:10px;font-size:13px; }
-#focus,#englishlearning,#englishquiz{ width:434px;border: 1px solid #D6DEE0;margin-bottom:10px; overflow:auto;font-size:13px;}
+#focus,#englishlearning,#englishquiz{ width:434px;border: 1px solid #D6DEE0;margin-bottom:10px; overflow:auto;font-size:13px;*padding-bottom:10px;}
 #RSS,#baowanglianxian{width: 230px;border: 1px solid #D6DEE0;margin-bottom:10px; overflow:auto;}
 
 /* 全页公用样式布局 */
@@ -18,7 +18,7 @@
 .view-content .views-row .views-label-title{ color:#c60100; font-weight:700; margin-right:2px;}
 /* focus 局部布局 */
     #focus .view-display-id-block_3 .attachment-before{ float:right; margin-right:6px; display:inline}	
-    #focus .view-display-id-block_3 .view-content{ width:200PX;float:left;margin:6PX; position:relative;overflow:hidden; display:inline;}
+    #focus .view-display-id-block_3 .view-content{ width:198PX;float:left;margin:6PX; position:relative;overflow:hidden; display:inline; padding-bottom: 0; height: 230px}
 	#focus .view-display-id-block_3 .view-content .views-row{ width:200PX; height:240PX; background:none;}
 	#focus .view-display-id-block_3 .attachment-before .view-content .views-row{line-height:18px; text-indent:1.4em; height:39px; margin-bottom:14px;}
 	#focus .view-display-id-block_3 .attachment-before .view-content .views-row .views-field-title{ height:20PX;background:url("images/style.gif") no-repeat scroll 2px -250px transparent;overflow:hidden; }
@@ -56,11 +56,13 @@
 #translate .views-row .views-field-body p{color:#535353}
 
 /* 报网连线局部布局 */
-
-#baowanglianxian .attachment-before .views-row-last{ height:84px;}
-#baowanglianxian .attachment-before .views-row-last .views-field-field-21st-pic-fid{border: 1px solid #DBE1E6; text-align:center; height:82px; width:110px; }
+#baowanglianxian .view-content .views-row{height:25px;}
+#baowanglianxian .attachment-before .views-row-last{ height:84px;*height:90px;}
+#baowanglianxian .attachment-before .views-row-last .views-field-field-21st-pic-fid{float:left;border: 1px solid #DBE1E6; text-align:center; height:82px; width:110px; margin-right: 4px; }
 #baowanglianxian .attachment-before .views-row-last .views-field-field-21st-pic-fid img{margin:5px;}
 #baowanglianxian .view-dom-id-9 .view-content{ padding-bottom:0}
+#baowanglianxian .view-display-id-block_7 .attachment-before .view-content{ padding-bottom:10px}
+
 
 /* RSS局部布局 */
 #RSS h2{ margin-bottom:4px;}

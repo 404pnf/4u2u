@@ -6,7 +6,7 @@
 float:left;
 margin-right:18px;
 }
-.view-whx-yuedu  .view-display-id-attachment_5 .views-field-field-yuedu-summary-value{
+.view-whx-yuedu  .view-display-id-attachment_5 .s-field-field-yuedu-summary-value{
 clear:left;
 }
 .view-whx-yuedu  .view-display-id-attachment_5 .views-row{
@@ -1329,7 +1329,7 @@ width:120px;
 .box_21st img{ margin:10px 24px 0 0; border:1px solid #999}
 .dl_21st{ width:138px; float:right; padding-left:8px}
 .box_21st .column_21st_l1 .pane-21st-page .view-display-id-attachment_1 .views-field-title{ display: none;}
-.box_21st .column_21st_r2 .pane-21st-page{ float: left; width: 130px;}
+.box_21st .pane-21st-page{ float: left; width: 130px;}
 
 /*google 提供的广告*/
 .egs_gg{

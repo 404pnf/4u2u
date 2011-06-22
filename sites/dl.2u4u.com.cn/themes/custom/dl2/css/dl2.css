@@ -63,15 +63,16 @@ ul#primary li a:hover {color: #FFFFFF;text-decoration: none;}
 		#filetype .label{ float:left; color:#930; margin-top:6px; font-weight:500}
 		#filetype ul{ float:left}
 		/* 右侧内容区域 -- list */
-		#resources-list .view-content{ margin-top:20px; border-top:3px solid #FFC3DC; padding-top:30px;}
-		#resources-list .view-content ul{ margin:0; padding:0; list-style:none; }
-		#resources-list .view-content ul li{ color: #0b43b6; margin-bottom:20px; border-bottom:1px dashed #CCC; padding-bottom:16px; width:590px;}
-		#resources-list .view-content ul li h2{ font-size:13px;background:url('../images/dl_reddot20110427.gif') no-repeat -2px 2px ; text-indent:1.2em;}
-		#resources-list .view-content ul li p{ margin:2px 0 6px; color: #666666;}
+		#resources-list .view-content,#resources-list-content .view-content{ margin-top:20px; border-top:3px solid #FFC3DC; padding-top:30px;}
+		#resources-list .view-content ul,#resources-list-content .view-content ul{ margin:0; padding:0; list-style:none; }
+		#resources-list .view-content ul li,#resources-list-content .view-content ul li{ color: #0b43b6; margin-bottom:20px; border-bottom:1px dashed #CCC; padding-bottom:16px; width:590px;}
+		#resources-list .view-content ul li h2,#resources-list-content .view-content ul li h2{ font-size:13px;background:url('../images/dl_reddot20110427.gif') no-repeat -2px 2px ; text-indent:1.2em;}
+		#resources-list .view-content ul li p,#resources-list-content .view-content ul li p{ margin:2px 0 6px; color: #666666;}
+		
 		/* 右侧内容区域 -- 分页控制 */
-		#resources-list .pager li.pager-current{ background:#c70000;border-color:#ccc;font-size:12px;}
-		#resources-list .pager li a{ border-color:#ccc; font-size:12px;}
-		#resources-list .pager li a:hover{background:#c70000;}
+		ul.pager li.pager-current{ background:#c70000;border-color:#ccc;font-size:12px;}
+		ul.pager li a{ border-color:#ccc; font-size:12px;}
+		ul.pager li a:hover{background:#c70000;}
 
 /* footer 区域 */
 #footer {font-size: 100%;width:100%; }

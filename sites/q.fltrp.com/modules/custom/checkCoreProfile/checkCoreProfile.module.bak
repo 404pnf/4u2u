@@ -1,0 +1,31 @@
+<?php 
+
+/*检查核心profile完整性
+ * 
+ */
+
+
+
+   function checkCoreProfile_form_alter(&$form, &$form_state, $form_id){
+        $check_form_id = 'quiz-question-answering-form';
+	print ($form_id);
+	print ("<br>");
+	print ($check_form_id);
+   	if($form_id == $check_form_id ){
+  	     global $user;
+	     $sql="select * from  profile_values  where fid=6 and uid=%d";
+             $result =  db_query($sql,$user->uid);
+             while ($data = db_fetch_object($result))
+             {
+                   $id= $data->value;
+              }
+	      if(empty($id)){
+		  drupal_set_message("请补充完整用户信息后再参加测试");
+		  drupal_goto("user/$user->uid/edit/个人信息");
+	      }
+ 	   }   
+	 
+
+   } 
+
+

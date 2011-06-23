@@ -1,0 +1,7 @@
+﻿; $Id$
+name = checkCoreProfile
+description = 检查核心profile是否填写完整
+package = q.fltrp.com
+project = 2u4u
+core = 6.x
+php = 5.0

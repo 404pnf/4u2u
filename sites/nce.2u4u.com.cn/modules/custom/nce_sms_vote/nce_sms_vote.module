@@ -96,9 +96,10 @@
    	 }
    	 else 
    	 {
-   	 	$sms_return_msg=t('无效投票，请检查您投票的选手号码是否正确'); 
-   	 	sms_send($sms_return_msg,$mobile);
-   	 	return false;
+   	 	//$sms_return_msg=t('无效投票，请检查您投票的选手号码是否正确');
+        $sms_return_msg='2'; 
+        //sms_vote_send($sms_return_msg,$mobile);
+        return(sms_vote_markup($sms_return_msg));  
    	 }
     	
    	 //将有效短信投票记录到短信日志中
@@ -123,11 +124,16 @@
    	 
     votingapi_set_votes($vote);
 
-    
+    $sms_return_msg='1';
    	drupal_set_message("mobile is  $mobile,userid is $msg");
-   	
-   	return(t("投票成功"));
+   	return(sms_vote_markup($sms_return_msg));
+
    
+   }
+
+   function sms_vote_markup($sms_msg =null){
+   
+      return "<chiling-return-msg>$sms_msg</chiling-return-msg>"; 
    }
 
    

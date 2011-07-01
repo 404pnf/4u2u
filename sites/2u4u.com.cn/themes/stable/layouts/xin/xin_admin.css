@@ -1,0 +1,4 @@
+.nce_section{border:1px solid #ddd}
+#nce_header{width:300px;}
+#nce_left,#nce_right{width:200px; float:left;border:1px solid #ddd}
+#nce_footer{margin-top:10px;width:300px}

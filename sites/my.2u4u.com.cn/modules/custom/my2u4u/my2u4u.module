@@ -13,16 +13,16 @@
 function my2u4u_menu(){
 	//unset($items['user/%user/view']);  
 	
-	$items['user/%user_uid_optional/mypoints'] = array(
-                   'title' => '积分记录',
+	$items['user/%user/mypoints'] = array(
+                 'title' => '积分记录',
                    'page callback' => 'my2u4u_my_pionts_page',
 	           'page arguments' => array(1),
-                   'access callback' => 'user_view_access',
-    	           'access arguments' => array(1),
+                   'access callback' => 'my2u4u_access_my_account',
+    	           //'access arguments' => array(1),
                    'type' => MENU_CALLBACK,
                    'file' => 'my2u4u.pages.inc',
         );
-  $items['user/%user_uid_optional/chongzhi'] = array(
+  $items['user/%user/chongzhi'] = array(
     'title' => '积分充值',
     'page callback' => 'my2u4u_my_chongzhi_page',
 		'page arguments' => array(1),
@@ -31,7 +31,7 @@ function my2u4u_menu(){
     'type' => MENU_CALLBACK,
     'file' => 'my2u4u.pages.inc',
   );
-  $items['user/%user_uid_optional/buyuserpoints'] = array(
+  $items['user/%user/buyuserpoints'] = array(
     'title' => '积分购买',
     'page callback' => 'my2u4u_my_buyuserpoints_page',
 		'page arguments' => array(1),

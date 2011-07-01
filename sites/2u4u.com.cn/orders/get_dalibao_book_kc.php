@@ -32,19 +32,26 @@ $sql = "SELECT cp.field_product_neirongtiyao_value AS content,n.`title`
 	$i = 0;
 	$total_mayang = 0;
 	$total_points = 0;
+	
+	$arr = array();
+	
 	while($row=mysql_fetch_array($re)){
 		$title = '';
         $title = $row[title];
 		$content_new = '';
    		$content = strip_tags($row[content]);
+   		
+   		//echo '-------'; 
+   		
 	   	if(strpos($content,"+")!==false){
 	   		   $content = substr($content,1);
                $content =preg_replace("/：.*?\+/s",";",$content); 
                if(strpos($content,"：")){
                    $new_content = explode("：",$content);
-                   $content = $new_content[0].";";
+                   $content = "1.".$new_content[0].$new_content[1];
                }
-	   		} 
+            //echo '+++++'.var_export($content,true).'<br/>';    
+	   	} 
 	    if(strpos($content,"1.")!==false)
                 $content =substr(str_replace("1.","; ",$content),1);	
 
@@ -52,21 +59,28 @@ $sql = "SELECT cp.field_product_neirongtiyao_value AS content,n.`title`
        if(strpos($content,";")){
           $book_list = explode(";",$content);
     
+    	//echo var_export($content,true).'<br/>'; 
           
-          foreach($book_list as $value){
-          
+       foreach($book_list as $value){
+         //echo $value.'<br/>';
+           //$arr[] =  '"'.$value.'';
         	$new_value = '';
         	if(strlen($value)>2){       		
-	        	$value = trim($value);	        		       
-	       		$new_query = "SELECT bi.`name`,bi.`sku`,bk.`now_kc` FROM 2u4u.`book_info` bi
+	        	$value = trim($value);	  
+	        	
+	       		$new_query = "SELECT bi.`name`,bi.`sku`,bk.`now_kc`,`price` FROM 2u4u.`book_info` bi
 							  LEFT JOIN 2u4u.`book_kc` bk on bk.sku=bi.sku
 							  WHERE bi.`name` LIKE  '".$value."%' AND bk.`now_kc`<10";
-	            $new_rs = mysql_fetch_object(mysql_query($new_query));
+				$query = mysql_query($new_query);
+
+			while($new_rs = mysql_fetch_object($query)){	
+        
 	            if($new_rs->sku>0){
 	            	if($new_rs->now_kc<10){
-	            	      $table .= "<tr><td>".$title."</td><td>".$new_rs->name."</td><td>".$new_rs->sku."</td><td>".$new_rs->now_kc."</td>";
+	            	      $table .= "<tr><td>".$title."</td><td>".$new_rs->name."</td><td>".$new_rs->sku."</td><td>".$new_rs->now_kc."</td><td>".$new_rs->price."</td>";
 	            	} 
-	           }else{                    		        	
+	           }
+	           else{                    		        	
                   $name_sql = '';
  	          	  $search = array( "(", ")", "·",  "）", "（", "《", "》", "--","－","—"); 
                   $new_value = str_replace($search,'|',$value); 
@@ -80,30 +94,38 @@ $sql = "SELECT cp.field_product_neirongtiyao_value AS content,n.`title`
 	     			     }
 				     }
                    }else{
-                   		
-	        		         $new_value = $value;
-                             $name_sql  = " bi.`name` LIKE '".$new_value."%'";
-                   		}	
+					
+						 $new_value = $value;
+						 $name_sql  = " bi.`name` LIKE '".$new_value."%'";
+					}	
 	
 	               if(substr($name_sql,-4)=='AND ')
 	                 $name_sql = substr($name_sql,0,-4);     		
-	                 $new_sql = " SELECT bi.`name`,bi.`sku`,bk.`now_kc` FROM 2u4u.`book_info` bi
-							        LEFT JOIN 2u4u.`book_kc` bk on bk.sku=bi.sku 
-	        		                WHERE ".$name_sql."
-	        		                AND bk.`now_kc`<10";
-	                 $result = mysql_query($new_sql);  
-	                 $res_num = @mysql_num_rows($result);
-		             $new_res = mysql_fetch_object($result); 
-		             
-		             if($new_res->now_kc<10&$res_num>0){
-	        	           $table .= "<tr><td>".$title."</td><td>".$new_res->name."</td><td>".$new_res->sku."</td><td>".$new_res->now_kc."</td></tr>";
-		             }
+	               $new_sql = " SELECT bi.`name`,bi.`sku`,bk.`now_kc`,`price` FROM 2u4u.`book_info` bi
+							    LEFT JOIN 2u4u.`book_kc` bk on bk.sku=bi.sku 
+	        		            WHERE ".$name_sql."
+	        		            AND bk.`now_kc`<10";
+	               $result = mysql_query($new_sql);  
+	               $res_num = @mysql_num_rows($result);
+		           // $new_res = mysql_fetch_object($result); 
+		           if($res_num>0)
+		             	while($new_rs = mysql_fetch_object($result))	
+		             		if($new_res->now_kc<10&$res_num>0){
+								   $table .= "<tr><td>".$title."</td><td>".$new_res->name."</td><td>".$new_res->sku."</td><td>".$new_res->now_kc."</td><td>".$new_rs->price."</td></tr>";
+							 }
+		           
 		            
-	             }
-		     }
-         } 
+	             } //------ end else ------
+	          }	//------ end while ------
+
+		     } //----- end if ------
+         } //----- end foreach ------
  	   }	
+ 	   
+ 	   //echo '<br/><br/>';
 	 }
+	 
+	 //echo var_export($arr,true).'<br/>';
 }	 
 ?>	 
 <div align="center">
@@ -112,6 +134,7 @@ $sql = "SELECT cp.field_product_neirongtiyao_value AS content,n.`title`
 <th scope="col">图书名</th>
 <th scope="col">物料号</th>
 <th scope="col">现有库存</th>	
+<th scope="col">价格</th>
 <?php echo $table;?>
 </table>
 </div>

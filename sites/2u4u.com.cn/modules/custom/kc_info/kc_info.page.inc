@@ -28,7 +28,7 @@ function get_erp_kc(){
 	$emno = (int)$_GET['sku'];
 	$kc = get_kc($emno);
 	echo $kc;
-	if($kc>0){
+	if($kc>=0){
 	    $sql = "INSERT INTO {book_kc}(`sku`,`last_kc`,`now_kc`,`changed`) VALUES (%d,%d,%d,%d) ";
 	    db_query($sql,$emno,$kc,$kc,time());
 	}

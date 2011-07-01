@@ -140,7 +140,7 @@ function theme_my2u4u_my_orders_block(){
 	if(arg(0)=='user'&& arg(1)>0){
 		$uid = arg(1);
 	}
-	$user = user_load($uid);
+	//$user = user_load($uid);
 		$output .= '<ul class="my_content my_account_info">';
 		$output .= '<li class="unfinishedorders">'.l(t('未结算订单'),'user/'.$uid.'/unfinishedorders'). '</li>';
 		$output .= '<li class="orders">'.l(t('订单记录'),'user/'.$uid.'/orders'). '</li>';
@@ -157,6 +157,7 @@ function  my2u4u_my_pionts_page($user){
 	$output .= '<div id="my-points-total-points">';
 	//$output .= '您的当前总积分：';
 	$output .= '您的当前总积分：'.userpoints_get_current_points($user->uid);
+	$output.=$GLOBALS['user']->uid;
 	$output .= "</div>";
 	
 $header = array(

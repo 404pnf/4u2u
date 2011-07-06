@@ -1,0 +1,132 @@
+/* $Id: TODO.txt,v 2.5.4.10 2010/01/13 17:43:18 danielkm Exp $ */
+
+
+                      TAXONOMY CSV IMPORT/EXPORT
+                      ==========================
+
+
+== T O D O ==
+  =========
+
+(no particular order)
+
+ o         = TODO
+ -         = Skipped/postponed
+ x         = DONE
+ R         = Removed
+   nnn mmm = Release introduced into (Module for Drupal 6 / 7)
+=====================
+
+User interface
+ x 622 --- display result of import
+ x 622 --- display imported terms
+ x 622 --- notice warnings and errors of import file
+ x 622 --- choose level of message
+ o         cumulate important messages with use Drupal's log
+ x 622 --- auto create vocabulary
+ x 630 --- test on an existing vocabulary (duplicating it)
+ x 630 --- dynamic options and examples (existing items matching source content)
+ x 630 --- import by a text area. See taxonomy_batch_operations
+ o         text area to modify line when warning
+ x 620 --- add link to use module after installation
+ x 630 --- remind previous options values
+ x 630 --- do a uninstall hook if remind previous options values is done
+ x 622 --- warn remove when there is only one column and update is chosen
+ - --- --- reset button (useless)
+ x 630 --- recommended default values button
+ o         inform about changes during import (ex: relations set then unset)
+ o         two steps import (validate and display warnings then process)
+ o         option to choose one or two steps
+ o         five step wizard for non javascript users
+ x 630 --- notice exceed file size
+ o         option to import in original vocabulary after import in a duplicate
+ o 645 745 no warning on last empty lines
+ x 643 743 ahah ui for specific parameters
+ x 643 743 disable utf8 option if textarea import
+ x 640 --- add a csv enclosure option (so >= php 4.3)
+ o         use Drupal themes
+ - --- --- add a menu link to taxonomy csv in list terms
+ x 643 743 use drupal_set_message 'warning' and not only 'status' and 'error'.
+ - --- --- batch process without Javascript
+
+Functions
+ o         import of structured alphabetic terms list (thesaurus)
+ o         import of iso 2788 as in taxonomy_xml (but KISS by line approach)
+ x 623 --- option to import sub-relations and not only relations to first term
+ x 623 --- option to make relations to terms of all vocabularies.
+ x 630 --- import of ancestors structure and not children (change name)
+ x 644 744 import of first level parents
+ x 644 744 import of first level children
+ x 622 --- use of parents of previous line for children without ancestors
+             ("one term by line structure import")
+ x 645 745 parent merge (polyhierarchy)
+ x 620 --- distinction between description and synonyms
+ o         multiple files import
+ - --- --- option sensitive or not to uppercase/lowercase (not in D6 neither D7)
+ o         add notice when sensitive duplicate items are found in line check
+ o         integrate or reference to Taxonomy manager module
+ o         remove csv terms import choice
+ o         test before import (autocreate a vocabulary) (see UI)
+ o         remove ignore existing terms choice (see dynamic options above)
+ - --- --- import relateds in other vocabulary before current one (not in D6)
+ o         autodetect good source content and vocabulary with a command line key
+ o         with autodetect, import multiple type with one file
+ o         convert and export vocabulary to xml (especially to compare with xml)
+ R 643 743 multistep import: autodivide big taxonomies to avoid memory error
+ o         import by term identifiant (tid)
+ x 643 743 import from url (#529480)
+ o         allow direct duplicates with polyhierarchy
+ o         option to automatically disable and re-enable non compatible modules
+ o 647 747 full term definitions and links export in order to import in Drupal 7
+
+Code / security
+ o         remove query and use only Drupal core ones and php filters (useful?)
+ x --- 740 see if there are Drupal functions to import only synonyms etc.
+ x 622 --- manage and inform on input error
+ o         factorize code and use more php functions (import type callback...)
+ x 622 --- redo a cache
+ x 622 --- clean the input line at the beginning of process and never after
+ o         use taxonomy_parser?
+ x 622 --- change the type of vocabulary (flat, monohierarchy, polyhierarchy)
+ x 630 --- add hook_perm
+ o         add hook_info
+ x 630 --- replace _taxonomy_csv_parse_size by a Drupal function
+ o         no order to import files
+ o         use Drupal management of errors (mysql log)
+ x 622 --- change function name to internal, except some
+ o         vocabulary full fine check (after and before)
+ o         vocabulary relations integrety check and attribute
+ o ---     use management of test in Drupal 7.
+ x 643 743 time out control
+ x 645 745 fix: keep multiple parents when children import
+ x 622 --- fix: if ignore existing items, search in imported terms cache before
+ x 643 743 fix: result statistic import (sometime new terms number is wrong)
+ - --- --- remove useless define
+ - --- --- use a global messages variable or sandbox to avoid multiple copy
+ o         relations with other vocabularies (unsupported in Drupal 6 neither 7)
+ o         extract all helps of forms to help.html in order to remove duplicates
+ x 640 --- simplify batch set (all $options aren't needed)
+ - --- --- use $form_state['storage'] for batch operations? Useless.
+ x 643 743 remove base64 temporary and work only with utf8
+ - --- --- use a smarter regexp delimiter than fgetcsv or explode
+ x 642 742 fix: when a file is set, avoid UI bug when first option changes
+ x 645 745 change Warning empty line by a simple info except if problem
+ o         modularize code to simplify addition of new schemes
+ x 643 743 create API
+ R --- --- fix: make multistep import compatible with one term by line import
+ R --- --- allow cancel multistep when import in an existing vocabulary
+ - --- --- fix: allow only users with taxonomy rights (useless: roles)
+ R --- --- fix: display main form when error occurs in multistep process
+ x 643 743 direct read of lines without prepare batch for file import
+
+Documentation
+ o         make it simpler
+ o         more examples
+ o         merge advanced help and dynamic examples (cf. modularize code)
+ x 620 --- image view and presentation text for project page
+ x 620 --- translations
+
+Drupal version
+ o --- 740 Drupal 7: All. Use terms as objects: simpler with parents, etc.
+ -         Drupal 5: update / backport
+ -         Drupal 4: update / backport

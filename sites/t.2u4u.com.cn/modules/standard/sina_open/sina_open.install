@@ -1,0 +1,117 @@
+<?php
+// $Id: sina_open.install,v 1.3 2011/02/11 03:52:44 eastcn Exp $
+
+/**
+ * @Implement of hook_update_x()
+ */
+function sina_open_update_2() {
+  $ret = array();
+  
+  $sina_uid = array(
+    'type' => 'varchar',
+    'length' => 32,
+    'not null' => TRUE,
+    'default' => '',
+    'description' => '新浪用户 id',
+  );
+  
+  db_add_field($ret, 'sina_open_user', 'sina_uid', $sina_uid);
+  
+  return $ret;
+}
+
+/**
+ * @Implement of hook_update_x()
+ */
+function sina_open_update_1() {
+  $result = db_query('SELECT uid, sina_name FROM {sina_open_user}');
+  while ($o = db_fetch_object($result)) {
+    if (strpos($o->sina_name, '@') !== false) {
+      $name = current(explode('@', $o->sina_name, 2));
+      db_query("UPDATE {sina_open_user} SET sina_name = '%s' WHERE uid = %d", $name, $o->uid);
+    }
+  }
+}
+
+
+/**
+ * Implementation of hook_schema().
+ */
+function sina_open_schema() {
+  $schema['sina_open_user'] = array(
+    'description' => '绑定新浪微博用户表',
+    'fields' => array(
+      'uid' => array(
+        'type' => 'int',
+        'description' => '关联 users 表',
+        'unsigned' => true,
+        'not null' => true,
+        'default' => 0,
+      ),
+      'sina_uid' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => '新浪用户 id',
+      ),
+      'sina_name' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => '新浪用户名称，添加后缀：@t.sina.com.cn',
+      ),
+      'token' => array(
+        'type' => 'text',
+        'description' => '访问令牌等信息',
+        'not null' => true,
+        'serialize' => true,
+        'size' => 'medium'
+      ),
+      'config' => array(
+        'type' => 'text',
+        'description' => '用户设置等信息',
+        'serialize' => true,
+        'not null' => true,
+        'size' => 'medium'
+      ),
+    ),
+    'unique keys' => array(
+      'sina_name' => array('sina_name'),
+    ),
+    'primary key' => array('uid'),
+  );
+  
+  return $schema;
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function sina_open_install() {
+  drupal_install_schema('sina_open');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function sina_open_uninstall() {
+  drupal_uninstall_schema('sina_open');
+  db_query("DELETE FROM {variable} WHERE name LIKE 'sina_open_%'");
+  cache_clear_all('variables', 'cache');
+}
+
+/**
+ * @Implement of hook_requirements()
+ */
+function sina_open_requirements($phase) {
+  $requirements = array();
+  
+  if (!function_exists('json_decode') || !function_exists('hash_hmac')) {
+    $requirements['php']['description'] = '必须开启 json、hash 扩展库';
+    $requirements['php']['severity'] = REQUIREMENT_ERROR;
+  }
+  
+  return $requirements;
+}

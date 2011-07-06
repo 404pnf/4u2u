@@ -1,0 +1,45 @@
+<?php
+// $Id$
+
+function flag_viewed_flag_default_flags() {  
+	$flags = array();  
+	$flags[] = array(    
+		'content_type' => 'node',    
+		'name' => 'node_viewed',    
+		'title' => '看过',    
+		'roles' => array('2'),    
+		'global' => FALSE,    
+		'types' => array('story', 'page'),    
+		'flag_short' => '看过',    
+		'flag_long' => '看过该节点',    
+		'flag_message' => '看过该节点.',    
+		'unflag_short' => '取消看过',    
+		'unflag_long' => '取消看过',    
+		'unflag_message' => '取消看过.',    
+		'show_on_page' => TRUE,    
+		'show_on_teaser' => FALSE,    
+		'show_on_form' => FALSE,    
+		'status' => FALSE,    
+		'locked' => array('show_on_teaser', 'name', 'roles', 'global'),  
+	);  
+	return $flags;
+}
+
+function flag_viewed_exit(){
+  global $user;
+  drupal_bootstrap(DRUPAL_BOOTSTRAP_PATH);
+	//如果当前为节点,并且处于节点完整页面
+	if ((arg(0) == 'node') && is_numeric(arg(1)) && arg(2) == '') {
+	
+		$flag_node_viewed = flag_get_flag('node_viewed'); 
+		if($flag_node_viewed && !($flag_node_viewed->is_flagged(arg(1)))){
+		  //global $user;
+			$action = 'flag';
+			//$action = 'unflag';
+			$flag_node_viewed->flag($action,arg(1),$user); 
+			//drupal_set_message('kan guo le');
+		}
+		
+	}
+
+}

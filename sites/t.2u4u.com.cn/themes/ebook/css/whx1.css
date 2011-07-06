@@ -1,0 +1,485 @@
+@charset "utf-8"; /* CSS Document */
+ 
+/* -----------------------------------电子图书馆 阅读 开始 -----------------------------*/
+/* 新书快递 */
+.view-whx-yuedu  .view-display-id-attachment_5 .views-field-field-slideshow-cover-fid{
+float:left;
+margin-right:18px;
+height:106px;
+}
+/* .view-whx-yuedu  .view-display-id-attachment_5 .views-field-field-yuedu-summary-value{
+clear:left;
+} */
+.view-whx-yuedu  .view-display-id-attachment_5 .views-row{
+padding:5px 10px 8px 3px;
+border-bottom:1px dashed #D1D1D1;
+}
+/* hover css */
+/* + front page 首页*/
+
+
+
+/*系列图书*/
+
+ .view-whx-yuedu .view-display-id-attachment_1 .item-list{
+position:relative; 
+width:90px;
+float:left;
+margin:0 9px;
+z-index:100;
+}
+ .view-whx-yuedu .view-display-id-attachment_1 .item-list img{
+	width:90px;
+	height:120px;
+ }
+ .view-whx-yuedu  .view-display-id-attachment_1  .views-row{
+position:absolute;
+display:none;
+list-style:none;
+z-index:999;
+}
+/* 阴影 ie不支持*/
+ .shadow-right {
+-moz-border-radius:3px 3px 3px 3px;
+-moz-box-shadow:2px 2px 2px #999999;
+}
+/* 边框及颜色 */
+ .detail-tip {
+background:none repeat scroll 0 0 #FFFFFF;
+border:1px solid #DDDDDD;
+padding:13px 13px 10px;
+position:absolute;
+width:300px;
+top:0px;
+left:110px;
+z-index:9999; 
+}
+/* 小三角 */
+ .arrow-left {
+background:url("images/arrow_gray.gif") no-repeat scroll 0 0 transparent;
+height:9px;
+left:0;
+margin-left:-6px;
+position:absolute;
+top:30px;
+width:6px;
+z-index:9999; 
+}
+/* 阅读首页 hover end */
+
+/* 阅读滚动 开始  */
+/* prev, next, prevPage and nextPage buttons */
+ .anniu{
+float:right;
+width:110px;
+display:inline;
+}
+ a#prev1, a#next1 ,a#prev2, a#next2,a#prev3 ,a#next3,a#prev4, a#next4,a#prev5 ,a#next5,a#prev6, a#next6,a#prev7 ,a#next7{
+	width:18px;
+	height:18px;
+	background:url(images/left.png) 0 -18px no-repeat;
+	float:right;
+	cursor:pointer;
+	font-size:1px;
+}
+ a#next1 ,a#next2,a#next3,a#next4,a#next5,a#next6,a#next7{
+	background:url(images/right.png) 0 -18px no-repeat;
+}
+
+ a#prev1.disabled, a#next1.disabled, a#prev2.disabled, a#next2.disabled, a#prev3.disabled, a#next3.disabled, a#prev4.disabled, a#next4.disabled, a#prev5.disabled, a#next5.disabled, a#prev6.disabled, a#next6.disabled, a#prev7.disabled, a#next7.disabled{
+	background-position:0 0;		
+}
+/* position and dimensions of the navigator */
+#navi1,#navi2 ,.navi{
+	float:right;
+	margin-top:2px;
+}
+/* items inside navigator */
+#navi1 a ,#navi2 a ,.navi a {
+	width:8px;
+	height:8px;
+	float:left;
+	margin:3px;
+	background:url(images/navigator.png) 0 0 no-repeat;
+	font-size:1px;
+}
+/* mouseover state */
+#navi1 a:hover,#navi2 a:hover ,.navi a:hover{
+	background-position:0 -8px;      
+}
+/* active state (current page state) */
+#navi1 a.active ,#navi2 a.active ,.navi a.active {
+	background-position:0 -16px;     
+} 	
+/* this makes it possible to add next button beside view-content */
+.view-whx-yuedu .view-display-id-attachment_1 .view-content-cover{
+	clear:none;
+	float:right;
+	height:180px;
+	overflow:hidden;
+	position:relative;
+	width:540px;
+}
+ .view-whx-yuedu .view-display-id-attachment_1 .view-header{
+height:25px;
+}
+ .content-content-area-top.view-whx-yuedu .view-display-id-attachment_1 .view-header  h2{
+display:inline;
+float:left;
+}
+ .view-whx-yuedu .view-display-id-attachment_1  .view-content {
+position:absolute;
+width:20000em;
+left:-4px; 
+}
+/* 阅读滚动 结束 end  */
+
+
+/* ----------免费阅读、新书快递切换------------- */
+.view-whx-yuedu .attachment-after .view-display-id-attachment_7 .view-content,
+.view-whx-yuedu .attachment-after .view-display-id-attachment_8 .view-content,
+.view-whx-yuedu .attachment-after .view-display-id-attachment_7 .view-footer,
+.view-whx-yuedu .attachment-after .view-display-id-attachment_8 .view-footer
+{
+ display:none;
+} 
+.view-whx-yuedu .attachment-after .view-display-id-attachment_7 .view-content,
+.view-whx-yuedu .attachment-after .view-display-id-attachment_7 .view-footer
+{
+ display:block;
+}
+/* 整体外框 加边、两个附件的位置控制、即第二个附件（热门推荐）的两列排版、hover后的小tip边框及颜色*/
+.view-whx-yuedu .attachment-before{
+   height:610px;
+}
+#attachment7 {
+left:120px;
+}
+#attachment8 {
+left:0px;
+}
+.view-whx-yuedu .view-display-id-attachment_7  .views-field-title,.view-whx-yuedu .view-display-id-attachment_8 .view-header p{
+     font-weight:bold;
+     font-size:1.2em;
+}
+/* 保持附件的相对位置，clear:both让after不飘到before的位置 */
+.view-whx-yuedu .attachment-after,.view-whx-yuedu .attachment-before{
+  position:relative;
+  display:block;
+  clear:both;
+}
+/* attachment-after */
+/* 可点击的按钮 */
+.view-whx-yuedu .attachment-after .view-header a:hover{
+     text-decoration:none;
+}
+
+.view-whx-yuedu .attachment-after .view-header a{
+      position:absolute;
+      top:-30px;
+      line-height:26px;
+      background:url("images/images-10.gif") no-repeat;
+      width:115px;
+      height:29px;
+      padding:2px 8px 2px 28px;
+      display:block;
+	  color:#363636;
+	  font-weight:bold;
+	  font-size:14px;
+}
+
+.view-whx-yuedu .attachment-after .view-header a.on{
+       background:url("images/images-15.gif") no-repeat;
+       height:30px;
+       color:#FFFFFF;
+       font-size:14px;
+       font-weight:bold;
+}
+
+ /* 内容的位置 相关位置*/
+.view-whx-yuedu .attachment-after .view-content{
+        position:relative;
+        display:block;
+        clear:both;
+        margin-top:40px;
+        z-index:1;
+        border-top:4px solid #6A6A7A;
+        border-left:1px solid #CECECE;
+        border-right:1px solid #CECECE;
+}
+
+.attachment-after .views-row{
+    clear:both;
+	 float:none;
+	 padding:5px 0 5px 5px;
+	 border-bottom:1px dashed #d1d1d1;
+	 margin-left:10px;
+}
+
+
+.view-display-id-page_7 .views-field-field-yuedu-cover-fid, .view-display-id-page_8 .views-field-field-yuedu-cover-fid, .section-mtag  .views-field-field-yuedu-cover-fid, .section-taxonomy  .views-field-field-yuedu-cover-fid {
+    float:left;
+	height:148px;
+	width:156px;
+	margin:10px 0 0 0;
+}
+
+.views-yuedu-whx .views-display-id-attachment_11 .views-field-field-yuedu-cover-fid-1{
+        background:black;
+        margin-left:100px;
+}
+/* 免费阅读、新书快递切换 end */
+
+
+/*----------------------------------- 首页flash 幻灯片---------------------------------*/
+#huandengpian{	/* 幻灯片总体设置 */
+position:relative;
+height:400px;
+width:288px;
+border:1px solid #cecece;
+background-color:#eee;
+}
+#huandengpian .view-content{
+margin:8px;	
+}
+
+/* 幻灯片左侧大图与文字 */
+#huandengpian .views-field-field-slideshow-cover-fid,#huandengpian .views-field-title,#huandengpian .views-field-body{
+	width:200px;
+	padding:5px;
+	display:none;
+	line-height:19px;
+}
+
+#huandengpian .views-field-body{
+	height:45px;
+	width:270px;
+}
+#huandengpian  .views-row-1 .views-field-field-slideshow-cover-fid,#huandengpian  .views-row-1 .views-field-title,#huandengpian  .views-row-1 .views-field-body{
+	display:block;
+}
+
+#huandengpian img.imagefield-field_yuedu_cover{
+	width:200px;
+	height:300px;
+}
+#huandengpian .views-field-field-slideshow-cover-fid{
+	height:300px;
+}
+#huandengpian img.imagecache-shu_width_100{
+ width:48px;
+ height:65px;
+}
+
+/* 标题鼠标hover的样式 */
+#huandengpian .on .views-field-field-slideshow-cover-fid-2,#huandengpian .on .views-field-field-slideshow-cover-fid{
+ background-color:#fff;
+ border:1px solid #cecece;
+ -moz-box-shadow:2px 2px 2px #999999;
+ padding:5px;
+ border-left:0px;
+ z-index:5;
+}
+#huandengpian .on .views-field-field-slideshow-cover-fid{
+border:1px solid #cecece;
+}
+
+/* 右侧标题 */
+#huandengpian .views-field-field-slideshow-cover-fid-2{
+	left:219px;
+	padding:5px 5px 5px 6px ;
+	position:absolute;
+	height:65px;
+}
+
+/* 标题相对于#huandengpian的绝对位置 */
+#huandengpian .views-row-1 .views-field-field-slideshow-cover-fid-2 {
+top:8px;
+}
+
+#huandengpian .views-row-2 .views-field-field-slideshow-cover-fid-2 {
+top:86px;
+}
+#huandengpian .views-row-3 .views-field-field-slideshow-cover-fid-2 {
+top:164px;
+}
+#huandengpian .views-row-4 .views-field-field-slideshow-cover-fid-2 {
+top:243px;
+}
+/* 幻灯片 flash end */
+
+/*---------- 系列图书描述布局 --------------*/
+.xilietush-content{
+	clear:both;
+}
+.term-detail{
+	background-color:#EEEEEE;
+	float:left;
+	margin-left:10px;
+	padding:8px 0 8px 10px;
+	width:160px;
+}
+.term-detail .term-name{
+    font-weight:bold;
+    font-size:1.3em;
+    line-height:2em;
+}
+.term-detail .term-description{
+    font-weight:normal;
+    color:#797979;
+    line-height:2em;
+    height:110px;overflow:hidden;
+}
+/* 系列图书描述布局 end*/
+
+/*--------------- 评论 ----------------*/
+
+.node-type-ebook #comments{
+	border:1px solid #CECECE;
+	margin-top:15px;
+	padding:10px 0 0 0;
+}
+
+
+.node-type-ebook .comments_title{
+	background:url("images/images-19.gif") no-repeat scroll left center transparent;
+	font-weight:bold;
+	font-size:14px;
+	color:#901616;
+	text-indent:20px;
+	margin-left:20px;
+	margin-bottom:5px;
+}
+
+
+.node-type-ebook #comments .indented{
+	margin-left:0;
+}
+
+.node-type-ebook #comments .submitted a{
+	color:#8C6F00;
+}
+
+.node-type-ebook #comments .content{
+	margin:10px 20px 0 20px;
+}
+
+.node-type-ebook #comments ul.links li{
+	float:right;
+	margin-right:10px;
+}
+.node-type-ebook .box form#comment-form>div>div.form-item>label,.node-type-ebook .box form#comment-form>div>div.form-item>a {
+display:none;
+}
+
+.node-type-ebook #edit-preview{
+	display:none;
+}
+
+.node-type-ebook #comment-form #edit-submit{
+	background:url("images/save.jpg") no-repeat scroll left center transparent;
+	border:0px none;
+	width:64px;
+	height:31px;
+	font-size:0px;
+	cursor:pointer;
+	text-indent:-5000px;
+}
+#comments .box{
+	background-color:#F1F1F1;
+	padding-top:5px;
+	padding-bottom:15px;
+}
+/*--- //end 评论-----*/
+
+/*------ 相关视频与图书 --------*/
+.node-type-ebook .relatebox{
+	border:1px solid #CECECE;
+	margin-top:15px;
+	height:200px;
+}
+.node-type-ebook .view-display-id-block_2{
+	width:330px;
+	float:left;
+	border-right:1px dashed #9F9D9D;
+	margin:10px 0 0 20px;_ margin:10px 0 0 10px;
+}
+.node-type-ebook .view-media-taxonomy-term{
+	border-right:0 none;
+	float:none;
+	margin:10px 0 0 20px;
+	/* width:930px; */
+}
+.node-type-ebook .video_relate{
+	float:left;
+	width:370px;
+}
+.node-type-ebook .view-media-taxonomy-term .views-row, .node-type-ebook .ebook_relate .view-yuedu-taxonomy-term .views-row{
+	float:left;
+	width:100px;
+	margin:-6px 15px 0 0;
+}
+.node-type-ebook .view-display-id-block_2 .views-row{
+	float:left;
+	width:85px;
+	margin:-6px 25px 0 0;
+}
+
+.node-type-ebook .view-media-taxonomy-term .views-row-last, .node-type-ebook .ebook_relate .view-yuedu-taxonomy-term .views-row-last{
+	float:left;
+	margin:-6px 0 0 0;
+}
+
+.node-type-ebook .ebook_relate{
+	float:left;
+}
+
+.node-type-ebook .view-yuedu-taxonomy-term .views-row{
+	float:left;
+}
+.node-type-ebook .view-media-taxonomy-term .view-header, .node-type-ebook .view-yuedu-taxonomy-term .view-header{
+	background:url("images/images-19.gif") no-repeat scroll left center transparent;
+	font-weight:bold;
+	font-size:14px;
+	color:#901616;
+	text-indent:20px;
+}
+
+.node-type-ebook .relatebox .view-media-taxonomy-term .views-field-field-shipin-cover-fid{
+	background:url("images/images-08.gif") no-repeat scroll 0 0 transparent;
+	width:108px;
+	height:99px;
+	margin-bottom:3px;
+}
+.node-type-ebook .relatebox .view-media-taxonomy-term img{
+	margin:5px 0 0 4px;
+}
+.node-type-ebook .relatebox .more-link{
+	margin-top:140px;
+	margin-right:10px;
+}
+.node-type-ebook .view-yuedu-taxonomy-term .views-field-field-yuedu-cover-fid{
+	background:url("images/shipin-book.gif") no-repeat scroll 0 0 transparent;
+}
+
+.node-type-ebook .imagecache-shu_width_100{
+	width:70px;
+	height:95px;
+	margin:2px;
+}
+.node-type-ebook .relatebox .views-field-title{
+	width:100px;
+	line-height:15px;
+
+	text-overflow:ellipsis; 
+	overflow:hidden;
+	height:30px;
+}
+/*----------- //end 相关 ------*/
+
+/*------google 提供的广告----*/
+.google_gg{
+    padding:9px 9px 2px;
+    background-color:#dddddd;
+    border-top:1px solid #CECECE;
+}

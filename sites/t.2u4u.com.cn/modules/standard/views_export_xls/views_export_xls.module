@@ -1,0 +1,58 @@
+<?php
+// $Id: views_export_xls.module,v 1.1.2.2 2009/11/04 17:22:39 jkarsum Exp $
+/**
+ * @file
+ * Gives the ability to export to excel
+ */
+
+/**
+ * Implementation of hook_perm().
+ */
+function views_export_xls_perm() {
+  return array('xls export views');
+}
+
+/**
+ * Implementation of hook_views_api().
+ */
+function views_export_xls_views_api() {
+  return array(
+    'api' => 2,
+  );
+}
+
+/**
+ * Preprocess xls output template.
+ */
+function template_preprocess_views_export_xls_view_xls(&$vars) {
+  $view     = $vars['view'];
+  $fields   = &$view->field;
+
+  drupal_set_header('Cache-Control: max-age=60, must-revalidate');
+  $filename = strtr(
+    $vars['options']['filename'],
+    array('%view' => check_plain($view->name))
+  );
+
+  $rows = $vars['rows'];
+
+  $vars['header'] = array();
+  foreach ($fields as $key => $field) {
+    if (empty($field->options['exclude'])) {
+      $vars['header'][$key] = check_plain($field->label());
+    }
+  }
+
+  $vars['themed_rows'] = array();
+  foreach ($rows as $num => $row) {
+    $items = array();
+
+    foreach ($fields as $key => $field) {
+      if (empty($field->options['exclude'])) {
+        $items[$key] = strip_tags($field->theme($row));
+      }
+    }
+    $vars['themed_rows'][$num] = $items;
+  }
+  $vars['file_name'] = $filename;
+}

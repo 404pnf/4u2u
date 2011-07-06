@@ -1,0 +1,28 @@
+<?php
+// $Id: views_slideshow.module,v 1.11.2.2.2.3 2009/09/28 21:26:06 redndahead Exp $
+
+/**
+ *  @file
+ *  Provides Slideshow style options for Views.
+ */
+
+/**
+ *  Implement hook_theme().
+ */
+function views_slideshow_theme($existing, $type, $theme, $path) {
+  return array(
+    'views_slideshow_main_section' => array(
+      'arguments' => array('id' => NULL, 'hidden_elements' => NULL, 'plugin' => NULL),
+      'file' => 'views_slideshow.theme.inc',
+    ),
+  );
+}
+
+/**
+ *  Implements hook_views_api().
+ */
+function views_slideshow_views_api() {
+  return array(
+    'api' => 2.0,
+  );
+}

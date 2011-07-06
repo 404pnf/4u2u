@@ -1,0 +1,369 @@
+<?php
+
+//$Id: nodevote.module,v 1.31.2.1 2008/10/15 16:52:12 kbahey Exp $
+
+// Copyright 2005 Khalid Baheyeldin http://2bits.com
+
+/**
+* Implementation of hook_menu().
+*/
+
+function duhougan_menu(){
+
+	$items['duhougan_confirm'] = array(
+		'page callback' => 'duhougan_confirm_page',
+		'access arguments' => array('access content'),
+		'type' => MENU_CALLBACK,
+		);
+	
+	return $items;
+
+}
+
+
+function duhougan_confirm_page($nid){
+	
+	$output = "";
+
+	$output .= '<div id="confirm_message"><h3>您的读后感已经成功发表</h3>';
+
+	global $user;
+
+	$mycreat_id = db_fetch_object(db_query("SELECT MAX(nid) as max_id,COUNT(nid) as total_id FROM {node} WHERE type='%s' AND uid=%d ORDER by nid DESC",'readthink',$user->uid));
+
+	$output .= '<div class="confirm-links"><ul><li>'.l("查看您的读后感","node/".$mycreat_id->max_id).'</li><li>'.l("返回该书","node/".$nid).'</li><li>'.l("返回读后感比赛首页","duhougan").'</li></ul></div>';
+
+	if($mycreat_id->total_id == 1){
+
+		$output .= '<h4>您发表的第一篇读后感会得到'.variable_get('first_duhougan','10').'个积分</h4>';
+	}
+	
+	$output .= '</div>';//whx添加，为了闭合上面写的div：'<div id="confirm_message"><h3>您的读后感已经成功发表</h3>'
+	
+return $output;
+
+}
+
+function duhougan_perm(){
+	return array('give points');
+}
+
+
+function duhougan_form_alter(&$form, &$form_state, $form_id) {
+		global $user;
+		$division='';
+		$group='';
+ 
+ 		if($form_id == "profile_node_form"){
+				$form['taxonomy']["#title"] = "读后感比赛参赛信息";
+		}
+
+		if($form_id == "readthink_node_form"){
+
+						$form['taxonomy']["#title"] = "读后感比赛参赛信息";
+
+						unset($form['taxonomy']['#type']);
+
+						$group = db_result(db_query("SELECT nid FROM {node} WHERE type='%s' AND uid=%d",'profile',$user->uid));
+				
+						$node_profile = node_load($group);
+
+						array_multisort($node_profile->taxonomy);
+
+				//	print_r($node_profile);exit;
+
+						foreach($node_profile->taxonomy as $value){
+							if($value->vid == 21){
+								$term_21[] = $value->tid;
+								$term_21name[] = $value->name;
+							 }elseif($value->vid == 22){
+								 $term_22[] = $value->tid;
+								 $term_22name[] = $value->name;
+							 }
+							}
+					$saiqu = implode(" => ",$term_21name);	
+					$zubie = implode(" => ",$term_22name);	
+
+						 $form['taxonomy'][22]['#default_value'] = $term_22;
+						 $form['taxonomy'][21]['#prefix'] = '<div id="taxonomy-21">';
+						 $form['taxonomy'][21]['#suffix'] = '</div>';
+						 $form['taxonomy'][21]['#default_value'] = $term_21;
+
+					  $form['myprofile'] = array(
+						  '#type' => 'fieldset',
+						  '#title' => '我的参赛信息',
+						  '#weight' => -1,
+						);
+
+					  $form['myprofile']['saiqu'] = array(
+						  '#value' => "<p>".$saiqu."</p>",
+						  );
+
+					  $form['myprofile']['zubie'] = array(
+						  '#value' => "<p>".$zubie."<br /></p>",
+						  );
+
+					if($form['nid']['#value']){
+
+						$change_link = "<a href=".base_path()."user/".$user->uid."/profile/profile?destination=node/".$form['nid']['#value']."/edit>参赛信息不正确? 修改我的信息</a>";
+
+					}else{
+
+							$change_link = "<a href=".base_path()."user/".$user->uid."/profile/profile?destination=node/add/readthink?edit[parent]=".$_GET["edit"]["parent"].">参赛信息不正确? 修改我的信息</a>";
+					}
+					  $form['myprofile']['change_profile'] = array(
+						  '#value' => "<p>".$change_link."</p>",
+					  );
+						 $parent_id = $_GET['edit']['parent'];
+						 if($parent_id){
+
+									 $parent_title = db_fetch_object(db_query("SELECT title,nid FROM {node} WHERE nid=%d",$parent_id));
+
+									 $form['field_dhg_pinglun_shuming'][0]['#default_value']['value'] = l($parent_title->title,"node/".$parent_title->nid);
+									 $form['field_dhg_pinglun_shuming']['#disabled'] = TRUE;
+									 $form['field_dhg_pinglun_shuming']['#prefix'] = "<div id='pinglun-shuming'>";
+									 $form['field_dhg_pinglun_shuming']['#suffix'] = "</div>";
+
+						 }
+
+								$disabled_shu = '$(document).ready(function () {
+
+											$("#pinglun-shuming").css("display", "none");
+
+											$(".textarea-identifier").css("display", "none");
+
+											$("#edit-field-dhg-pinglun-shuming-0-value-wrapper").css("display", "none");
+											
+											$("#taxonomy-21").css("display", "none");
+											$("#edit-taxonomy-22-wrapper").css("display", "none");
+
+											})';
+									drupal_add_js($disabled_shu, 'inline');
+
+						
+
+		}
+}
+
+
+ function duhougan_link_alter(&$links, $node){
+
+
+	 $type = array(9011,9012,9013,9014,9015,9017,9018,9019,9020,9021);
+
+	 $is_duhougan = FALSE;
+
+	foreach($node->taxonomy as $value){
+
+		if(in_array($value->tid,$type)){
+			$is_duhougan = TRUE;
+		}
+
+	}
+
+	
+	global $user;
+
+
+		$division =db_result(db_query("SELECT d.tid FROM node n inner join term_node t on n.nid=t.nid  inner join term_data d on t.tid =d.tid where n.type='profile'  and d.vid=22 and n.uid=%d",$user->uid));
+ 
+		$group =db_result(db_query("SELECT d.tid FROM node n inner join term_node t on n.nid=t.nid  inner join term_data d on t.tid =d.tid where n.type='profile'  and d.vid=21 and n.uid=%d",$user->uid));
+
+
+	if($node->type == "ebook" && $user->uid < 1 && $is_duhougan){
+		
+		$links["login_duhougan"] = array(
+			            'title' => t('You must login to join DuHouGan'),
+						'href' => 'user/login',
+						'query' => 'destination=node/'.$node->nid,
+		);
+
+	}
+
+	$compele_profiel = db_result(db_query("SELECT nid FROM {node} WHERE uid=%d AND type='%s'",$user->uid,'profile'));
+
+if($node->type == "ebook"  && user_is_logged_in() && $is_duhougan && (empty($division) || empty($group) || empty($compele_profiel))){
+
+		$links["login_duhougan"] = array(
+			            'title' => t('You must add your profile to join DuHouGan'),
+						'href' => 'user/'.$user->uid.'/profile/profile',
+						//这里被老葛注释掉了,这个地方有问题,替换成了紧挨着的一行了
+						//'query' => 'destination=node/add/readthink/'.$node->nid,
+						'query' => 'destination=node/add/readthink?edit[parent]='.$node->nid,
+		);
+		
+	}
+/*
+if($node->type == "ebook" && user_is_logged_in() && $is_duhougan && $compele_profiel && !empty($division) && !empty($group)){
+
+		$links["login_duhougan"] = array(
+			            'title' => '我要写读后感',
+						'href' => 'node/add/readthink',
+						//这里被老葛注释掉了,去掉了destination=duhougan_confirm/'.$node->nid.'&
+						//'query' => 'destination=duhougan_confirm/'.$node->nid.'&edit[parent]='.$node->nid,
+						'query' => 'edit[parent]='.$node->nid,
+		);
+		
+	}
+	*/
+
+
+ }
+
+/**Hook_link
+* 主要处理不同版本Chapter
+*/
+
+function duhougan_link($type, $node, $teaser = FALSE){
+
+
+
+	if($type == "node" && $node->type == "readthink"){
+		
+
+
+	$parent_nid = db_result(db_query("SELECT parent FROM {nodehierarchy} WHERE nid = %d",$node->nid));
+
+
+
+
+	$back = '返回图书';
+
+
+		$links['parent'] = array(
+		  'title' => $back,
+		  'href' => "node/".$parent_nid,
+		);
+
+}
+
+
+
+if($type == 'node' && $node->type == "ebook"){
+
+		 $type2 = array(9011,9012,9013,9014,9015,9017,9018,9019,9020,9021);
+
+	 $is_duhougan = FALSE;
+
+	foreach($node->taxonomy as $value){
+
+		if(in_array($value->tid,$type2)){
+			$is_duhougan = TRUE;
+		}
+
+	}
+
+if($is_duhougan){
+
+	$total = db_result(db_query("SELECT count(nd.nid) FROM nodehierarchy nd INNER JOIN node n ON n.nid=nd.nid WHERE nd.parent=%d AND n.type='%s'",$node->nid,"readthink"));
+
+if($total){
+
+		$links['display_all_duhougan'] = array(
+		  'title' => '本书有 '.$total.' 篇读后感，点击查看',
+		  'href' => "all_duhougan/".$node->nid,
+		);
+
+}
+ }
+
+}
+
+ return $links;
+}
+
+/**
+ * Implmentation of hook_nodeapi().
+ */
+function duhougan_nodeapi(&$node, $op, $teaser = NULL, $page = NULL) {
+  switch ($op) {
+    case 'insert':
+	 if($node->type == "readthink"){
+		 duhougan_first_create_add_points($node);
+	 }
+		if($node->type == 'readthink'){
+			drupal_goto('duhougan_confirm/'.$node->parent);
+		}
+      break;
+    case 'update':
+
+      break;
+    case 'delete':
+		if($node->type == "readthink"){
+			//用户删除最后一篇读后感时,减去用户获取的相应积分.
+			 _duhougan_last_delete_delete_points($node);
+		}
+
+      break;
+	 case 'prepare':
+		//print_r($node);exit;
+      break;
+    case 'view':
+    break;
+  }
+}
+
+/**
+*判断是不是这个用户第一次发的读后感，如果是,加10分
+*/
+
+
+function duhougan_first_create_add_points($node){
+	
+	global $user;
+
+	$is_first_create = db_result(db_query("SELECT count(nid) as nids FROM {node} WHERE uid=%d AND type='%s'",$user->uid,'readthink'));
+
+	if($is_first_create == 1){
+			    $params = array (
+				  'uid' => $user->uid,
+				  'points' => variable_get('first_duhougan','10'),
+				  'description' => '第一次参加读后感大赛得分',
+				);
+			userpoints_userpointsapi($params); 
+	}
+}
+/*
+ * 帮助函数，用于在用户删除最后一篇读后感时，减去积分
+ */
+function _duhougan_last_delete_delete_points($node){
+	//判断是不是最后一篇文章
+	$is_last_delete = db_result(db_query("SELECT count(nid) as nids FROM {node} WHERE uid=%d AND type='%s'",$node->uid,'readthink'));
+
+	if($is_last_delete == 0){
+		$params = array (
+			'uid' => $node->uid,
+			'points' => 0-variable_get('first_duhougan','10'),
+			'description' => '减去第一次参加读后感大赛的得分',
+		);
+		//减去积分
+		userpoints_userpointsapi($params); 
+	}
+}
+
+
+/**
+*积分设置 
+*/
+
+function duhougan_userpoints($op, $points = 0, $uid = 0, $event = '') {
+  switch($op) {
+    case 'setting':
+      $group = 'duhougan';
+      $form[$group] = array(
+        '#type'        => 'fieldset',
+        '#collapsible' => TRUE,
+        '#collapsed'   => TRUE,
+        '#title'       => t("读后感和翻译比赛积分设置"),
+      );
+
+      $form[$group]['first_duhougan'] = array(
+        '#type'          => 'textfield',
+        '#title'         => t("如果是用户发表第一篇读后感，则应加的分数"),
+        '#default_value' => variable_get('first_duhougan', '10'),
+        '#size'          => 5,
+        '#maxlength'     => 5,
+      );
+    return $form;
+  }
+}

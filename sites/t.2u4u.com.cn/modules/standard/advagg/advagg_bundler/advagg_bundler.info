@@ -1,0 +1,12 @@
+name = AdvAgg Bundler
+description = Provides intelligent bundling of CSS and JS files by grouping files that belong together.
+package = Advanced CSS/JS Aggregation
+core = 6.x
+dependencies[] = advagg
+
+; Information added by drupal.org packaging script on 2011-06-18
+version = "6.x-1.0"
+core = "6.x"
+project = "advagg"
+datestamp = "1308358032"
+

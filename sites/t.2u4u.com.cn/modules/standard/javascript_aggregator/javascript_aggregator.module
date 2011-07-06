@@ -1,0 +1,174 @@
+<?php
+// $Id: javascript_aggregator.module,v 1.17.2.21 2010/04/14 08:31:42 derjochenmeyer Exp $
+
+/**
+ * Implementation of hook_help().
+ */
+function javascript_aggregator_help($path, $arg) {
+  switch ($path) {
+    case 'admin/help#javascript_aggregator':
+      $output = '<p>'. t('Uses the <a href="@jsmin">JSMin</a> library to minify the aggregated JavaScript file when <em>JavaScript optimization</em> has been enabled in the <a href="@performance">Performance settings</a>.', array('@performance' => url('admin/settings/performance'), '@jsmin' => 'http://code.google.com/p/jsmin-php/')) .'</p>';
+      return $output;
+  }
+}
+
+/**
+ * Implementation of hook_form_alter().
+ */
+function javascript_aggregator_form_alter(&$form, $form_state, $form_id) {
+  if ($form_id == 'system_performance_settings') {
+    $form['bandwidth_optimizations']['preprocess_js']['#title'] = t('Optimize and Minify JavaScript files');
+    $form['bandwidth_optimizations']['preprocess_js']['#description'] .= t(' Once the JavaScript files have been aggregated, they will be minified.');
+    $form['bandwidth_optimizations']['preprocess_js']['#weight'] = 2;
+
+    $form['bandwidth_optimizations']['javascript_aggregator_gzip'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('GZip JavaScript'),
+      '#description' => t('Once minified, optionally <a href="@gzip">GZip</a> the aggregated JavaScript file to dramatically decrease its size.', array('@gzip' => 'http://en.wikipedia.org/wiki/Gzip')),
+      '#default_value' => variable_get('javascript_aggregator_gzip', FALSE),
+      '#weight' => 3,
+    );
+    $form['bandwidth_optimizations']['javascript_aggregator_no_htaccess'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Do not auto generate .htaccess file (experts only)'),
+      '#description' => t("If you want to use GZipping and your host doesn't like multiple .htaccess files check this option, together with the option above to bypass htaccess file generation and follow directions in the README.txt."),
+      '#default_value' => variable_get('javascript_aggregator_no_htaccess', FALSE),
+      '#weight' => 5,
+    );
+    $form['bandwidth_optimizations']['javascript_aggregator_jsminplus'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Use JSMin+ instead of JSMin'),
+      '#description' => t('Check this option to use <a href="@jsminplus">JSMin+</a> instead of JSMin.', array('@jsminplus' => 'http://crisp.tweakblogs.net/blog/1665/a-new-javascript-minifier-jsmin+.html')),
+      '#default_value' => variable_get('javascript_aggregator_jsminplus', FALSE),
+      '#weight' => 4,
+    );
+  }
+}
+
+/**
+ * Implementation of hook_theme_registry_alter().
+ *
+ * Make javascript_aggregator's page preprocess function run *after* everything else's (even jQuery Update).
+ */
+function javascript_aggregator_theme_registry_alter(&$theme_registry) {
+  if (isset($theme_registry['page'])) {
+    // If javascript_aggregator's preprocess function is there already, remove it.
+    if (is_array($theme_registry['page']['preprocess functions']) && $key = array_search('javascript_aggregator_preprocess_page', $theme_registry['page']['preprocess functions'])) {
+      unset($theme_registry['page']['preprocess functions'][$key]);
+    }
+    // Now tack it on at the end so it runs after everything else.
+    $theme_registry['page']['preprocess functions'][] = 'javascript_aggregator_preprocess_page';
+  } 
+}
+
+/**
+ * Implementation of hook_preprocess_hook().
+ *
+ * Minify the aggregated JavaScript file if JavaScript Optimization is turned on.
+ */
+function javascript_aggregator_preprocess_page(&$variables) {
+  // Only do this for pages that have JavaScript on them.
+  if (!empty($variables['scripts'])) {
+    $variables['scripts'] = _javascript_aggregator_minify($variables['scripts']);
+  }
+}
+
+/**
+ * Implementation of theme_closure().
+ */
+function phptemplate_closure($main = 0) {
+  $footer = module_invoke_all('footer', $main);
+  
+  $js_footer = drupal_get_js('footer');
+  // Only do this for pages that have JavaScript on them.
+  if (!empty($js_footer)) {
+    $js_footer = _javascript_aggregator_minify($js_footer);
+  }
+
+  return implode("\n", $footer) . $js_footer;
+}
+
+/**
+ * Helper function to minify and gzip files.
+ */
+function _javascript_aggregator_minify($scripts) {
+  // Only process it is JavaScript Optimization is enabled.
+  if (variable_get('preprocess_js', 0)) {
+    // Strip out the aggregated JavaScript file.
+    $path_to_files_directory = base_path() . file_directory_path();
+
+    $pattern = "!(<script type=\"text\/javascript\" src=\"(.*?)$path_to_files_directory)(.*?)(\"(.*?)><\/script>)!";
+    if (preg_match_all($pattern, $scripts, $matches) > 0) {
+      $aggregated_file_name = $matches[3][0];
+      $jsmin_file_name = $aggregated_file_name .'min.js';
+
+      // Construct the final JSMin file path.
+      $jsmin_file_path = file_directory_path() . $jsmin_file_name;
+
+      // Create the JSMinified file if it doesn't exist yet.
+      if (!file_exists($jsmin_file_path)) {
+
+        if (variable_get('javascript_aggregator_jsminplus', FALSE)) {
+          // JSMin+ the contents of the aggregated file.
+          require_once(drupal_get_path('module', 'javascript_aggregator') .'/jsminplus.php');
+          // Strip Byte Order Marks (BOM's) from the file, JSMin+ cannot parse these.
+          $file = str_replace(pack("CCC",0xef,0xbb,0xbf), "", file_get_contents(file_directory_path() . $aggregated_file_name));
+          $contents = JSMinPlus::minify($file);
+        }
+        else {
+          // JSMin the contents of the aggregated file.
+          require_once(drupal_get_path('module', 'javascript_aggregator') .'/jsmin.php');
+          $contents = JSMin::minify(file_get_contents(file_directory_path() . $aggregated_file_name));
+        }
+
+        // Code comments containing copyright notices and licensing information
+        // are stripped when the file is minified. GPL and most other open
+        // source licenses require the license text to be included whenever the
+        // file is distributed, so include a reference to the un-minified file.
+        $contents = '// Minified using Javascript Aggregator - see '. $path_to_files_directory . $aggregated_file_name ." for original source including licensing information.\n". $contents;
+
+        // GZip the JavaScript if required.
+        $htaccess = file_directory_path() . '/js/.htaccess';
+        if (variable_get('javascript_aggregator_gzip', FALSE)) {
+
+          // Create the GZip file if it doesn't already exist.
+          if (!file_exists($jsmin_file_name .'.gz')) {
+            file_save_data(gzencode($contents, 9), $jsmin_file_name .'.gz', FILE_EXISTS_REPLACE);
+          }
+
+          // Make sure the .htaccess file is active to handle GZipped JavaScript files.
+          if (!variable_get('javascript_aggregator_no_htaccess', FALSE) && !file_exists($htaccess)) {
+            $htaccess_contents = <<<EOT
+<Files *.js.gz>
+AddEncoding x-gzip .gz
+ForceType text/javascript
+</Files>
+<IfModule mod_rewrite.c>
+RewriteEngine on
+RewriteCond %{HTTP_USER_AGENT} !".*Safari.*"
+RewriteCond %{HTTP:Accept-encoding} gzip
+RewriteCond %{REQUEST_FILENAME}.gz -f
+RewriteRule ^(.*)\.js $1.js.gz [L,QSA]
+</IfModule>
+EOT;
+            file_save_data($htaccess_contents, $htaccess, FILE_EXISTS_REPLACE);
+          }
+        }
+        else {
+          // Delete .htaccess file so *.gz files do not get served.
+          if (file_exists($htaccess)) {
+            file_delete($htaccess);
+          }
+        }
+
+        // Save the contents to the JavaScript file.
+        file_save_data($contents, $jsmin_file_path, FILE_EXISTS_REPLACE);
+      }
+
+      // Replace the aggregated file with the minified JavaScript file.
+      $scripts = str_replace($aggregated_file_name, $jsmin_file_name, $scripts);
+    }
+  }
+  
+  return $scripts;
+}

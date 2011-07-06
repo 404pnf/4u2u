@@ -1,0 +1,106 @@
+<?php
+// $Id: amfphp.module,v 1.10 2009/02/14 20:26:21 snelson Exp $
+
+/*
+ * Implementation of hook_requirements()
+ */
+function amfphp_requirements($phase) { $t = get_t();
+  
+  // Test AMFPHP version 
+  $requirements['amfphp'] = array( 
+    'title' => $t('AMFPHP'), 
+    'value' => $t('1.9 Beta 2'), 
+  );
+  
+  if (!file_exists(realpath(dirname(__FILE__) . '/amfphp/globals.php'))) { 
+    $requirements['amfphp']['value'] = $t('Not found or wrong version');
+    $requirements['amfphp']['description'] = $t('You must dowload <a href="http://downloads.sourceforge.net/amfphp/amfphp-1.9.beta.20080120.zip?modtime=1200844138">AMFPHP 1.9 beta 2</a>, and extract to modules/amfphp/amfphp, or respective site modules directory.');
+    $requirements['amfphp']['severity'] = REQUIREMENT_ERROR; 
+  }
+  
+  return $requirements;
+}
+
+/*
+ * Implementation of hook_server_info()
+ */
+function amfphp_server_info() {
+  return array(
+    '#name' => 'AMFPHP',
+    '#path' => 'amfphp'
+  );
+}
+
+/*
+ * Implementation of hook_server()
+ * here we include the contents of a gateway.php
+ */
+function amfphp_server() {
+  $path = drupal_get_path('module', 'amfphp');
+  define("PRODUCTION_SERVER", !variable_get('services_debug', FALSE));
+	
+	require_once $path . "/amfphp/globals.php";
+	require_once $path . "/overrides/AmfphpGateway.php";
+
+	$gateway = new AmfphpGateway();
+	$gateway->setClassPath($servicesPath);
+	$gateway->setClassMappingsPath($voPath); 
+	$gateway->setCharsetHandler("iconv", "UTF-8", "UTF-8");
+	$gateway->setErrorHandling(E_ALL ^ E_NOTICE);
+	
+	if(PRODUCTION_SERVER)
+	{
+		$gateway->disableDebug();
+	}
+
+	$gateway->enableGzipCompression(25*1024);
+	$gateway->service();
+}
+
+/*
+ * ugly! ugly! ugly!
+ * we need to use a method call wrapper here to convert all 'uid' values in the result
+ * to 'userid'.  this is because flex uses the property 'uid' in objects and will overwrite
+ * anything we send with its own value.
+ */
+function amfphp_method_call($method_name, $args) {
+  
+  // convert all userid to uid
+  $args = amfphp_fix_uid($args, 0);
+  
+  $result = services_method_call($method_name, $args);
+  
+  // convert all uid to userid
+  $result = amfphp_fix_uid($result);
+  
+  return $result;
+}
+
+/*
+ * ugly! ugly! ugly!
+ */
+function amfphp_fix_uid($data, $direction = 1) {
+  $uid    = 's:3:"uid";';
+  $userid = 's:6:"userid";';
+  
+  $from = ($direction) ? $uid : $userid;
+  $to   = (!$direction) ? $uid : $userid;
+  
+  $data = serialize($data);
+  $data = str_replace($from, $to, $data);
+  $data = unserialize($data);
+  
+  return $data;
+}
+
+/*
+ * Implementation of hook_server_error()
+ */
+function amfphp_server_error($message) {
+  // log error to watchdog
+  watchdog('amfphp server', $message, NULL, WATCHDOG_ERROR);
+  
+  // we must throw an error here as it is caught by AMFPHP to send faults back
+  // to the client
+  trigger_error($message, E_USER_ERROR);
+}

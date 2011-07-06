@@ -1,0 +1,240 @@
+@charset "utf-8"; /* CSS Document */
+
+
+/* -----------------------------用户中心 开始-------------------------- */
+
+/*-------积分充值--------*/
+.ff1-bg {
+	background-image: url(images/image_11.gif);
+	background-repeat: repeat-x;
+	height: 49px;
+	/*width: 930px;*/
+}
+.ff1-cz1 {
+	height: 20px;
+	width: 100px;
+	float: left;
+	margin-left: 15px;
+	font-weight: bold;
+	margin-top: 17px;
+}
+.ff1-input {
+	height: 16px;
+	width: 140px;
+}
+.ff1-bottom {
+	height: 33px;
+	width: 85px;
+	float: left;
+	margin-top: 5px;
+}
+.ff1-czbz {
+	height: 28px;
+	width: 900px;
+	font-weight: bold;
+	font-size: 14px;
+	padding-top: 18px;
+}
+.ff1-czbz1,.ff1-czbz2,.ff1-czbz3{
+	background-repeat: no-repeat;
+	height: 300px;
+	width: 200px;
+	float: left;
+}
+.ff1-czbz1{
+	background-image: url(images/image_23.gif);
+}
+.ff1-czbz2 {
+	background-image: url(images/image_25.gif);
+}
+.ff1-czbz3 {
+	background-image: url(images/image_27.gif);
+}
+.ff1-czbz-arrow {
+	background: url(images/image_05.gif) no-repeat  center center;
+	height: 300px;
+	width: 50px;
+	float: left;
+}
+
+.ff1-js{
+	clear:both;
+	padding-top: 10px;
+	font-family: "宋体";
+	font-size: 12px;
+	color: #9B9B9B;
+	line-height: 16px;
+}
+
+
+.ff1-cz2 {
+	height: 20px;
+	width: 45px;
+	float: left;
+	margin-top: 17px;
+}
+.ff1-cz3 {
+	height: 15px;
+	width: 160px;
+	float: left;
+	margin-top: 12px;
+}
+.ff1-cz4 {
+	height: 20px;
+	width: 220px;
+	float: left;
+	margin-top: 17px;
+	margin-left: 20px;
+}
+
+#gift-points-chongzhi-form #edit-gcode-wrapper label,#gift-points-chongzhi-form .form-item{
+ display:none;
+ float:left;
+}
+#recommender-points-form  #edit-gcode-1-wrapper label,#recommender-points-form .form-item{
+ float:left;
+ padding:0px 10px;
+}
+
+#gift-points-chongzhi-form #edit-gcode-wrapper .form-text,#recommender-points-form #edit-gcode-1.form-text{
+width:150px;
+}
+#gift-points-chongzhi-form  #edit-gcode-wrapper.form-item,#recommender-points-form  #edit-gcode-1-wrapper.form-item{
+display:block;
+margin-top:17px;
+}
+#gift-points-chongzhi-form .form-submit,#recommender-points-form .form-submit{
+	background-image: url(images/image_14.gif);
+	background-repeat: no-repeat;
+	height: 33px;
+	width: 85px;
+	border: 0px solid;
+	font-size: 12px;
+	font-weight: bold;
+	color: #FFFFFF;
+	line-height: 33px;
+	float:left;
+	margin:9px 0 0 10px;
+}
+
+.login-input2 {
+	background-image:url("images/image_32.gif");
+	background-repeat:no-repeat;
+	border-style:solid;
+	border-width:0;
+	color:#FF8000;
+	cursor:pointer;
+	display:block;
+	font-size:1px;
+	height:85px;
+	line-height:33px;
+	width:246px;
+}
+/*------//-----end 积分充值-------*/
+
+/*-------------积分购买-------------*/
+
+.ff2-jfsm {
+	color: #333333;
+    float: left;
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+    width: 450px;
+}
+.ff2-jfsm2 {
+	margin-top: 5px;
+	float: left;
+	margin-left: 15px;
+	line-height: 22px;
+	font-size: 12px;
+	font-weight: normal;
+	text-align: left;
+}
+.ff2-jfsm-botton {
+  	float: left;
+    height: 85px;
+    margin-left: 15px;
+    margin-top: 40px;
+}
+.ff2-jflc {
+	height: 30px;
+	width: 900px;
+	float: left;
+	/*margin-left: 30px;*/
+	font-size: 14px;
+	font-weight: bold;
+	padding-top: 15px;
+}
+.ff2-jflc1,.ff2-jflc2 ,.ff2-jflc3{
+	height: 239px;
+	width: 200px;
+	float: left;
+}
+.ff2-jflc1 {
+	background-image: url(images/image_35.gif);
+	
+}
+.ff2-jflc2 {
+	background-image: url(images/image_37.gif);
+	
+}
+.ff2-jflc3 {
+	background-image: url(images/image_39.gif);
+}
+.newtext {
+	font-family: "宋体";
+	font-size: 14px;
+	font-weight: bold;
+	color: #CA0000;
+}
+
+
+/*------------------推荐的测试-----------------*/
+
+/* 标题与连接、摘要、点击率的颜色、大小 */
+.view-whx-frontpage .view-header  a  ,
+.view-whx-frontpage .view-header a:visited,
+.view-whx-frontpage .views-field-title  a  ,
+.view-whx-frontpage .views-field-title  a:visited{
+color:#911D2B;
+cursor:pointer;
+text-decoration:none;
+font-weight:700;
+}
+.view-whx-frontpage .view-header h1{
+padding-bottom:0px;
+}
+h1 span {
+color:#666666;
+font-size:12px;
+font-weight:400;
+margin-left:10px;
+}
+.view-whx-frontpage .views-row{
+clear:both;
+ position: relative;
+}
+.view-whx-frontpage  .views-field-teaser {
+min-height:60px;
+overflow:hidden;
+}
+
+.view-whx-frontpage .views-field-totalcount {
+/*color:#999999;
+float:right;
+margin-top:-36px;*/
+    position: absolute;
+    right: 10px;
+    top: 20px;
+}
+
+.view-whx-frontpage .views-field-totalcount *{
+	color:#999999;
+}
+/* 内容中的小图 */
+.view-whx-frontpage .views-field-field-quiz-tuijian-pic-fid {
+float:right;
+/*margin:0 0 20px 10px;*/
+}
+/* quiz 结束 */

@@ -1,0 +1,34 @@
+
+这个程序是将2u4u的yuedu程序已经导入和处理好的ebook图书转成一本书一个文件夹的形式。
+
+因此，如果给b2b制作电子书需要两步：
+
+1、把pdf通过yuedu模块导入到ebook.2u4u.com.cn
+2、根据后面的参数刚才导入的图书导出为给b2b使用的格式
+
+
+
+导出程序已经放到服务器上面了，放在
+
+/var/www/html/2u4u/sites/2u4u.com.cn/files/pdf/swf
+
+有三个文件：exporter.php、template.tpl、Yuedu.swf
+
+其中：
+exporter.php 是导出程序
+
+template.tpl 是html模板
+
+Yuedu.swf 是播放器。
+
+exporter 的使用方法：
+
+./exporter.php -d 20 -o /var/www/html/2u4u/b2b/
+
+其中 -d 为时间参数，意思是导出多少天以内更新过的图书，-o 是输出目录，我现在指向了根目录下的一个b2b文件夹（新建的，用于演示），结果可看：
+
+http://2u4u.com.cn/b2b/57039/
+
+其中 -d 参数可以替换为 -h， 以小时为单位。
+
+

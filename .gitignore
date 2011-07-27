@@ -25,3 +25,5 @@ player/
 # symbolic link to whx and zym 's home page
 whx
 zym
+# fltrp 目录下都是appstore的静态文件，不放在git中
+fltrp/*

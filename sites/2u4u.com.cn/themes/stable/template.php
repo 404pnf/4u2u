@@ -546,8 +546,10 @@ function phptemplate_get_answer($view_name,$display_id){
 		array_shift($args);	//remove $display_id
 	}
 	$output='';
-	$answer=xmlrpc('http://answer.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id,$args,0,0,true);
+	$answer=xmlrpc('http://answer.2u4u.com.cn/xmlrpc.php','views.get',$view_name,$display_id, array() ,0,0,true);
+
 	$output.=$answer[0];
-	
+        //$output= phptemplate_get_ebook('whx_frontpage','attachment_6');
+         
 	return $output;
 }

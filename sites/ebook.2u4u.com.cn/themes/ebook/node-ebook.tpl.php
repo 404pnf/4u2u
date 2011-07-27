@@ -149,7 +149,6 @@
 	</div>
 	
 	
-	
  </div> <!-- /node-inner -->
 </div> <!-- /node-->
 <?php endif; ?>

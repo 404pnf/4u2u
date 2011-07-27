@@ -24,8 +24,8 @@
                                                 <a class="shareto_button" href="http://shareto.com.cn/share.html"><img src="http://video.2u4u.com.cn/sites/video.2u4u.com.cn/themes/video/css/shipin_images/shareto.gif" alt="分享道" style="border:0"/></a>
                                                 <script type="text/javascript" src="http://s.shareto.com.cn/js/shareto_button.js"></script>
                                                 <!-- ShareTo Button END -->
+     
     </div>
-
 
     <?php if ($links): ?> 
       <div class="home-links"> <?php print $links; ?></div>

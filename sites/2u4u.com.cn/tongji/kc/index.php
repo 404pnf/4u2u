@@ -46,7 +46,7 @@ var url = 'index.html'; //加载的网址
 </STYLE>
 </HEAD>
 <?php
-    @$rs = file_get_contents("http://yuedu.2u4u.com.cn/get_kc");   
+    @$rs = file_get_contents("http://2u4u.com.cn/get_kc");   
  ?>
 <BODY onload="location.href = url;" 
 style="OVERFLOW: hidden; OVERFLOW-Y: hidden">

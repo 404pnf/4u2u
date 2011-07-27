@@ -12,42 +12,120 @@
 <script src="jquery.ajaxContent.pack.js" type="text/javascript"></script>
 <script type="text/javascript">
 $(document).ready(function(){
+		/*
+	
 	$('.demo').ajaxContent({
 		event:'click', //mouseover
 		loaderType:'img',
 		loadingMsg:'<img src="ajax-loader.gif">',
 		target:'#demo'
 	});	
+	whx 用下面效果，替换掉原有效果。这样的话，可以确保页面加载完url内容后，执行js op_function()。
+	*/
+	
+	$('.demo').click(function(){
+		url = $(this).attr('href');
+		//alert(url);
+		$('#demo').html('<img src="ajax-loader.gif">');
+		$('#demo').load(url,function(){
+			op_function();
+			/*--为了更新以后的内容还可以在#demo中直接显示链接内容*/
+				$('.demo').click(function(){
+					url_2 = $(this).attr('href');
+					
+					$('#demo').html('<img src="ajax-loader.gif">');
+					$('#demo').load(url_2);
+					return false;
+				});
+			/*---end*/
+		});
+		return false;
+	});
+	
+	/*
 	
     var options = {    
             target:'#demo',   
             url:'kc_list.php', 
-            success:showResponse   
+            data:'text',
+            success:function(date){alert(date);op_function();}
         };   
 
     $('#form1').submit(function() {  
-           $(this).ajaxSubmit(options);   
+           $(this).ajaxSubmit(options);  
+           //op_function();
            return false;//阻止表单提交   
        });  
      function showResponse(responseText) {   
             alert('responseText:'+responseText);   
         }     
-
+    whx 用下面的ajax函数，替换ajaxSubmit，因为以下方法可以确保，加载玩内容后执行 js。
+    */   
+   	
 });
+function ajax_submit(){	
+	
+   		num = $('#num').val();
+   		sku = $('#sku').val();
+   		data = "num=" + num + "&sku=" + sku;
 
+		$.ajax({
+			url: 'kc_list.php',
+			dataType: 'text',
+			data: data,
+			timeout:200000,// 设置请求超时时间（毫秒）。 
+			error: function (XMLHttpRequest, textStatus, errorThrown) {// 请求失败时调用函数。  
+				$(that).html(" 请求超时! textStatus: " + textStatus + ', errorThrown: ' + errorThrown);
+			 }, 
+			success: function(resp) 
+			{  //请求成功后回调函数。
+			
+	
+				try
+				{
+				
+					$('#demo').html(resp);
+					op_function();
+				
+				}
+				catch (err)
+				{
+						resp = undefined;
+						$(that).append('服务器交互失败，请重试'+err);
+				}
+				
+				
+			}	
+		});
+		
+		return false;
+	}
+	function op_function(){
+		
+		$('.op').each(function(){
+			id = this.id;
+			$('#'+id).ajaxContent({
+				event:'click', 
+				loaderType:'img',
+				loadingMsg:'<img src="ajax-loader.gif">',
+				target:'#'+id
+			});	
+		});
+	}
 </script>
 </head>
 <body>
+<a class="demo" href="/update_book_info/query">更新本地书目</a>
 <a class="demo" href="/get_kc">更新库存</a>
 <a class="demo" href="kc_change.php">库存变动</a>
 <a class="demo" href="http://2u4u.com.cn/sites/2u4u.com.cn/orders/get_dalibao_book_kc.php">大礼包图书预警</a>
-<form name="form1" id="form1" method='post' >
-<select name='num'>
+<form name="form1" id="form1" method='post' onSubmit="return ajax_submit()" action="">
+<select id="num" name='num'>
 <option value='1' selected>20本以下</option>
 <option value='2'>20-50本</option>
 <option value='3'>50-100本</option>
 <option value='4'>100本以上</option>
-</select>&nbsp; &nbsp;查询单本书的库存&nbsp;&nbsp;<input type='text' name='sku'>
+</select>&nbsp; &nbsp;查询单本书的库存&nbsp;&nbsp;<input id="sku" type='text' name='sku'>
 <input type='submit' name='btn' value='提交'>
 </form>
 <div id="demo" style="min-height:100px;margin:10px 0;solid #CCCCCC;"></div>

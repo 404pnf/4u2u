@@ -598,3 +598,16 @@ a:hover,a:active {
 .views-field-title .view-display-id-page_1{ padding-top:0px;}
 #footer{float:left; width:100%;}
 .page-news-1 #content-area .view-content .item-list ul li{ background:none!important; line-height:30px;}
+
+
+/* bxy 新闻页面的链接，点击后的颜色不能是黑色，否则用户分别不出哪个是链接了 */
+#content-area .content a:link,a:visited {
+	color: #0027b7;
+	text-decoration: none;
+	/*line-height: 25px; */ 
+}
+
+/* bxy 新闻页面的文章标题居中 */
+.node-type-page #content-header h1 {
+	text-align:center;
+}

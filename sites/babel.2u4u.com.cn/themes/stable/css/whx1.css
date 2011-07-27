@@ -616,7 +616,8 @@ width:25%;*width:24.7%;
 .section-fanyi .view-fanyi .views-field-field-bookcase-ctitle-value,
 .section-fanyi .view-fanyi .views-field-field-bookcase-author-value,
 .section-fanyi .view-fanyi .views-field-totalcount,
-.section-fanyi .view-fanyi .views-field-field-bookcase-zhuangtai-value{
+.section-fanyi .view-fanyi .views-field-field-bookcase-zhuangtai-value,
+.section-fanyi .view-fanyi .views-field-field-bookcase-yizhe-value{
 width:150px;
 float:left;
 clear:left;
@@ -1445,7 +1446,7 @@ width:120px;
 #classic_flash .views-field-title span.field-content{ padding:0!important; width:80%; margin:5px 5px 0 24px!important; display:block!important;}
 
 /* 二级页面样式修正 */
-#content-inner{ border:1px solid #CCC;}
+#content-inner{ border:1px solid #CCC; overflow: auto}
 .node-inner{ padding:30px;}
 .node-inner .field-items .field-item a{ color:#F60; font-weight:700}
 .node-inner .content .field { margin-left:0; margin-right:0; padding-left:0; padding-right:0}

@@ -361,10 +361,12 @@
 				<?php $block = module_invoke('panels_mini','block','view','shiji') ?>
 				<?php print $block['content']; ?>
 		</div>
-        <div class=tonglanall>
-        	<?php $block = module_invoke('block', 'block', 'view', 84); ?>
-			<?php print $block['content']; ?>
-        </div>
+		
+        <!--<div class=tonglanall> -->
+        	<?php //$block = module_invoke('block', 'block', 'view', 84); ?>
+			<?php //print $block['content']; ?>
+       <!-- </div>-->
+       
 		<div class="qz">
 			
 			<div class="qz-head"> 
@@ -405,7 +407,7 @@
 			<div class="qz-ywyd"><!--有问有答-->		
 				<div class="qz-zy-title"><a href="http://answer.2u4u.com.cn" target="_blank" class="h">有问有答</a> </div>
 				<div class="qz-ywyd-text"> 
-					<? print phptemplate_get_answer('whx_frontpage','attachment_9');?>	
+					<?php print phptemplate_get_answer('whx_frontpage','attachment_9');?>	
 				</div>
 			</div>
 		  </div>

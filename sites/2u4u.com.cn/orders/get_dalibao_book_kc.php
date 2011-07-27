@@ -68,7 +68,7 @@ $sql = "SELECT cp.field_product_neirongtiyao_value AS content,n.`title`
         	if(strlen($value)>2){       		
 	        	$value = trim($value);	  
 	        	
-	       		$new_query = "SELECT bi.`name`,bi.`sku`,bk.`now_kc`,`price` FROM 2u4u.`book_info` bi
+	       		$new_query = "SELECT bi.`name`,bi.`sku`,bk.`now_kc`,`price`,`is_dalibao` FROM 2u4u.`book_info` bi
 							  LEFT JOIN 2u4u.`book_kc` bk on bk.sku=bi.sku
 							  WHERE bi.`name` LIKE  '".$value."%' AND bk.`now_kc`<10";
 				$query = mysql_query($new_query);
@@ -77,7 +77,12 @@ $sql = "SELECT cp.field_product_neirongtiyao_value AS content,n.`title`
         
 	            if($new_rs->sku>0){
 	            	if($new_rs->now_kc<10){
-	            	      $table .= "<tr><td>".$title."</td><td>".$new_rs->name."</td><td>".$new_rs->sku."</td><td>".$new_rs->now_kc."</td><td>".$new_rs->price."</td>";
+						$op = '<a id="op_'.$new_rs->sku.'" class="op" href="http://2u4u.com.cn/set_dalibao/'.$new_rs->sku.'">';
+						if($new_rs->is_dalibao) $op .= "移出礼包";
+						else $op .= "移入礼包";
+						$op .= '</a>';
+						
+	            	      $table .= "<tr><td>".$title."</td><td>".$new_rs->name."</td><td>".$new_rs->sku."</td><td>".$new_rs->now_kc."</td><td>".$new_rs->price."</td><td>".$op."</td></tr>";
 	            	} 
 	           }
 	           else{                    		        	
@@ -101,17 +106,22 @@ $sql = "SELECT cp.field_product_neirongtiyao_value AS content,n.`title`
 	
 	               if(substr($name_sql,-4)=='AND ')
 	                 $name_sql = substr($name_sql,0,-4);     		
-	               $new_sql = " SELECT bi.`name`,bi.`sku`,bk.`now_kc`,`price` FROM 2u4u.`book_info` bi
+	               $new_sql = " SELECT bi.`name`,bi.`sku`,bk.`now_kc`,`price`,`is_dalibao` FROM 2u4u.`book_info` bi
 							    LEFT JOIN 2u4u.`book_kc` bk on bk.sku=bi.sku 
 	        		            WHERE ".$name_sql."
 	        		            AND bk.`now_kc`<10";
 	               $result = mysql_query($new_sql);  
 	               $res_num = @mysql_num_rows($result);
 		           // $new_res = mysql_fetch_object($result); 
-		           if($res_num>0)
+		           if($res_num>0) 
 		             	while($new_rs = mysql_fetch_object($result))	
 		             		if($new_res->now_kc<10&$res_num>0){
-								   $table .= "<tr><td>".$title."</td><td>".$new_res->name."</td><td>".$new_res->sku."</td><td>".$new_res->now_kc."</td><td>".$new_rs->price."</td></tr>";
+		             				$op = '<a id="op_'.$new_res->sku.'" class="op" href="http://2u4u.com.cn/set_dalibao/'.$new_res->sku.'">';
+									if($new_res->is_dalibao) $op .= "移出礼包";
+									else $op .= "移入礼包";
+									$op .= '</a>';
+									
+								   $table .= "<tr><td>".$title."</td><td>".$new_res->name."</td><td>".$new_res->sku."</td><td>".$new_res->now_kc."</td><td>".$new_rs->price."</td><td>".$op."</td></tr>";
 							 }
 		           
 		            
@@ -135,6 +145,7 @@ $sql = "SELECT cp.field_product_neirongtiyao_value AS content,n.`title`
 <th scope="col">物料号</th>
 <th scope="col">现有库存</th>	
 <th scope="col">价格</th>
+<th scope="col">移出礼包（移出后，仍需手动修改“礼包站点”的具体书目）</th>
 <?php echo $table;?>
 </table>
 </div>

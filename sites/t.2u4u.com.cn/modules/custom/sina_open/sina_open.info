@@ -1,0 +1,11 @@
+; $Id: sina_open.info,v 1.1 2010/07/25 15:43:36 eastcn Exp $
+name = 新浪微博 API
+description = 请参见: http://open.t.sina.com.cn/wiki/index.php.
+core = 6.x
+
+; Information added by drupal.org packaging script on January 1, 1970 - 00:00
+version = "6.x-1.0-beta5"
+core = "6.x"
+project = "sina_open"
+datestamp = "1297396612"
+

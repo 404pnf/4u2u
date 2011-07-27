@@ -29,6 +29,7 @@ function uchome_xfjd_post(){
            FROM `uchome_xfjd_book` as xb
 	   LEFT JOIN `uchome_xfjd_p` as xp
 	   ON xb.pid=xp.pid
+           WHERE xp.endtime > UNIX_TIMESTAMP(now())
 	   LIMIT 0,4";
      /*$sql = "SELECT blogid,uid,username,subject 
 		    FROM `uchome_blog` 

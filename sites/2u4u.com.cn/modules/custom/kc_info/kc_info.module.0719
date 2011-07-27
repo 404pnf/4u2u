@@ -25,15 +25,6 @@ function kc_info_menu(){
      'access callback' => true,
      'file' => 'kc_info.page.inc'
    );  
-   
-   $items['update_book_info/%']=array(
-     'title' => '根据erp更新本地书目',
-     'page callback' => 'compare_erp_book_info',
-     'page arguments' =>  array(1),
-     'type' => MENU_CALLBACK,
-     'access callback' => true,
-     'file' => 'kc_info.page.inc'
-   );  
 /*
 	$items['unset_dalibao/%']=array(
      'title' => '设置大礼包',

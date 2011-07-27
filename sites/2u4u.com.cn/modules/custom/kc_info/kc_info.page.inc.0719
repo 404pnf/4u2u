@@ -1,0 +1,88 @@
+<?php
+
+function get_book_kc(){
+
+	
+	set_time_limit(0);
+    $query = "SELECT MAX(`changed`) time FROM {book_kc} WHERE is_dalibao=1";
+	$update_time = db_fetch_object(db_query($query));
+	$span = time()-$update_time->time;
+	//if($span>86400){
+	if($span>=0){
+		$sql = "SELECT `sku`,`last_kc`,`now_kc`,`changed` FROM `book_kc` where  is_dalibao=1";
+		$rs = db_query($sql);
+		$i = 0;
+		while($row = db_fetch_object($rs)){
+		  if(time()-$row->changed>86400){ 
+			 $kc = get_kc($row->sku);
+			  if($kc!=$row->now_kc){
+				$query = "UPDATE `book_kc` SET `last_kc`=`now_kc`,`now_kc` = %d ,`changed` =%d WHERE sku=%d ";
+				db_query($query,$kc,time(),$row->sku);
+				$i++;			  
+		    }   
+		 }  
+	    } 
+	    echo "<h2 align='center'>更新了".$i."条记录</h2>";
+}else  
+    echo "<h2 align='center'>今天已经进行过更新！</h2>";
+    
+   
+}
+
+/*
+function insert_book_kc_base_erp($sku){
+
+	$kc = get_kc($sku);
+	if($kc>=0){
+	    $sql = "INSERT INTO {book_kc}(`sku`,`last_kc`,`now_kc`,`changed`) VALUES (%d,%d,%d,%d) ";
+	    db_query($sql,$emno,$kc,$kc,time());
+	}
+	return $kc;
+}
+*/
+
+
+
+function get_erp_kc(){
+	$emno = (int)$_GET['sku'];
+	$kc = get_kc($emno);
+	echo $kc;
+	if($kc>=0){
+	    $sql = "INSERT INTO {book_kc}(`sku`,`last_kc`,`now_kc`,`changed`) VALUES (%d,%d,%d,%d) ";
+	    db_query($sql,$emno,$kc,$kc,time());
+	}
+}
+
+
+
+function get_kc($emno){
+	
+	$client = new SoapClient("http://nps.fltrp.com/webs/getkc/getkc.cfc?wsdl");
+	return $client->getkc($emno); 
+}
+
+
+function set_book_kc_is_dalibao($sku){
+	$sql_query = "SELECT is_dalibao FROM {book_kc} WHERE `sku` = %d ";
+	$rs = db_query($sql_query,$sku);
+	
+	if($row = db_fetch_object($rs)){
+		if($row-> is_dalibao){
+			$sql = "UPDATE {book_kc} SET is_dalibao=0 WHERE `sku` = %d ";
+			$output = "移入礼包";
+		}
+		else{
+			$sql = "UPDATE {book_kc} SET is_dalibao=1 WHERE `sku` = %d ";
+			$output = "移出礼包";
+		}
+		db_query($sql,$sku);
+		echo $output;
+	}
+	
+}
+/*
+function unset_book_kc_is_dalibao($sku){
+	$sql = "UPDATE {book_kc} SET is_dalibao=0 WHERE `sku` = %d ";
+	db_query($sql,$sku);
+	echo "成功移出大礼包";
+}*/

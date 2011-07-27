@@ -96,22 +96,26 @@ function recommender_points_topup_form(&$form_state = NULL){
 	 }
    return $form;
 }
+
 function recommender_points_topup_form_validate($form,&$form_state = NULL){
+
 	//第一步表单提交后的验证逻辑
 	if($form_state['storage']['step'] == 1 ){
 	
-		//
 		$values = $form_state['values'];
-		$emno = gift_points_get_emno($values['gcode']);
-		
-		if(!$emno[0]){
-			form_set_error('gcode', t("您输入的验证码不对。请再试一次。"));
-		}elseif($emno[2]){
-				form_set_error('gcode', t("您输入的验证码已经被使用过。"));
+		if(substr($values['gcode'],0,4) == '2u4u'){
 		}else{
-			//我们将在验证中取得值保存起来，这样在提交函数中可以使用。
-			$form_state['storage']['emno'] = $emno;
-		}	
+			$emno = gift_points_get_emno($values['gcode']);
+			
+			if(!$emno[0]){
+				form_set_error('gcode', t("您输入的验证码不对。请再试一次。"));
+			}elseif($emno[2]){
+					form_set_error('gcode', t("您输入的验证码已经被使用过。"));
+			}else{
+				//我们将在验证中取得值保存起来，这样在提交函数中可以使用。
+				$form_state['storage']['emno'] = $emno;
+			}	
+		}
 		
 	}
 	//第二步表单提交后的验证逻辑
@@ -129,14 +133,22 @@ function recommender_points_topup_form_validate($form,&$form_state = NULL){
 			form_set_error('recommender', t('推荐人不能是自己'));
 		}
 	}
+	
 }
+
+
 function recommender_points_topup_form_submit($form,&$form_state = NULL){
   if($form_state['storage']['step'] == 1 ){
 	
 		/******************************下面的这段代码复制自gift_points模块*********************************************/	
-		
+	
 		global $user;
 		$values = $form_state['values'];
+		//检查是否是自己生成的验证码.
+		if(substr($values['gcode'],0,4) == '2u4u'){
+			gift_points_topup_vcode($form,$form_state);
+			return ;
+	  }
 		//将原来放在submit里面的验证代码放到了validate函数中了，validate中所作的操作保存到了$form_state['storage']['emno']
 		$emno = $form_state['storage']['emno'];
 		$em = gift_points_get_em(gift_points_full_emno($emno[0]));

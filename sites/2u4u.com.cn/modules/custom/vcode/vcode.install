@@ -1,0 +1,81 @@
+<?php
+// $Id: vcode.install,v 1.1 2009/01/05 23:27:34 yangyicn Exp $
+
+/**
+ * @file
+ * vcode.module的安装文件.
+ */
+/**
+ * Implements hook_schema().
+ */
+function vcode_schema() {
+  $schema = array();
+
+  $schema['vcode'] = array(
+    'description' => '验证码.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary key.',
+        'type' => 'serial',
+        'not null' => TRUE,
+      ),
+      'code' => array(
+        'description' => 'A 12 character unique identifier for the vcode.',
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+			'point' => array(
+        'description' => 'point of this vcode.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0
+			),
+			'status' => array(
+        'description' => 'The status of vcode.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0
+			),
+			'uid' => array(
+        'description' => 'The uid of user of vcode.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0
+			),
+			'created' => array(
+        'description' => 'The Unix timestamp when the record was created.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0
+			),
+			'updated' => array(
+        'description' => 'The Unix timestamp when the record was updated.',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0
+			),   
+    ),
+    'primary key' => array('id'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */ 
+function vcode_install() {
+  drupal_install_schema('vcode');
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function vcode_uninstall() {
+  drupal_uninstall_schema('vcode');
+	db_query("DELETE FROM {variable} WHERE name LIKE 'vcode_%%'");
+}
+
+

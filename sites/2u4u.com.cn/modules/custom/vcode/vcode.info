@@ -1,0 +1,6 @@
+name = 验证码
+description = 办活动,用验证码充值.
+core = 6.x
+php = 5.0
+
+

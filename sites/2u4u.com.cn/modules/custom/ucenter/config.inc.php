@@ -16,7 +16,7 @@ define('UC_DBCONNECT', '0');
 define('UC_KEY', '9999Nbder3I5rbNeu6u2g1G4Gdj6F6K8Ba30obb1CfZf76yaCcodd2zfRb3196uc');
 define('UC_API', 'http://u.2u4u.com.cn/ucenter');
 define('UC_CHARSET', 'utf-8');
-define('UC_IP', '221.122.115.57');
+define('UC_IP', '');
 define('UC_APPID', '3');
 define('UC_PPP', '20');
 

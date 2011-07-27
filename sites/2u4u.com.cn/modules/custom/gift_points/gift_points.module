@@ -195,6 +195,12 @@ function gift_points_topup_form_submit($form,$form_stat){
 
   global $user;
   $values = $form_stat['values'];
+	
+	if(substr($values['gcode'],0,4) == '2u4u'){
+	  gift_points_topup_vcode($form,$form_stat);
+		return ;
+	}
+	
    $rs = preg_match("/[A-Z0-9]{12}/",$values['gcode']);  
   if($rs)
          $emno = gift_points_get_emno($values['gcode']);
@@ -272,9 +278,9 @@ function gift_points_topup_form_submit($form,$form_stat){
    db_query("INSERT INTO {topup} (uid, gcode, emno, time,status,points,price) VALUES (%d, '%s','%s',%d,%d,%d,%f)",$user->uid, $values['gcode'],gift_points_full_emno($emno[0]),time(),$is_add,$points,$price);
 	 // drupal_set_message(t('充值成功。 增加了 '.$points.' 个积分。'));
    drupal_goto('userpoints/gift/promote/'.$points);
- 
-}
 
+}
+ 
 function gift_points_get_emno($gcode)
 {
   $client = new SoapClient("http://nps.fltrp.com/webs/getsn.cfc?wsdl", array('login' => "getsn",'password'=> "fltrp<>?{}|"));
@@ -362,4 +368,43 @@ function gift_points_promote($point)
 </div>';
 	
 	return $output;
+}
+
+//这个函数由老葛添加,用来处理自动生成的验证码
+function gift_points_topup_vcode($form,$form_state){
+  global $user; 
+	$values = $form_state['values'];
+	//验证码等于用户输入的gcode
+  $vcode = $values['gcode'];
+	//drupal_set_message('123456:'.$vcode);
+	//根据vcode向数据库查询对应的记录对象
+	$sql_obj = "SELECT * FROM {vcode} WHERE code = '%s' ";
+	$vcode_obj = db_fetch_object(db_query($sql_obj,$vcode));
+	
+	//检查vcode对象是否存在，如果不存在，则表示验证码无效，如果存在，但是状态status的值为2，则表示已经使用过了。
+	if(empty($vcode_obj)){
+	  form_set_error('',t("您输入的验证码不对。请再试一次。"));
+		return;
+	}elseif(isset($vcode_obj->status) && $vcode_obj->status >= 2){
+	  form_set_error('',t("您输入的验证码已被使用。请再试一个。"));
+		return;
+	}
+	
+	//为当前用户添加积分
+  $points = $vcode_obj->point;
+  $params = array (
+    'uid' => $user->uid,
+    'points' => $points,
+	  'description' => '积分充值.自动生成的图书验证码',
+   );
+
+  $add_status = userpoints_userpointsapi($params);  
+  
+  //更新验证码的对应记录，将其状态修改为已使用的，也就是2。
+	$status = 2;
+  $sql_update = "UPDATE {vcode} SET status = %d, uid = %d, updated = %d  WHERE code = '%s' ";
+  db_query($sql_update, $status, $user->uid, time(), $vcode);
+
+	//重定向页面到userpoints/gift/promote，和原有程序保持一致
+  drupal_goto('userpoints/gift/promote/'.$points);
 }

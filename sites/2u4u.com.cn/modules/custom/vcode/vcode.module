@@ -1,0 +1,74 @@
+<?php
+// $Id$
+
+/**
+ * 实现钩子hook_menu().
+ */
+function vcode_menu() {
+  $items['admin/content/vcode/generate'] = array(
+    'title' => '生成验证码',
+    'page callback' => 'vcode_generate_page',
+    'access callback' => 'user_access',
+		'access arguments' => array('administer site configuration'),
+		'type' => MENU_LOCAL_TASK,
+    'file' => 'vcode.pages.inc',
+		'weight' => 3,
+  );
+	$items['admin/content/vcode'] = array(
+    'title' => '验证码管理',
+    'page callback' => 'vcode_admin_page',
+    'access callback' => 'user_access',
+		'access arguments' => array('administer site configuration'),
+    'file' => 'vcode.pages.inc',
+  );
+	$items['admin/content/vcode/new'] = array(
+    'title' => '验证码管理',
+    'page callback' => 'vcode_admin_page',
+    'access callback' => 'user_access',
+		'access arguments' => array('administer site configuration'),
+		'type' => MENU_DEFAULT_LOCAL_TASK,
+    'file' => 'vcode.pages.inc',
+		'weight' => 0,
+  );
+	$items['admin/content/vcode/open'] = array(
+    'title' => '已公开的验证码',
+    'page callback' => 'vcode_admin_open_page',
+    'access callback' => 'user_access',
+		'access arguments' => array('administer site configuration'),
+		'type' => MENU_LOCAL_TASK,
+    'file' => 'vcode.pages.inc',
+		'weight' => 1,
+  );
+	$items['admin/content/vcode/used'] = array(
+    'title' => '已用过的验证码',
+    'page callback' => 'vcode_admin_used_page',
+    'access callback' => 'user_access',
+		'access arguments' => array('administer site configuration'),
+		'type' => MENU_LOCAL_TASK,
+    'file' => 'vcode.pages.inc',
+		'weight' => 2,
+  );
+  return $items;
+}
+/**
+ * 实现钩子hook_theme()
+ */
+function vcode_theme() {
+ return array(
+    'vcode_admin_codes' => array(
+      'arguments' => array('form' => NULL),
+      'file' => 'vcode.pages.inc',
+    ),
+		'vcode_admin_open_codes' => array(
+      'arguments' => array('form' => NULL),
+      'file' => 'vcode.pages.inc',
+    ),
+		'vcode_admin_used_codes' => array(
+      'arguments' => array('form' => NULL),
+      'file' => 'vcode.pages.inc',
+    ),
+	);
+}
+
+
+

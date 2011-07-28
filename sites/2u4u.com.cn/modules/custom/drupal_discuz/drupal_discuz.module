@@ -118,7 +118,7 @@ function uhome_hotblog($day=7,$num=4){
      $time = strtotime("today");
     $sql = "SELECT blogid,uid,username,subject 
 		    FROM `uchome_blog` 
-		     GROUP BY uid ORDER BY hot DESC,viewnum DESC 
+		     GROUP BY uid ORDER BY RAND()
 		     LIMIT $num";		    
     $rs = db_query($sql);
 //var_dump($rs);

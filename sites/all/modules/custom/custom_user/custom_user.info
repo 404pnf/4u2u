@@ -1,0 +1,5 @@
+name = custom user
+description = 用户统一管理中心模块
+core = 6.x
+package = decoxy develope module
+version = "6.x"

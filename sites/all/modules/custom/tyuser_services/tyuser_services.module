@@ -1,0 +1,145 @@
+<?php
+// $Id: tyuser_services.module 2011/07/13 fu shun Exp $
+//本模块提供两个services方法，批量删除用户和批量更改用户信息
+
+/**
+ * Implementation of hook_service().
+ */
+function tyuser_services_service() {
+  return array(
+     array(
+      '#method'           => 'tyuser_services.update',
+      '#callback'         => '_tyuser_service_update',
+      '#access callback'  => '_tyuser_services_access',
+      '#access arguments' => array('view'),
+      '#args'             => array(
+        array(
+          '#name'           => 'name',
+          '#type'           => 'string',
+          '#description'    => t('A user name.'),
+        ),
+       array(
+          '#name'           => 'pass',
+          '#type'           => 'string',
+          '#description'    => t('A user password.'),
+        ),
+      array(
+          '#name'           => 'mail',
+          '#type'           => 'string',
+          '#description'    => t('A user mail.'),
+        ),
+       array(
+          '#name'           => 'status',
+          '#type'           => 'int',
+          '#description'    => t('A user status.'),
+        ),
+        array(
+          '#name'           => 'signature',
+          '#type'           => 'string',
+          '#description'    => t('The user signature.'),
+        ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Save user details.')
+    ),
+
+    // Tyuser.delete
+    array(
+      '#method'           => 'tyuser_services.delete',
+      '#callback'         => '_tyuser_service_delete',
+      '#access callback'  => '_tyuser_services_access',
+      '#access arguments' => array('view'),
+      '#args'             => array(
+        array(
+          '#name'           => 'name',
+          '#type'           => 'string',
+          '#description'    => t('A valid username.'),
+        ),
+       array(
+          '#name'           => 'method',
+          '#type'           => 'string',
+          '#description'    => t('Delete user method.'),
+        ),
+       array(
+          '#name' => 'notify',
+          '#type'           => 'int',
+          '#description'    => t('notify'),
+          ),
+      ),
+      '#return'           => 'struct',
+      '#help'             => t('Delete an user.')
+    ),
+  );
+}
+
+/**
+ * 删除用户信息
+ * @param $name
+ *   (string) 被删除的用户名称
+ * @param $method
+ *   (string) 删除方式,在drupal6系统中只有一种删除方式，此处可以不做审查,
+ *    为了兼顾(用户中心)的调用方法,继续保持这个参数
+ * @param $notify
+ *   (int)  是否要邮件通知用户的标识
+ */
+function _tyuser_service_delete($name,$method,$notify){
+  $account = user_load(array('name'=>$name));
+  if (empty($account)) {
+    $result = array('result'=>0,'message'=>'There is no user infomation');
+  }else{
+	user_delete($account, $account->uid);
+        uc_user_delete($name);
+	$result = array('result'=>1,'message'=>'Delete success');
+  }
+  return $result;
+}
+
+/**
+ * 更新用户信息
+ * @param $name
+ *   (string) 被更新的用户名称
+ * @param $pass
+ *   (string) 被更新的用户密码
+ * @param $mail
+ *   (string) 被更新的用户邮件
+ * @param $status
+ *   (int) 被更新的用户状态
+ * @param $signature
+ *   (string) 提供一种验证匹配,用一种静态的字符串加上动态的用户初始邮件来防止一些不法
+ *    人员通过后台来篡改用户信息
+ */
+function _tyuser_service_update($name,$pass,$mail,$status,$signature) {
+   if(!empty($name)){
+       $object = db_fetch_object(db_query("select uid,init from users where name = '%s'",$name));
+       if($object->uid){
+         $string = md5($name.$object->init);
+         if($string == $signature){
+          $new = array(
+                'name' => $name,
+                'mail' => $mail,
+                'pass' => $pass,
+                'status'=>$status
+               );
+          $account = user_load($object->uid);
+          $account = user_save($account, $new);
+          if($account){
+             $edit_result = uc_user_edit($name, '', $pass, $mail, 1);
+             if ($edit_result == -8) {
+                $result = array('result'=>-8,'message'=>'该用户受保护无权限更改');
+	     }else{
+               $result = array('result'=>1,'message'=>'update success');
+             }
+          } else {
+            $result = array('result'=>2,'message'=>'update false');
+          }
+        }
+     } else {
+        $result = array('result'=>0,'message'=>'There is no user infomation.');
+     }
+      return $result;
+  }
+}
+
+function _tyuser_services_access($op){
+  return TRUE;
+}

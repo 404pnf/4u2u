@@ -1,0 +1,376 @@
+<?php
+
+define('TYUSER_SERVICES_URL', 'http://129.0.0.48:8080/uums/services/UserAuthWS?wsdl');
+define('WEB_HTTP_HOST', 'http://'.$_SERVER['HTTP_HOST']);
+/**
+ * hook_form_alter(&$form, &$form_state, $form_id)
+ */
+function custom_user_form_alter(&$form, &$form_state, $form_id){
+   switch ($form_id) {
+    case 'user_login_block':
+    case 'user_login':
+      //首先要通过java验证中心验证此用户的合法性,最后再去调用系统登录验证
+      array_unshift($form['#validate'], '_custom_user_login_form_validate');
+      break;
+    case 'user_register':
+      //先执行drupal系统注册验证，如果验证通过，最后再调用此验证中心方法
+      array_push($form['#validate'], '_custom_user_register_final_validate');
+      break;
+    case 'user_profile_form':
+    case 'user_edit_form':
+      //先执行系统编辑验证流程，如果通过，最后调用此验证中心方法，修改用户信息
+      array_push($form['#validate'], '_custom_user_edit_validate');
+      break;
+    case 'user_confirm_delete':
+         //管理员取消指定用户时，先去用户中心注销，如果注销成功再在本网站系统注销
+         $form['#validate'][] = '_custom_user_confirm_delete_validate';
+      break;
+    case 'user_multiple_delete_confirm':
+         //管理员批量删除指定用户时，先去用户中心删除，如果删除成功再在本网站系统删除
+         $form['#validate'][] = '_custom_user_multiple_delete_confirm_validate';
+      break;
+    case 'user_admin_account':
+         //管理员批量编辑用户状态时，先去用户中心编辑，编辑成功后再在本网站系统编辑
+         $form['#validate'][] = '_custom_user_admin_account_update_validate';
+      break;
+    }
+}
+ 
+
+/**
+ * 自定义登录验证处理函数
+ * validator for user login
+ */
+function _custom_user_login_form_validate(&$form, &$form_state){
+//  当用户登录的时候通过webservice的方式，传递过去用户名称和密码
+//  此处需要得到用户的基本信息，确定验证中心有此用户
+  $client = new SoapClient(TYUSER_SERVICES_URL,array('encoding'=>'UTF-8'));
+  $values = $form_state['values'];
+  $params1 = '<?xml version="1.0" encoding="UTF-8" ?>
+                <UUMS>
+                  <BaseInfo>
+                      <UserName>'.gbkToUtf8($values['name']).'</UserName>
+                      <PassWord>'.$values['pass'].'</PassWord>
+                  </BaseInfo>
+                </UUMS>';
+  $params = array("parm"=>$params1);
+  $return_xmlinfo = $client->loginUser($params);
+  $xml = simplexml_load_string($return_xmlinfo->loginUserReturn);
+  $Return_info = $xml->ReturnInfo;
+  $BaseInfo    = $xml->BaseInfo;
+  if($Return_info->Result != 0){
+    foreach($Return_info->MsgList as $error){
+        $message = utf8togbk($error->Message);
+        form_set_error('name',$message);
+     }
+  } else {
+    $uid = db_result(db_query("select uid from users where name = '%s' and init = '%s' and status = %d",$values['name'],$BaseInfo->Init,$BaseInfo->Status));
+  //查询本地用户表中有无此用户信息记录，如果没有，则创建此用户
+  if (!$uid) {
+        // Status = 1 because we never want accounts started as "blocked".
+        // 调用drupal api函数 user_save()来处理用户添加和更新
+        $new = array(
+          'name' => $values['name'],
+          'mail' => $BaseInfo->Mail,
+          'init' => $BaseInfo->Init,
+          'status' => 1,
+          'pass' => $values['pass'],
+        );
+        $account = user_save(null, $new);
+        $account = user_load($account->uid);
+        if (module_exists('ucenter')) {
+            list($uc_uid, $uc_username, $uc_password, $uc_email) = uc_user_login($values['name'],$values['pass']);
+            //此处去ucernter中心验证此用户是否已经存在，如果存在匹配用户名和密码是否正确
+            //如果返回的是-2 或者是 -1
+            //此处根据ucenter模块的登录验证，得到-1 是没有此用户，-2代表用户密码错误
+            if ($uc_uid == -2) {
+                     uc_user_edit($values['name'], '', $values['pass'], $BaseInfo->Mail, 1);
+            } else if ($uc_uid == -1) {
+               uc_user_register($values['name'], $values['pass'], $BaseInfo->Mail);
+            }
+        }
+      } else {
+        //更新此用户信息,更新时user_save()函数的第一个参数至少包含用户的uid
+        $edit = array(
+          'name' => $values['name'],
+          'mail' => $BaseInfo->Mail,
+          'pass' => $values['pass'],
+        );
+        $account = user_load($uid);
+        $account = user_save($account, $edit);
+      }
+    $ServiceTicket = (array)$BaseInfo->ServiceTicket;
+    $_SESSION['userticket'] = $ServiceTicket[0];
+  }
+}
+
+/**
+ * 自定义注册验证函数
+ * validator for user register
+ */
+function _custom_user_register_final_validate(&$form, &$form_state){
+  $error = FALSE;
+  //此处检查注册信息的有效性，如果没有通过drupal系统表单验证，则会产生错误信息.
+  $errors = form_get_errors();
+  if (empty($errors)) {
+    global $user;
+    $values   = $form_state['values'];
+    $createuser = $user->uid ? $user->name: $values['name'];
+    $createuser = gbkToUtf8($createuser);
+    $username   = gbkToUtf8($values['name']);
+    $status   = $values['status'] ? $values['status'] : 1;
+    $pass     = isset($values['pass']) ? $values['pass'] : '';
+    if($user->uid){
+       $ServiceTicket = $_SESSION['userticket'];
+    } else {
+      $ServiceTicket = '';
+    }
+    //注册验证，通过webservice的方式传递给用户中心用户名称，验证此用户是否存在，存在就不让注册，反之则允许注册
+    //传送给服务器端xml文件信息
+    $client = new SoapClient(TYUSER_SERVICES_URL,array('encoding'=>'UTF-8'));
+    $params1 = '<?xml version="1.0" encoding="UTF-8" ?>
+          <UUMS>
+            <BaseInfo>
+                <UserName>'.$createuser.'</UserName>
+                <ServiceTicket>'.$ServiceTicket.'</ServiceTicket>
+            </BaseInfo>
+            <UpdateInfo>
+                <UserName>'.$username.'</UserName>
+                <PassWord>'.$pass.'</PassWord>
+                <Mail>'.$values['mail'].'</Mail>
+                <RegisterSource>'.WEB_HTTP_HOST.'</RegisterSource>
+                <Status>'.$status.'</Status>
+            </UpdateInfo>
+          </UUMS>';
+    $params = array("parm"=>$params1);
+    $return_xmlinfo = $client->registerUser($params);
+    //解析从服务器端返回的xml信息
+    $xml = simplexml_load_string($return_xmlinfo->registerUserReturn);
+    $Return_info = $xml->ReturnInfo;
+    $BaseInfo    = $xml->BaseInfo;
+   if($Return_info->Result != 0){
+      foreach($Return_info->MsgList as $error){
+          $message = utf8togbk($error->Message);
+          if($error->ErrID == 'SYS_004'){
+            form_set_error('name',$message);
+          }
+          else if($error->ErrID == 'SYS_005'){
+            form_set_error('mail',$message);
+          }
+          else if($error->ErrID == 'SYS_008'){
+            form_set_error('',$message);
+          } else {
+            form_set_error('',$message);
+          }
+       }
+    } else {
+      $ServiceTicket = (array)$BaseInfo->ServiceTicket;
+      $_SESSION['userticket'] = $ServiceTicket[0];
+    }
+ }
+}
+
+/**
+ * 自定义编辑验证函数
+ * validator for user edit
+ */
+function _custom_user_edit_validate(&$form, &$form_state){
+  global $user;
+  $error = FALSE;
+  //此处检查注册信息的有效性，如果没有通过drupal系统表单验证，则会产生错误信息.
+  $errors = form_get_errors();
+ if (empty($errors)) {
+     //在用户编辑页面有保存和取消两种选择按钮,处理的事件也不相同,默认的普通用户只显示修改保存按钮,管理员会显示两种
+     //当真正保存用户信息的时候才进行下面的流程,删除用户则走别的流程
+    if($form_state['values']['op'] == "保存" || $form_state['values']['op'] == 'Save'){
+      $values = $form_state['values'];
+      $update_name  = $user->uid ? $user->name: $values['name'];
+      $update_name  = gbkToUtf8($update_name);
+      $create_name = isset($values['name']) ? $values['name'] : $user->name;
+      $create_name  = gbkToUtf8($create_name);
+      $status = isset($values['status']) ? $values['status'] : 1;
+      $pass   = $values['pass'];
+      $mail   = $values['mail'];
+      if(isset($_SESSION['userticket'])){
+        $ServiceTicket = $_SESSION['userticket'];
+      } else {
+        $ServiceTicket = md5($user->name.$user->init);
+      }
+      //传送给服务器端xml文件信息
+      $client = new SoapClient(TYUSER_SERVICES_URL,array('encoding'=>'UTF-8'));
+      $params1 = '<?xml version="1.0" encoding="UTF-8" ?>
+            <UUMS>
+              <BaseInfo>
+                  <UserName>'.$update_name.'</UserName>
+                  <ServiceTicket>'.$ServiceTicket.'</ServiceTicket>
+                  <EditSource>'.WEB_HTTP_HOST.'</EditSource>
+              </BaseInfo>
+              <UpdateInfo>
+                  <UserName>'.$create_name.'</UserName>
+                  <PassWord>'.$pass.'</PassWord>
+                  <Mail>'.$mail.'</Mail>
+                  <Status>'.$status.'</Status>
+                  <Role>2</Role>
+              </UpdateInfo>
+            </UUMS>';
+        $params = array("parm"=>$params1);
+        $return_xmlinfo = $client->updateUser($params);
+        //解析从服务器端返回的xml信息
+        $xml = simplexml_load_string($return_xmlinfo->updateUserReturn);
+        $Return_info = $xml->ReturnInfo;
+        $BaseInfo    = $xml->BaseInfo;
+       if($Return_info->Result != 0){
+          foreach($Return_info->MsgList as $error){
+              $message = utf8togbk($error->Message);
+              form_set_error('', t($message));
+           }
+       }
+    }
+  }
+}
+
+/**
+ * 自定义单条用户删除处理函数
+ */
+function _custom_user_confirm_delete_validate(&$form, &$form_state){
+  global $user;
+  $username = '';
+  if($form_state['values']['_account']->name){
+    $username = $form_state['values']['_account']->name;
+  }
+  $flag_method = 'user_cancel_reassign';
+  $user_cancel_notify = 0;
+  $ServiceTicket = $_SESSION['userticket'];
+  $client = new SoapClient(TYUSER_SERVICES_URL,array('encoding'=>'UTF-8'));
+  $params1 = '<?xml version="1.0" encoding="UTF-8" ?>
+                  <UUMS>
+                    <BaseInfo>
+                        <UserName>'.gbkToUtf8($user->name).'</UserName>
+                        <ServiceTicket>'.$ServiceTicket.'</ServiceTicket>
+                        <EditSource>'.WEB_HTTP_HOST.'</EditSource>
+                    </BaseInfo>
+                    <UpdateInfo>
+                      <UserName>'.gbkToUtf8($username).'</UserName>
+                      <DeleteLevel>'.$flag_method.'</DeleteLevel>
+                      <DeleteNotify>'.$user_cancel_notify.'</DeleteNotify>
+                    </UpdateInfo>
+                 </UUMS>';
+    $params = array("parm"=>$params1);
+    $return_xmlinfo = $client->deleteUser($params);
+    $xml = simplexml_load_string($return_xmlinfo->deleteUserReturn);
+    $Return_info = $xml->ReturnInfo;
+    $BaseInfo    = $xml->BaseInfo;
+   if($Return_info->Result != 0){
+      foreach($Return_info->MsgList as $error){
+          $message = utf8togbk($error->Message);
+          form_set_error('', t($message));
+       }
+   }
+}
+
+/**
+ * 管理员批量删除用户处理函数
+ */
+function _custom_user_multiple_delete_confirm_validate(&$form, &$form_state){
+  global $user;
+  $operation = $_POST['operation'];
+  if($operation == 'delete'){
+     $accounts = array_filter($form_state['values']['accounts']);
+     $flag_method = 'user_cancel_reassign';
+     $user_cancel_notify = 0;
+     $ServiceTicket = $_SESSION['userticket'];
+     $client = new SoapClient(TYUSER_SERVICES_URL,array('encoding'=>'UTF-8'));
+     $params1 = '<?xml version="1.0" encoding="UTF-8" ?>
+                  <UUMS>
+                    <BaseInfo>
+                        <UserName>'.gbkToUtf8($user->name).'</UserName>
+                        <ServiceTicket>'.$ServiceTicket.'</ServiceTicket>
+                        <EditSource>'.WEB_HTTP_HOST.'</EditSource>
+                    </BaseInfo>';
+     foreach ($accounts as $uid) {
+        $account = user_load(array('uid' => (int)$uid));
+        // Prevent user 1 from being canceled.
+        // 预防管理员被取消
+        if ($uid <= 1) {
+          continue;
+        }
+        $params1 .= '<UpdateInfo>
+                      <UserName>'.gbkToUtf8($account->name).'</UserName>
+                      <DeleteLevel>'.$flag_method.'</DeleteLevel>
+                      <DeleteNotify>'.$user_cancel_notify.'</DeleteNotify>
+                   </UpdateInfo>';
+      }
+      $params1 .='</UUMS>';
+      $params = array("parm"=>$params1);
+      $return_xmlinfo = $client->deleteUser($params);
+      $xml = simplexml_load_string($return_xmlinfo->deleteUserReturn);
+      $Return_info = $xml->ReturnInfo;
+      $BaseInfo    = $xml->BaseInfo;
+     if($Return_info->Result != 0){
+        foreach($Return_info->MsgList as $error){
+            $message = utf8togbk($error->Message);
+            form_set_error('', t($message));
+         }
+     }
+  }
+}
+
+/**
+ * 管理员批量编辑用户状态处理函数
+ */
+function _custom_user_admin_account_update_validate(&$form, &$form_state){
+  global $user;
+  $operation = $_POST['operation'];
+  if($operation == 'block' || $operation == 'unblock'){
+    $accounts = array_filter($form_state['values']['accounts']);
+    $ServiceTicket = $_SESSION['userticket'];
+    if( $operation == 'block'){
+      $states = 0;
+    } else {
+      $states = 1;
+    }
+    $client = new SoapClient(TYUSER_SERVICES_URL,array('encoding'=>'UTF-8'));
+    $params1 = '<?xml version="1.0" encoding="UTF-8" ?>
+          <UUMS>
+	  <BaseInfo>
+	      <UserName>'.gbkToUtf8($user->name).'</UserName>
+	      <ServiceTicket>'.$ServiceTicket.'</ServiceTicket>
+              <EditSource>'.WEB_HTTP_HOST.'</EditSource>
+	  </BaseInfo>';
+    foreach ($accounts as $uid) {
+      $account = user_load(array('uid' => (int)$uid));
+      // Prevent user 1 from being canceled.
+      // 预防管理员被取消
+      if ($uid <= 1) {
+        continue;
+      }
+     $params1 .= '<UpdateInfo>
+                      <UserName>'.gbkToUtf8($account->name).'</UserName>
+                      <Status>'.$states.'</Status>
+                   </UpdateInfo>';
+    }
+  $params1 .= '</UUMS>';
+  $params = array("parm"=>$params1);
+  $return_xmlinfo = $client->updateUser($params);
+  $xml = simplexml_load_string($return_xmlinfo->updateUserReturn);
+  $Return_info = $xml->ReturnInfo;
+  $BaseInfo    = $xml->BaseInfo;
+   if($Return_info->Result != 0){
+      foreach($Return_info->MsgList as $error){
+          $message = utf8togbk($error->Message);
+          form_set_error('', t($message));
+       }
+   }
+ }
+}
+
+function gbkToUtf8($message){
+  $returnvalue = iconv('UTF-8','UTF-8',rawurlencode($message));
+  return $returnvalue;
+}
+
+
+function utf8togbk($message){
+  $sendvalue = iconv('UTF-8','UTF-8',rawurldecode($message));
+  return $sendvalue;
+}

@@ -180,8 +180,22 @@ function ucenter_user($op, &$edit, &$account, $category = null) {
 
 			//watchdog(t('user'), t('send user login info to ucenter, user name is @username', array('@username' => $edit['name'])));
 
-			uc_user_delete($account->name);
+			//uc_user_delete($account->name);
 
+			//break;
+		        // 20110808 by decoxy begin
+                        // uc_user_delete($account->name); 原先调用此方法传的参数为$account->name；
+			// uc_get_user() 此函数用以返回用户在ucenter下的个人信息，如下数组
+			// return array(
+			//      0 => uid,
+			//      1 => 'username',
+			//      2 => 'user email',
+			//  );
+			$uc_user = uc_get_user($account->name);
+			//watchdog(t('user'), t('send user login info to ucenter, user name is @username', array('@username' => $edit['name'])));
+                        //此uc_user_delete() 函数只接受用户uid参数
+			uc_user_delete($uc_user[0]);
+                        // 20110808 by decoxy end
 			break;
 
 		case 'submit':

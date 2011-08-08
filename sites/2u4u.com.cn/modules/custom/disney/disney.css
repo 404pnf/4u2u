@@ -32,7 +32,13 @@ font-size:1.5em;
 font-weight:bold;
 padding:20px;
 }
-
+.disney-series-description{
+    background-color: #FFFCF3;
+    color: #B67C4D;
+    padding: 18px 15px 20px;
+    text-indent: 25px;
+    width: 570px;
+}
 .page-disney .title{
 display:none;
 }

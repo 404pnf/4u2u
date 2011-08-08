@@ -19,7 +19,7 @@ function disney_list_page($series_id=1)
 	 
  	// $name = $name_array[$series_id];
 
-	 $sql = "SELECT * FROM {disney_book} WHERE `series_id` = %d ORDER BY book_id";
+	 $sql = "SELECT * FROM {disney_book} b LEFT JOIN {disney_series} s ON b.`series_id` = s.`series_id` WHERE b.`series_id` = %d ORDER BY book_id";
 
 	 $res = db_query($sql,$series_id);
 
@@ -46,7 +46,7 @@ function disney_list_page($series_id=1)
 		       		
 		       	    $content .="<div class='disney-series'>";
 		            $content .= "<div class='disney-series-name'>".$row->series_name."</div>";
-	
+					$content .= "<div class='disney-series-description'>".$row->series_description."</div>";
 		       }      
 		     
 		            $content .="<div class='disney-book-content ".$class."'>";

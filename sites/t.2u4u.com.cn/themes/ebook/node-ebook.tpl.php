@@ -57,54 +57,14 @@
 
   <div class="content clear">
       <div class="ebook_title_bg"><h1 class="title"><?php print $title; ?></h1></div>
-	  <div class="ebook_top clearfix">
-		<div class="yuedu_permission fleft">
-			<?php print ebook_output_buy_button($node); ?>
-
-			<?php 
-				$output = '';
-				$node_terms=taxonomy_node_get_terms($node , $key = 'tid'); 
-				foreach($node_terms as $tid => $tmp_term){
-					if($tid==10359) 
-						$output .= '<div class="pdfdl"><a href="http://shop.2u4u.com.cn/pdfdl">pdf文件下载</a></div>';
-				}
-				print $output;
-			?>
-		</div>
-		<div class="fivestar_votes fright">	
-				<?php // print fivestar_widget_form($node); ?>
-				<?php print $node->content[fivestar_widget]['#value']; ?>
-		</div>
-	  </div>
-	
-	
-	
-	<div class="author_tags clearfix">
-		<?php if(strlen($node->field_yuedu_author[0]['view'])>2):?>		  
-			<div class="field_yuedu_author fleft"> <span class="field_label">作者：</span>
-				<span class="field_content"><?php print $node->field_yuedu_author[0]['view'] ?></span>
-			</div>
-		 <?php endif ?>
-		<?php if ($terms): ?>
-			<div class="ebook_terms terms terms-inline fright"><span class="field_label">标签：</span>
-				<span class="field_content"><?php print $terms; ?></span>
-			</div>
-		<?php endif; ?>
-	</div>
-			
-	<?php if(strlen($node->field_yuedu_summary[0]['view'])>2):?>		  
-		<div class="field_yuedu_summary">
-			<span class="field_content"><?php print $node->field_yuedu_summary[0]['view'] ?></span>
-		</div>
-    <?php endif ?>
-
+	 
 		<?php if(strlen($node->field_yuedu_player[0]['view'])>2):?>		  
 			<div class="field_yuedu_player"> 
 				<a id="yuedu_player" name="yuedu_player"></a><span class="field_content"><?php print $node->field_yuedu_player[0]['view'] ?></span>
 			</div>
 		<?php endif ?>
      
-    </div>
+  </div>
 
 
     
@@ -112,44 +72,7 @@
       <div class="links clear"> <?php print $links; ?></div>
     <?php endif; ?>
 
-	
-		<?php 
 
-		$output=""; 
-		$output2=""; 
-		$node_terms=taxonomy_node_get_terms($node , $key = 'tid'); 
-		foreach($node_terms as $tid => $tmp_term){
-			$output .= $tid.",";
-			$output2 .= phptemplate_get_videoterms('termid_by_name','default',$tmp_term->name);
-		}
-		$output=substr($output,0,strlen($output)-1);
-		$output2=substr($output2,0,strlen($output2)-1);
-	?>
-	<?php 
-				$relate_video ='';
-				//$relate_ebook ='';
-				
-				$relate_ebook =views_embed_view('yuedu_taxonomy_term','block_2',$node->nid,$output);
-				$relate_video =phptemplate_get_video('media_taxonomy_term','block_3',$output2);
-				
-				
-				if(strlen($relate_video)>146) {
-					$relate_video .='<div class="more-link"><a href="http://video.2u4u.com.cn/erelate/'.$output2.'">更多>></a></div>'; 
-				}
-				else {
-					$relate_ebook =views_embed_view('yuedu_taxonomy_term','block_3',$node->nid,$output);
-					$relate_ebook = '<div class="ebook_none_mrelate">'.$relate_ebook.'</div>';
-				}
-			?>
-	<div class="relatebox">
-		<? print $relate_ebook; ?>
-		<div class="video_relate">
-			<? print $relate_video; ?>
-		</div>
-	</div>
-	
-	
-	
  </div> <!-- /node-inner -->
 </div> <!-- /node-->
 <?php endif; ?>

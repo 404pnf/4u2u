@@ -1,0 +1,53 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * egs 需要的资源,按标签调取.
+ */
+
+
+/**
+ * 实现hook_menu钩子，统一用户中心的URL
+ */
+function egs_resources_menu(){
+	
+	$items['resources_by_tags/%'] = array(
+		//'title' => '积分记录',
+		'page callback' => 'egs_resources_by_tags',
+		'page arguments' => array(1),
+		'access callback' => true,
+		//'access arguments' => array(1),
+		'type' => MENU_CALLBACK,
+		//'file' => 'egs_resources.pages.inc',
+	);
+
+	return $items;
+
+}
+
+function egs_resources_by_tags($tags){
+	
+	$resources = "";
+	$tags_ids = " ";
+	$tags_array = explode(',',$tags);
+	$tags_id_array = array();
+	
+	foreach($tags_array as $index => $tag){
+
+		$terms = taxonomy_get_term_by_name($tag);
+		
+		foreach($terms as $i => $term){
+			$tags_id_array[] = $term->tid;
+		}
+	}
+	
+	if(!empty($tags_id_array))
+		$tags_ids = implode(',',$tags_id_array);
+	//echo '<br>tags_ids::'.$tags_ids;
+	$resources = views_embed_view('yuedu_taxonomy_term','page_5',$tags_ids);
+	
+	echo $resources;
+
+}
+	

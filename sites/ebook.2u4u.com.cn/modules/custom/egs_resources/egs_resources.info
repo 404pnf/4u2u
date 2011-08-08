@@ -1,0 +1,11 @@
+; $Id: egs_resources.info,v 1.2 2008/02/27 11:31:21 rwohleb Exp $
+name = egs resources by tags 为测试系统调取资源
+description = "Import ERP data to site."
+core = 6.x
+package = 2u4u
+
+; Information added by drupal.org packaging script on 2008-02-27
+version = "6.x-1.x-dev"
+core = "6.x"
+project = "2u4u"
+datestamp = "1204114023"

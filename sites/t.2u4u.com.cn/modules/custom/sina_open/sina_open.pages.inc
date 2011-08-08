@@ -293,7 +293,7 @@ function theme_sina_open_yuedu_block(){
 	$output = '';
 	$nid = arg(1);
 	
-	$output = '456<div class="sina_open_yuedu"><label class="sina_users">他们也在读这本书...</label><div class="yuedu_centent">';
+	
 	
 	if($nid > 0 ){
 		$sql_yuedu = "SELECT *
@@ -306,8 +306,15 @@ function theme_sina_open_yuedu_block(){
 							AND content_id =%d
 						) AND uid != %d lIMIT %d";
 		$result = db_query($sql_yuedu, $fid, $nid, $uid, $num);
+		
+		$num_rows = FALSE;
+		
+		$rows = '';
+		
 		while ($o = db_fetch_object($result)) 
-      	{
+		{
+			$num_rows = TRUE;
+			
 			if ($o->sina_uid) {
 				$sina_data = get_sina_info_by_sina_id($o->sina_uid);
 				$value = $sina_data;
@@ -317,16 +324,23 @@ function theme_sina_open_yuedu_block(){
 				$sina_url = 'http://weibo.com/'.$sina_id.'/profile';
 				$sina_image_url = $value->profile_image_url;
 				
-				$output .= '<div class="yuedubenshu">';
+				$rows .= '<div class="yuedubenshu">';
 				
-				$output .= '<div id="sina_image"> <a href="'.$sina_url.'"> <img src="'.$sina_image_url.'"/></a></div>';	//悠粉头像
-				$output .= '<div id="sina_name"> <a href="'.$sina_url.'">'.$sina_name.'</a></div>';	//悠粉用户名
+				$rows .= '<div id="sina_image"> <a href="'.$sina_url.'"> <img src="'.$sina_image_url.'"/></a></div>';	//悠粉头像
+				$rows .= '<div id="sina_name"> <a href="'.$sina_url.'">'.$sina_name.'</a></div>';	//悠粉用户名
 				
-				$output .= '</div>';
+				$rows .= '</div>';
 			}
 		 }
+		 
+		 if($num_rows){
+		 	$output = '<div class="sina_users">他们也在读这本书...</div><div class="sina_open_yuedu"><div class="yuedu_centent">';
+			$output .= $rows;
+		 	$output .= '</div></div>';
+		 }
+		 
     }
-    $output .= '</div></div>';
+    
 	return $output;
 }
 
@@ -347,19 +361,111 @@ function theme_sina_open_fans_block(){
 				
 				$output .= '<div class="fans-row row-'.($index+1).'">';
 				
-				$output .= '<div id="sina_name"> <a href="'.$sina_url.'">'.$sina_name.'</a></div>';	//悠粉用户名
 				$output .= '<div id="youyou_image"> <a href="'.$sina_url.'"> <img src="'.$sina_image_url.'"/></a></div>';	//悠粉头像
+				$output .= '<div id="sina_name"> <a href="'.$sina_url.'">'.$sina_name.'</a></div>';	//悠粉用户名
 				
 				$output .= '</div>';
 			}
 				
 		}
 	}
+	else
+		$output .= '您还没有粉丝';
 	$output .= '</div></div>';
 	
 	return $output;
 }
 
+
+/*-------悠游外语学习网的话题-------*/
+function theme_sina_open_comment_trends_block(){
+	$youyou_trend_name = '外语微阅读';
+
+	$output = '';
+
+	if($data = get_trends_by_trend_name($youyou_trend_name)){
+		//echo var_dump($data);
+		
+		foreach($data as $index => $value){
+			//if($index < 9){
+				//$status = $value->retweeted_status;
+				$status = $value;
+				$id = $status->id;
+				$created_at = $status->created_at;
+				$source = $status->source;
+				$text = $status->text;
+				
+				$text = handle_text($text);
+				
+				$user  = $status->user;
+				$user_id = $user->id;
+				$user_name = $user->name;
+				$user_profile_image_url = $user->profile_image_url;
+				$user_screen_name = $user->screen_name;
+				$user_url = 'http://weibo.com/'.$user_id.'/profile';
+				
+				
+				$output .= '<div class="trends-row row-'.($index+1).'">';
+				
+				
+				$output .= '<div id="user_image"> <a href="'.$user_url.'"> <img src="'.$user_profile_image_url.'"/></a></div>';	//微博用户头像
+				$output .= '<div id="user_name_text"><span id="user_name"> <a href="'.$user_url.'">'.$user_screen_name.'</a>：</span>';	//微博用户名
+				$output .= '<span id="user_text"> '.$text.'</span>';
+				$output .= '<span id="user_created_at"> '.date('Y-m-d h:m:s',strtotime($created_at)).'</span></div>';
+				$output .= '</div>';
+			//}
+				
+		}
+	}
+	
+	return $output;
+}
+
+
+/*-------正在热评的图书（收藏、阅读、评论）------*/
+function theme_sina_open_popular_comment_book_block(){
+
+	$output = '';
+	if($data = get_popular_comment_book()){
+		//echo var_export($data,true);
+		//array ( 0 => array ( 'sina_user' => array ( 'id' => 1283838614, 'name' => '小雪飞雨', 'url' => 'http://weibo.com/1283838614/profile', 'image_url' => 'http://tp3.sinaimg.cn/1283838614/50/5601789937/0', 'comment_count' => '133', ), 'book' => array ( 'nid' => '60705', 'title' => '鲁宾孙漂流记(书虫)', 'type' => 'ebook', ), ), ) 
+		
+		foreach($data as $index => $value){
+			if($index < 10){
+				$sina_user = $value['sina_user'];
+				$book = $value['book'];
+				
+				$output .= '<div class="comment_book-row row-'.($index+1).'">';
+				
+				$output .= '<div id="user_image"> <a href="'.$sina_user['url'].'"> <img src="'.$sina_user['image_url'].'"/></a></div>';	//用户头像
+				$output .= '<div class="user-book-content"><span id="user_name"> <a href="'.$sina_user['image_url'].'">'.$sina_user['name'].'</a></span>';	//用户名
+				$output .= '评论<span id="book_name"> <a href="/node/'.$book['nid'].'">'.$book['title'].'</a></span>';	//书名
+				$output .= '<br/><span id="comment_count"> '.$sina_user['comment_count'].'</span></div>';	//评论的个数
+				
+				$output .= '</div>';
+			}
+				
+		}
+	}
+	else
+		$output .= '没有书评';
+	
+	return $output;
+}
+
+
+
+function handle_text($text){
+	//处理微博具体文章内容
+	//索索实例：$search_youyou = urlencode('http://weibo.com/k/外语微阅读&refer=miniblog_jing');
+	
+	$text = ereg_replace("[[:alpha:]]+://[^<>[:space:]]+[[:alnum:]/]","<a href=\"\\0\">\\0</a>", $text);//把url输出成网页链接
+	
+	$text = preg_replace("/＃(.*?)＃/","<a href=http://weibo.com/k/\\1&refer=miniblog_jing>＃\\1＃</a>", $text);
+	//微博中以＃开头结尾的内容，可以直接点击搜索
+	
+	return $text;
+}
 
 /* 加悠粉 */
 function sina_open_guanzhu($sina_id){
@@ -396,15 +502,7 @@ echo var_export($values,true);
 function get_sina_info_by_sina_id($sina_id){
 
 	$values = array();
-	/*
-	if ($tok = sina_open_get_access_token($sina_id)){
-		$values['oauth_access_token_key'] = $tok->key;
-		$values['oauth_access_token_secret'] = $tok->secret;
-		if ($tok->verifier) {
-		  $values['oauth_verifier'] = $tok->verifier;
-		}
-	 }
-	 */
+
 	 $arr = array();
 	 if ($result = sina_open_t_set_request('http://api.t.sina.com.cn/users/show/'.$sina_id.'.json',$values)){
 		
@@ -461,18 +559,11 @@ function get_user_info_by_sina_id($sina_id = 0){
     
 }
 
+/* 粉丝 */
 function get_follows_by_uid($uid = 0){
 	
 	
 	$values = array();
-	/*
-	if ($tok = sina_open_get_access_token($uid)){
-		$values['oauth_access_token_key'] = $tok->key;
-		$values['oauth_access_token_secret'] = $tok->secret;
-		if ($tok->verifier) {
-		  $values['oauth_verifier'] = $tok->verifier;
-		}
-	 }*/
 	 if($data = get_user_info_by_uid($uid)){
 	 	$sina_id = $data->sina_uid;
 	 	$sina_name = $data->sina_name;
@@ -486,4 +577,99 @@ function get_follows_by_uid($uid = 0){
 	}
 	
 	return false;
+}
+
+/* 话题列表 */
+function get_trends_by_trend_name($trend_name){
+
+	$values = array('trend_name' => $trend_name);    
+	//$values = array('trend_name' => '微影评哈利波特7'); 
+	 if ($result = sina_open_t_set_request('http://api.t.sina.com.cn/trends/statuses.json',$values)){
+
+		$data = json_decode ($result->data);
+		
+		return $data;
+	}
+	
+}	
+
+/* 热评的书 */
+function get_popular_comment_book(){
+	
+	$comment_book_array = array();
+	$result = db_query("SELECT nid, count( s.uid ) count, s.uid, 
+      					subject, name
+					FROM `comments` c, sina_open_user s
+					WHERE c.uid = s.uid
+					AND `nid`
+					IN (
+						SELECT nid
+						FROM `node`
+						WHERE TYPE = 'ebook'
+					)
+					GROUP BY nid
+					ORDER BY count DESC");
+					
+	while ($o = db_fetch_object($result)) {
+		
+		if ($o->nid) {
+			
+			$node = node_load($o->nid);
+			$user = get_user_info_by_uid($o->uid);
+			//echo $o->nid.$user['sina_uid'];
+			if($user['sina_uid']){
+				$sina_user = get_sina_info_by_sina_id($user['sina_uid']);
+				$comment_count = get_comment_count_by_uid($o->uid);
+				
+				$sina_id = $sina_user->id;
+				$sina_name = $sina_user->name;
+				$sina_url = 'http://weibo.com/'.$sina_id.'/profile';
+				$sina_image_url = $sina_user->profile_image_url;
+				
+				$sina_user_array = array(
+					'id' => $sina_id,
+					'name' => $sina_name,
+					'url' => $sina_url,
+					'image_url' => $sina_image_url,
+					'comment_count' => $comment_count
+				);
+				$book_array = array(
+					'nid' => $node->nid,
+					'title' => $node->title,
+					'type' => $node->type
+				);
+				$comment_book_array[] = array(
+					'sina_user'=>$sina_user_array,
+					'book'=>$book_array,
+				);
+				
+			}
+				
+		} 
+   
+	}
+	
+	return $comment_book_array;
+}
+
+
+
+function get_comment_count_by_uid($uid){
+	if ($o = db_fetch_object(db_query("SELECT count( nid ) count, uid
+										FROM `comments` c
+										WHERE `nid`
+										IN (
+										
+										SELECT nid
+										FROM `node`
+										WHERE TYPE = 'ebook'
+										)
+										AND uid = %d ",$uid))) {
+		if($o->uid){
+			return $o->count;
+		}
+		return 0;
+	}
+	
+	return 0;
 }

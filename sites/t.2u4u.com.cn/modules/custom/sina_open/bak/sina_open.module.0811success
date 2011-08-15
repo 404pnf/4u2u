@@ -2,6 +2,34 @@
 // $Id: sina_open.module,v 1.5 2011/02/11 03:52:44 eastcn Exp $
 include_once( 'config.php' );
 include_once( 'weibooauth.php' );
+/*
+$o = new WeiboOAuth( WB_AKEY , WB_SKEY  );
+
+$keys = $o->getRequestToken();
+
+$url = $o->getAuthorizeURL( $keys['oauth_token'] ,false , 'http://t.2u4u.com.cn');
+
+$_SESSION['keys'] = $keys;
+
+$o = new WeiboOAuth( WB_AKEY , WB_SKEY , $_SESSION['keys']['oauth_token'] , $_SESSION['keys']['oauth_token_secret']  );
+
+$last_key = $o->getAccessToken(  $_GET['oauth_verifier'] ) ;
+
+$_SESSION['last_key'] = $last_key;
+*/
+/*global $user;
+$keys1 = sina_open_get_access_token($user->uid);
+$o = new WeiboOAuth( WB_AKEY , WB_SKEY  );
+$keys = $o->getRequestToken();
+//'oauth_token' => 'fc438ac1bdc6afea620fa25fa58eaa3f', 'oauth_token_secret' => '395f1781dc1bf8da8d960df7f6c77088',
+$_SESSION['keys']['oauth_token'] = $keys1->key;
+$_SESSION['keys']['oauth_token_secret'] = $keys1->secret;
+$_SESSION['verifier'] = $keys1->verifier;
+$o = new WeiboOAuth( WB_AKEY , WB_SKEY , $_SESSION['keys']['oauth_token'] , $_SESSION['keys']['oauth_token_secret']  );
+$last_key = $o->getAccessToken( $_SESSION['verifier'] ) ;
+$_SESSION['last_key'] = $last_key;
+*/
+//echo '<br><br>session:<br>'.var_export($_SESSION,true).'123<br><br>'.$url.'123<br><br>get:'.var_export($_GET,true).' <br><br>request:'.var_export($_REQUEST);
 
 /**
  * @file
@@ -61,14 +89,7 @@ function sina_open_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'sina_open.pages.inc',
   );
-  $items['tuijian/%'] = array(
-    'description' => '推荐本书',
-    'page callback' => 'sina_open_tuijian',
-    'page arguments' => array(1),
-    'access callback' => 'sina_open_is_access',
-    'type' => MENU_CALLBACK,
-    'file' => 'sina_open.pages.inc',
-  );
+  
   return $items;
 }
 
@@ -187,15 +208,22 @@ function sina_open_comment(&$comment, $op) {
   if ($op == 'insert' && isset($comment['sina_open']) && variable_get('sina_open_comment', 1)) {
   	$node = node_load($comment['nid']);
   	
-  	
     if($comment['sina_open']['check']) {
       sina_open_t_set_pic_tweet(
           
-        '＃'.外语微阅读.'＃【'.$node->title.'】'.$comment['subject'], $node->field_yuedu_cover[0]['filepath'] ,
+        '＃'.外语微阅读.'＃【'.$node->title.'】'.$comment['subject'], '106250001.jpg' ,
        url('node/'.$comment['nid'], array('absolute' => true))
       );
     }
-    /**/
+   
+   /* if($comment['sina_open']['check']) {
+      sina_open_t_set_tweet(
+          
+         '＃'.外语微阅读.'＃【'.$node->title.'】'.$comment['subject'],
+        url('node/'.$comment['nid'], array('absolute' => true))
+      );
+    }
+     */
   }
 }
 
@@ -434,7 +462,6 @@ function sina_open_t_get_request(array $params) {
  * 执行一个 http 请求
  * $pic 专为图片上传调用（图片内容不需要签名）
  */
- /*
 function sina_open_t_set_pic_request($http_url, array $values = array(), array $pic = array(), array $headers = array(), $method = 'POST') {
   if (!isset($headers['User-Agent'])) {
     $headers['User-Agent'] = 'Sae T OAuth v0.2.0-beta2';
@@ -462,13 +489,12 @@ function sina_open_t_set_pic_request($http_url, array $values = array(), array $
   
   
 }
-*/
+
 /**
  * 创建 http 请求
  * @param (array) $params
  * @unsignature_params $unsignature_params 专为图片上传调用（图片内容不需要签名）
  */
- /*
 function sina_open_t_get_pic_request(array $params,array $unsignature_params = array()) {
   $request = new stdClass;
   if (!$consumer_key = variable_get('sina_open_oauth_consumer_key', false)) {
@@ -575,6 +601,21 @@ function sina_open_t_get_pic_request(array $params,array $unsignature_params = a
       $urls[] = $key . '=' . $value;
     }
   }
+  /*
+  foreach ($unsignature_pairs as $unsignature_keys => $unsignature_values ) {
+    if (is_array($unsignature_values)) {
+      natsort($unsignature_values);
+      
+      foreach ($value as $v2) {
+        $unsignature_pairs[] = $unsignature_keys . '=' . $v2;
+        $unsignature_urls[] = $unsignature_keys . '[]=' . $v2;
+      }
+    } else {
+      $unsignature_pairs[] = $unsignature_keys . '=' . $unsignature_values;
+      $unsignature_urls[] = $unsignature_keys . '=' . $unsignature_values;
+    }
+  }
+  */
   
   $parts = array($request->http_method, $request->http_url, implode('&', $pairs));
   
@@ -607,6 +648,9 @@ function sina_open_t_get_pic_request(array $params,array $unsignature_params = a
     return false;
   }
   
+  // Authorization: OAuth oauth_consumer_key="406362050",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1301451901",oauth_nonce="329917789",oauth_version="1.0",oauth_token="9858b4a2055d50997ec9a826d4814d5f",oauth_signature="aP%2BuQD6wsbHfgEzuf8YN8tLxVtA%3D"
+ 
+ //$request->header['Authorization'] = 'OAuth oauth_consumer_key="' . $consumer_key . '",oauth_signature_method="HMAC-SHA1",oauth_timestamp="' .  $oauth_timestamp . '",oauth_nonce="' . $oauth_nonce . '",oauth_version="1.0",oauth_token="' . $request->token->key . '",oauth_signature="'.sina_open_urlencode_rfc3986($request->sign). '",source="'.$consumer_key.'"';
  
  $request->header['Authorization'] = 'OAuth oauth_consumer_key="' . $consumer_key . '",oauth_signature_method="HMAC-SHA1",oauth_timestamp="' .  $oauth_timestamp . '",oauth_nonce="' . $oauth_nonce . '",oauth_version="1.0",oauth_token="' . $request->token->key . '",oauth_signature="'.sina_open_urlencode_rfc3986($request->sign). '"';
   
@@ -618,7 +662,7 @@ function sina_open_t_get_pic_request(array $params,array $unsignature_params = a
   
   return $request;
 }
-*/
+
 
 
 /**
@@ -705,6 +749,9 @@ function sina_open_t_login_url(array $values = array()) {
       $tok = new stdClass;
       $tok->key = $token['oauth_token'];
       $tok->secret = $token['oauth_token_secret'];
+      
+      //whx here
+     // sina_open_get_access_token($uid = 0)$_SESSION['keys']=$token;
       
       $_SESSION['sina_t_oauth_token'] = $tok;
       
@@ -903,10 +950,13 @@ function sina_open_t_set_pic_tweet($text, $pic_name, $url = NULL) {
 	file_put_contents(file_directory_path().'/whx123.gif', $pic);
 	//$pic = '';
 	
-	$headers['Content-Type'] = ' multipart/form-data; boundary='.uniqid('------------------');
+	$headers['Content-Type'] = 'multipart/form-data';
+	//$headers['Content-Type'] = ' multipart/form-data; charset=utf-8; boundary='.uniqid('------------------');
+	//$headers['Authorization'] = ' OAuth oauth_consumer_key="2784147378",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1312941164",oauth_nonce="5306b0ec1fd947427c7d12368ea8d6a8",oauth_version="1.0",oauth_token="b8a8e44e835c6fbeb0ca06988725a941",oauth_signature="oYJOxjxWOYLNNvvOVh1UKhoH7V4%3D",source="2784147378"';
 	
 
    $result = sina_open_t_set_pic_request(
+  	//	'http://api.t.sina.com.cn/statuses/update.json',
    		'http://api.t.sina.com.cn/statuses/upload.json',
 		array(
 			//'status' => urlencode($text. $url)
@@ -918,6 +968,13 @@ function sina_open_t_set_pic_tweet($text, $pic_name, $url = NULL) {
 		,$headers
   	);
   
+  $result = sina_open_t_set_request(
+  	'http://api.t.sina.com.cn/statuses/update.json',
+    array(
+    	'status' => urlencode($text. $url)
+    )
+    //,$headers
+  );
  
   echo var_export($result,true);
   
@@ -932,7 +989,7 @@ function sina_open_t_set_pic_tweet($text, $pic_name, $url = NULL) {
 }
 */
  
-function sina_open_t_set_pic_tweet($text, $pic_path, $url = NULL) {
+function sina_open_t_set_pic_tweet($text, $pic_name, $url = NULL) {
   if (isset($url)) {
     $len = drupal_strlen($url);
   } else {
@@ -944,30 +1001,48 @@ function sina_open_t_set_pic_tweet($text, $pic_path, $url = NULL) {
   if ($len < 0) {
     $text = drupal_substr($text, 0, $len);
   }	
+	
+//$o = new WeiboOAuth( WB_AKEY , WB_SKEY  );
 
+//$keys = $o->getRequestToken();
+//$aurl = $o->getAuthorizeURL( $keys['oauth_token'] ,false , $_SERVER['SCRIPT_URI'].'/callback.php');
+
+//$_SESSION['keys'] = $keys;
+
+//echo var_export($_SESSION,true);
+//whx here SDKs bao
+/*
+$o = new WeiboOAuth( WB_AKEY , WB_SKEY , $_SESSION['keys']['oauth_token'] , $_SESSION['keys']['oauth_token_secret']  );
+$last_key = $o->getAccessToken( $_SESSION['verifier'] ) ;
+$_SESSION['last_key'] = $last_key;
+*/
+	//here end
 	global $user;
 	$token = sina_open_get_access_token($user->uid);
 	$_SESSION['keys']['oauth_token'] = $token->key;
 	$_SESSION['keys']['oauth_token_secret'] = $token->secret;
 
-	$c = new WeiboClient( WB_AKEY , WB_SKEY , $_SESSION['keys']['oauth_token'] , $_SESSION['keys']['oauth_token_secret']  );
-	$ms  = $c->home_timeline(); // done
-	$me = $c->verify_credentials();
+$c = new WeiboClient( WB_AKEY , WB_SKEY , $_SESSION['keys']['oauth_token'] , $_SESSION['keys']['oauth_token_secret']  );
+$ms  = $c->home_timeline(); // done
+$me = $c->verify_credentials();
 
 	
 	// 需要上传的图片所在路径
-	//$pic_path = file_create_path(file_directory_path().'/pdf/cover/'.$pic_name);
+	//$pic_path = file_create_path(file_directory_path().'/'.$pic_name);
+	$pic_path = file_create_path(file_directory_path().'/ebook_logo.gif');
 	
-	$result = $c ->upload( $text.$url , $pic_path);
+	//$pic = file_get_contents($pic_path);
+	
+	$result = $c ->upload( $text , $pic_path);
 
-	//echo 'c::<br>'.var_export($ms,true).var_export($_SESSION,true).'<br><br>memememename:<br>'.$me['name'].'<br><br>result:<br>'.var_export($result,true).' <br>pic_path:<br>'.$pic_path;
+	echo 'c::<br>'.var_export($ms,true).var_export($_SESSION,true).'<br><br>memememename:<br>'.$me['name'].'<br><br>result:<br>'.var_export($result,true).' <br>pic_path:<br>'.$pic_path;
 	
 	
-	 if (isset($result['error_code'])) {
-    	drupal_set_message('发送到新浪微博失败'.$result['error'], 'error');
-		return false;
+	 if ($result['code'] == 200) {
+    	drupal_set_message('已成功发送到新浪微博');
 	  } else {
-		drupal_set_message('已成功发送到新浪微博');
+		drupal_set_message('发送到新浪微博失败', 'error');
+		return false;
 	  }
 	
 	  return $result;

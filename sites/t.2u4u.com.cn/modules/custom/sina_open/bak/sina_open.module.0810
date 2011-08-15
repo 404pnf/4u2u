@@ -3,6 +3,7 @@
 include_once( 'config.php' );
 include_once( 'weibooauth.php' );
 
+
 /**
  * @file
  * 实现新浪微博开放平台部分功能
@@ -61,14 +62,7 @@ function sina_open_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'sina_open.pages.inc',
   );
-  $items['tuijian/%'] = array(
-    'description' => '推荐本书',
-    'page callback' => 'sina_open_tuijian',
-    'page arguments' => array(1),
-    'access callback' => 'sina_open_is_access',
-    'type' => MENU_CALLBACK,
-    'file' => 'sina_open.pages.inc',
-  );
+  
   return $items;
 }
 
@@ -186,16 +180,23 @@ function sina_open_comment(&$comment, $op) {
 	
   if ($op == 'insert' && isset($comment['sina_open']) && variable_get('sina_open_comment', 1)) {
   	$node = node_load($comment['nid']);
-  	
-  	
+  	/*
     if($comment['sina_open']['check']) {
       sina_open_t_set_pic_tweet(
           
-        '＃'.外语微阅读.'＃【'.$node->title.'】'.$comment['subject'], $node->field_yuedu_cover[0]['filepath'] ,
-       url('node/'.$comment['nid'], array('absolute' => true))
+        '＃'.外语微阅读.'＃【'.$node->title.'】'.$comment['subject'], '106250001.jpg' ,
+        url('node/'.$comment['nid'], array('absolute' => true, 'fragment' => 'comment-'. $comment['cid']))
       );
     }
-    /**/
+    */
+    if($comment['sina_open']['check']) {
+      sina_open_t_set_tweet(
+          
+         '＃'.外语微阅读.'＃【'.$node->title.'】'.$comment['subject'],
+        url('node/'.$comment['nid'], array('absolute' => true))
+      );
+    }
+    
   }
 }
 
@@ -304,7 +305,7 @@ function sina_open_t_get_request(array $params) {
   // 默认参数
   $defaults = array( 
   	"source" =>  $consumer_key, // app key
-    'oauth_version' => '1.0', // 版本
+    'oauth_version' => '1.0a', // 版本
     'oauth_nonce' => md5(mt_rand(). $_SERVER['REQUEST_TIME']), // 随机数
     'oauth_timestamp' => time(), // 发起请求的时间戳
     'oauth_consumer_key' => $consumer_key, // app key
@@ -434,7 +435,6 @@ function sina_open_t_get_request(array $params) {
  * 执行一个 http 请求
  * $pic 专为图片上传调用（图片内容不需要签名）
  */
- /*
 function sina_open_t_set_pic_request($http_url, array $values = array(), array $pic = array(), array $headers = array(), $method = 'POST') {
   if (!isset($headers['User-Agent'])) {
     $headers['User-Agent'] = 'Sae T OAuth v0.2.0-beta2';
@@ -442,9 +442,8 @@ function sina_open_t_set_pic_request($http_url, array $values = array(), array $
   
   if (!isset($headers['Content-Type'])) {
     $headers['Content-Type'] = 'application/x-www-form-urlencoded; charset=utf-8';
+   
   }
-  
-  
   
   $values['http_url'] = $http_url;
   $values['http_method'] = $method;
@@ -453,22 +452,18 @@ function sina_open_t_set_pic_request($http_url, array $values = array(), array $
     return false;
   }
   
-  if (!isset($headers['Authorization'])) {
-    $headers['Authorization'] = $request->header['Authorization'];
-  }
-  echo '<br><br>sina_open_t_set_pic_request::request::::'.var_export($request,true).'<br><br>request->http_url:::'.var_export($request->http_url,true).'<br><br>headers:::'.var_export($headers,true).'<br><br>method:::'.var_export($method,true).'<br><br>request->to_data:::'.var_export($request->to_data,true).'<br><br>';
+  //echo '<br><br>sina_open_t_set_pic_request::request::::'.var_export($request,true).'<br>headers:::'.var_export($headers,true).'<br><br>';
   
   return drupal_http_request($request->http_url, $headers, $method, $request->to_data);
   
   
 }
-*/
+
 /**
  * 创建 http 请求
  * @param (array) $params
  * @unsignature_params $unsignature_params 专为图片上传调用（图片内容不需要签名）
  */
- /*
 function sina_open_t_get_pic_request(array $params,array $unsignature_params = array()) {
   $request = new stdClass;
   if (!$consumer_key = variable_get('sina_open_oauth_consumer_key', false)) {
@@ -477,20 +472,17 @@ function sina_open_t_get_pic_request(array $params,array $unsignature_params = a
     $consumer_secret = variable_get('sina_open_oauth_consumer_secret', false);
   }
   
-  $oauth_nonce = md5(mt_rand(). $_SERVER['REQUEST_TIME']);
-  $oauth_timestamp = time();
-  
   // 默认参数
   $defaults = array( 
-  	//"source" =>  $consumer_key, // app key
-    'oauth_version' => '1.0', // 版本
-    'oauth_nonce' => $oauth_nonce, // 随机数
-    'oauth_timestamp' =>  $oauth_timestamp, // 发起请求的时间戳
+  	"source" =>  $consumer_key, // app key
+    'oauth_version' => '1.0a', // 版本
+    'oauth_nonce' => md5(mt_rand(). $_SERVER['REQUEST_TIME']), // 随机数
+    'oauth_timestamp' => time(), // 发起请求的时间戳
     'oauth_consumer_key' => $consumer_key, // app key
     'oauth_consumer_secret' => $consumer_secret, // app 密钥
     'oauth_signature_method' => 'HMAC-SHA1', // 签名方式
   );
- 
+  
   // 合并
   $params = array_merge($defaults, $params);
   
@@ -575,6 +567,21 @@ function sina_open_t_get_pic_request(array $params,array $unsignature_params = a
       $urls[] = $key . '=' . $value;
     }
   }
+  /*
+  foreach ($unsignature_pairs as $unsignature_keys => $unsignature_values ) {
+    if (is_array($unsignature_values)) {
+      natsort($unsignature_values);
+      
+      foreach ($value as $v2) {
+        $unsignature_pairs[] = $unsignature_keys . '=' . $v2;
+        $unsignature_urls[] = $unsignature_keys . '[]=' . $v2;
+      }
+    } else {
+      $unsignature_pairs[] = $unsignature_keys . '=' . $unsignature_values;
+      $unsignature_urls[] = $unsignature_keys . '=' . $unsignature_values;
+    }
+  }
+  */
   
   $parts = array($request->http_method, $request->http_url, implode('&', $pairs));
   
@@ -607,18 +614,15 @@ function sina_open_t_get_pic_request(array $params,array $unsignature_params = a
     return false;
   }
   
- 
- $request->header['Authorization'] = 'OAuth oauth_consumer_key="' . $consumer_key . '",oauth_signature_method="HMAC-SHA1",oauth_timestamp="' .  $oauth_timestamp . '",oauth_nonce="' . $oauth_nonce . '",oauth_version="1.0",oauth_token="' . $request->token->key . '",oauth_signature="'.sina_open_urlencode_rfc3986($request->sign). '"';
+  ;
   
- // $urls[] = 'pic='.implode('&',sina_open_urlencode_rfc3986($unsignature_params)).'&oauth_signature='.sina_open_urlencode_rfc3986($request->sign);
-  
-  $urls[] = 'oauth_signature='.sina_open_urlencode_rfc3986($request->sign).'&pic='.implode('&',sina_open_urlencode_rfc3986($unsignature_params));
+  $urls[] = 'pic='.implode('&',sina_open_urlencode_rfc3986($unsignature_params)).'&oauth_signature='.sina_open_urlencode_rfc3986($request->sign);
   
   $request->to_data = implode('&', $urls);
   
   return $request;
 }
-*/
+
 
 
 /**
@@ -780,8 +784,8 @@ function sina_open_t_set_request($http_url, array $values = array(), array $head
     return false;
   }
   
- //echo '<br><br>sina_open_t_set_request::request::::'.var_export($request,true).'<br><br>request->http_url:::'.var_export($request->http_url,true).'<br><br>headers:::'.var_export($headers,true).'<br><br>method:::'.var_export($method,true).'<br><br>request->to_data:::'.var_export($request->to_data,true).'<br><br>';
- 
+  //echo '<br><br>sina_open_t_set_request::request::::'.var_export($request,true).'<br>headers:::'.var_export($values,true).'<br><br>';
+  
   return drupal_http_request($request->http_url, $headers, $method, $request->to_data);
 }
 
@@ -881,7 +885,7 @@ function sina_open_t_set_tweet($text, $url = NULL) {
  * @param (string) $url
  *  访问地址
  */
-/*
+
 function sina_open_t_set_pic_tweet($text, $pic_name, $url = NULL) {
  
  if (isset($url)) {
@@ -896,29 +900,29 @@ function sina_open_t_set_pic_tweet($text, $pic_name, $url = NULL) {
     $text = drupal_substr($text, 0, $len);
   }
   
-	//$pic_path = file_create_path(file_directory_path().'/'.$pic_name);
-	$pic_path = file_create_path(file_directory_path().'/ebook_logo.gif');
-	$pic = file_get_contents($pic_path);
-	
-	file_put_contents(file_directory_path().'/whx123.gif', $pic);
-	//$pic = '';
-	
-	$headers['Content-Type'] = ' multipart/form-data; boundary='.uniqid('------------------');
-	
+	$pic_path = file_create_path(file_directory_path().'/'.$pic_name);
 
-   $result = sina_open_t_set_pic_request(
-   		'http://api.t.sina.com.cn/statuses/upload.json',
-		array(
-			//'status' => urlencode($text. $url)
-			'status' =>  urlencode( urlencode('abc'))
-			//,'lat' => 29.50,
-			//'lang' => 105.29
-		)
-		,array('pic' => $pic)
-		,$headers
-  	);
-  
- 
+	$pic = file_get_contents($pic_path);
+
+	
+  $result = sina_open_t_set_pic_request(
+  //	'http://api.t.sina.com.cn/statuses/update.json',
+   'http://api.t.sina.com.cn/statuses/upload.json',
+    array(
+    	'status' => urlencode($text. $url)
+    	//'status' => $text. $url
+    )
+    ,array('pic' => urlencode($pic)),
+    array('Content-Type' => ' multipart/form-data; charset=utf-8; boundary='.uniqid('------------------'))
+  );
+  /*
+   $result = sina_open_t_set_request(
+  	'http://api.t.sina.com.cn/statuses/update.json',
+    array(
+    	'status' => urlencode($text. $url)
+    )
+  );
+  */
   echo var_export($result,true);
   
   if ($result->code == 200) {
@@ -930,9 +934,9 @@ function sina_open_t_set_pic_tweet($text, $pic_name, $url = NULL) {
   
   return $result;
 }
-*/
- 
-function sina_open_t_set_pic_tweet($text, $pic_path, $url = NULL) {
+
+ /*
+function sina_open_t_set_pic_tweet($text, $pic_name, $url = NULL) {
   if (isset($url)) {
     $len = drupal_strlen($url);
   } else {
@@ -944,36 +948,40 @@ function sina_open_t_set_pic_tweet($text, $pic_path, $url = NULL) {
   if ($len < 0) {
     $text = drupal_substr($text, 0, $len);
   }	
+	
+$o = new WeiboOAuth( WB_AKEY , WB_SKEY  );
 
-	global $user;
-	$token = sina_open_get_access_token($user->uid);
-	$_SESSION['keys']['oauth_token'] = $token->key;
-	$_SESSION['keys']['oauth_token_secret'] = $token->secret;
+$keys = $o->getRequestToken();
+//$aurl = $o->getAuthorizeURL( $keys['oauth_token'] ,false , $_SERVER['SCRIPT_URI'].'/callback.php');
 
-	$c = new WeiboClient( WB_AKEY , WB_SKEY , $_SESSION['keys']['oauth_token'] , $_SESSION['keys']['oauth_token_secret']  );
-	$ms  = $c->home_timeline(); // done
-	$me = $c->verify_credentials();
+$_SESSION['keys'] = $keys;
+
+$c = new WeiboClient( WB_AKEY , WB_SKEY , $keys['oauth_token'] , $keys['oauth_token_secret']  );
+$ms  = $c->home_timeline(); // done
+$me = $c->verify_credentials();
 
 	
 	// 需要上传的图片所在路径
-	//$pic_path = file_create_path(file_directory_path().'/pdf/cover/'.$pic_name);
+	$pic_path = file_create_path(file_directory_path().'/'.$pic_name);
+	$file = file_get_contents($pic_path);
 	
-	$result = $c ->upload( $text.$url , $pic_path);
+	$result = $c ->upload( $text , $pic);
 
-	//echo 'c::<br>'.var_export($ms,true).var_export($_SESSION,true).'<br><br>memememename:<br>'.$me['name'].'<br><br>result:<br>'.var_export($result,true).' <br>pic_path:<br>'.$pic_path;
+	echo var_export($result,true).var_export($keys,true);
 	
 	
-	 if (isset($result['error_code'])) {
-    	drupal_set_message('发送到新浪微博失败'.$result['error'], 'error');
-		return false;
+	 if ($result['code'] == 200) {
+    	drupal_set_message('已成功发送到新浪微博');
 	  } else {
-		drupal_set_message('已成功发送到新浪微博');
+		drupal_set_message('发送到新浪微博失败', 'error');
+		return false;
 	  }
 	
 	  return $result;
 }
 
-/*
+
+*/
 
 function bstr2bin($input)
 // Binary representation of a binary-string
@@ -994,8 +1002,6 @@ function bstr2bin($input)
  
   return $bin;
 }
-
-*/
 
 
 /**

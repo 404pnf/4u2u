@@ -485,7 +485,7 @@ display:none;
 }
 
 /*--------微博--------*/
-
+/*
 .trends-row {
     border-bottom: 1px dashed #DDDDDD;
     clear: both;
@@ -513,3 +513,54 @@ display:none;
 #user_created_at {
     float: right;
 }
+*/
+.trends-row {
+    border-bottom: 1px dashed #DDDDDD;
+    clear: both;
+    margin: 15px 0;
+    overflow: hidden;
+    padding: 0 0 10px;
+    position: relative;
+    width: 100%;
+}
+#user_image {
+    float: left;
+    margin-right: 20px;
+    width: 56px;
+}
+#user_image img {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 1px solid #CCCCCC;
+    display: block;
+    height: 50px;
+    padding: 2px;
+    width: 50px;
+}
+#user_name_text {
+    float: left;
+    position: relative;
+    width: 630px;
+    margin-bottom: 20px;
+}
+#user_name_text.withimg {
+    width: 550px;
+}
+#book_img_date {
+    float: right;
+    position: relative;
+    position: absolute;
+    right: 5px;
+}
+#book_img {
+    border: 1px solid #CCCCCC;
+    display: block;
+    float: right;
+    padding: 2px;
+    width: 78px;
+}
+#user_created_at {
+    bottom: 10px;
+    left: 76px;
+    position: absolute;
+}
+

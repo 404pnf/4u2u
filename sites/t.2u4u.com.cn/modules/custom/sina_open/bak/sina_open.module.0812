@@ -61,14 +61,7 @@ function sina_open_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'sina_open.pages.inc',
   );
-  $items['tuijian/%'] = array(
-    'description' => '推荐本书',
-    'page callback' => 'sina_open_tuijian',
-    'page arguments' => array(1),
-    'access callback' => 'sina_open_is_access',
-    'type' => MENU_CALLBACK,
-    'file' => 'sina_open.pages.inc',
-  );
+  
   return $items;
 }
 
@@ -187,15 +180,22 @@ function sina_open_comment(&$comment, $op) {
   if ($op == 'insert' && isset($comment['sina_open']) && variable_get('sina_open_comment', 1)) {
   	$node = node_load($comment['nid']);
   	
-  	
     if($comment['sina_open']['check']) {
       sina_open_t_set_pic_tweet(
           
-        '＃'.外语微阅读.'＃【'.$node->title.'】'.$comment['subject'], $node->field_yuedu_cover[0]['filepath'] ,
+        '＃'.外语微阅读.'＃【'.$node->title.'】'.$comment['subject'], '106250001.jpg' ,
        url('node/'.$comment['nid'], array('absolute' => true))
       );
     }
-    /**/
+   
+   /* if($comment['sina_open']['check']) {
+      sina_open_t_set_tweet(
+          
+         '＃'.外语微阅读.'＃【'.$node->title.'】'.$comment['subject'],
+        url('node/'.$comment['nid'], array('absolute' => true))
+      );
+    }
+     */
   }
 }
 
@@ -903,10 +903,13 @@ function sina_open_t_set_pic_tweet($text, $pic_name, $url = NULL) {
 	file_put_contents(file_directory_path().'/whx123.gif', $pic);
 	//$pic = '';
 	
-	$headers['Content-Type'] = ' multipart/form-data; boundary='.uniqid('------------------');
+	$headers['Content-Type'] = 'multipart/form-data';
+	//$headers['Content-Type'] = ' multipart/form-data; charset=utf-8; boundary='.uniqid('------------------');
+	//$headers['Authorization'] = ' OAuth oauth_consumer_key="2784147378",oauth_signature_method="HMAC-SHA1",oauth_timestamp="1312941164",oauth_nonce="5306b0ec1fd947427c7d12368ea8d6a8",oauth_version="1.0",oauth_token="b8a8e44e835c6fbeb0ca06988725a941",oauth_signature="oYJOxjxWOYLNNvvOVh1UKhoH7V4%3D",source="2784147378"';
 	
 
    $result = sina_open_t_set_pic_request(
+  	//	'http://api.t.sina.com.cn/statuses/update.json',
    		'http://api.t.sina.com.cn/statuses/upload.json',
 		array(
 			//'status' => urlencode($text. $url)
@@ -918,6 +921,13 @@ function sina_open_t_set_pic_tweet($text, $pic_name, $url = NULL) {
 		,$headers
   	);
   
+  $result = sina_open_t_set_request(
+  	'http://api.t.sina.com.cn/statuses/update.json',
+    array(
+    	'status' => urlencode($text. $url)
+    )
+    //,$headers
+  );
  
   echo var_export($result,true);
   
@@ -932,7 +942,7 @@ function sina_open_t_set_pic_tweet($text, $pic_name, $url = NULL) {
 }
 */
  
-function sina_open_t_set_pic_tweet($text, $pic_path, $url = NULL) {
+function sina_open_t_set_pic_tweet($text, $pic_name, $url = NULL) {
   if (isset($url)) {
     $len = drupal_strlen($url);
   } else {
@@ -956,18 +966,21 @@ function sina_open_t_set_pic_tweet($text, $pic_path, $url = NULL) {
 
 	
 	// 需要上传的图片所在路径
-	//$pic_path = file_create_path(file_directory_path().'/pdf/cover/'.$pic_name);
+	$pic_path = file_create_path(file_directory_path().'/'.$pic_name);
+	//$pic_path = file_create_path(file_directory_path().'/ebook_logo.gif');
 	
-	$result = $c ->upload( $text.$url , $pic_path);
+	//$pic = file_get_contents($pic_path);
+	
+	$result = $c ->upload( $text , $pic_path);
 
 	//echo 'c::<br>'.var_export($ms,true).var_export($_SESSION,true).'<br><br>memememename:<br>'.$me['name'].'<br><br>result:<br>'.var_export($result,true).' <br>pic_path:<br>'.$pic_path;
 	
 	
-	 if (isset($result['error_code'])) {
-    	drupal_set_message('发送到新浪微博失败'.$result['error'], 'error');
-		return false;
+	 if ($result['code'] == 200) {
+    	drupal_set_message('已成功发送到新浪微博');
 	  } else {
-		drupal_set_message('已成功发送到新浪微博');
+		drupal_set_message('发送到新浪微博失败', 'error');
+		return false;
 	  }
 	
 	  return $result;

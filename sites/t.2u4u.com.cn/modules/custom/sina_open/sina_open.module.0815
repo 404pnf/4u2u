@@ -61,14 +61,7 @@ function sina_open_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'sina_open.pages.inc',
   );
-  $items['tuijian/%'] = array(
-    'description' => '推荐本书',
-    'page callback' => 'sina_open_tuijian',
-    'page arguments' => array(1),
-    'access callback' => 'sina_open_is_access',
-    'type' => MENU_CALLBACK,
-    'file' => 'sina_open.pages.inc',
-  );
+  
   return $items;
 }
 

@@ -64,10 +64,9 @@ function _custom_user_login_form_validate(&$form, &$form_state){
         form_set_error('name',$message);
      }
   } else {
-   // $uid = db_result(db_query("select uid from users where name = '%s' and init = '%s' and status = %d",$values['name'],$BaseInfo->Init,$BaseInfo->Status));
-$user_info = db_fetch_object(db_query("select uid,pass from users where name = '%s' and init = '%s' and status = %d",$values['name'],$BaseInfo->Init,$BaseInfo->Status));  
-//查询本地用户表中有无此用户信息记录，如果没有，则创建此用户
-  if (!$user_info->uid) {
+    $user_info = db_fetch_object(db_query("select uid,pass from {users} where name = '%s' and init = '%s' and status = %d",$values['name'],$BaseInfo->Init,$BaseInfo->Status));
+    //查询本地用户表中有无此用户信息记录，如果没有，则创建此用户
+    if (!$user_info->uid) {
         // Status = 1 because we never want accounts started as "blocked".
         // 调用drupal api函数 user_save()来处理用户添加和更新
         $new = array(
@@ -79,7 +78,7 @@ $user_info = db_fetch_object(db_query("select uid,pass from users where name = '
         );
         $account = user_save(null, $new);
         $account = user_load($account->uid);
-         if (module_exists('ucenter')) {
+        if (module_exists('ucenter')) {
             list($uc_uid, $uc_username, $uc_password, $uc_email) = uc_user_login($values['name'],$values['pass']);
             //此处去ucernter中心验证此用户是否已经存在，如果存在匹配用户名和密码是否正确
             //如果返回的是-2 或者是 -1
@@ -90,11 +89,9 @@ $user_info = db_fetch_object(db_query("select uid,pass from users where name = '
                uc_user_register($values['name'], $values['pass'], $BaseInfo->Mail);
             }
         }
-
-
       } else {
         //更新此用户信息,更新时user_save()函数的第一个参数至少包含用户的uid
-	$cur_pass = md5($values['pass']);
+        $cur_pass = md5($values['pass']);
         if($cur_pass == $user_info->pass){
           $edit = array(
             'name' => $values['name'],
@@ -107,7 +104,7 @@ $user_info = db_fetch_object(db_query("select uid,pass from users where name = '
             'pass' => $values['pass'],
           );
         }    
-        $account = user_load($uid);
+        $account = user_load($user_info->uid);
         $account = user_save($account, $edit);
       }
     $ServiceTicket = (array)$BaseInfo->ServiceTicket;

@@ -274,7 +274,7 @@
 					   <div class="book-fl2">
 					   <ul>
 					     <li><a title="中小学英语 " href="http://ebook.2u4u.com.cn/yuedu/2013" target="_blank">中小学英语</a></li>
-					     <li><a title="英语专业教程 " href="http://ebook.2u4u.com.cn/yuedu/2016" target="_blank">英语专业教程</a></li>
+					     <li><a title="英语专项训练 " href="http://ebook.2u4u.com.cn/yuedu/2023" target="_blank">英语专项训练</a></li>
 					     <li><a title="简易英语读物 " href="http://ebook.2u4u.com.cn/yuedu/9308" target="_blank">简易英语读物</a></li>
 					     <li><a title="精选英文原著 " href="http://ebook.2u4u.com.cn/yuedu/9310" target="_blank">精选英文原著</a></li>
 					     <li><a title="英语学术文集 " href="http://ebook.2u4u.com.cn/yuedu/2019" target="_blank">英语学术文集</a></li>

@@ -48,53 +48,78 @@
  * @see template_preprocess_node()
  */
 ?>
-<?php if (!$page): ?>
-<h1 class="title"><?php print $title; ?></h1>
-<?php endif; ?>
-<?php if ($page): ?>
 <div class="node <?php print $classes; ?>" id="node-<?php print $node->nid; ?>">
  <div class="node-inner">
 
   <div class="content clear">
-     <div class="ebook_title_bg"><h1 class="title"><?php print $title; ?></h1></div>
-	 <div class="ebook_top clearfix">
-		<div class="yuedu_permission fleft">
-			<?php print ebook_output_buy_button($node); ?>
-
-			<?php 
-				$output = '';
-				$node_terms=taxonomy_node_get_terms($node , $key = 'tid'); 
-				foreach($node_terms as $tid => $tmp_term){
-					if($tid==10359) 
-						$output .= '<div class="pdfdl"><a href="http://shop.2u4u.com.cn/pdfdl">pdf文件下载</a></div>';
-				}
-				print $output;
-			?>
-		</div>
-		<div class="fivestar_votes fright">	
-				<?php // print fivestar_widget_form($node); ?>
-				<?php print $node->content[fivestar_widget]['#value']; ?>
-		</div>
-	  </div>
-	  
+   <div class="ebook_ad_top clearfix">
+		  <div class="ebook_ad_left fleft">
+			<div class="ebook_title_bg"><h1 class="title"><?php print $title; ?></h1></div>
+				
+			<?php 	$flag = flag_get_flag('yuedu_freebie'); if($flag && $flag->is_flagged($node->nid)): ?>
+						<div id='points_free'>
+							<a href="#yuedu_player">免费阅读</a> 
+						</div>
+			<?php else: ?>   
+				<?php if (!yuedu_check_access($node->nid)): ?>
+						<div id='points'><a title="购买本图书" href = "/yuedu/buy/<?=$node->nid?>" class="duihuan"><span class="price"><?php print $node->field_yuedu_pricebypoints[0]['value'];?></span><span class="price_unit">积分</span></a>
+						</div>  
+						
+				<?php endif;?>  
+			<?php endif;?>  
+			
+				<?php 
+					if (user_is_anonymous()){
+						print t('您还未登录只能阅读本书的10%,').l('请登录','user/login');
+					} 
+				?>
+				
+				<?php 
+					$output = '';
+					$node_terms=taxonomy_node_get_terms($node , $key = 'tid'); 
+					foreach($node_terms as $tid => $tmp_term){
+						if($tid==10359) 
+							$output .= '<div class="pdfdl"><a href="http://shop.2u4u.com.cn/pdfdl">pdf文件下载</a></div>';
+					}
+				?>		 
+				<?php print $output?>
+					
+				<?php if(strlen($node->field_yuedu_author[0]['view'])>2):?>		  
+					<div class="field_yuedu_author"> <span class="field_label">作&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;者：</span>
+						<span class="field_content"><?php print $node->field_yuedu_author[0]['view'] ?></span>
+					</div>
+				 <?php endif ?>
+				<?php if ($terms): ?>
+					<div class="ebook_terms terms terms-inline"><span class="field_label">标&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;签：</span>
+						<span class="field_content"><?php print $terms; ?></span>
+					</div>
+				<?php endif; ?>
+			</div>	
+			
+			<div id="ebook_ad" class="ebook_ad_right fright">
+				<?php $block = module_invoke('block', 'block', 'view', 77); ?>	
+				<?php print $block['content']; ?>
+			</div>	
+	</div>
+	
+		<?php if(strlen($node->field_yuedu_summary[0]['view'])>2):?>		  
+			<div class="field_yuedu_summary"> <span class="field_label">内容简介：</span>
+				<span class="field_content"><?php print $node->field_yuedu_summary[0]['view'] ?></span>
+			</div>
+		<?php endif ?>
+                <?php print fivestar_widget_form($node); ?>
 		<?php if(strlen($node->field_yuedu_player[0]['view'])>2):?>		  
 			<div class="field_yuedu_player"> 
 				<a id="yuedu_player" name="yuedu_player"></a><span class="field_content"><?php print $node->field_yuedu_player[0]['view'] ?></span>
 			</div>
-		<?php endif ?>
-     
-  </div>
+		 <?php endif ?>
+      <?php //print $content; ?>
+    </div>
 
-
-  <div class="comment_collect clearfix">  
-  	<div class="comment-tip fleft">
-  		喜欢本书可在下方评论并分享到微博
-  	</div>
+    
     <?php if ($links): ?> 
-      <div class="fright links"> <?php print $links; ?></div>
+      <div class="links clear"> <?php print $links; ?></div>
     <?php endif; ?>
-   </div>
 
- </div> <!-- /node-inner -->
+  </div> <!-- /node-inner -->
 </div> <!-- /node-->
-<?php endif; ?>

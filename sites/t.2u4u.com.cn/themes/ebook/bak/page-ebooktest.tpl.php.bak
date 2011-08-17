@@ -6,9 +6,13 @@
     <title><?php print $head_title; ?></title>
     <?php print $head; ?>
 	<link href="http://2u4u.com.cn/sites/2u4u.com.cn/themes/stable/css/common.css" media="all" rel="stylesheet" type="text/css">
-    <?php print $styles; ?>
     <!--[if lte IE 6]><style type="text/css" media="all">@import "<?php print $base_path . path_to_theme() ?>/css/ie6.css";</style><![endif]-->
     <!--[if IE 7]><style type="text/css" media="all">@import "<?php print $base_path . path_to_theme() ?>/css/ie7.css";</style><![endif]-->
+<?php $node_url=drupal_get_path_alias($_GET['q']);?>
+<?php $pos=strpos($node_url,'disney');?>
+<?php if($pos!== false ): ?>
+<script type="text/javascript" src="http://cdn1.2u4u.com.cn/disney/js/submit.js"></script>
+<?php endif;?>
 
 
   </head>
@@ -30,18 +34,9 @@
         <?php endif; ?>
 
       </div> <!-- /logo-title -->
-      
-	<?php if (!empty($primary_links) or !empty($secondary_links)): ?>
-	  <div id="navigation" class="menu <?php if (!empty($primary_links)) { print "with-main-menu"; } if (!empty($secondary_links)) { print " with-sub-menu"; } ?>">
-		<?php if (!empty($primary_links)){ print theme('links', $primary_links, array('id' => 'primary', 'class' => 'links main-menu')); } ?>
-		<?php if (!empty($secondary_links)){ print theme('links', $secondary_links, array('id' => 'secondary', 'class' => 'links sub-menu')); } ?>
-	  </div> <!-- /navigation -->
-	  
-	<?php endif; ?>
+
       <?php if ($header): ?>
         <div id="header-region">
-
-			
           <?php print $header; ?>
         </div>
       <?php endif; ?>
@@ -50,8 +45,12 @@
 	</div>
 	
 	
-
-    
+	    <?php if (!empty($primary_links) or !empty($secondary_links)): ?>
+          <div id="navigation" class="menu <?php if (!empty($primary_links)) { print "with-main-menu"; } if (!empty($secondary_links)) { print " with-sub-menu"; } ?>">
+            <?php if (!empty($primary_links)){ print theme('links', $primary_links, array('id' => 'primary', 'class' => 'links main-menu')); } ?>
+            <?php if (!empty($secondary_links)){ print theme('links', $secondary_links, array('id' => 'secondary', 'class' => 'links sub-menu')); } ?>
+          </div> <!-- /navigation -->
+        <?php endif; ?>
     </div> <!-- /header -->
 
     <!-- ______________________ MAIN _______________________ -->

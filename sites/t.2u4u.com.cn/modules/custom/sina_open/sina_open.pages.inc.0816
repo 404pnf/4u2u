@@ -100,8 +100,8 @@ function _sina_open_t_login($tok = NULL) {
             drupal_goto('user/'.$user->uid);
           } else {
             $account = $user;
-            db_query("INSERT INTO {sina_open_user} (uid, sina_uid, sina_name, sina_image_url, token, config) VALUES ('%s', '%s', '%s', '%s', '%s', '')",
-            $user->uid, $sina_uid, $authname, $json->profile_image_url, serialize($tok));
+            db_query("INSERT INTO {sina_open_user} (uid, sina_uid, sina_name, token, config) VALUES ('%s', '%s', '%s', '%s', '')",
+            $user->uid, $sina_uid, $authname, serialize($tok));
             /**
              * drupal 不支持远程图片做为头像
             if (db_affected_rows() && !$user->picture) {
@@ -135,11 +135,10 @@ function _sina_open_t_login($tok = NULL) {
             drupal_set_message('无法注册帐号', 'error');
             drupal_goto('user/register');
           }
-         
-         db_query("INSERT INTO {sina_open_user} (uid, sina_uid, sina_name, sina_image_url, token, config) VALUES ('%s', '%s', '%s', '%s', '%s', '')",
-            $account->uid, $sina_uid, $authname, $json->profile_image_url, serialize($tok));
-            
-         drupal_set_message('已为你成功创建帐号，随机密码：'.$pass.'，如果你需要从本站直接登录，请记住此密码或'.l('立即修改', 'user/'.$account->uid.'/edit'));
+          
+          db_query("INSERT INTO {sina_open_user} (uid, sina_uid, sina_name, token, config) VALUES ('%s', '%s', '%s', '%s', '')",
+          $account->uid, $sina_uid, $authname, serialize($tok));
+          drupal_set_message('已为你成功创建帐号，随机密码：'.$pass.'，如果你需要从本站直接登录，请记住此密码或'.l('立即修改', 'user/'.$account->uid.'/edit'));
           user_external_login($account);
         }
         
@@ -228,71 +227,24 @@ function sina_open_remove_confirm_submit($form, &$form_state) {
 /**
  * 用户信息 区块
  */
+ 
  function theme_sina_open_user_info_block(){
- 	global $user;
- 	
- 	$youyou_sina_id = 1283838614;
- 	$youyou_image_url = 'http://tp3.sinaimg.cn/1283838614/50/5601789937/0';
- 	$youyou_name = '小雪飞雨';
- 	$youyou_description = '外语学习一网打尽';
-
-	$youyou_url = 'http://weibo.com/'.$youyou_sina_id.'/profile';
-	
-	$youyou_output = '';
-	
-	$youyou_name = '<div id="youyou"> <a href="'.$youyou_url.'">'.$youyou_name.'</a></div>';	//悠游外语微阅读用户名
-	$youyou_image = '<div id="youyou_image"> <a href="'.$youyou_url.'"> <img src="'.$youyou_image_url.'"/></a></div>';	//悠游外语微阅读头像
-	$youyou_create_fans = '<div class="create_fans"><a href="/create/'.$youyou_sina_id.'">'.悠粉.'</a></div>';	//加悠粉
-	
-
- 	//当前用户 的信息
- 	$user_output = '';
-	if($user->uid){
-		
-		$user_info = get_user_info_by_uid($user->uid);
-		$user_data = get_sina_info_by_sina_id($user_info['sina_uid']);
-		
-		$user_id = $user_data->id;
-		$user_name = $user_data->name;
-		$user_url = 'http://weibo.com/'.$user_id.'/profile';
-		$userpoints = userpoints_get_current_points($user->uid);
-		
-		$useroutput_name ='<div id="login-user"> <a class="login-user-sina_name" href="'.$user_url.'">'.$user_name.'</a>（<a class="login-user-name" href="http://my.2u4u.com.cn">'.$user->name.'</a>）<span class="userpoints">'.$userpoints.'</span></div>';
-		
-		$useroutput_collect = views_embed_view('flag_bookmarks_tab', $display_id = 'block_4');
-		$useroutput_yuedu = views_embed_view('flag_bookmarks_tab', $display_id = 'block_5');
-		
-		$user_output = $useroutput_name . $useroutput_collect . $useroutput_yuedu; 
-		
-	}
-	else{
-	
-		$youyou_create_fans = '<div class="create_fans"><a href="/sina_open/t_login?destination=/create/'.$youyou_sina_id.'">'.悠粉.'</a></div>';	//加悠粉
-		
-		$user_output = '<div class="sina_login_link">'.l('使用新浪微博登录', 'sina_open/t_login').'</div>';
-	}
- 	
-	$youyou_output = $youyou_create_fans . $youyou_image . $youyou_name; 
-	$output = $youyou_output . $user_output;
-	
-	return $output;
-}
-/*
-function theme_sina_open_user_info_block(){
  	global $user;
  	
  	//$youyou_uid = 303636;
  	$youyou_sina_id = 1283838614;
- 	$youyou_image_url = 'http://tp3.sinaimg.cn/1283838614/50/5601789937/0';
  	$youyou_name = '小雪飞雨';
- 	$youyou_description = '外语学习一网打尽';
-
-  	if($data = get_sina_info_by_sina_id($youyou_sina_id)){
+ 	/*
+ 	$values = array();  
+	 if($data = get_user_info_by_uid($youyou_uid)){
+	 	$youyou_sina_id = $data['sina_uid'];
+	 	$youyou_name = $data['sina_name'];
+	 }
+  */
+  	if($sina_data = get_sina_info_by_sina_id($youyou_sina_id)){
 		
-		echo var_export($data, true);
-		
+		$data = $sina_data;
 		$youyou_id = $data->id;
-		
 		if($youyou_id){
 			$youyou_name = $data->name;
 			//$youyou_url = $data->url;  //为什么获取不到？？
@@ -328,8 +280,6 @@ function theme_sina_open_user_info_block(){
 	}
 	return '服务器错误';
 }
-*/
-
 
 /*-----阅读本书 的微博用户------*/
 function theme_sina_open_yuedu_block(){
@@ -366,7 +316,6 @@ function theme_sina_open_yuedu_block(){
 			$num_rows = TRUE;
 			
 			if ($o->sina_uid) {
-				/*
 				$sina_data = get_sina_info_by_sina_id($o->sina_uid);
 				$value = $sina_data;
 				
@@ -374,11 +323,6 @@ function theme_sina_open_yuedu_block(){
 				$sina_name = $value->name;
 				$sina_url = 'http://weibo.com/'.$sina_id.'/profile';
 				$sina_image_url = $value->profile_image_url;
-				*/
-				$sina_id = $o->sina_uid;
-				$sina_name = $o->sina_name;
-				$sina_url = 'http://weibo.com/'.$sina_id.'/profile';
-				$sina_image_url = $o->sina_image_url;
 				
 				$rows .= '<div class="yuedubenshu">';
 				
@@ -520,7 +464,7 @@ function theme_sina_open_popular_comment_book_block(){
 				
 				$output .= '<div id="user_image"> <a href="'.$sina_user['url'].'"> <img src="'.$sina_user['image_url'].'"/></a></div>';	//用户头像
 				$output .= '<div class="user-book-content"><span id="user_name"> <a href="'.$sina_user['image_url'].'">'.$sina_user['name'].'</a></span>';	//用户名
-				$output .= ' 评论<span id="book_name"> <a href="/node/'.$book['nid'].'">'.$book['title'].'</a></span>';	//书名
+				$output .= '评论<span id="book_name"> <a href="/node/'.$book['nid'].'">'.$book['title'].'</a></span>';	//书名
 				$output .= '<br/><span id="comment_count"> '.$sina_user['comment_count'].'</span></div>';	//评论的个数
 				
 				$output .= '</div>';
@@ -655,12 +599,11 @@ function get_user_info_by_uid($uid = 0){
 	$user_info = array();
 	
 	if ($uid > 0){
-      if ($o = db_fetch_object(db_query('SELECT uid,sina_uid,sina_name, sina_image_url FROM {sina_open_user} WHERE uid = %d', $uid))) {
+      if ($o = db_fetch_object(db_query('SELECT uid,sina_uid,sina_name FROM {sina_open_user} WHERE uid = %d', $uid))) {
         if ($o->sina_uid) {
           	$user_info['uid'] = $o->uid;
            	$user_info['sina_uid'] = $o->sina_uid;
             $user_info['sina_name'] = $o->sina_name;
-            $user_info['sina_image_url'] = $o->sina_image_url;
         } else {
           drupal_set_message('您的新浪微博授权已经过期，请'.l('点击这儿', 'sina_open/t_login').'重新授权');
         }
@@ -678,12 +621,11 @@ function get_user_info_by_sina_id($sina_id = 0){
 	$user_info = array();
 	
 	if ($sina_id > 0){
-      if ($o = db_fetch_object(db_query('SELECT uid, sina_uid, sina_name, sina_image_url FROM {sina_open_user} WHERE sina_uid = %d', $sina_id))) {
+      if ($o = db_fetch_object(db_query('SELECT uid,sina_uid,sina_name FROM {sina_open_user} WHERE sina_uid = %d', $sina_id))) {
         if ($o->sina_uid) {
           	$user_info['uid'] = $o->uid;
            	$user_info['sina_uid'] = $o->sina_uid;
             $user_info['sina_name'] = $o->sina_name;
-            $user_info['sina_image_url'] = $o->sina_image_url;
         } else {
           drupal_set_message('您的新浪微博授权已经过期，请'.l('点击这儿', 'sina_open/t_login').'重新授权');
         }
@@ -746,7 +688,7 @@ function get_popular_comment_book(){
 	
 	$comment_book_array = array();
 	$result = db_query("SELECT nid, count( s.uid ) count, s.uid, 
-      					subject, name, s.sina_name, s.sina_image_url
+      					subject, name
 					FROM `comments` c, sina_open_user s
 					WHERE c.uid = s.uid
 					AND `nid`
@@ -755,7 +697,7 @@ function get_popular_comment_book(){
 						FROM `node`
 						WHERE TYPE = 'ebook'
 					)
-					GROUP BY nid,c.uid
+					GROUP BY nid
 					ORDER BY count DESC");
 					
 	while ($o = db_fetch_object($result)) {
@@ -766,19 +708,13 @@ function get_popular_comment_book(){
 			$user = get_user_info_by_uid($o->uid);
 			//echo $o->nid.$user['sina_uid'];
 			if($user['sina_uid']){
-				//$sina_user = get_sina_info_by_sina_id($user['sina_uid']);
-				
+				$sina_user = get_sina_info_by_sina_id($user['sina_uid']);
 				$comment_count = get_comment_count_by_uid($o->uid);
-				/*
+				
 				$sina_id = $sina_user->id;
 				$sina_name = $sina_user->name;
 				$sina_url = 'http://weibo.com/'.$sina_id.'/profile';
 				$sina_image_url = $sina_user->profile_image_url;
-				*/
-				$sina_id = $user['sina_uid'];
-				$sina_name = $user['sina_name'];
-				$sina_url = 'http://weibo.com/'.$sina_id.'/profile';
-				$sina_image_url = $user['sina_image_url'];
 				
 				$sina_user_array = array(
 					'id' => $sina_id,

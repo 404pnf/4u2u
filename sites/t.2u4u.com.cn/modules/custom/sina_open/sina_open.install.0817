@@ -62,13 +62,6 @@ function sina_open_schema() {
         'default' => '',
         'description' => '新浪用户名称，添加后缀：@t.sina.com.cn',
       ),
-      'sina_image_url' => array(
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => TRUE,
-        'default' => '',
-        'description' => '新浪用户远程头像',
-      ),
       'token' => array(
         'type' => 'text',
         'description' => '访问令牌等信息',

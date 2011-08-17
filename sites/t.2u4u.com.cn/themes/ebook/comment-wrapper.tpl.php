@@ -32,6 +32,5 @@
  */
 ?>
 <div id="comments">
-	<div class="comments_title">评论</div>
   <?php print $content; ?>
 </div>

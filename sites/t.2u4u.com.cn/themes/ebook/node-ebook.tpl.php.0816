@@ -86,14 +86,11 @@
   </div>
 
 
-  <div class="comment_collect clearfix">  
-  	<div class="comment-tip fleft">
-  		喜欢本书可在下方评论并分享到微博
-  	</div>
+    
     <?php if ($links): ?> 
-      <div class="fright links"> <?php print $links; ?></div>
+      <div class="links clear"> <?php print $links; ?></div>
     <?php endif; ?>
-   </div>
+
 
  </div> <!-- /node-inner -->
 </div> <!-- /node-->

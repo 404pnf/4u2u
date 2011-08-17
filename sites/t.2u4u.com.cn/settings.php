@@ -7,14 +7,13 @@
 $db_url = 'mysql://woshiguanliyuan:ef5abfb553fab28a3d9@localhost/t';
 $db_prefix = array(
    'default'   => '',
-  /* 'users'     => '2u4u.',
+   'users'     => '2u4u.',
+   'authmap'   => '2u4u.',
    'sessions'  => '2u4u.',
    'role'      => '2u4u.',
    'users_roles' => '2u4u.',
-   'authmap'   => '2u4u.',
    'userpoints' => '2u4u.',
    'userpoints_txn' => '2u4u.',
-   */
 );
 
 /**
@@ -79,7 +78,7 @@ ini_set('url_rewriter.tags',        '');
  * shared base domain. Doing so assures that users remain logged in as they
  * cross between your various domains.
  */
-// $cookie_domain = '.2u4u.com.cn';
+ $cookie_domain = '.2u4u.com.cn';
 
 /**
  * Variable overrides:

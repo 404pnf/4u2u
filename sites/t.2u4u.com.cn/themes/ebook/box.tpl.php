@@ -18,5 +18,24 @@
   <h2><?php print $title ?></h2>
 <?php endif; ?>-->
 	<a id="pinglun" name="pinglun"></a>
-  <div class="content"><?php print $content ?></div>
+  <div class="content">
+  	<?php print $content ?>
+
+  	<div calss="wordleft-tip">还可以输入 <span class="charsLeft">140</span> 字</div>
+  </div>
 </div>
+<SCRIPT type="text/javascript" src="/misc/jquery.js"></SCRIPT>
+
+<script>
+$(function () {
+	var max=$(".charsLeft").text();
+	
+	$('textarea#edit-comment').keyup(function() {
+		var text=$(this).val();
+		var counter=text.length;
+		$(".charsLeft").text(max-counter);
+	}); 
+	
+});
+
+</script>

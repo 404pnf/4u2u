@@ -14,7 +14,6 @@
   </head>
 
   <body class="<?php print $body_classes; ?>">
-    
     <div id="skip"><a href="#content">Skip to Content</a> <a href="#navigation">Skip to Navigation</a></div>  
     <div id="page">
 
@@ -125,23 +124,33 @@
 
     </div> <!-- /page -->
 	
-	<?php print $scripts; ?>
-			<script type="text/javascript">
-				$(function(){
-					$('a:[href^=http://test.]').attr('target','_blank');
-					$('a:[href^=http://u.]').attr('target','_blank');
-					$('a:[href^=http://frenchfriend.]').attr('target','_blank');
-					
-					$('#primary li a:[href^=http://ebook.2u4u.com.cn]').addClass('active');
-				});
-			</script>
+	<?php print $scripts; ?>	
+	<?php 
+		$term_id = arg(2);
+		print '<script type="text/javascript">var term_id = '.$term_id.'; </script>';
+	?>
+	<script type="text/javascript">
+	
+		$(function(){
+			$('#primary a').attr('target','_blank');
+			
+			$('#block_yuedu_term li a').each(function(){
+				term_url = $(this).attr('href');
+				id = term_url.replace("/yuedu/", "");
+			
+				if(term_id == id){
+					$(this).addClass('active');
+				}
+			});
+			
+		});
+	</script>
 <script type="text/javascript">
 var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
 document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F116fea821e3bfb6c5a7d4b187a50b502' type='text/javascript'%3E%3C/script%3E"));
 </script>	
 <SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery-ui.min.js"></SCRIPT>
-	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.spasticNav.js"></SCRIPT>
-	
+
 	<?php if($closure_region): ?>
 		<div id="closure_region">
 			<?php print $closure_region; ?>

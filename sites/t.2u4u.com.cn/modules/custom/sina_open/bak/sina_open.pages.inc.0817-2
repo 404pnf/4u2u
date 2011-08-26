@@ -5,8 +5,8 @@
  * 获取授权令牌并在 Drupal 可登录
  */
 function sina_open_page_t_login() {
-//  global $user;
-
+  global $user;
+  
   if ($user->uid) {
     if ($tok = sina_open_get_access_token($user->uid)){
       
@@ -41,7 +41,6 @@ function sina_open_page_t_login() {
     drupal_set_message('新浪服务器未响应，无法验证', 'error');
     drupal_goto('user/login');
   }
- 
 }
 
 /**
@@ -278,6 +277,58 @@ function sina_open_remove_confirm_submit($form, &$form_state) {
 	
 	return $output;
 }
+/*
+function theme_sina_open_user_info_block(){
+ 	global $user;
+ 	
+ 	//$youyou_uid = 303636;
+ 	$youyou_sina_id = 1283838614;
+ 	$youyou_image_url = 'http://tp3.sinaimg.cn/1283838614/50/5601789937/0';
+ 	$youyou_name = '小雪飞雨';
+ 	$youyou_description = '外语学习一网打尽';
+
+  	if($data = get_sina_info_by_sina_id($youyou_sina_id)){
+		
+		echo var_export($data, true);
+		
+		$youyou_id = $data->id;
+		
+		if($youyou_id){
+			$youyou_name = $data->name;
+			//$youyou_url = $data->url;  //为什么获取不到？？
+			$youyou_url = 'http://weibo.com/'.$youyou_id.'/profile';
+			$youyou_image_url = $data->profile_image_url;
+		
+	
+			$output = '<div id="youyou"> <a href="'.$youyou_url.'">'.$youyou_name.'</a></div>';	//悠游外语微阅读用户名
+			$output .= '<div id="youyou_image"> <a href="'.$youyou_url.'"> <img src="'.$youyou_image_url.'"/></a></div>';	//悠游外语微阅读头像
+			$output .= '<div class=""><a href="/create/'.$youyou_id.'">'.悠粉.'</a></div>';	//加悠粉
+			
+		}
+		
+		//当前用户 的信息
+		if($user->uid){
+			$user_info = get_user_info_by_uid($user->uid);
+			$user_data = get_sina_info_by_sina_id($user_info['sina_uid']);
+			
+			$user_id = $user_data->id;
+			$user_name = $user_data->name;
+			$user_url = 'http://weibo.com/'.$user_id.'/profile';
+			
+			$output .='<div id="login-user"> <a href="'.$user_url.'">'.$user_name.'</a></div>';
+		}
+		else
+			$output .= '<div class="sina_login_link">'.l('使用新浪微博登录', 'sina_open/t_login').'</div>';
+			
+		$output .= views_embed_view('flag_bookmarks_tab', $display_id = 'block_4');
+		$output .= views_embed_view('flag_bookmarks_tab', $display_id = 'block_5');
+		
+		
+		return $output;
+	}
+	return '服务器错误';
+}
+*/
 
 
 /*-----阅读本书 的微博用户------*/
@@ -331,8 +382,8 @@ function theme_sina_open_yuedu_block(){
 				
 				$rows .= '<div class="yuedubenshu">';
 				
-				$rows .= '<div class="sina_image"> <a href="'.$sina_url.'"> <img src="'.$sina_image_url.'"/></a></div>';	//悠粉头像
-				$rows .= '<div class="sina_name"> <a href="'.$sina_url.'">'.$sina_name.'</a></div>';	//悠粉用户名
+				$rows .= '<div id="sina_image"> <a href="'.$sina_url.'"> <img src="'.$sina_image_url.'"/></a></div>';	//悠粉头像
+				$rows .= '<div id="sina_name"> <a href="'.$sina_url.'">'.$sina_name.'</a></div>';	//悠粉用户名
 				
 				$rows .= '</div>';
 			}
@@ -369,11 +420,11 @@ function theme_sina_open_fans_block(){
   		$youyou_uid = 1;
   	
 	$output = '<div class="sina_open_fans"><label class="fans">悠粉儿：</label><div class="fans_centent">';
-	if($data = get_follows_by_uid('followers', $youyou_uid, 20, -1)){
+	if($data = get_follows_by_uid('followers', $youyou_uid, 9, -1)){
 		//echo var_dump($data);
 		
 		foreach($data->users as $index => $value){
-			if($index < 9){
+			//if($index < 9){
 				$sina_id = $value->id;
 				$sina_name = $value->name;
 				$sina_url = 'http://weibo.com/'.$sina_id.'/profile';
@@ -381,11 +432,11 @@ function theme_sina_open_fans_block(){
 				
 				$output .= '<div class="fans-row row-'.($index+1).'">';
 				
-				$output .= '<div class="sina_image"> <a href="'.$sina_url.'"> <img src="'.$sina_image_url.'"/></a></div>';	//悠粉头像
-				$output .= '<div class="sina_name"> <a href="'.$sina_url.'">'.$sina_name.'</a></div>';	//悠粉用户名
+				$output .= '<div id="youyou_image"> <a href="'.$sina_url.'"> <img src="'.$sina_image_url.'"/></a></div>';	//悠粉头像
+				$output .= '<div id="sina_name"> <a href="'.$sina_url.'">'.$sina_name.'</a></div>';	//悠粉用户名
 				
 				$output .= '</div>';
-			}
+		//	}
 				
 		}
 	}
@@ -434,16 +485,16 @@ function theme_sina_open_comment_trends_block(){
 				$output .= '<div class="trends-row row-'.($index+1).'">';
 				
 				
-				$output .= '<div class="user_image"> <a href="'.$user_url.'"> <img src="'.$user_profile_image_url.'"/></a></div>';	//微博用户头像
+				$output .= '<div id="user_image"> <a href="'.$user_url.'"> <img src="'.$user_profile_image_url.'"/></a></div>';	//微博用户头像
 					
-				$output .= '<div class="user_name_text '.$user_name_text_class.'"><span class="user_name"> <a href="'.$user_url.'">'.$user_screen_name.'</a>：</span>';
+				$output .= '<div id="user_name_text" class="'.$user_name_text_class.'"><span id="user_name"> <a href="'.$user_url.'">'.$user_screen_name.'</a>：</span>';
 				//微博用户名
-				$output .= '<span class="user_text"> '.$text.'</span></div>';
+				$output .= '<span id="user_text"> '.$text.'</span></div>';
 				
 				if(!empty($thumbnail_pic)) 	
-					$output .= '<div class="book_img_date"><img class="book_img" src="'.$thumbnail_pic.'"/></div>';
+					$output .= '<div id="book_img_date"><img id="book_img" src="'.$thumbnail_pic.'"/></div>';
 				
-				$output .= '<div class="user_created_at"> '.date('Y-m-d h:m:s',strtotime($created_at)).'</div>';
+				$output .= '<div id="user_created_at"> '.date('Y-m-d h:m:s',strtotime($created_at)).'</div>';
 				
 				
 				$output .= '</div>';
@@ -472,10 +523,10 @@ function theme_sina_open_popular_comment_book_block(){
 				
 				$output .= '<div class="comment_book-row row-'.($index+1).'">';
 				
-				$output .= '<div class="user_image"> <a href="'.$sina_user['url'].'"> <img src="'.$sina_user['image_url'].'"/></a></div>';	//用户头像
-				$output .= '<div class="user-book-content"><span class="user_name"> <a href="'.$sina_user['image_url'].'">'.$sina_user['name'].'</a></span>';	//用户名
-				$output .= ' 评论<span class="book_name"> <a href="/node/'.$book['nid'].'">'.$book['title'].'</a></span>';	//书名
-				$output .= '<br/><span class="comment_count"> '.$sina_user['comment_count'].'</span></div>';	//评论的个数
+				$output .= '<div id="user_image"> <a href="'.$sina_user['url'].'"> <img src="'.$sina_user['image_url'].'"/></a></div>';	//用户头像
+				$output .= '<div class="user-book-content"><span id="user_name"> <a href="'.$sina_user['image_url'].'">'.$sina_user['name'].'</a></span>';	//用户名
+				$output .= ' 评论<span id="book_name"> <a href="/node/'.$book['nid'].'">'.$book['title'].'</a></span>';	//书名
+				$output .= '<br/><span id="comment_count"> '.$sina_user['comment_count'].'</span></div>';	//评论的个数
 				
 				$output .= '</div>';
 			}
@@ -533,119 +584,21 @@ function sina_open_guanzhu($sina_id){
 	return false;
 }
 
-function sina_open_tuijian($nid){
-	$node = node_load($nid);
-	$tab_output = '<div class="friTab">
-						<ul id="friTab">
-							<li class="first">推荐 '.$node->title.' 给：</li>
-							<li class="current"><a class="tuijian_function" href="javascript:void(0)" alt="sina_open/friends/-1">我的关注</a></li>
-							<li class=""><a class="tuijian_function" href="javascript:void(0)" alt="sina_open/followers/-1">我的粉丝</a></li>
-							
-						</ul>
-					</div>';
-	/*<li id="friResult" >搜索结果</li>
-							<li id="frisearch" > <input type="text" value="好友太多，直接输入查找……" id="friText">
-							<a href="javascript:void(0)" alt="sina_open/search_friend" >搜索</a></li>*/
-	$content_output = '<div class="tuijian_content">'.sina_open_tuijian_op('friends', -1).'</div>';
-
-	
-	$comment_form = theme('box', '', drupal_get_form('comment_form',array('nid' => $nid)));
-	
-	$tuijian_content = $tab_output.$content_output.$comment_form;
-	$output = theme('tuijian_node', $tuijian_content );
-	return $output;
-}
-
-
 /*推荐本书给当前用户的粉丝*/
-function sina_open_tuijian_op($type = 'followers', $cursor =-1){
-	$count = 16;
+function sina_open_tuijian($nid, $type = 'followers', $cursor =-1){
+	$nid = arg(1);
+	echo $nid.$type.$cursor;
 
 	global $user;
-	$user_info = get_user_info_by_uid($user->uid);
-	$sina_info = get_sina_info_by_sina_id($user_info['sina_uid']);
-	$followers_count = $sina_info->followers_count;
-	$friends_count = $sina_info->friends_count;
-	
-	//echo $user->uid.'<br>user_info::'.var_export($user_info, true).'<br>followers_count::'.$followers_count.'<br>friends_count::'.$friends_count;
-	
-	$pager_output = '';
-	
 	if($type == 'followers'){
 		$output = '<div class="tuijian_user"><span>您的粉丝</span>';
 		$empty_text = '您还没有粉丝';
-		$data = get_follows_by_uid($type , $user->uid, $count, $cursor);
-		
-		if(!empty($followers_count)){
-			$pages = ceil($followers_count/$count);
-			$pages_current = ceil($cursor/$count)+1;
-			$pager_output = '<ul class="pager">';
-			if( $pages_current > 1){
-				if( $pages_current == 2 ) $pre_cursor = -1;
-				else	$pre_cursor = $cursor - $count;
-				
-				$pager_output .='<li><a class="tuijian_function" href="javascript:void(0)" alt="sina_open/followers/'.$pre_cursor.'">'.上一页.'</a></li>';
-			}
-			for( $i = 0; $i < $pages; $i++ ){
-				
-				if( ($i+1) == $pages_current ){
-					$pager_output .='<li class="current">'.($i+1).'</li>';
-				}
-				else if( ($i+1) == 1){
-					$pager_output .='<li><a class="tuijian_function" href="javascript:void(0)" alt="sina_open/followers/-1">'.($i+1).'</a></li>';
-				}
-				else{
-					$pager_output .='<li><a class="tuijian_function" href="javascript:void(0)" alt="sina_open/followers/'.($i*$count).'">'.($i+1).'</a></li>';
-				}
-			}
-			if($pages_current < $pages){
-				if( $pages_current == 1 ) 	$next_cursor = $count;
-				else	$next_cursor = $cursor + $count;
-				
-				$pager_output .='<li><a class="tuijian_function" href="javascript:void(0)" alt="sina_open/followers/'.$next_cursor.'">'.下一页.'</a></li>';
-			}
-			$pager_output .= '</ul>';
-			
-		}
-	
+		$data = get_follows_by_uid($type , $user->uid, $count = 20, $cursor = -1 );
 	}
 	else if($type == 'friends'){
 		$output = '<div class="tuijian_user"><span>您的关注</span>';
 		$empty_text = '您没有关注任何人';
-		$data = get_follows_by_uid($type , $user->uid, $count, $cursor);
-		
-		
-		if(!empty($friends_count)){
-			$pages = ceil($friends_count/$count);
-			$pages_current = ceil($cursor/$count)+1;
-			$pager_output = '<ul class="pager">';
-			if( $pages_current > 1){
-				if( $pages_current == 2 ) $pre_cursor = -1;
-				else	$pre_cursor = $cursor - $count;
-				
-				$pager_output .='<li><a class="tuijian_function" href="javascript:void(0)" alt="sina_open/friends/'.$pre_cursor.'">'.上一页.'</a></li>';
-			}
-			for( $i = 0; $i < $pages; $i++ ){
-				
-				if( ($i+1) == $pages_current ){
-					$pager_output .='<li class="current">'.($i+1).'</li>';
-				}
-				else if( ($i+1) == 1){
-					$pager_output .='<li><a class="tuijian_function" href="javascript:void(0)" alt="sina_open/friends/-1">'.($i+1).'</a></li>';
-				}
-				else{
-					$pager_output .='<li><a class="tuijian_function" href="javascript:void(0)" alt="sina_open/friends/'.($i*$count).'">'.($i+1).'</a></li>';
-				}
-			}
-			if($pages_current < $pages){
-				if( $pages_current == 1 ) 	$next_cursor = $count;
-				else	$next_cursor = $cursor + $count;
-				
-				$pager_output .='<li><a class="tuijian_function" href="javascript:void(0)" alt="sina_open/friends/'.$next_cursor.'">'.下一页.'</a></li>';
-			}
-			$pager_output .= '</ul>';
-			
-		}
+		$data = get_follows_by_uid($type , $user->uid, $count = 20, $cursor = -1 );
 	}
 	else if($type == 'search'){
 		$output = '<div class="tuijian_search_user"><span>搜索用户</span>';
@@ -659,8 +612,8 @@ function sina_open_tuijian_op($type = 'followers', $cursor =-1){
 	}
 	
 	if($data){
-		//echo var_dump($data);
-		$output .= '<div id="friendList" class="friendList">';
+		echo var_dump($data);
+		
 		foreach($data->users as $index => $value){
 			
 				$sina_id = $value->id;
@@ -670,14 +623,12 @@ function sina_open_tuijian_op($type = 'followers', $cursor =-1){
 				
 				$output .= '<div class="fans-row row-'.($index+1).'">';
 				
-				$output .= '<div class="sina_image sayto"> <a href="javascript:void(0)" alt="'.$sina_name.'"> <img src="'.$sina_image_url.'"/></a></div>';	//悠粉头像
-				$output .= '<div class="sina_name sayto"> <a href="javascript:void(0)" alt="'.$sina_name.'">'.$sina_name.'</a></div>';	//悠粉用户名
-				$output .= '<em></em>';
+				$output .= '<div id="youyou_image"> <a href="'.$sina_url.'"> <img src="'.$sina_image_url.'"/></a></div>';	//悠粉头像
+				$output .= '<div id="sina_name"> <a href="'.$sina_url.'">'.$sina_name.'</a></div>';	//悠粉用户名
+				
 				$output .= '</div>';
 			
 		}
-		$output .='</div>'.$pager_output;
-		if($index < $count-1) $output .='<div class="tip">系统提示：为了避免骚扰，微博智能反垃圾系统已过滤掉部分广告用户。</div>';
 	}
 	else
 		$output .= $empty_text;
@@ -755,10 +706,9 @@ function get_user_info_by_sina_id($sina_id = 0){
 function get_follows_by_uid($type = 'followers', $uid = 0, $count = 20, $cursor = -1 ){
 
 	$values = array(
-		'cursor'=>$cursor,
-		'count'=>$count
+		'count'=>$count,
+		'cursor'=>$cursor
 	);
-
 	 if($data = get_user_info_by_uid($uid)){
 	 	$sina_id = $data['sina_uid'];
 	 	$sina_name = $data['sina_name'];
@@ -774,7 +724,7 @@ function get_follows_by_uid($type = 'followers', $uid = 0, $count = 20, $cursor 
 		
 		$data = json_decode ($result->data);
 		
-		//echo '<br><br><br><br> result::'.var_export($data, true);
+		//echo '<br> result::'.var_export($data, true);
 		
 		return $data;
 	}

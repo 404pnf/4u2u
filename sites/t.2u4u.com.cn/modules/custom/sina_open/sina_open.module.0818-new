@@ -69,23 +69,6 @@ function sina_open_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'sina_open.pages.inc',
   );
-  $items['sina_open/followers/%'] = array(
-    'title' => '推荐本书',
-    'page callback' => 'sina_open_tuijian_op',
-    'page arguments' => array(1, 2),
-    'access callback' => 'sina_open_is_access',
-    'type' => MENU_CALLBACK,
-    'file' => 'sina_open.pages.inc',
-  );
-  $items['sina_open/friends/%'] = array(
-    'title' => '推荐本书',
-    'page callback' => 'sina_open_tuijian_op',
-    'page arguments' => array(1, 2),
-    'access callback' => 'sina_open_is_access',
-    'type' => MENU_CALLBACK,
-    'file' => 'sina_open.pages.inc',
-  );
- 
   return $items;
 }
 
@@ -1178,9 +1161,5 @@ function sina_open_theme(){
 			'variables' => array(),
 			'file' => 'sina_open.pages.inc',
     	),
-    	'tuijian_node' => array(
-		  'template' => 'tuijian-node',
-		  'arguments' => array('content' => NULL),
-		),
     );  
 }

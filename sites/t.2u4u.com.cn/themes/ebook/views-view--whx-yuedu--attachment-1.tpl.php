@@ -57,21 +57,7 @@
     </div>
   <?php endif; ?>
 
-  <?php  
-	$view = views_get_current_view();  
-	$tid = $view->argument['term_node_tid_depth']->argument;
-	$term = taxonomy_get_term($tid);
-	
-?>
 <div class="xilietush-content">
-	<div class="term-detail">
-       <div class='term-name'>                    
-		<?php print '<a href="/yuedu/'.$tid.'">'.$term->name.'</a>';?>
-	   </div>  
-       <div class='term-description'>                    
-		<?php  print $term->description;?>                     
-	   </div>                          
-	</div>
   
   <?php if ($rows): ?>
   <div class="view-content-cover">

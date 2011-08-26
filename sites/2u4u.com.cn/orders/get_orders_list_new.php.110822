@@ -78,10 +78,10 @@ if(date('w')==5){
         			$new_value = '';
         		if(strlen($value)>2){       		
 		        	$value = trim($value);	        		       
-		       		$new_query = "SELECT price,sku FROM 2u4u.`book_info` 
+		       		$new_query = "SELECT price,sku FROM `book_info` 
 		        		                    WHERE name LIKE	'".$value."%' 
 		        		                    AND `sku` 
-		        		                    IN (SELECT `sku` FROM 2u4u.`book_kc`)";
+		        		                    IN (SELECT `sku` FROM `book_kc`)";
 		        		
 		            $new_rs = mysql_fetch_object(mysql_query($new_query));
 		            if($new_rs->price>0)
@@ -111,10 +111,10 @@ if(date('w')==5){
 	    if(substr($name_sql,-4)=='AND ')
 	           $name_sql = substr($name_sql,0,-4);     		
 	                   		    
-                       $new_sql = "SELECT price,sku FROM 2u4u.`book_info` 
+                       $new_sql = "SELECT price,sku FROM `book_info` 
 	        		                    WHERE ".$name_sql."
 	        		                  AND `sku` 
-	        		                    IN (SELECT `sku` FROM 2u4u.`book_kc`)";
+	        		                    IN (SELECT `sku` FROM `book_kc`)";
  
 //	                  echo $new_sql."<br>";		
 		             $new_res = mysql_fetch_object(mysql_query($new_sql)); 

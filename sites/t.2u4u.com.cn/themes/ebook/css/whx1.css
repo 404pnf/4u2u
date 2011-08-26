@@ -300,7 +300,6 @@ display:none;
 .user_name_text {
     float: left;
     position: relative;
-    width: 630px;
     margin-bottom: 20px;
 }
 .user_name_text.withimg {

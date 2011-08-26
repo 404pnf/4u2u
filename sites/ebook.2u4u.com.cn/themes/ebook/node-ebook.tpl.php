@@ -58,6 +58,8 @@
   <div class="content clear">
       <div class="ebook_title_bg"><h1 class="title"><?php print $title; ?></h1></div>
 	  <div class="ebook_top clearfix">
+	  
+  
 		<div class="yuedu_permission fleft">
 			<?php print ebook_output_buy_button($node); ?>
 
@@ -76,6 +78,20 @@
 				<?php print $node->content[fivestar_widget]['#value']; ?>
 		</div>
 	  </div>
+
+	
+    	<script>  
+	<?php
+	      $image = $node->field_yuedu_cover[0]['filepath'];
+	      $output = 'var pic="http://ebook.2u4u.com.cn/'.$image.'";';
+	      print $output;
+	 ?>
+	 
+	 </script>
+	 	
+	<?php $block_sharetosina = module_invoke('block', 'block', 'view', 81); ?>
+	<?php print $block_sharetosina['content']; ?>
+	 
 	
 	
 	

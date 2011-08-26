@@ -105,7 +105,7 @@
 				<?php /* if(user_is_anonymous()){print drupal_get_form('user_login_block');}  */?>
 		<?php if ($user_login): ?>
               <?php print $user_login; ?>
-          <?php endif; ?>
+          <?php endif; ?> 
 			      
 				
 

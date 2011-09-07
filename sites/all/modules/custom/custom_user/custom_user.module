@@ -129,7 +129,12 @@ function _custom_user_register_final_validate(&$form, &$form_state){
     $status   = $values['status'] ? $values['status'] : 1;
     $pass     = isset($values['pass']) ? $values['pass'] : '';
     if($user->uid){
-       $ServiceTicket = $_SESSION['userticket'];
+       //$ServiceTicket = $_SESSION['userticket'];
+       if(isset($_SESSION['userticket'])){
+         $ServiceTicket = $_SESSION['userticket'];
+       }else{
+         $ServiceTicket = md5($user->name.$user->init);
+       }
     } else {
       $ServiceTicket = '';
     }

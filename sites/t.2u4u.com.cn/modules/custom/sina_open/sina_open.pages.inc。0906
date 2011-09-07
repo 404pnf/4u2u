@@ -273,8 +273,8 @@ function sina_open_remove_confirm_submit($form, &$form_state) {
 		
 	}
 	else{
-		$youyou_create_fans = '<div class="create_fans"><a href="/sina_open/t_login?destination=/create/'.$youyou_sina_id.'"><span class="addnew">+</span>'.关注.'</a></div>';
-		//加悠粉
+	
+		$youyou_create_fans = '<div class="create_fans"><a href="/sina_open/t_login?destination=/create/'.$youyou_sina_id.'">'.悠粉.'</a></div>';	//加悠粉
 		
 		$user_output = '<div class="sina_login_link">'.l('使用新浪微博登录', 'sina_open/t_login').'</div>';
 	}

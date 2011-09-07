@@ -812,18 +812,15 @@ width:100%;
 	color:#797979;
 }
 
-#huandengpian {
-    float: left;
-    margin-right: 20px;
+#huandengpian{
+	float:left;
 }
 
-#zhongdian, #zhongdianfenlei {
-    float: left;
-    /*left: 20px;*/
-    position: relative;
-    width: 400px;
+#zhongdian, #zhongdianfenlei{
+	width:400px;
+	float:left;
+	margin-left:20px;
 }
-
 #zhongdian .view-header{
 	background-image:url("http://video.2u4u.com.cn/sites/video.2u4u.com.cn/themes/video/css/shipin_images/images-07.gif");
 	height:23px;
@@ -838,20 +835,10 @@ width:100%;
 	line-height:2px;
 	padding-left:20px;
 }
-#zhongdian .views-field-body .field-content{
-    line-height: 25px;
-    margin-top: 15px;
-    text-indent: 26px;
-    display: block;
-}
 
 #xilietushu{
 	margin-top:20px;
 }
-.term-detail{
-	text-align:justify;
-}
-
 #huandengpian .views-field-field-yuedu-summary-value {
 	padding-bottom:0px;
 }
@@ -861,14 +848,10 @@ width:100%;
 	margin:0px;
 	padding:0px;
 }
-#zhongdian{
-	margin-bottom:24px;
-	position:relative;
-}
 #zhongdian .view-content .views-field-title{
 	font-size:14px;
 	font-weight:bold;
-	margin-top:20px;
+	margin-top:5px;
 }
 #zhongdian .view-content .views-field-field-yuedu-summary-value{
 	color:#8A8A8A;
@@ -880,29 +863,19 @@ width:100%;
 #zhongdian .view-content .views-field-tid{
 	display:none;
 }
-#zhongdian .gozhuanti a{
-	color:#961F1F;
-	font-weight:bold;
-	float:left;
-	position:absolute;
-	right:0;
-}
-
 #zhongdian thead th{
 	border:0px;
 }
 #zhongdianfenlei .view-content .views-field-tid .field-content a{
 	color:#96833E;
 }
-#zhongdianfenlei .view-content .views-row {
-    background: url("images/fangkuang.gif") no-repeat scroll left 5px transparent;
-    margin-top: 5px;
-    overflow: hidden;
-    padding-left: 10px;
-    white-space: nowrap;
-    width: 398px;
+#zhongdianfenlei .view-content .views-row{
+	width:398px;
+	white-space:nowrap; 
+	text-overflow:ellipsis; 
+	overflow:hidden;
+	margin-top:5px;
 }
-
 #zhongdianfenlei .view-content .views-field-title{
 	margin-left:8px;
 }
@@ -1069,6 +1042,13 @@ width:100%;
 	background:none;
 	border:0px;
 	padding:0px;
+}
+#zhongdian .view-content .item-list ul li{
+	height:140px;
+}
+.term-detail{
+	padding:3px 0 8px 10px;
+	margin-top:10px;
 }
 
 .view-whx-yuedu .view-display-id-attachment_1 .item-list img{

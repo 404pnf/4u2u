@@ -23,10 +23,15 @@ border-bottom:1px dashed #D1D1D1;
 
  .view-whx-yuedu .view-display-id-attachment_1 .item-list{
 position:relative; 
+width:90px;
 float:left;
 margin:0 9px;
 z-index:100;
 }
+ .view-whx-yuedu .view-display-id-attachment_1 .item-list img{
+	width:90px;
+	height:120px;
+ }
  .view-whx-yuedu  .view-display-id-attachment_1  .views-row{
 position:absolute;
 display:none;
@@ -113,7 +118,7 @@ display:inline;
 	height:180px;
 	overflow:hidden;
 	position:relative;
-	width:490px;
+	width:540px;
 }
  .view-whx-yuedu .view-display-id-attachment_1 .view-header{
 height:25px;
@@ -310,9 +315,9 @@ top:243px;
 .term-detail{
 	background-color:#EEEEEE;
 	float:left;
-    margin: 8px 15px;
-    padding: 3px 5px 8px 10px;
-	width:190px;
+	margin-left:10px;
+	padding:8px 0 8px 10px;
+	width:160px;
 }
 .term-detail .term-name{
     font-weight:bold;
@@ -478,10 +483,3 @@ display:none;
     background-color:#dddddd;
     border-top:1px solid #CECECE;
 }
-
-/*---- 编辑推荐内容类型 ---- */
-.node-type-editorrec .node-inner .content {
-	font-size: 14px;
-        line-height: 30px;
-        text-indent:28px;
-       }

@@ -362,10 +362,10 @@
 				<?php print $block['content']; ?>
 		</div>
 		
-        <!--<div class=tonglanall> -->
-        	<?php //$block = module_invoke('block', 'block', 'view', 84); ?>
-			<?php //print $block['content']; ?>
-       <!-- </div>-->
+        <div class=tonglanall> 
+        	<?php $block = module_invoke('block', 'block', 'view', 84); ?>
+			<?php print $block['content']; ?>
+       </div>
        
 		<div class="qz">
 			

@@ -25,7 +25,7 @@
       <div id="logo-title">
 	
         <?php if (!empty($logo)): ?>
-		  <a href="http://2u4u.com.cn"  title="悠游网" rel="home" id="logo">
+		  <a href="http://t.2u4u.com.cn"  title="悠游网" rel="home" id="logo">
             <img src="<?php print $logo; ?>" alt="<?php print $site_name; ?>"/>
           </a>
         <?php endif; ?>

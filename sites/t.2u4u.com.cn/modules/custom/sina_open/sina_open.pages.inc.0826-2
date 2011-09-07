@@ -232,18 +232,18 @@ function sina_open_remove_confirm_submit($form, &$form_state) {
  function theme_sina_open_user_info_block(){
  	global $user;
  	
- 	$youyou_sina_id = 1709121243;
- 	$youyou_image_url = 'http://tp4.sinaimg.cn/1709121243/50/5600676202/0';
- 	$youyou_name = '悠游外语学习网';
+ 	$youyou_sina_id = 1283838614;
+ 	$youyou_image_url = 'http://tp3.sinaimg.cn/1283838614/50/5601789937/0';
+ 	$youyou_name = '小雪飞雨';
  	$youyou_description = '外语学习一网打尽';
 
-	$youyou_url = 'http://weibo.com/'.$youyou_sina_id;
+	$youyou_url = 'http://weibo.com/'.$youyou_sina_id.'/profile';
 	
 	$youyou_output = '';
 	
 	$youyou_name = '<div id="youyou"> <a href="'.$youyou_url.'">'.$youyou_name.'</a></div>';	//悠游外语微阅读用户名
 	$youyou_image = '<div id="youyou_image"> <a href="'.$youyou_url.'"> <img src="'.$youyou_image_url.'"/></a></div>';	//悠游外语微阅读头像
-	$youyou_create_fans = '<div class="create_fans"><a href="/create/'.$youyou_sina_id.'"><span class="addnew">+</span>'.关注.'</a></div>';	//加悠粉
+	$youyou_create_fans = '<div class="create_fans"><a href="/create/'.$youyou_sina_id.'">'.悠粉.'</a></div>';	//加悠粉
 	
 
  	//当前用户 的信息
@@ -255,31 +255,25 @@ function sina_open_remove_confirm_submit($form, &$form_state) {
 		
 		$user_id = $user_data->id;
 		$user_name = $user_data->name;
-		$user_image_url =  $user_data->profile_image_url;
 		$user_url = 'http://weibo.com/'.$user_id.'/profile';
 		$userpoints = userpoints_get_current_points($user->uid);
 		
-		$useroutput_image ='<div class="user-image"><a class="login-user-sina_image" href="'.$user_url.'"><img src="'.$user_image_url.'"/></a></div>';
-		
-		//$useroutput_name ='<div id="user-material"> <a class="login-user-sina_name" href="'.$user_url.'">'.$user_name.'</a>（<a class="login-user-name" href="http://my.2u4u.com.cn">'.$user->name.'</a>）<span class="userpoints">'.$userpoints.'</span></div>';
-		$useroutput_name ='<div id="user-material"> <a class="login-user-sina_name" href="'.$user_url.'">'.$user_name.'</a><span class="userpoints">'.$userpoints.'</span></div>';
-		
-		$useroutput_logout = '<div class="logout"><a href="/logout">登出</a></div>';
+		$useroutput_name ='<div id="login-user"> <a class="login-user-sina_name" href="'.$user_url.'">'.$user_name.'</a>（<a class="login-user-name" href="http://my.2u4u.com.cn">'.$user->name.'</a>）<span class="userpoints">'.$userpoints.'</span></div>';
 		
 		$useroutput_collect = views_embed_view('flag_bookmarks_tab', $display_id = 'block_4');
 		$useroutput_yuedu = views_embed_view('flag_bookmarks_tab', $display_id = 'block_5');
 		
-		$user_output = '<div id="login-user"><div class="block-title-bg"><h3 class="title block-title">用户信息</h3></div>'.$useroutput_image.$useroutput_name .$useroutput_logout . $useroutput_collect . $useroutput_yuedu.'</div>'; 
+		$user_output = $useroutput_name . $useroutput_collect . $useroutput_yuedu; 
 		
 	}
 	else{
-		$youyou_create_fans = '<div class="create_fans"><a href="/sina_open/t_login?destination=/create/'.$youyou_sina_id.'"><span class="addnew">+</span>'.关注.'</a></div>';
-		//加悠粉
+	
+		$youyou_create_fans = '<div class="create_fans"><a href="/sina_open/t_login?destination=/create/'.$youyou_sina_id.'">'.悠粉.'</a></div>';	//加悠粉
 		
 		$user_output = '<div class="sina_login_link">'.l('使用新浪微博登录', 'sina_open/t_login').'</div>';
 	}
  	
-	$youyou_output = '<div id="youyou-user">' . $youyou_image . $youyou_name . $youyou_create_fans . '</div>'; 
+	$youyou_output = $youyou_create_fans . $youyou_image . $youyou_name; 
 	$output = $youyou_output . $user_output;
 	
 	return $output;
@@ -321,7 +315,15 @@ function theme_sina_open_yuedu_block(){
 			$num_rows = TRUE;
 			
 			if ($o->sina_uid) {
-
+				/*
+				$sina_data = get_sina_info_by_sina_id($o->sina_uid);
+				$value = $sina_data;
+				
+				$sina_id = $value->id;
+				$sina_name = $value->name;
+				$sina_url = 'http://weibo.com/'.$sina_id.'/profile';
+				$sina_image_url = $value->profile_image_url;
+				*/
 				$sina_id = $o->sina_uid;
 				$sina_name = $o->sina_name;
 				$sina_url = 'http://weibo.com/'.$sina_id.'/profile';
@@ -336,7 +338,7 @@ function theme_sina_open_yuedu_block(){
 			}
 		 }
 		 if($uid>0){
-		 	$tuijian = '<div id="tuijian" >	 <div class="tuijian_text"> 如果您觉得此书值得分享，可以通过新浪微博推荐给您的好友</div>	<div class="tuijian_link"><a href="/tuijian/'.$nid.'" target="_blank">推荐给微博好友</a></div>	</div>';
+		 	$tuijian = '<div id="tuijian" >	 <div class="tuijian_text"> 如果您觉得此书值得分享，可以通过新浪微博推荐给您的好友</div>	<div class="tuijian_link"><a href="/tuijian/'.$nid.'" onclick="">推荐给微博好友</a></div>	</div>';
 		 }
 		 else{
 		 	$tuijian = '<div id="tuijian" >	 <div class="tuijian_text"> 如果您觉得此书值得分享，可以通过新浪微博推荐给您的好友</div>	<div class="tuijian_link"><a href="/sina_open/t_login?destination=/tuijian/'.$nid.'" onclick="">推荐给微博好友</a></div>	</div>';
@@ -357,16 +359,16 @@ function theme_sina_open_yuedu_block(){
 /*-------悠游外语学习网的粉丝-------*/
 function theme_sina_open_fans_block(){
 	//$youyou_uid = 303636;
-	$youyou_sina_id = 1709121243;
- 	$youyou_name = '悠游外语学习网';
-
+	$youyou_sina_id = 1283838614;
+ 	$youyou_name = '小雪飞雨';
+ 	
 	 if($data = get_user_info_by_sina_id($youyou_sina_id)){
 	 	$youyou_uid = $data['uid'];
 	 }
   	else
   		$youyou_uid = 1;
   	
-	$output = '<div class="sina_open_fans"><div class="fans_centent">';
+	$output = '<div class="sina_open_fans"><label class="fans">悠粉儿：</label><div class="fans_centent">';
 	if($data = get_follows_by_uid('followers', $youyou_uid, 20, -1)){
 		//echo var_dump($data);
 		
@@ -399,7 +401,7 @@ function theme_sina_open_fans_block(){
 function theme_sina_open_comment_trends_block(){
 	$youyou_trend_name = '外语微阅读';
 
-	$output = '<div class="block-title-bg"><h3 class="title block-title">正在进行的书评...</h3><div class="more"><a href="http://weibo.com/k/外语微阅读&refer=miniblog_jing">更多》</a></div></div>';
+	$output = '';
 
 	if($data = get_trends_by_trend_name($youyou_trend_name)){
 		//echo var_dump($data);

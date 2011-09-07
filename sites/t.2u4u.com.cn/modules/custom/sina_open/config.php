@@ -1,5 +1,5 @@
 <?php
-define( "WB_AKEY" , '2784147378' );
-define( "WB_SKEY" , 'dd97f116fc7a97b1e48acfd9431f90aa' );
+define( "WB_AKEY" , '3650932499' );
+define( "WB_SKEY" , '42e33bc91b362ae16201974b3e094a34' );
 
 ?>

@@ -516,11 +516,14 @@ form.fivestar-widget div.description .fivestar-summary {
 
 /* t.2u4u.com.cn by zhao*/
 .block-inner .content { padding: 0}
-#content-inner{ margin-right: 300px;}
+#content-inner{ margin-right: 320px; float: left}
 #content-top .block-title-bg h3{font-size:16px; margin:0px 15px 15px 0;}
 #block_yuedu_term{ background: #F4F8F9; border: 1px solid #E3E3E3;padding: 10px 0;_height:80px;}
 #block_yuedu_term ul{list-style:none; overflow: auto; overflow: hidden; margin: 0; padding: 0}
-#block_yuedu_term li{ float: left;padding: 3px 10px;* width: 84px;}
+#block_yuedu_term li{ float: left;padding: 3px 0;*width:100px}
+#block_yuedu_term li a{padding: 2px 10px;}
+#block_yuedu_term li a:hover{ color: #fff; background: #FE8103;}
+#block_yuedu_term li a.active{background: #FE8103; color: #FFF}
 #block_yuedu_term .book-fl ul li,#block_yuedu_term  .book-fl2 ul li{}
 .tuijiantitle{ float: left; font-weight:700; font-size:16px; margin:0px 25px 15px 0;}
 #huandengpian{ clear: left;}
@@ -529,33 +532,83 @@ form.fivestar-widget div.description .fivestar-summary {
 #content-bottom{ margin-top: 40px;}
 #content-bottom .user_name_text{ float: none;}
 #content-bottom .book_img_date{top:0}
-#content-bottom .user_created_at{bottom: 76px;}
+/*#content-bottom .user_created_at{bottom: 76px;}*/
 #content-bottom .trends-row{ height: 125px;}
 #content-bottom .user_text{}
 #content-bottom a{ color: #049DA9}
 #sidebar-second{ width: 280px;}
 #sidebar-second .content{ overflow: auto}
 #sidebar-second .block-inner .block-title-bg{background-image:none; background-color: #F7F7F7;}
-#block-sina_open-0 .content{ *height: 120px; position: relative}
-#block-sina_open-0 .view-flag-bookmarks-tab{ float: left; clear: none; margin:0 10px; *display: inline;*width:100px}
+#sidebar-second #block-sina_open-0 .content{ *height: 120px; position: relative; padding: 0}
+#block-sina_open-0 .view-flag-bookmarks-tab{ float: left; clear: none; margin:0 10px; *display: inline;width: 100px;}
 #block-sina_open-0 .content .view-display-id-block_4{ clear: left;}
 #block-sina_open-0 .content .view-display-id-block_5{ *margin-top:20px; *margin-left: 50px}
 #youyou_image{ float: left; margin: 20px 0 1px 10px;*margin: 20px 0 10px 10px;_display: inline;}
 .create_fans,#youyou{ float: right; width: 200px;line-height:1.3em; margin-top:3px}
-.create_fans a{ font-weight:700; color: red;}
-.create_fans{ margin-top: 24px;}
+.create_fans a{ background:#E3FFD5;border: 1px solid #CFF3BB;cursor: pointer;display: block;height: 18px;line-height: 18px;overflow: hidden;text-align: left;width: 56px;color: #0082CB;}
+.create_fans span{cursor: pointer; float: left;font-family: Arial;font-size: 17px;font-weight: bold;line-height: 18px;margin: 0 1px 0 3px;}
+.create_fans a:hover{ color: #0082cb; background: #4FBE4F;text-decoration: none;}
+#youyou{ margin-top: 20px; margin-bottom: 4px}
+#youyou a{ color: #FE8103;font-weight: 700;}
 .sina_login_link{ padding: 2px 30px; color: #fff;background:#FE8103; width: 190px; *width:188px; float: left; margin: 0 10px 10px; text-align: center}
 .sina_login_link a{ color: #FFF}
-#block-views-whx_yuedu-block_6 ol{ margin: 10px 0}
+#sidebar-second .block-inner #login-user .block-title-bg{ border-left: none; border-right:none;}
+#block-views-whx_yuedu-block_6 ol{ margin: 10px 0;_margin:0;}
 #block-views-whx_yuedu-block_6 li{line-height:2.8em;}
 #sidebar-second #block-sina_open-4 .content{ padding: 20px 0}
 #block-sina_open-4 .comment_book-row{ margin: 0 10px; height: 70px;}
 #block-sina_open-4 .comment_book-row .user-book-content a{ color: #049DA9}
 #block-sina_open-4 .comment_book-row .comment_count{background:url("images/heart.gif") no-repeat 0 3px; padding-left: 15px;}
-.fans_centent .fans-row{ float: left; margin: 10px}
+.fans_centent .fans-row{ float: left; margin: 10px; width: 69px; height: 80px; overflow: hidden}
 .user_name_text.withimg {*width:470px;}
-#login-user{ position: absolute; display: none;}
+#youyou-user{ overflow: auto}
+#login-user{}
+#login-user .user-image{float: left;margin: 20px 20px 1px 10px;}
+#login-user #user-material{ margin-top: 20px}
+#user-material a{color: #049DA9; text-decoration: underline; margin-right: 10px;}
 .section-yuedu #content-area{ border-top:1px solid #CECECE!important; padding-top: 20px; }
 #block-sina_open-0 .content,.sina_open_fans,.fans_centent,.fans{_overflow: auto;_zoom:1}
-#content-bottom .block-title-bg .block-title{ background: #F7F7F7; border: 1px solid #E3E3E3; line-height: 35px;text-indent:1em;}
+#content-bottom .block-title-bg{ background: #F7F7F7; border: 1px solid #E3E3E3;  position: relative}
+#content-bottom .block-title-bg h3{line-height: 35px;text-indent:1em; margin: 0}
+#content-bottom .block-title-bg .more{ position: absolute ;top:7px; right: 7px;}
 #content-area .comment_collect .comment-tip{ color: #F10A14;font-weight:700;background: #F7F7F7; border: 1px solid #E3E3E3; line-height: 35px;text-indent:1em; float: none; margin: 10px 0;}
+	/* 新导航*/
+#header{ height: 40px; width: 980px; overflow: hidden; background: #FF7F07; margin: 0 auto;}
+#page{ width: 980px; margin: 0 auto; background: #fff}
+body{ background: #E2E2E2;}
+#header-middle{*display: inline;}
+#main{ width: 940px; margin-top: 16px;}
+#logo-title{ width: 250px; float: left; margin-left: 10px;}
+#navigation{ clear: none; width: 560px; float: right;}
+#navigation ul#primary { float: none; overflow: hidden; height: 14px; overflow: hidden; margin-top: 15px;}
+#navigation ul#primary li{ border-left:1px solid #FFF; margin-left: -1px;}
+#navigation ul#primary li,#navigation ul#primary li a{ height: 14px; line-height: 14px; font-weight:400; color: #FFFAF9; font-size:12px;}
+/* tuijian*/
+#tuijian{ margin:0 5px;}
+.tuijian_text{ line-height:1.4em; margin: 10px 0 6px}
+.tuijian_link a{ color: #049DA9; font-style: italic;}
+.sina_users{margin:0 5px;font-weight:700; color:#FE8103}
+.sina_open_yuedu{ margin:0 5px;}
+.yuedubenshu{ float: left;margin: 5px 20px 5px 10px;*margin: 5px 10px 5px 10px; overflow: hidden;}
+/* 对单个图书阅读的页面样式*/
+.node-type-ebook #content-inner{ width: 722px; margin-right: 240px;}
+.node-type-ebook #sidebar-second{ width: 200px; overflow: hidden;}
+.node-type-ebook #sidebar-second #youyou{ float: none; margin-bottom: 6px; width: 170px;*width: 120px;_float: left}
+.node-type-ebook #sidebar-second #youyou_image{margin: 20px 20px 20px 10px;*margin: 20px 0px 20px 10px;_float: left}
+.node-type-ebook #sidebar-second .create_fans{ float: none; width: 170px;*width: 120px;_float: left;}
+.node-type-ebook #sidebar-second #block-sina_open-0 .view-flag-bookmarks-tab{ margin: 0 6px; width: auto}
+.node-type-ebook #sidebar-second #block-sina_open-4 .comment_book-row{ height: 100px;}
+.node-type-ebook #sidebar-second #block-sina_open-4 .comment_book-row .user_image{margin-bottom: 40px;}
+#sidebar-second .block-inner .content, #sidebar-first .block-inner .content, .section-fanyi #main #content-area, .section-fanyituijian #main #content-area, .section-yuedu #main #content-area, .section-fenlei #main #content-area, .section-dhgps #main #content-area, .section-wenda #main #content-area, .page-libao #main #content-area{_zoom:1}
+.node-type-ebook #sidebar-second .sina_login_link {width: 118px; _display: inline;_width: 110px}
+/*推荐页面*/
+.page-tuijian #content-inner{ width:640px;}
+.page-tuijian .friTab{ _width: 100%;}
+.page-tuijian .friTab ul{ list-style: none; margin: 0; margin: 0; padding: 0; overflow: auto}
+.page-tuijian .friTab ul li{ float:  left ;border: 1px solid #DDD; padding: 6px 10px; border-bottom:none}
+.tuijian_user{border: 1px solid #DDD; overflow: auto; margin-bottom: 10px;_zoom:1}
+.tuijian_user span{ display: block; padding: 6px 0; font-weight:700;text-indent:1.1em;}
+#friendList{ width: auto; height: auto; padding: 10px;}
+.tuijian_user ul.pager{ list-style: none; padding: 0 20px; overflow: auto;text-align: center}
+.tuijian_user ul.pager li{ float: left; margin: 8px;}
+.friendList .fans-row {padding: 8px 16px 5px;}

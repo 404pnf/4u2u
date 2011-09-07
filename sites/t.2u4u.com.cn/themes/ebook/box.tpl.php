@@ -17,7 +17,7 @@
 <!--<?php if ($title): ?>
   <h2><?php print $title ?></h2>
 <?php endif; ?>-->
-	<a id="pinglun" name="pinglun"></a>
+	<div class="box-title">发表书评...</div>
   <div class="content">
   	<?php print $content ?>
 

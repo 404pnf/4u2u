@@ -273,8 +273,8 @@ function sina_open_remove_confirm_submit($form, &$form_state) {
 		
 	}
 	else{
-		$youyou_create_fans = '<div class="create_fans"><a href="/sina_open/t_login?destination=/create/'.$youyou_sina_id.'"><span class="addnew">+</span>'.关注.'</a></div>';
-		//加悠粉
+	
+		$youyou_create_fans = '<div class="create_fans"><a href="/sina_open/t_login?destination=/create/'.$youyou_sina_id.'">'.悠粉.'</a></div>';	//加悠粉
 		
 		$user_output = '<div class="sina_login_link">'.l('使用新浪微博登录', 'sina_open/t_login').'</div>';
 	}
@@ -399,7 +399,7 @@ function theme_sina_open_fans_block(){
 function theme_sina_open_comment_trends_block(){
 	$youyou_trend_name = '外语微阅读';
 
-	$output = '<div class="block-title-bg"><h3 class="title block-title">正在进行的书评...</h3><div class="more"><a href="http://weibo.com/k/外语微阅读&refer=miniblog_jing">更多》</a></div></div>';
+	$output = '';
 
 	if($data = get_trends_by_trend_name($youyou_trend_name)){
 		//echo var_dump($data);

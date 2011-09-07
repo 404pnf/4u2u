@@ -57,11 +57,20 @@
     </div>
   <?php endif; ?>
 
-
+  <?php  
+	$view = views_get_current_view();  
+	$tid = $view->argument['term_node_tid_depth']->argument;
+	$term = taxonomy_get_term($tid);
+	
+?>
 <div class="xilietush-content">
 	<div class="term-detail">
-我们怀念悠闲惬意的阅读，一杯茶，一本书，一个慵懒的下午，享受慢阅读，唤回阅读的愉悦，寻回遗失的美好......
-悠游网将推出不同的专题，限时免费开放，让我们“共同阅读 共同成长”，悠粉儿们，尽情地阅读、交流、评论吧！                         
+       <div class='term-name'>                    
+		<?php print '<a href="/yuedu/'.$tid.'">'.$term->name.'</a>';?>
+	   </div>  
+       <div class='term-description'>                    
+		<?php  print $term->description;?>                     
+	   </div>                          
 	</div>
   
   <?php if ($rows): ?>

@@ -319,13 +319,13 @@ display:none;
     width: 78px;
 }
 .user_created_at {
-    bottom: 10px;
-    left: 76px;
-    position: absolute;
+    bottom: -10px;
+   /* left: 76px;*/
+    position: relative;
 }
 
 /*推荐此书给当前用户*/
-.page-tuijia .box{
+.page-tuijian .box{
 	display:none; 
 }
 .friendList {

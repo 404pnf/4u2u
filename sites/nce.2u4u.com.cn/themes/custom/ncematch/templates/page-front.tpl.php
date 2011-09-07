@@ -87,7 +87,7 @@
 			<div class="news_list">
 			<?php 
 			   $views_name = 'news';
-			   $display_id = 'page_1';
+			   $display_id = 'block_1';
 			   $view_args = 1;
 			   print views_embed_view($views_name, $display_id,$view_args); 
 			?>

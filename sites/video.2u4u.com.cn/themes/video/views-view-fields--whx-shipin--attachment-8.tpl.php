@@ -4,10 +4,10 @@
 	   print $block['content'];
 	?>	
 </div>
-<!--<div class="google_gg">-->
+<div class="google_gg">
 	<?php	
-		//$block_googlead = module_invoke('block', 'block', 'view', 83);
-	   //print $block_googlead['content'];
+		$block_googlead = module_invoke('block', 'block', 'view', 83);
+	   print $block_googlead['content'];
 	?>
-<!--</div>-->
+</div>
 

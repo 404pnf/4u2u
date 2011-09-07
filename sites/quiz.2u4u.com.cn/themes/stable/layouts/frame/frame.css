@@ -48,7 +48,7 @@
 	margin: 15px 0 0 18px;
 }
 .ksrl {
-	height: 245px;
+	height: 390px;
 	width: 218px;
 	/*background-color: #F5F5F5;*/
 	border-left: 1px solid #CECECE;
@@ -56,11 +56,11 @@
 	border-bottom: 1px solid #CECECE;
 }
 .dfphb {
-	width: 218px;
+	/*width: 218px;
 	height: 236px;
 	/*height: 229px;*/
-	margin-top: 15px;
-	border: 1px solid #CECECE;
+	/*margin-top: 15px;
+	border: 1px solid #CECECE;*/
 }
 
 .zxlx {

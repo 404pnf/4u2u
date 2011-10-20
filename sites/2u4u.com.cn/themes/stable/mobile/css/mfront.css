@@ -1,0 +1,27 @@
+#huandengpian{
+	width:320px;
+	margin:0 auto;
+}
+
+/*------------热点推荐新闻----------*/
+
+#rediantuijian .views-row {
+	border-top:1px solid #f2f2f1;
+    border-bottom: 1px solid #bfbfbd;
+    padding:10px;
+    background-image:-webkit-gradient(linear,0% 0%, 0% 100%, from(#F1F1F1), to(#D7D7D7), color-stop(0.5,#e4e4e4));
+}
+#rediantuijian .views-field-title {
+    font-weight: bold;
+}
+#rediantuijian .views-field-body{
+	color:#333333;
+	/*-webkit-text-stroke: 1.6px #333333;
+	text-fill-color:#333333 transparent;
+	text-shadow:1px 1px 1px #E4E4E4;*/
+	
+}
+/*---------end 热点推荐新闻--------*/
+
+
+

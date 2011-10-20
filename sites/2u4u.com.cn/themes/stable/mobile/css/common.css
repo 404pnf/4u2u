@@ -1,0 +1,241 @@
+/** ABOUT common STYLES
+---------------------------------
+*  common.css is used to establish general rules
+主站以及所有子站点都使用的css，在子站中处于所有css的最顶层，可以在其他css中复写本文件中的任何样式。
+---------------------------------
+*/
+
+* { margin: 0; padding: 0; }
+
+/* 王海霞 whx修改page、head、main、Navigation，使导航部分符合现在的布局（即占满整个窗口） */
+
+
+/** LAYOUT RULES
+---------------------------------
+*  do not change if you're not sure you know what you're doing
+*/
+
+#main{width: 480px; margin: 0 auto; position:relative;overflow:hidden;}
+
+body {
+  margin: 0;
+  font: 12px/1.7em "Helvetica Neue", helvetica, Arial, sans-serif;
+  letter-spacing:0.03em;
+  background-color: #EDEDED;
+}
+
+@media only screen and (max-device-width: 480px){
+	#main{
+		width:320px;
+		min-width:320px;
+		min-height:380px;
+		overflow:hidden;
+	}
+	body {
+		line-height: 1.5em;
+		font-size:14px;
+	}
+}
+
+/** Clear Floats Without Structural Markup: 
+---------------------------------
+*  http://www.positioniseverything.net/easyclearing.html
+*/
+
+.clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+.clearfix { display: inline-block; }
+
+/* Hides from IE-mac \*/
+* html .clearfix { height: 1%; }
+.clearfix { display: block; }
+/* End hide from IE-mac */
+
+/* clear classes */
+
+.clearleft, .clearl, .cleft { clear: left; }
+.clearright, .clearr, .cright { clear: right; }
+.clear, .clearboth, .clearall{ clear: both; }
+
+/* Float classes */
+
+.floatleft, .fleft, .floatl { float: left; margin: 0 10px 5px 0; }
+.floatright, .fright, .floatr { float: right; margin: 0 0 5px 10px; }
+
+
+/* whx view,block 清除Clear Floats*/
+.view,.block{
+display:block;
+clear:both;
+}
+.block{
+margin-bottom:10px;
+}
+.block-inner .content{
+padding:5px;
+}
+
+/* Links */
+a { cursor:pointer; }
+a:link {color:#282727; text-decoration:none; }
+a:visited {color:#282727; text-decoration:none; }
+a:hover {text-decoration:underline; }
+a img { border-width:0; }
+
+/* whx Titles */
+h1, h2, h3, h4, h5, h6 {line-height:1.3em;}
+h1 { font-size: 2.0em; 	font-weight:700; padding: 0 0 0.5em; margin: 0;}
+h2 {font-size:1.4em;/* font-weight:300; */font-weight:700;margin-bottom:0.5em;}
+h3 {font-size:1.1em;margin-bottom:0.4em;}
+h4 {font-size:1.2em;margin-bottom:0.3em;}
+h5 {font-size:1.1em;font-weight:600;margin-bottom:0;}
+h6 {font-size:1em;font-weight:bold;}
+/* whx view title */
+.views-field-title{font-size:1.1em;}
+td.views-field-title{font-size:1.0em;}
+
+/* Paragraph Styles */
+p {  margin:0 0 1em 0;}
+.field-content p{  margin:0;}
+/* List Styles  */
+
+ul, ol {  margin-left: 0;   padding-left: 2em; }
+
+/* Table Styles  */
+table {	width: 99%;}
+/* whx tr 高度 颜色 border*/
+tbody tr.odd td,tbody  tr.even td {
+	/* padding: 10px 5px; */
+	border-bottom:1px dashed #DDDDDD;
+	padding:3px 3px 3px 0;
+}
+tbody tr.odd,tbody  tr.even{
+	background-color: #fff;
+}
+
+/* Code */
+pre, code, tt {font:1em 'andale mono', 'lucida console', monospace;line-height:1.5;}
+
+pre {
+	background-color: #efefef;
+	display: block;
+	padding: 5px;
+	margin: 5px 0;
+	border: 1px solid #aaa;
+}
+
+/* List Styles */
+ul          { list-style-type: disc; }
+ul ul       { list-style-type: circle; }
+ul ul ul    { list-style-type: square; }
+ul ul ul ul { list-style-type: circle; }
+ol          { list-style-type: decimal; }
+ol ol       { list-style-type: lower-alpha; }
+ol ol ol    { list-style-type: decimal; }
+
+/* Abbreviation */
+abbr {
+  border-bottom: 1px dotted #666;
+  cursor: help;
+  white-space: nowrap;
+}
+
+/* UI improvments  */
+#edit-title{
+	font-size: 24px;
+}
+#system-themes-form img{
+	width:100px;
+}
+.form-item .description{
+	font-size:0.9em;
+	color:#777;
+}
+#edit-delete{
+	color:#c00;
+}
+#attention{
+	color:#961F1F;
+}
+/**
+ * Console, style from Slate theme
+ */
+
+
+div.status {
+  color: #360;
+}
+div.error {
+  color: #dd0d0d;
+}
+div.messages{
+	color: #8F8F8F;
+}
+div.warning {
+  color: #961F1F;
+}
+.views-hide{
+	display:none;
+}
+
+/*----------列表页 分页样式----------*/
+.element-invisible{
+	display:none;
+}
+.item-list .pager {
+    clear: both;
+    text-align: center;
+    margin: 10px 0 20px;
+    padding: 0;
+}
+.item-list .pager li {
+    background-image: none;
+    display: inline;
+    list-style-type: none;
+    padding: 0.5em;
+}
+.pager-current {
+    font-weight: bold;
+}
+.item-list .pager li {
+    border: 1px solid #CECECE;
+    margin: 0;
+    padding: 1px 5px;
+}
+.item-list .pager-current {
+    background-color: #CECECE;
+     color: #FFFFFF;
+}
+
+
+
+
+/* ------------新闻toolbar------------- */
+.toolbar{
+	background: url("images/toolbarbg.gif") repeat-x scroll 0 0 transparent;
+	height: 42px;
+	line-height: 42px;
+	font-family:"宋体";
+	font-size:14px;
+	width:100%;
+	/*position: absolute;
+	top: 0px;
+	z-index: 9999;
+	overflow:hidden;*/
+}
+.toolbar a, .toolbar a:link{
+	color:#ffffff;
+}
+/*-------end 新闻toolbar------*/
+
+
+/*--------节点页面共同需要隐藏掉的内容--------*/
+.page-mnode .submitted, .page-mnode .taxonomy{
+	display:none;
+}

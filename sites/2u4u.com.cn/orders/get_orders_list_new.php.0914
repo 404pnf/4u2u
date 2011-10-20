@@ -16,24 +16,21 @@ if(date('w')==5){
    $end = strtotime("last friday"); 
 } 
 
-if($_GET['op']=="test"){
-	$time = " uo.order_id>118 AND uo.created > unix_timestamp('2011-09-24 0-0-0') AND uo.created < unix_timestamp('2011-09-30 0-0-0') AND ( uo.order_status = 'payment_received' OR uo.order_status = 'completed')";
- 	$filename = '2011-09-24到2011-09-30的订单';
-}
-else if($_GET['op']=="latest"){
- 	$time = " uo.order_id>118 AND uo.created<$end AND ( uo.order_status = 'payment_received' OR uo.order_status = 'completed')";
- 	$filename = date("Ymd",$end)."订单";
+ if($_GET['op']=="latest"){
+ 	$time = " uo.order_id>118 AND uo.created<$end ";
+ 	$filename = date("Ymd",$end).urlencode("订单");
  }else{
- 	$time =" uo.created>=$start AND uo.created<$end AND uo.order_status = 'payment_received'";
- 	$filename = date("Ymd",$start)."-".date("Ymd",$end)."订单";
+ 	$time =" uo.created>=$start AND uo.created<$end ";
+ 	$filename = date("Ymd",$start)."-".date("Ymd",$end).urlencode("订单");
  }
- 
 	$sql = "SELECT cp.field_product_neirongtiyao_value AS content,cp.field_product_mayang_value mayang, uo.order_id, uo.delivery_first_name, uo.delivery_company,
 			uo.delivery_phone, uo.delivery_street1, uo.delivery_city, uo.delivery_postal_code,uo.created, up.nid, up.title, up.qty,up.price
 			FROM `uc_orders` uo
 			LEFT JOIN `uc_order_products` up ON up.order_id = uo.order_id
 			LEFT JOIN `content_type_product` cp ON cp.nid = up.nid
-			WHERE $time 
+			WHERE $time AND uo.order_status = 'payment_received'
+			AND uo.order_total >200
+			AND up.price >200
 			AND NOT EXISTS (
 			SELECT * 
 			FROM `content_type_product` 
@@ -41,7 +38,7 @@ else if($_GET['op']=="latest"){
 			AND vid > cp.vid
 			)  AND uo.uid<>1 ORDER BY uo.uid,uo.order_id";
 
-	//echo $sql.'<br><br>';
+	//echo $sql;
 	$re = mysql_query($sql);
 	$num = mysql_num_rows($re);
 	if($num>0){
@@ -71,11 +68,10 @@ else if($_GET['op']=="latest"){
                    $content = $new_content[0].";";
                }
 	   		} 
-	       
-            if(strpos($content,"1.")!==false)
-                $content =substr(str_replace("1.","; ",$content),1).';';	
-			
+	        if(strpos($content,"1.")!==false)
+                $content =substr(str_replace("1.","; ",$content),1);	
 
+                  
        if(strpos($content,";")){
         	$book_list = explode(";",$content);
         	foreach($book_list as $value){
@@ -86,7 +82,7 @@ else if($_GET['op']=="latest"){
 		        		                    WHERE name LIKE	'".$value."%' 
 		        		                    AND `sku` 
 		        		                    IN (SELECT `sku` FROM 2u4u.`book_kc`)";
-		        	//echo 	'new_query::<br>'.$new_query.'<br><br>';
+		        		
 		            $new_rs = mysql_fetch_object(mysql_query($new_query));
 		            if($new_rs->price>0)
 	        	    $content_new .=$new_rs->price>0?$value."(".$new_rs->sku.")"."-".$new_rs->price.";":$value.";";
@@ -120,7 +116,7 @@ else if($_GET['op']=="latest"){
 	        		                  AND `sku` 
 	        		                    IN (SELECT `sku` FROM 2u4u.`book_kc`)";
  
-	                 // echo $new_sql."<br>";		
+//	                  echo $new_sql."<br>";		
 		             $new_res = mysql_fetch_object(mysql_query($new_sql)); 
 	        	     $content_new .=$new_res->price>0?$value."(".$new_res->sku.")"."-".$new_res->price.";":$value.";";
 /*

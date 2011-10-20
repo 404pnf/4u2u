@@ -107,8 +107,8 @@ if(date('w')==5){
 <caption><h2>打印用户订单（EXCEL表）</h2></caption> 
 <tr> 
 <th scope="col">操作</th><th scope="col">操作说明</th></tr>
-<th scope="col"><a href='get_orders_list_new.php'>打印上周订单(<?php echo date("ymd",$start)."-".date("ymd",$end)?>)</a></th><th scope="col">只打印上一周的订单，不改变用户的状态，可重复打印（包括付款完成或者已经发送的订单）</th></tr>
-<th scope="col"><a href='get_orders_list_new.php?op=latest'>打印截至本周五的所有订单(<?php echo $time ?>)</a></th><th scope="col">打印截至本周五的所有订单，不改变用户的状态，可重复打印（包括付款完成或者已经发送的订单）</th></tr>
+<th scope="col"><a href='get_orders_list_new.php'>打印上周订单(<?php echo date("ymd",$start)."-".date("ymd",$end)?>)</a></th><th scope="col">只打印上一周的订单，不改变用户的状态，可重复打印</th></tr>
+<th scope="col"><a href='get_orders_list_new.php?op=latest'>打印截至本周五的所有订单(<?php echo $time ?>)</a></th><th scope="col">打印截至本周五的所有订单，不改变用户的状态，可重复打印</th></tr>
 <th scope="col"><a href='get_orders_list_new.php?info=update'>打印上周订单(<?php echo date("ymd",$start)."-".date("ymd",$end)?>)并更新用户订单状态</a></th><th scope="col">改变用户的状态，只能打印一次</th></tr>
 <th scope="col"><a href='get_orders_list_new.php?op=latest&info=update'>打印截至本周五的所有订单(<?php echo $time ?>)并更新用户订单状态</a></th><th scope="col">改变用户的状态，只能打印一次</th></tr>
 </table>

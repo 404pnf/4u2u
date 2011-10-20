@@ -253,7 +253,11 @@ function _custom_user_confirm_delete_validate(&$form, &$form_state){
   }
   $flag_method = 'user_cancel_reassign';
   $user_cancel_notify = 0;
-  $ServiceTicket = $_SESSION['userticket'];
+  if(isset($_SESSION['userticket'])){
+     $ServiceTicket = $_SESSION['userticket'];
+  } else {
+     $ServiceTicket = md5($user->name.$user->init);
+  }
   $client = new SoapClient(TYUSER_SERVICES_URL,array('encoding'=>'UTF-8'));
   $params1 = '<?xml version="1.0" encoding="UTF-8" ?>
                   <UUMS>
@@ -291,7 +295,11 @@ function _custom_user_multiple_delete_confirm_validate(&$form, &$form_state){
      $accounts = array_filter($form_state['values']['accounts']);
      $flag_method = 'user_cancel_reassign';
      $user_cancel_notify = 0;
-     $ServiceTicket = $_SESSION['userticket'];
+     if(isset($_SESSION['userticket'])){
+        $ServiceTicket = $_SESSION['userticket'];
+      } else {
+        $ServiceTicket = md5($user->name.$user->init);
+     }
      $client = new SoapClient(TYUSER_SERVICES_URL,array('encoding'=>'UTF-8'));
      $params1 = '<?xml version="1.0" encoding="UTF-8" ?>
                   <UUMS>
@@ -336,7 +344,11 @@ function _custom_user_admin_account_update_validate(&$form, &$form_state){
   $operation = $_POST['operation'];
   if($operation == 'block' || $operation == 'unblock'){
     $accounts = array_filter($form_state['values']['accounts']);
-    $ServiceTicket = $_SESSION['userticket'];
+    if(isset($_SESSION['userticket'])){
+       $ServiceTicket = $_SESSION['userticket'];
+    } else {
+       $ServiceTicket = md5($user->name.$user->init);
+    }
     if( $operation == 'block'){
       $states = 0;
     } else {

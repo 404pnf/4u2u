@@ -1,7 +1,7 @@
     var word = $("#spell-wrapper").html();
     
     function initRecorder(){
-        var serverList = ["rtmp://sandbox.api.aispeech.com/aistream.enscore.v1.0"];
+        var serverList = ["rtmp://cn.api.aispeech.com:443/v1.1/aistream.encore"];
         
         window.recorder1 = new aispeech.AiRecorder({
             id: "aiRecorder",
@@ -361,7 +361,7 @@ if (Drupal.jsEnabled) {
 		  alert('只有登录用户才能测评，请现在登录。');
 		  window.location.href = 'http://2u4u.com.cn/user/login';
 		}
-		
+		/*
 		var getsessionkey = function(data){
 		  //alert(data.error);
 	    var sessionkey = data.result.session_key;
@@ -388,6 +388,7 @@ if (Drupal.jsEnabled) {
 			
 			
 		}
+		*/
 		//initRecorder();	
 		if(recorder1 === undefined){
 		 // alert('init');
@@ -405,7 +406,7 @@ if (Drupal.jsEnabled) {
 		  //alert("已经存在");
 		}
 		
-		
+		/*
 		
 		$.ajax({
 		  type: 'POST',
@@ -414,7 +415,34 @@ if (Drupal.jsEnabled) {
 			success: getsessionkey,
 			data: 'js=1'
 		});
-		
+		*/
+		var appKey = "1300675449010";
+		var lang = 'en';
+		var text = $("#aispeech-word").html();
+		var coreType = 'en.sent.syn';
+		var resource = 'syn_ensnt_liuyim';
+		//alert(text);
+		var r = player1.synth({
+				applicationId: appKey,
+				ttsUrl: "http://video.2u4u.com.cn/sites/video.2u4u.com.cn/modules/custom/aispeech/tts-v1.1.php",
+			//ttsUrl: "http://video.2u4u.com.cn/oral/test/session/key",
+				
+				lang: lang,
+				text: text,
+				coreType: coreType,
+				resource: resource,
+				player: player1,
+				onGetSessionSuccess: function(data){
+				//alert('success');
+						//$("#sessionKey").html(data.session);
+				},
+				onPlayStop: function(code, message){
+				  //alert('123');
+				   showstep2button();
+						//player1AiDebug.info("JS: playStop callback, code=" + code + ", message=" + JSON.stringify(message));
+				}
+		});
+		showstep2button();
 		return false;
 		
 	

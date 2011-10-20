@@ -106,36 +106,62 @@ function aispeech_oral_test_point_add(){
 }
 function aispeech_oral_test_get_session_key(){
 	
+	ini_set ('arg_separator.output', '&');
+error_reporting ( E_ALL ^ E_NOTICE ^ E_WARNING );
 	$appKey = "1300675449010";
 	$secretkey = "50b87599fcc2bd7bd27cb2799759eba59c56aaf8";
-	$apiHost = "http://sandbox.api.aispeech.com";
-	$apiVersion = "v1.0";
+	$apiHost = "http://cn.api.aispeech.com";
+	$apiVersion = "v1.1";
 	$apiSessionKey = null;
 
-	$url = "$apiHost/api/$apiVersion/auth/getSessionKey/appkey/$appKey/secretkey/$secretkey";
+	 
+  $timestamp = round(microtime(true)*1000);
+  $sig = sha1("$applicationId$timestamp$secretKey");
+  $url = "$apiHost/api/$apiVersion/auth/getSessionKey";
+	
+	 
+	$validateResultJson = curl_post ( $url , array(
+	   "applicationId"=>"$applicationId",
+	  "sig"=>"$sig",
+	  "timestamp"=>"$timestamp",
+  ) );
+echo " $validateResultJson ";
+  $validateResultObj = json_decode ( $validateResultJson );
+ 
+  echo $validateResultJson;
+	drupal_json($validateResultObj);
+ 
+	 
 
-	if (empty ( $appKey ) || empty ( $secretkey ) ) {
-		$json = array ("error" => "missing parameters" );
-		echo json_encode ( $json );
-		die ();
-	}
 
 
-
-	$validateResultJson = curl_post ( $url );
-	$validateResultObj = json_decode ( $validateResultJson );
+	//$validateResultJson = curl_post ( $url );
+	//$validateResultObj = json_decode ( $validateResultJson );
 	//drupal_set_message(print_r($validateResultObj));
 	if(!empty($_POST['js'])){
-	  $validateResultJson = curl_post ( $url );
-	  $validateResultObj = json_decode ( $validateResultJson );
+	  //$validateResultJson = curl_post ( $url );
+	  //$validateResultObj = json_decode ( $validateResultJson );
+		/*
+		$validateResultJson = curl_post ( $url , array(
+	    "applicationId"=>"$applicationId",
+	    "sig"=>"$sig",
+	    "timestamp"=>"$timestamp",
+    ) );
+
+    $validateResultObj = json_decode ( $validateResultJson );
+		
+		echo $validateResultJson;
+		*/
+		/*
 	  drupal_json(array(
 		    'result' => $validateResultObj,
 				//'result' => array('session_key'=>'123456789'),
 		  )
 		);
-		exit();
+		*/
+		//exit();
 	}
-	
+	exit();
 	$path = 'oral/test/session/key';
 	//drupal_goto($path);
 	return $path;

@@ -99,12 +99,12 @@ function highlight(findsubtitles,id){
 	var subtitle_line = findsubtitles.children('.time_'+id);
 	var offset = $(subtitle_line).offset();
 	var top_val=offset.top;
-	if(top_val>50)
-		$(document).scrollTop(top_val-50);	
+	if(top_val>100)
+		$(document).scrollTop(top_val-100);	
 	//alert(scrolltop+' time_id:'+id+' top_val:'+top_val);
 	if(navigator.platform == 'iPad' || navigator.platform == 'iPhone' || navigator.platform == 'iPod')
 	{
-		findsubtitles.parents('.smart_blog_subtitle').prev('.smart_blog_audio').children('.jp-audio').attr('style','position:absolute;top:'+(scrolltop+10)+'px;left:20px;');
+		findsubtitles.parents('.smart_blog_subtitle').prev('.smart_blog_audio').children('.jp-audio').attr('style','position:absolute;top:'+(scrolltop+10)+'px;left:16px;');
 	};
 	
 
@@ -141,8 +141,8 @@ function highlight(findsubtitles,id){
 				$(this).prev('.smart_blog_audio').children('.jp-audio').attr('style','position:fixed;top:10px;left:16px;');
 				if(navigator.platform == 'iPad' || navigator.platform == 'iPhone' || navigator.platform == 'iPod')
 				{
-					$(this).prev('.smart_blog_audio').children('.jp-audio').attr('style','position:absolute;top:'+(scrolltop+10)+'px;left:20px;');
-				}
+					$(this).prev('.smart_blog_audio').children('.jp-audio').attr('style','position:absolute;top:'+(scrolltop+10)+'px;left:16px;');
+				};
 			}	
 			if(scrolltop < audiotop || scrolltop >(zimuTop+zimuHeight - 35))
 				$(this).prev('.smart_blog_audio').children('.jp-audio').removeAttr('style');

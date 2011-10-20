@@ -20,17 +20,35 @@
  */
 ?>
     
-   <div class="smart_left">
-                   <div class="smart_first">  <div class="smart_date"><?php print $fields['field_date_value']->content;?></div>
-                                              <div class="smart_blog_title"><?php print $fields['title']->content; ?></div>
-                   </div>
-       <div class="smart_secend"><div class="smart_blog_image"><?php print $fields['field_image_fid']->content;?></div>
-                                 <div class="smart_content"><div class="smart_blog_teaser"><?php print $fields['teaser']->content;?></div>
-                                                            <div class="anniu"><div class="anniuback">按钮</div></div>  
-                                                            <div class="smart_audio_button"><div class="smart_blog_audio"><?php print $fields['field_audio_fid']->content;?></div>                     
-                                                                                            <div class="smart_blog_subtitle"><?php print $fields['field_subtitles_value']->content;?></div>
-                                                            </div>                        
-                                 </div>
-       </div>                           
-   </div>
-   <div class="smart_right"> <?php  print $fields['field_word_value']->content;?></div>
+<div class="smart_left">
+   <div class="smart_first">  
+	   <div class="smart_date">
+			<?php print $fields['field_date_value']->content;?>
+		</div>
+	</div>
+   <div class="smart_secend">
+   		<div class="smart_blog_image_title">
+		   <div class="smart_blog_image">
+				<?php print $fields['field_image_fid']->content;?>
+			</div>
+			<div class="smart_blog_title_bg">
+			<?php print $fields['title']->content; ?>
+			</div>
+		   <div class="smart_blog_title">
+				<?php print $fields['title']->content; ?>
+		   </div>
+		</div>
+		<div class="smart_content">
+			<div class="smart_blog_teaser"><?php print $fields['teaser']->content;?></div>
+			<div class="anniu">
+				<div class="anniuback">按钮</div>
+			</div>  
+			<div class="smart_audio_button">
+				<div class="smart_blog_audio"><?php print $fields['field_audio_fid']->content;?></div>
+				<div class="smart_blog_subtitle"><?php print $fields['field_subtitles_value']->content;?></div>
+			</div>                        
+		</div>
+	</div>                           
+</div>
+   
+<div class="smart_right"> <?php  print $fields['field_word_value']->content;?></div>

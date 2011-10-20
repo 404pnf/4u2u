@@ -999,11 +999,11 @@ display:none;
 #smart_everyday .views-row{width:100%;background:url(images/bg_line20110517.jpg) repeat-y 0 0; overflow:auto; padding-bottom:30px;_background:none; _margin-bottom:30px;}
 #smart_everyday .views-row .smart_left{float:left;width:700px; overflow:hidden}
 .smart_first{height:54px; margin:12px 0 0 12px;}
-.smart_date{display:block; float:left; width:175px; background:url(images/button_20110517.gif) no-repeat scroll 0 -42px transparent; height:42px;line-height:42px;text-align:right; font-family:Arial; font-size:16px;}
+.smart_date{display:block; float:left; width:175px; background:url(images/button_20110517.gif) no-repeat scroll 0 -42px transparent; height:42px;line-height:42px; font-family:Arial; font-size:16px;}
 .views-row-1 .smart_date{display:block; float:left; width:175px; background:url(images/button_20110517.gif); color:#FFF;}
-.smart_date span{ padding-right:40px; font-weight:700}
+.smart_date span{font-weight:700; letter-spacing: -1px;padding: 0 0 0 8px;}
 .smart_blog_title{float:right; height:40px;line-height:40px; background:#f5f5f5; border:1px solid #d4d4d4; font-size:24px; margin:0 12px; width:487px; overflow:hidden; text-indent:.4em;}
-.smart_secend{margin-left:12px;overflow: auto;}
+.smart_secend{margin-left:12px;}
 .smart_secend .smart_blog_image{width:302px; height:223px; overflow:hidden; border:1px solid #000; float:left}
 .smart_secend .smart_blog_teaser{float:right;width:318px; margin:0 12px;background:#f5f5f5; border:1px solid #d4d4d4; padding:20px; border-bottom:none;}
 .anniu{float:right; width:318px; margin:0 12px;background:#f5f5f5; border:1px solid #d4d4d4;padding:20px;border-top:none;}

@@ -1,11 +1,13 @@
 @charset "utf-8"; /* CSS Document */
 body {
-    font-size: 18px;
+    font-size: 12pt;
     line-height: 1.6em;
+    /*width: 320px;*/
 }
-.views-hide{
+.views-hide,.block-config{
 	display:none;
 }
+
 a:link {
     color: #272727;
     text-decoration: none;
@@ -149,6 +151,7 @@ div.jp-audio div.jp-type-single a.jp-stop {
     padding: 0;
 }
 
+/*情景百科 视频列表页*/
 ul.quicktabs_tabs{
 	list-style:none;
 }
@@ -161,25 +164,37 @@ ul.quicktabs_tabs li{
 ul.quicktabs_tabs li.active a{
 	color:red;
 }
-.view-mobile-baike .views-row{
+
+.page-mobile .view-mobile-baike .views-row{
 	float: left;
     margin-right: 20px;
     position: relative;
     padding-bottom:0px;
 }
-
-
-.view-mobile-baike .views-field-title,.view-mobile-baike .views-field-nothing{
+.page-mobile .view-mobile-baike .views-field-title,.page-mobile .view-mobile-baike .views-field-nothing{
     bottom: 8px;
     font-size: 12pt;
     line-height: 1.5em;
     position: absolute;
     width: 100%;
 }
-.view-mobile-baike .views-field-nothing{
+.page-mobile .view-mobile-baike .views-field-nothing{
     background: none repeat scroll 0 0 #000000;
     opacity: 0.5;
 }
-.view-mobile-baike .views-field-title a,.view-mobile-baike .views-field-nothing a{
+.page-mobile .view-mobile-baike .views-field-title a,.page-mobile .view-mobile-baike .views-field-nothing a{
 	color:white;
 }
+/**/@media only screen and (max-device-width: 480px){
+	.page-mobile .view-mobile-baike .views-field-field-shipin-cover-fid img{
+		height: 67.5px;
+		width: 90px;
+	}
+	.page-mobile .view-mobile-baike .views-row{
+		margin:0 0 0 10px;
+	}
+	.page-mobile .view-mobile-baike .views-field-title, .page-mobile .view-mobile-baike .views-field-nothing{  
+		font-size: 10pt;
+		line-height: 1em;
+	}
+/**/}

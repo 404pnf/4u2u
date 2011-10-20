@@ -1,0 +1,480 @@
+@charset "utf-8"; /* CSS Document */
+body{
+	font-size: 12pt;
+    line-height: 1.6em;
+}
+body.page-mobile {   
+	background-color: #DCDBDA;
+}
+.views-hide,.block-config{
+	display:none;
+}
+
+a:link {
+    color: #272727;
+    text-decoration: none;
+}
+a:visited {
+    color: #272727;
+    text-decoration: none;
+}
+a:hover {
+    color: #272727;
+    text-decoration: underline;
+}
+p{
+	margin:0;
+}
+.clearfix:after {
+  content: ".";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+
+.clearfix { display: inline-block; }
+
+/* Hides from IE-mac \*/
+* html .clearfix { height: 1%; }
+.clearfix { display: block; }
+/* End hide from IE-mac */
+
+/* clear classes */
+
+.clearleft, .clearl, .cleft { clear: left; }
+.clearright, .clearr, .cright { clear: right; }
+.clear, .clearboth, .clearall{ clear: both; }
+
+.highlight{
+	color:red;
+}
+
+/*=============== 司马丽霞专题 =================*/
+
+/*========= 播放器 ==========*/
+.page-smartfp  .view-display-id-page_2 .views-row {border-bottom: 0;margin-left: 0;clear:both;}
+.subtitles div,.anniu{cursor:default;}
+.anniu .anniuback{cursor:pointer;}
+
+/*========= 司马丽霞 Everyday  ==========*/
+.page-smartfp{ border-left:1px solid #d4d4d4; border-right:1px solid #d4d4d4;}
+.page-smartfp .views-row{ padding-bottom:30px;}
+.smart_first{ margin:10px 8px 5px;}
+.smart_date{ width:175px; background:url(images/button_20110517.gif) no-repeat scroll 0 -42px transparent; height:42px;line-height:42px;text-align:left; font-family:Arial; font-size: 16px;}
+.views-row-1 .smart_date{background:url(images/button_20110517.gif); color:#FFF;}
+.smart_date span{padding-left:5px; font-weight:700}
+.smart_blog_title{line-height:40px; background:#f5f5f5; border:1px solid #d4d4d4; font-size: 1.4em;     line-height: 1.3em;    margin: 15px 0 0;    padding: 10px;}
+.smart_secend .smart_blog_image{height:223px;   border: 1px solid #000000;  width: 302px;margin: 0px auto 10px;}
+
+.smart_secend .smart_blog_teaser{    		    
+	margin:0 5px;
+	background: none repeat scroll 0 0 #D1D1CF;
+	
+	border: 1px solid #c8c7c6;
+	border-top: 3px solid #cececc;
+    border-bottom: 1px solid #B7B7B7;
+    border-radius: 15px 15px 0 0;
+    padding: 20px;
+    -moz-box-shadow:1px 1px 0px #c6c5c4; -webkit-box-shadow:1px 1px 0px #c6c5c4;
+}
+.anniu{    
+	margin:0 5px;
+	
+	background: none repeat scroll 0 0 #D1D1CF;
+    border: 1px solid #c8c7c6;
+    border-top: 1px solid #E9E9E8;
+    border-bottom: 1px solid #B7B7B7;
+    padding: 10px;
+    -moz-box-shadow:1px 1px 0px #c6c5c4; -webkit-box-shadow:1px 1px 0px #c6c5c4;
+}
+.anniu .anniuback{width:175px; background:url(images/button_20110517.gif) no-repeat 0 -129px;height:45px;text-indent:-99em; margin:10px 0 10px 5px;}
+.anniu_up .anniuback{background:url(images/button_20110517.gif) no-repeat 0 -84px;}
+.anniu_down .anniuback{background:url(images/button_20110517.gif) no-repeat 0 -129px;}
+
+.smart_audio_button{
+	margin:0 5px;
+	background-image:-webkit-gradient(linear,45% 100%, 45% 0%, from(#E7E7E5), to(#D1D1CF), color-stop(0.9,#E6E6E4));
+	
+	/*
+    border-color: #FDFDFD #D4D4D4 #D4D4D4;
+    border-right: 1px solid #D4D4D4;
+    border-style: solid;
+    border-width: 1px;
+    */
+    border: 1px solid #c8c7c6;
+    border-top: 1px solid #E9E9E8;
+    border-bottom: 2px solid #888888;
+    padding: 2px 10px 10px 10px;
+    -moz-box-shadow:1px 1px 0px #c6c5c4; -webkit-box-shadow:1px 1px 0px #c6c5c4;
+    
+    display: none;
+    padding: 20px 15px;
+    border-radius: 0 0 15px 15px;
+}
+.smart_blog_audio{ margin: 10px 0;}
+.views-row-1 .smart_audio_button{display:block;}
+
+  /* Everyday 右侧 */
+.page-smartfp .smart_word_title{background:url(images/icon_20110517.gif) no-repeat 5px -146px; height:30px; margin:20px 10px 20px; font-size: 1.2em; border-bottom:3px solid #CCC; line-height:30px; text-indent:1.4em; font-weight:700}
+.page-smartfp .smart_right ul{ margin:0; padding:0px 1em;}
+.page-smartfp .smart_right ul li{ margin:10px 0 10px 13px;} 
+
+
+/* 不显示调节声音 */
+div.jp-type-single div.jp-volume-bar,div.jp-audio div.jp-type-single a.jp-mute, div.jp-audio div.jp-type-single a.jp-unmute {
+    display: none;
+}
+
+/* 外观调整 —— 整体缩小*/
+div.jp-audio {
+    width: 309px; 
+	color:#FBFBFB;
+}
+div.jp-audio div.jp-type-single div.jp-interface {
+	height: 26px;
+	border: 0px solid #009BE3;
+}
+div.jp-audio div.jp-type-single div.jp-progress {
+    height: 2px;
+    left: 40px;
+    top: 11px;
+    width: 185px;
+    overflow: visible;
+}
+div.jp-current-time-cover, div.jp-duration-cover {
+    height: 20px;
+    left: 233px;
+    overflow: hidden;
+    position: absolute;
+    top: 4px;
+    width: 38px;
+}
+div.jp-duration-cover {
+    left: 270px;
+}
+div.jp-time-separate {
+    font-size: 10px;
+    left: 267px;
+    position: absolute;
+    top: 4px;
+}
+div.jp-audio div.jp-type-single div.jp-current-time {
+    left: -18px;
+    top: 0;
+    width: 33px;
+}
+div.jp-audio div.jp-type-single div.jp-duration {
+    left: -17px;
+    top: 0;
+    width: 33px;
+}
+
+
+div.jp-audio div.jp-type-single a.jp-play, div.jp-audio div.jp-type-single a.jp-pause,div.jp-audio div.jp-type-single a.jp-stop {
+  	height: 18px;
+    left: 15px;
+    top: 2px;
+    width: 18px;
+}
+
+/*==========修改播放器外观============*/
+div.jp-interface {
+     background: url("images/myjplayer.png") no-repeat scroll 0 -19pt transparent; 
+     position: relative;
+     width: 100%;
+}
+a.jp-play, a.jp-play:hover {
+     background: url("images/myjplayer.png") no-repeat scroll -5pt 0pt transparent;
+}
+
+a.jp-pause, a.jp-pause:hover {
+     background: url("images/myjplayer.png") no-repeat scroll -20pt 0px transparent;
+     display: none;
+}
+
+a.jp-stop,a.jp-stop:hover {
+     background: none;
+}
+
+div.jp-seek-bar {
+     background: url("images/myjplayer.png") repeat-x scroll 0pt -20px transparent;
+     cursor: pointer;
+     height: 100%;
+     width: 0px;
+}
+
+div.jp-play-bar {
+     background: url("images/myjplayer.png") repeat-x scroll 0pt -22px transparent;
+     height: 100%;
+     width: 0px;
+     position: relative;
+     overflow:visibility;
+}
+div.jp-play-point {
+    background: url("images/myjplayer.png") no-repeat scroll -42pt -4pt transparent;
+    float: right;
+    height: 11px;
+    position: absolute;
+    right: -5px;
+    top: -4px;
+    width: 11px;
+}
+a.jp-mute, a.jp-mute:hover  {
+     background: url("images/myjplayer.png") no-repeat scroll -280pt -10px transparent;
+}
+
+/*======//end 播放器======*/
+
+
+
+
+
+
+.subtitles span{
+	cursor:pointer;
+}
+.subtitles span.hover {
+    background-color: #CCCCCC;
+}
+
+
+
+
+
+
+
+/*情景百科 视频列表页*/
+ul.quicktabs_tabs{
+	list-style:none;
+}
+
+ul.quicktabs_tabs li{
+	float:left;
+	margin-right: 8px;
+}
+
+ul.quicktabs_tabs li.active a{
+	color:red;
+}
+
+.page-mobile .view-mobile-baike .views-row{
+	float: left;
+    margin: 0 8px;
+    position: relative;
+    padding-bottom:0px;
+}
+.page-mobile .view-mobile-baike .views-field-title,.page-mobile .view-mobile-baike .views-field-nothing{
+    bottom: 8px;
+    font-size: 12pt;
+    line-height: 1.5em;
+    position: absolute;
+    width: 100%;
+}
+.page-mobile .view-mobile-baike .views-field-nothing{
+    background: none repeat scroll 0 0 #000000;
+    opacity: 0.5;
+}
+.page-mobile .view-mobile-baike .views-field-title a,.page-mobile .view-mobile-baike .views-field-nothing a{
+	color:white;
+}
+
+
+
+/*-------- 分类列表 --------*/
+/*.topterm{
+	width:480px;
+	height: 40px;
+	clear:both;
+	background:-webkit-gradient(linear, 46% 15%, 46% 0%, from(#f9f9f9), to(#cfcfcf));
+	
+	border-bottom:1px solid #e6e6e6;
+}
+*/
+#quicktabs-2 {
+    /*float: left;
+    height: 40px;
+    margin-left: 30px;
+    width: 100%;
+    width: 430px;*/
+    overflow: hidden;
+    position: relative;
+    margin-top: -43px;
+    
+}
+#block-quicktabs-2 h3.title
+{
+	background:-webkit-gradient(linear, 46% 15%, 46% 0%, from(#f9f9f9), to(#cfcfcf));
+    font-size: 1.2em;
+    margin: 0;
+    padding: 0.4em 0 0.4em 0.4em;
+    position: relative;
+    top: 0;
+    width: 138px;
+    z-index: 999;
+}
+#quicktabs-2 ul.quicktabs_tabs{
+    margin-left: 140px;
+    margin-bottom: 10px;
+    padding: 5px 0 3px 0;
+    position: relative;
+   /* position: absolute;
+    top: -30px;*/
+    width: 20000em;
+    background:-webkit-gradient(linear, 46% 15%, 46% 0%, from(#f9f9f9), to(#cfcfcf));
+    height: 30px;
+    line-height: 30px;
+}
+#quicktabs-2 ul.quicktabs_tabs li {
+    float: left;
+    list-style: none;
+    margin-right: 10px;
+    font-size:12px;
+    /*width: 100px;*/
+}
+a#prev, a#next {
+    background: url("images/left.png") no-repeat scroll 0 -18px transparent;
+    cursor: pointer;
+    float: left;
+    font-size: 1px;
+    height: 18px;
+    width: 18px;
+    margin: 11px 10px;
+    position: absolute;
+    top:0px;
+    z-index: 9999;
+}
+a#prev{
+	left: 100px;
+}
+a#next {
+    background: url("images/right.png") no-repeat scroll 0 -18px transparent;
+    right:5px;
+}
+a#prev.disabled, a#next.disabled {
+    background-position: 0 0;
+}
+.nextbg{
+	background: -webkit-gradient(linear, 46% 15%, 46% 0%, from(#F9F9F9), to(#CFCFCF));
+	position: absolute;
+	top: 0px;
+	right: 0px;
+	width: 48px;
+	height: 38px;
+}
+
+.page-mobile .view-mobile-baike .views-field-field-shipin-cover-fid img{
+	border: 2px solid #9F9E9D;
+}
+	
+	
+	
+	
+	
+/*具体内容页*/	
+
+.titlebar{
+	background:none;
+	background-image:-webkit-gradient(linear,0% 0%, 0% 100%, from(#F3F3F3), to(#d5d6d6), color-stop(0.5,#e7e8e8));
+	border:none;
+	border-top:1px solid #012526;
+    border-bottom: 1px solid #dfdfdf;
+    color: #676766;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+    padding: 0.3em;
+}
+
+.title{
+	line-height:24px;
+}
+.back {
+    margin: 0 5px 0 0;
+}
+.titlebar input.backbutton {
+     background: url("images/titleback.png") no-repeat scroll left center transparent;
+     border: 0pt none;
+     color: #FFFFFF;
+     height: 26px;
+     padding: 0 0 3px 10px;
+     width: 51px;
+     cursor: pointer;
+     font-size:12px;
+}
+/*--页面内容整体距两边为5px，用-5px让标题占整体的宽度---*/
+.page-mnode #content-inner{
+	padding: 0 5px;
+}
+.page-mnode #content-inner .views-field-title{
+	margin: 0 -5px;
+}
+
+/*-----修饰内容背景-----*/
+.page-mnode .view-mobile-baike  .views-field-field-shipin-upload-fid{
+	 margin: 15px 0pt;
+}
+.page-mnode .view-mobile-baike  .views-field-field-shipin-neirong-value,
+.page-mnode .view-mobile-baike  .views-field-field-shipin-jiaoben-value,
+.page-mnode .view-mobile-baike  .views-field-field-shipin-yuyanjiexi-value,
+.page-mnode .view-mobile-baike  .views-field-field-shipin-danci-value,
+.page-mnode .view-mobile-baike  .views-field-field-shipin-jiqiao-value {
+    margin: 15px 0pt;
+    
+    
+    border-radius: 10px 10px 10px 10px;
+    background-image:-webkit-gradient(linear,45% 100%, 45% 0%, from(#E7E7E5), to(#D1D1CF), color-stop(0.9,#E6E6E4));
+    border: 1px solid #b0b0af;
+    border-top: 3px solid #cececc;
+    border-bottom: 2px solid #888888;
+    padding: 2px 10px 10px 10px;
+    -moz-box-shadow:1px 1px 0px #c6c5c4; -webkit-box-shadow:1px 1px 0px #c6c5c4;
+}	
+	
+.page-mnode .view-mobile-baike  .views-field-field-shipin-neirong-value .field-content p ,
+.page-mnode .view-mobile-baike  .views-field-field-shipin-jiaoben-value .field-content p ,
+.page-mnode .view-mobile-baike  .views-field-field-shipin-yuyanjiexi-value .field-content p ,
+.page-mnode .view-mobile-baike  .views-field-field-shipin-danci-value .field-content p ,
+.page-mnode .view-mobile-baike  .views-field-field-shipin-jiqiao-value .field-content p {
+	padding: 15px 8px;
+	border-bottom: 1px solid #B7B7B7;
+	border-top: 1px solid #E9E9E8;
+}	
+.page-mnode .view-mobile-baike  .views-field-field-shipin-neirong-value .field-content ,
+.page-mnode .view-mobile-baike  .views-field-field-shipin-jiaoben-value .field-content ,
+.page-mnode .view-mobile-baike  .views-field-field-shipin-yuyanjiexi-value .field-content ,
+.page-mnode .view-mobile-baike  .views-field-field-shipin-danci-value .field-content ,
+.page-mnode .view-mobile-baike  .views-field-field-shipin-jiqiao-value .field-content {
+	border-top: 1px solid #B7B7B7;
+}	
+	
+	
+@media only screen and (max-device-width: 480px){
+	.page-mobile .view-mobile-baike .views-field-field-shipin-cover-fid img{
+		height: 67.5px;
+		width: 90px;
+	}
+	.page-mobile .view-mobile-baike .views-row{
+		margin:0 0 0 8px;
+	}
+	.page-mobile .view-mobile-baike .views-field-title, .page-mobile .view-mobile-baike .views-field-nothing{  
+		font-size: 10pt;
+		line-height: 1em;
+	}
+	
+	#block-quicktabs-2 h3.title{
+		width:123px;
+	}
+	#quicktabs-2 ul.quicktabs_tabs li{
+		font-size: 10pt;
+	}
+	#quicktabs-2 ul.quicktabs_tabs {
+		margin-left: 125px;
+    }
+    a#prev {
+		left: 90px;
+	}
+	div.jp-audio {
+		margin-left:-16px;
+	}
+}

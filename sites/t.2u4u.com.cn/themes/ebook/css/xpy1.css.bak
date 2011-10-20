@@ -50,7 +50,107 @@ a:link{
 	height:50px;
 }
 
+/* -----------------------------------活力英语二级页面 ----------------------------
+.page-yuedu-10359 .views-field-nothing .field-content a{
+  	display:block;
+	background:url("http://shop.2u4u.com.cn/sites/shop.2u4u.com.cn/themes/shop/css/fp_images/gouwu.gif") no-repeat scroll 0 0 transparent;
+	color:#FFFFFF;
+	font-weight:bold;
+	height:27px;
+	padding:2px 0 0 26px;
+	width:85px;
+	margin-left:120px;
+}
+.page-yuedu-10359 #content-area .view-content .item-list li{
+	height:190px;
+}
+.page-yuedu-10359 #content-area .view-content .views-field-title .field-content{
+	font-size:16px;
+	font-weight:bold;
+}
+.page-fenlei .view-duhougan-fenlie .views-field-field-yuedu-cover-fid, .section-yuedu .view-yuedu-taxonomy-term .views-field-field-yuedu-cover-fid{
+	margin-top:6px;
+}
 
+
+#ebook_ad #ad{
+	float:right;
+	clear:both;
+}
+
+.section-ebook .ebook_ad_left  h1{
+	color:#961F1F;
+	margin-top:13px;
+}
+.section-ebook a.duihuan{
+	background:url("images/duihua-bottom.gif") repeat scroll 0 0 transparent;
+	display:block;
+	height:42px;
+	line-height:35px;
+	width:143px;
+	text-decoration:none;
+	float:left;
+}
+
+.ebook_ad_left #points .price{
+	color:#FFFFFF;
+	font-size:22px;
+	font-weight:bold;
+	margin-left:15px;
+	line-height:40px;
+}
+.ebook_ad_left #points .price_unit{
+	color:#FFFFFF;
+	margin-left:5px;
+}
+
+.ebook_ad_left .field_yuedu_author{
+	margin-top:15px;
+}
+
+.field_yuedu_summary .field_label{
+	height:60px;
+	display:block;
+	float:left;
+	width:70px;
+}
+
+.field_yuedu_summary .field_content{
+}
+
+.section-ebook #content-bottom{
+	border-right:1px solid #E6E6E6;
+	border-left:1px solid #E6E6E6;
+	border-bottom:1px solid #E6E6E6;
+}
+
+
+.section-ebook .block-title-bg{
+	background-image:url("/sites/shop.2u4u.com.cn/themes/shop/css/fp_images/gracy-right-bg.gif");
+	height:35px;
+	margin:0;
+	width:100%;
+}
+.block-title-bg h3.title{
+	background:url("images/images-19.gif") no-repeat scroll left center transparent;
+	color:#901616;
+	text-indent:15px;
+	line-height:15px;
+	margin-top:10px;
+}
+
+.section-ebook .block-inner .item-list ul li{
+	float:left;
+	height:25px;
+	width:260px;
+	white-space:nowrap; 
+	text-overflow:ellipsis; 
+	overflow:hidden;
+	margin-right:10px;
+	padding:0;
+	
+}
+*/
 
 /* -----------------------------------电子图书馆新版css-----------------------------*/
 
@@ -489,8 +589,8 @@ body{ background: #E2E2E2;}
 .tuijian_link a{ color: #049DA9; font-style: italic;}
 .sina_users{margin:0 5px;font-weight:700; color:#FE8103}
 .sina_open_yuedu{ margin:0 5px;}
-.yuedubenshu{ float: left;margin: 5px 13px ;*margin: 5px 8px; overflow: hidden;}
-/* 对单个图书阅读的页面样式
+.yuedubenshu{ float: left;margin: 5px 20px 5px 10px;*margin: 5px 10px 5px 10px; overflow: hidden;}
+/* 对单个图书阅读的页面样式*/
 .node-type-ebook #content-inner{ width: 722px; margin-right: 240px;}
 .node-type-ebook #sidebar-second{ width: 200px; overflow: hidden;}
 .node-type-ebook #sidebar-second #youyou{ float: none; margin-bottom: 6px; width: 170px;*width: 120px;_float: left}
@@ -499,9 +599,8 @@ body{ background: #E2E2E2;}
 .node-type-ebook #sidebar-second #block-sina_open-0 .view-flag-bookmarks-tab{ margin: 0 6px; width: auto}
 .node-type-ebook #sidebar-second #block-sina_open-4 .comment_book-row{ height: 100px;}
 .node-type-ebook #sidebar-second #block-sina_open-4 .comment_book-row .user_image{margin-bottom: 40px;}
-.node-type-ebook #sidebar-second .sina_login_link {width: 118px; _display: inline;_width: 110px}*/
 #sidebar-second .block-inner .content, #sidebar-first .block-inner .content, .section-fanyi #main #content-area, .section-fanyituijian #main #content-area, .section-yuedu #main #content-area, .section-fenlei #main #content-area, .section-dhgps #main #content-area, .section-wenda #main #content-area, .page-libao #main #content-area{_zoom:1}
-
+.node-type-ebook #sidebar-second .sina_login_link {width: 118px; _display: inline;_width: 110px}
 /*推荐页面*/
 .page-tuijian #content-inner{ width:640px;}
 .page-tuijian .friTab{ _width: 100%;}

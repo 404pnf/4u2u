@@ -11,6 +11,13 @@ function userreg_menu() {
     'type' => MENU_CALLBACK,
     'file' => 'userreg.pages.inc',
   );
+	$items['userpass'] = array(
+    'title' => '用户注册',
+    'page callback' => 'userreg_pass_callback_page',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+    'file' => 'userreg.pages.inc',
+  );
 	$items['userreg/test'] = array(
     'title' => '用户注册',
     'page callback' => 'userreg_test_page',

@@ -82,7 +82,7 @@ function userreg_callback_page() {
 	if(!empty($errors)){
 		$reurn_result = array(
 			'status' => FALSE,
-			'errors' => implode("\n", $errors),
+			'errors' => strip_tags(implode("\n", $errors)),
 		);
 		//print drupal_to_js($output);
 		drupal_json($reurn_result);
@@ -103,6 +103,52 @@ function userreg_callback_page() {
 		exit();
 	}
 	
+}
+function userreg_pass_callback_page(){
+  //获取传递过来的值
+	$name = $_REQUEST['name'];
+	if(empty($name)){
+	  $reurn_result = array(
+		  'status' => FALSE,
+			'errors' => t('用户名不能为空.'),
+		);
+		drupal_json($reurn_result);
+		exit();
+	}
+  $account = user_load(array('mail' => $name, 'status' => 1));
+  if (!$account) {
+    // No success, try to load by name.
+    $account = user_load(array('name' => $name, 'status' => 1));
+  }
+	if ($account) {
+	  if (drupal_is_denied('user', $account->name) || drupal_is_denied('mail', $account->mail)) {
+		  $reurn_result = array(
+			  'status' => FALSE,
+			  'errors' => strip_tags(t('%name is not allowed to request a new password.', array('%name' => $name))),
+		  );
+			drupal_json($reurn_result);
+			exit();
+		}
+	}
+	if (!$account || !isset($account->uid)) {
+	  $reurn_result = array(
+		  'status' => FALSE,
+			'errors' => strip_tags(t('Sorry, %name is not recognized as a user name or an e-mail address.', array('%name' => $name))),
+		);
+		drupal_json($reurn_result);
+		exit();
+	}
+	
+	global $language;
+	_user_mail_notify('password_reset', $account, $language);
+	watchdog('user', 'Password reset instructions mailed to %name at %email.', array('%name' => $account->name, '%email' => $account->mail));
+  //drupal_set_message(t('Further instructions have been sent to your e-mail address.'));
+	$reurn_result = array(
+	  'status' => TRUE,
+		'errors' => '',
+	);
+	drupal_json($reurn_result);
+	exit();
 }
 
 function userreg_test_page(){

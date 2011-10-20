@@ -154,6 +154,7 @@ function ucenter_user($op, &$edit, &$account, $category = null) {
 					print '<meta http-equiv="refresh" content="1.5; url='.$url.'">';
 					//var_dump($_SERVER);
 					print theme('welcome_page', $action, $content);
+					drupal_set_message("<pre>".print_r($syninfo.'尊敬的用户,欢迎回来',true)."</pre>");
 				 }				
 			}
 			break;

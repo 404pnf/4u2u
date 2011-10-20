@@ -104,13 +104,7 @@
           </div>
         </div> <!-- /content-inner /content -->
 
-        <?php if ($right): ?>
-          <div id="sidebar-second" class="column sidebar second">
-            <div id="sidebar-second-inner" class="inner">
-              <?php print $right; ?>
-            </div>
-          </div>
-        <?php endif; ?> <!-- /sidebar-second -->
+     
 
       </div> <!-- /main -->
 

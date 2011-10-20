@@ -539,7 +539,7 @@ function ebook_output_mp3($node) {
 	if ($user->uid){
 		//用户不具有访问权限，此时显示购买按钮
 		if(!yuedu_check_access($node->nid)){
-			$output .='<img class="fleft" src="/sites/ebook.2u4u.com.cn/themes/ebook/css/images/audio.png"/><span class="miaoshu"><span class="login_miaoshu">请先<span class="highlight_red">兑换</span>本书。</span></span>';			 
+			$output .='<img class="fleft" src="/sites/ebook.2u4u.com.cn/themes/ebook/css/images/audio.png"/><span class="miaoshu"><span class="login_miaoshu">请先<a href="http://2u4u.com.cn/user?destination=http://ebook.2u4u.com.cn/ebook/78466" class="user_login">登录</a>，并兑换本书。</span></span>';			
 		}
 		//用户具有访问权限，此时提示用户可以阅读全部内容
 		else{
@@ -553,7 +553,7 @@ function ebook_output_mp3($node) {
 	// 如果为匿名用户，提示购买图书，以及推荐用户登录
 	else{
 
-    	$output .='<img class="fleft" src="/sites/ebook.2u4u.com.cn/themes/ebook/css/images/audio.png"/><span class="miaoshu"><span class="login_miaoshu">请先<a href="http://2u4u.com.cn/user?destination=http://ebook.2u4u.com.cn/ebook/78466" class="user_login">登录</a>，并<span class="highlight_red">兑换</span>本书。</span></span>';		
+    	$output .='<img class="fleft" src="/sites/ebook.2u4u.com.cn/themes/ebook/css/images/audio.png"/><span class="miaoshu"><span class="login_miaoshu">请先<a href="http://2u4u.com.cn/user?destination=http://ebook.2u4u.com.cn/ebook/78466" class="user_login">登录</a>，并兑换本书。</span></span>';		
 	}
 	$output .='</div>';
 	

@@ -1132,7 +1132,7 @@ width:100%;
 	color:#FFFFFF;
 	margin-left:3px;
 }
-.ebook_top span.miaoshu{
+span.miaoshu{
 	color:#959595;
 	display:block;
 	height:30px;
@@ -1140,6 +1140,11 @@ width:100%;
 	margin-bottom:6px;
 	float:left;
 }
+.highlight_red{
+	color:#A60C0C;
+	font-weight:bold;
+}
+
 #content-area .node-inner .ebook_title_bg h1.title{
 	color:#A60C0C;
 	margin-top:10px;
@@ -1153,7 +1158,7 @@ width:100%;
 	color:#96843E;
 }
 
-.field_yuedu_summary{
+.field_yuedu_summary, .field_yuedu_mp3{
 	color:#797979;
 	margin-bottom:20px;
 }

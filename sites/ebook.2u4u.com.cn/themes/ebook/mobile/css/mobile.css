@@ -1,0 +1,211 @@
+/*----------ebook 列表页--------*/
+.page-mobile .view-mobile-taxonomy-term .views-row {
+	border-top:1px solid #f2f2f1;
+    border-bottom: 1px solid #bfbfbd;
+    padding:10px;
+    background-image:-webkit-gradient(linear,0% 0%, 0% 100%, from(#F1F1F1), to(#D7D7D7), color-stop(0.5,#e4e4e4));
+    clear : both;
+    overflow : hidden;
+}
+.page-mobile .view-mobile-taxonomy-term  .views-row .views-field-field-yuedu-cover-fid {
+   /* background: url("images/book-bg.gif") no-repeat scroll left center transparent;
+    padding: 8px 0 2px 3px;*/
+    float: left;
+    
+}
+
+.page-mobile .view-mobile-taxonomy-term  .views-row .views-field-field-yuedu-cover-fid img{
+    border: 1px solid #B4B4B4;
+    height: 90px;
+    margin: 0 20px 0 0;
+    padding: 2px;
+    width: 62px;
+}
+.page-mobile .view-mobile-taxonomy-term  .views-row .views-field-field-yuedu-pricebypoints-value{
+	float:right;
+	margin-top: -21px;
+	color: #8F8F8F;
+}
+
+/*-------- 分类列表 --------*/
+.topterm{
+	height: 40px;
+	clear:both;
+	/*background-color:#ffffff;*/
+	background:-webkit-gradient(linear, 46% 15%, 46% 0%, from(#f9f9f9), to(#cfcfcf));
+	/*background:-webkit-gradient(linear,15% 15%, 15% 100%, from(#CFCFCF), to(#F9F9F9), color-stop(1.0,#F9F9F9));*/
+	border-bottom:1px solid #e6e6e6;
+}
+
+.termcover {
+    float: left;
+    height: 40px;
+    margin-left: 30px;
+    overflow: hidden;
+    position: relative;
+    width: 360px;
+}
+
+.termcover .termcontent{
+    position: absolute;
+    width: 20000em;
+    padding-left: 0;
+}
+.termcover .termcontent .list {
+    float: left;
+    list-style: none;
+    margin-right: 20px;
+    width: 100px;
+}
+a#prev, a#next {
+    background: url("images/left.png") no-repeat scroll 0 -18px transparent;
+    cursor: pointer;
+    float: left;
+    font-size: 1px;
+    height: 18px;
+    width: 18px;
+    margin: 11px 10px;
+}
+a#next {
+    background: url("images/right.png") no-repeat scroll 0 -18px transparent;
+}
+a#prev.disabled, a#next.disabled {
+    background-position: 0 0;
+}
+
+
+.titlebar{
+	background:none;
+	background-image:-webkit-gradient(linear,0% 0%, 0% 100%, from(#F3F3F3), to(#d5d6d6), color-stop(0.5,#e7e8e8));
+	border:none;
+	border-top:1px solid #012526;
+    border-bottom: 1px solid #dfdfdf;
+    color: #676766;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+    padding: 0.3em;
+}
+
+.title{
+	line-height:24px;
+}
+.back {
+    margin: 0 5px 0 0;
+}
+.titlebar input.backbutton {
+     background: url("images/titleback.png") no-repeat scroll left center transparent;
+     border: 0pt none;
+     color: #FFFFFF;
+     height: 26px;
+     padding: 0 0 3px 10px;
+     width: 51px;
+     cursor: pointer;
+     font-size:12px;
+}
+.views-field-body{
+	margin:10px 0 20px 20px;
+	text-align:justify;
+/*	text-justify:newspaper;
+	
+	background-color: #EDEDED;
+	border:1px solid red;*/
+}
+/*.field-content p {
+
+	text-align: justify;
+	padding:0px;
+	margin:0px;
+	word-wrap: break-word;
+	color:red;
+}*/
+@media only screen and (max-device-width: 480px){
+	.title{
+		 padding-top: 3px;
+	}
+	.views-field-body{
+		margin:10px 0 10px 10px;
+	}
+	.termcover {
+		width: 235px;
+		margin-left: 5px;
+	}
+	.termcover .termcontent .list {
+		margin:0 10px;
+	}
+	 
+}
+
+
+/*--------mobile node 页------*/
+
+/*五星评论*/
+.fivestar_votes {
+    position: relative;
+    width: 220px;
+}
+div.fivestar-widget-static .star {
+    height: 33px;
+    width: 34px;
+}
+div.fivestar-widget, div.fivestar-widget-static {
+    margin-right: 50px;
+}
+form.fivestar-widget div.description .fivestar-summary {
+    visibility: hidden;
+}
+.user-rating, .average-rating, .total-votes {
+    float: left;
+    visibility: visible;
+}
+.average-rating {
+    color: red;
+    font: bold 3em "Helvetica Neue",helvetica,Arial,sans-serif;
+    left: 176px;
+    position: absolute;
+    top: -3px;
+}
+.total-votes {
+    float: right;
+    margin-right: 15px;
+}
+.front div.fivestar-widget-static {
+    float: right;
+}
+div.fivestar-widget .star, div.fivestar-widget .star a,div.fivestar-widget div.hover a, div.rating div a:hover,div.fivestar-widget-static .star span.off  {
+    background-image: url("images/star.png");
+}
+.page-mnode .views-field-field-yuedu-fivestar-rating {
+    float: left;
+    left: 32px;
+    margin-top: 5px;
+    position: relative;
+}
+.page-mnode .views-field-field-yuedu-fivestar-rating .views-label-field-yuedu-fivestar-rating {
+    left: -32px;
+    position: absolute;
+    top: 8px;
+}
+.page-mnode .views-field-field-yuedu-pricebypoints-value {
+     height: 53px;
+     line-height: 53px;
+    float:right;
+}
+.page-mnode .views-field-field-yuedu-author-value{
+    clear: both;
+    height: 30px;
+    line-height: 28px;
+}
+.page-mnode #content-inner{
+	padding: 0 5px;
+}
+.page-mnode #content-inner .views-field-title{
+	margin: 0 -5px;
+}
+
+.keypoint{
+    color:red;
+    font-weight:bold;
+    padding:0 2px;
+    font-size:16px;
+}

@@ -1,7 +1,6 @@
 <?php
 // $Id: node-product.tpl.php,v 1.5 2010/09/17 21:36:06 eternalistic Exp $
 ?>
-
 <div id="node-<?php print $node->nid; ?>" class="node clear-block <?php print $node_classes; ?>">
   <div class="inner">
     <?php if ($page == 0): ?>
@@ -69,7 +68,6 @@
       </div><!-- /content -->
     </div><!-- /product-group -->
   </div><!-- /inner -->
-
   <?php if ($node_bottom && !$teaser): ?>
   <div id="node-bottom" class="node-bottom row nested">
     <div id="node-bottom-inner" class="node-bottom-inner inner">

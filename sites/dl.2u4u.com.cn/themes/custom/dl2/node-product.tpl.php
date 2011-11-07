@@ -1,7 +1,7 @@
 <?php
 // $Id: node-product.tpl.php,v 1.1.2.2 2009/11/11 05:25:58 sociotech Exp $
 ?>
-
+<indexAreaStart><!--  索引内容 开始 --></indexAreaStart>
 <div id="node-<?php print $node->nid; ?>" class="node clear-block <?php print $node_classes; ?>">
   <div class="inner">
     <?php if ($page == 0): ?>
@@ -59,7 +59,7 @@
           <?php print $terms; ?>
         </div>
         <?php endif;?>
-
+<indexAreaEnd><!--  索引内容 结束 --></indexAreaEnd>
         <?php if ($links && !$teaser): ?>
         <div class="links clear">
           <?php print $links; ?>

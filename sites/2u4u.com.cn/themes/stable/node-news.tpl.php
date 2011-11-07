@@ -1,6 +1,6 @@
 <div class="node <?php print $classes; ?>" id="node-<?php print $node->nid; ?>">
   <div class="node-inner">
-   
+   	<indexAreaStart><!--  索引内容 开始 --></indexAreaStart>
     <?php if (!$page): ?>
       <h2 class="title"><?php print $title; ?></h2>
     <?php endif; ?>
@@ -17,7 +17,7 @@
     <div class="content clear">
       <?php print $content; ?>
     </div>
-
+<indexAreaEnd><!--  索引内容 结束 --></indexAreaEnd>
     <div class="backfp"><a href="http://2u4u.com.cn">回到首页</a></div>
     <div class="home-shareto">  
                                                 <!-- ShareTo Button START -->

@@ -53,7 +53,11 @@
 
 <script src="/misc/jquery.js" type="text/javascript"></script> 
 <?php   if($node->type != 'best_answer'||$teaser):?>
+	
 <div class="shipin-terms"><div class="terms_label">分类导航>>  </div><?php print views_embed_view('shipin_terms', $display_id = 'default');?></div>
+	
+<indexAreaStart></indexAreaStart>
+	
 <div id="node-<?php print $node->nid; ?>" class="<?php  print $classes;  ?>">
 <div class="node-inner">
   <?php if ($node->type == 'shipin'): ?>
@@ -157,6 +161,9 @@
 <?php endforeach; ?>
 </DIV>
 </div>
+	
+<indexAreaEnd></indexAreaEnd>
+	
 <div style="clear:both"></div>
 </div>
 

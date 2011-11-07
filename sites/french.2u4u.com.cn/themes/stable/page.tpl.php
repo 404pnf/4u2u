@@ -79,7 +79,7 @@
 			  <?php endif; ?>
 
               <?php if(!empty($title) && $node->nid != 55446 && $node->type != 'og_group'): ?>
-                <div class="title_bg"><h1 class="title"><?php print $title; ?></h1></div>
+                <div class="title_bg"><h1 class="title"><indexAreaStart></indexAreaStart><?php print $title; ?><indexAreaEnd></indexAreaEnd></h1></div>
               <?php endif; ?>
 
               <?php print $messages; ?>

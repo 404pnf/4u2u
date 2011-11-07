@@ -1,3 +1,5 @@
+<indexAreaStart></indexAreaStart>
+
 <div class="node <?php print $classes; ?>" id="node-<?php print $node->nid; ?>">
   <div class="node-inner">
 
@@ -14,6 +16,8 @@
     <div class="content">
       <?php print $content; ?>
     </div>
+	  
+<indexAreaEnd></indexAreaEnd>
 
     <?php if ($terms): ?>
        <div class="taxonomy"><?php print $terms; ?></div>

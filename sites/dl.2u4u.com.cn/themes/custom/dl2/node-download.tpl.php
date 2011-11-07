@@ -1,7 +1,7 @@
 <?php
 // $Id: node.tpl.php,v 1.1.2.3 2010/01/11 00:08:12 sociotech Exp $
 ?>
-
+<indexAreaStart><!--  索引内容 开始 --></indexAreaStart>
 <div class="node-dl">
   <div class="inner">
     <?php print $picture ?>
@@ -27,7 +27,7 @@
     <div class="content clearfix">
       <?php print $content ?>
     </div>
-
+<indexAreaEnd><!--  索引内容 结束 --></indexAreaEnd>
     <?php if ($terms): ?>
     <div class="terms">
       <?php print $terms; ?>

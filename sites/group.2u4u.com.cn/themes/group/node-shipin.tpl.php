@@ -50,6 +50,9 @@
 ?>
 <script src="/misc/jquery.js" type="text/javascript"></script> 
 <?php   if($node->type != 'best_answer'||$teaser):?>
+
+<indexAreaStart></indexAreaStart>
+
 <div id="node-<?php print $node->nid; ?>" class="<?php print $classes; ?>">
 <div class="node-inner">
   <?php if (!$page): ?>
@@ -103,7 +106,6 @@
 		</div>
   </div>
 
-
 <div id="tab_area">
 <ul class="shipin-tabs"> 
 <?php $i=0 ;?>
@@ -131,6 +133,9 @@
 <?php endforeach; ?>
 </DIV>
 </div>
+	
+<indexAreaEnd></indexAreaEnd>
+	
 <div style="clear:both"></div>
 </div>
 <?php print $links; ?>

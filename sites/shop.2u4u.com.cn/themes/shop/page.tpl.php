@@ -73,7 +73,9 @@
 			  <?php endif; ?>
 
               <?php if(!empty($title) && $node->nid != 55446 && $node->type != 'og_group'): ?>
+              	  <indexAreaStart><!--  索引内容 开始 --></indexAreaStart>
                 <div class="title_bg"><h1 class="title"><?php print $title; ?></h1></div>
+                  <indexAreaEnd><!--  索引内容 结束 --></indexAreaEnd>
               <?php endif; ?>
 
               <?php print $messages; ?>

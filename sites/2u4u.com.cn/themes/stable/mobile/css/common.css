@@ -15,7 +15,7 @@
 *  do not change if you're not sure you know what you're doing
 */
 
-#main{width: 480px; margin: 0 auto; position:relative;overflow:hidden;}
+#main{width: 480px; margin: 0 auto; min-height:570px; position:relative;overflow:hidden;}
 
 body {
   margin: 0;

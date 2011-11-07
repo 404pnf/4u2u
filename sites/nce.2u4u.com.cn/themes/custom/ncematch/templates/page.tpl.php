@@ -73,7 +73,9 @@
               <?php print $breadcrumb; ?>
 
               <?php if ($title): ?>
+			  <indexAreaStart></indexAreaStart>
                 <h1 class="title"><?php print $title; ?></h1>
+				<indexAreaEnd></indexAreaEnd>
               <?php endif; ?>
 
               <?php if ($mission): ?>

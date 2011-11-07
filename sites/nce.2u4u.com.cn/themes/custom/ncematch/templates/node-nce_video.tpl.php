@@ -1,3 +1,4 @@
+<indexAreaStart></indexAreaStart>
 <div class="node <?php print $classes; ?>" id="node-<?php print $node->nid; ?>">
   <div class="node-inner">
 
@@ -25,5 +26,5 @@
 
   </div> <!-- /node-inner -->
 </div> <!-- /node-->
-
+<indexAreaEnd></indexAreaEnd>
 <pre><?php // print_r ($node); ?></pre>

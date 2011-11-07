@@ -102,7 +102,9 @@
                             <div id="content-inner" class="content-inner block">
                               <div id="content-inner-inner" class="content-inner-inner inner">
                                 <?php if ($title): ?>
+                            <indexAreaStart><!--  索引内容 开始 --></indexAreaStart>
                                 <h1 class="title"><?php print $title; ?></h1>
+                            <indexAreaEnd><!--  索引内容 结束 --></indexAreaEnd>
                                 <?php endif; ?>
                                 <?php if ($content): ?>
                                 <div id="content-content" class="content-content">

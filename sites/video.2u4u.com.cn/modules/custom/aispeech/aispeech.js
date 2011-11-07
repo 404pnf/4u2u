@@ -1,7 +1,7 @@
     var word = $("#spell-wrapper").html();
     
     function initRecorder(){
-        var serverList = ["rtmp://cn.api.aispeech.com:443/v1.1/aistream.encore"];
+        var serverList = ["rtmp://cn.api.aispeech.com:443/v1.1/aistream.enscore"];
         
         window.recorder1 = new aispeech.AiRecorder({
             id: "aiRecorder",
@@ -25,6 +25,7 @@
     }
 		
     function initPlayer(){
+	
 			window.player1 = new aispeech.AiPlayer({
 				id: "aiPlayer1",
 				appKey: "1300675449010",
@@ -39,6 +40,18 @@
 					 // player1AiDebug.info("JS: onError callback, code=" + code + ", message=" + JSON.stringify(message));
 				}
 			});
+			
+				/*
+			 window.player1 = new aispeech.AiPlayer({
+            id: "aiPlayer1",
+            onFlashLoad: function(code, message){
+                //player1AiDebug.info("JS: onFlashLoad callback, code=" + code + ", message=" + JSON.stringify(message));
+            },
+            onError: function(code, message){
+                //player1AiDebug.info("JS: onError callback, code=" + code + ", message=" + JSON.stringify(message));
+            }
+        });
+        */
 				
     }
 		
@@ -244,8 +257,8 @@ if (Drupal.jsEnabled) {
 	window.recorder1 = undefined;
 	window.player1 = undefined;
 	showstep1button();
-	//initPlayer();
-	//initRecorder();
+	initPlayer();
+	initRecorder();
 	
 	$('.aispeech-tdbutton').mouseover(function(){	
 	    //alert('123456');
@@ -417,10 +430,12 @@ if (Drupal.jsEnabled) {
 		});
 		*/
 		var appKey = "1300675449010";
+		var sessionKey = "null";
+
 		var lang = 'en';
 		var text = $("#aispeech-word").html();
 		var coreType = 'en.sent.syn';
-		var resource = 'syn_ensnt_liuyim';
+		var resource = 'syn_enwds_liuyim';
 		//alert(text);
 		var r = player1.synth({
 				applicationId: appKey,
@@ -434,15 +449,16 @@ if (Drupal.jsEnabled) {
 				player: player1,
 				onGetSessionSuccess: function(data){
 				//alert('success');
+				//alert(data.session);
 						//$("#sessionKey").html(data.session);
 				},
 				onPlayStop: function(code, message){
-				  //alert('123');
+				 // alert('123');
 				   showstep2button();
 						//player1AiDebug.info("JS: playStop callback, code=" + code + ", message=" + JSON.stringify(message));
 				}
 		});
-		showstep2button();
+		//showstep2button();
 		return false;
 		
 	

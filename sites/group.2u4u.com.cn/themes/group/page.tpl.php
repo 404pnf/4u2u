@@ -73,7 +73,9 @@
 			  <?php endif; ?>
 
               <?php if(!empty($title) && $node->nid != 55446 && $node->type != 'og_group'): ?>
-                <div class="title_bg"><h1 class="title"><?php print $title; ?></h1></div>
+		<indexAreaStart></indexAreaStart>
+		<div class="title_bg"><h1 class="title"><?php print $title; ?></h1></div>
+		<indexAreaEnd></indexAreaEnd>
               <?php endif; ?>
 
               <?php print $messages; ?>

@@ -48,6 +48,7 @@
  * @see template_preprocess_node()
  */
 ?>
+<indexAreaStart><!--  索引内容 开始 --></indexAreaStart>
 <?php if (!$page): ?>
 <h1 class="title"><?php print $title; ?></h1>
 <?php endif; ?>
@@ -102,7 +103,7 @@
     
 
 
-    
+    <indexAreaEnd><!--  索引内容 结束 --></indexAreaEnd>
     <?php if ($links): ?> 
       <div class="links clear"> <?php print $links; ?></div>
     <?php endif; ?>

@@ -1,7 +1,6 @@
 <?php
 // $Id: node.tpl.php,v 1.4 2010/09/17 21:36:06 eternalistic Exp $
 ?>
-
 <div id="node-<?php print $node->nid; ?>" class="node <?php print $node_classes; ?>">
   <div class="inner">
   

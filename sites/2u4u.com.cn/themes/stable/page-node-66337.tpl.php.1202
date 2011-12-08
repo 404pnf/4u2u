@@ -20,14 +20,7 @@
   </head>
 
   <body class="<?php print $body_classes; ?>">
- <?php 
- 	$url = "http://test.2u4u.com.cn/html/appstats/ip_stats.php?type=". $clienttype;
- 	$process = curl_init($url); 
- 	curl_exec($process); 
- 	curl_close($process); 
- 	//$is_ok = http_response($url);
-
-  ?>
+  <?php ?>
     <div id="main">
 	  <div class="toolbar">
 		

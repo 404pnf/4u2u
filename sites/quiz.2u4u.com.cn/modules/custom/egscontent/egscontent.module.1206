@@ -56,10 +56,6 @@ function egscontent_block($op = 'list', $delta = 0, $edit = array()){
 			//英语水平定位测试
 			$blocks[13]['info'] = t('EGS:水平排行');
 			$blocks[13]['cache'] = BLOCK_CACHE_GLOBAL;
-		
-		//最新试题
-			$blocks[14]['info'] = t('EGS:最新试题');
-			$blocks[14]['cache'] = BLOCK_CACHE_GLOBAL;
 			return $blocks;
 		
 		case 'view':
@@ -122,11 +118,6 @@ function egscontent_block($op = 'list', $delta = 0, $edit = array()){
 			if($delta == 13){
 				$block['subject'] = t('水平');
         		$block['content'] = theme('egscontent_userscore_shuipin_block',array());
-			}
-			
-			if($delta == 14){
-				$block['subject'] = t('最新试题');
-        		$block['content'] = theme('egscontent_latest_paper_block',array());
 			}
 			return $block;
 		
@@ -210,13 +201,6 @@ function egscontent_theme(){
 		  'variables' => array(),
 				'file' => 'egscontent.pages.inc',
 		),
-		
-		//最新试题函数
-			'egscontent_latest_paper_block' => array(
-		  'variables' => array(),
-				'file' => 'egscontent.pages.inc',
-		),
-		
   );
 }
 

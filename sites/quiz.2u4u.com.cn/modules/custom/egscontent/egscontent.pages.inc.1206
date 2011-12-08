@@ -1,19 +1,6 @@
 <?php
 // $Id$
 
-function theme_egscontent_latest_paper_block(){
-	 	
-	$output = '<div class="item-list latest_paper"> <ul>';
-	
-	//egscontent(模板or试卷,分类id,个数)
-	$paperresult = egscontent('paper_list', '',4);
-	$output .= $paperresult;
-	
-	$output .='</ul></div>';		
-	
-	return $output;
-}
-
 /**
  * 大学英语四级区块的主题函数
  */
@@ -45,7 +32,7 @@ function theme_egscontent_CET4_block(){
 		$output .='</ul></div>';		
 	else
 		$output .='</ul>
-			<div class="dxyy_lv4_more"><a href='.$url.'>>>更多</a></div>
+			<div class="dxyy_lv4_more"><a href='.$loginUrl.$url.'>>>更多</a></div>
 		</div>';
 
 	
@@ -84,7 +71,7 @@ function theme_egscontent_CET6_block(){
 		$output .='</ul></div>';		
 	else
 		$output .='</ul>
-			 <div class="dxyy_lv6_more"><a href='.$url.'>>>更多</a></div>
+			 <div class="dxyy_lv6_more"><a href='.$loginUrl.$url.'>>>更多</a></div>
 			</div>';
 	
 	return $output;
@@ -121,7 +108,7 @@ function theme_egscontent_TEM4_block(){
 		$output .='</ul></div>';		
 	else
 		$output .='</ul>
-			<div class="dxyy_lv4_more"><a href='.$url.'>>>更多</a></div>
+			<div class="dxyy_lv4_more"><a href='.$loginUrl.$url.'>>>更多</a></div>
 		</div>';
 	return $output;
 }
@@ -157,7 +144,7 @@ function theme_egscontent_TEM8_block(){
 		$output .='</ul></div>';		
 	else
 		$output .='</ul>
-			 <div class="zy_pf8_more"><a href='.$url.'>>>更多</a></div>
+			 <div class="zy_pf8_more"><a href='.$loginUrl.$url.'>>>更多</a></div>
 			</div>';
 		
 	return $output;
@@ -193,7 +180,7 @@ function theme_egscontent_PRETCO_block(){
 		$output .='</ul></div>';		
 	else
 		$output .='</ul>
-			<div class="yingyong_more"><a href='.$url.'>>>更多</a></div>
+			<div class="yingyong_more"><a href='.$loginUrl.$url.'>>>更多</a></div>
 		</div>';
 	
 	
@@ -230,7 +217,7 @@ function theme_egscontent_PETS_block(){
 		$output .='</ul></div>';		
 	else
 		$output .='</ul>
-			 <div class="quanguo_more"><a href='.$url.'>>>更多</a></div>
+			 <div class="quanguo_more"><a href='.$loginUrl.$url.'>>>更多</a></div>
 			</div>';
 	
 		
@@ -403,7 +390,7 @@ if($result != null && $result != ''){
   			else
   				$url = 'http://test.2u4u.com.cn/html/www/main.html?op=create_paper_by_module&id='.$sid;
   				
-			$output .= ' <li><a href='.$url.' >'.$name. "</a></li>";
+			$output .= ' <li><a href='.$loginUrl.$url.' >'.$name. "</a></li>";
 			//$output .= ' <li><a href="http://test.2u4u.com.cn/html/www/index.html?op=create_paper_by_module&id='.$sid.'" onclick="egs_paper('.$sid.')" >'.$name. "</a></li>";
 		}
 	else if($type == 'paper_list')
@@ -415,7 +402,7 @@ if($result != null && $result != ''){
   				$url = urlencode('http://test.2u4u.com.cn/html/www/main.html?op=paper_info&id='.$sid);
   			else 
   				$url = 'http://test.2u4u.com.cn/html/www/main.html?op=paper_info&id='.$sid;
-			$output .= ' <li><a href="'.$url.'" >'.$name. "</a></li>";
+			$output .= ' <li><a href="'.$loginUrl.$url.'" >'.$name. "</a></li>";
 		}
 
 	return $output;

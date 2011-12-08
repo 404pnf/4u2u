@@ -188,9 +188,12 @@ display:none;
 }
 .zdtj_top .zdtj_top_content, .zdtj_middle .zdtj_middle_content{
 	width:350px;
-	height:40px;
+	height:80px;
 	border-bottom:1px dashed #CECECE;
 	margin-bottom:10px;
+}
+.zdtj_bottom{
+clear:both;
 }
 .zdtj_fenlei{
 	padding-right:10px;
@@ -222,7 +225,19 @@ display:none;
 	height:310px;
 	width:370px;
 }
-
+#content #content-area .zdtj .item-list li{
+clear:left;
+float:none!important;
+background: url("images/fangkuang.gif") no-repeat scroll left 5px transparent!important;
+margin-top:2px;
+overflow: hidden;
+padding-left:20px;
+white-space: nowrap;
+}
+#content #content-area .zdtj .item-list li.views-row span{display:block;}
+.zdtj .item-list li.views-row a,.zdtj_ms{
+COLOR:#8A8A8A
+}
 .csfl .view-display-id-block_1 .view-content{
 	margin:0 10px 0 10px;
 }

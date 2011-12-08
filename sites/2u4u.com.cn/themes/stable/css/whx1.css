@@ -1365,4 +1365,24 @@ width:120px;
 .section-node #content-area #node-65808  .node-inner .content
 {width:900px;}
 #block-menu-menu-xgn ul.menu {padding-top:0}
-
+/*新概念整体css*/
+body{background:#FFF;}
+.newsblock{overflow:auto;background:#EFF7FA;font-size:12px;margin-bottom:16px;margin-right:16px;*zoom:1}
+.flash{width:307px;height:206px;overflow:auto;float:left;margin:0 20px 0 0;overflow:hidden;}
+.newsblock h2{padding-top:6px;margin-bottom:0;}
+.newsblock h2 a{font-size:16px;color:#036499;}
+.newsblock p{padding:6px;border-bottom:1px solid #DDD;margin:0 20px 0 320px;color:#5F5E5C;line-height:1.8em;height:64px}
+.newsblock ul{overflow:auto;list-style:none;margin:0;padding:0;margin-top:6px;}
+.newsblock ul li{background: url(images/orangepoint.gif) no-repeat 0 11px;text-indent:1em;line-height:2em;list-style:none;margin:0;padding:0;}
+.newsblock ul li a{color:#35807C}
+.newsblock a.more{float:right;color:#03629A;padding:0 40px 0 0;text-decoration:underline;}
+.sform p{color:#5E5E5E;font-size:13px;margin:10px 20px;}
+.sform p input{background:#FFF;border:1px solid #ccc;padding:3px;width:150px;}
+.sform form{padding:1px 0;}
+.sform p.fcenter{margin:0 auto;text-align:center;margin-bottom:20px;}
+.sform p.fcenter input{border:none;background:url(images/logbtn.gif) no-repeat;width:63px;padding:4px;color:#FFF;}
+#right h1{ margin:10px 14px; height: 30px; border-bottom: 1px solid #ccc; line-height:26px;color: #4D6778;}
+#nce_right .lise {border: none; padding-top: 0;}
+#time li {margin: 28px 20px 34px 24px;width: 120px;}
+.pwd{margin-left:23px;*margin-left:20px;}
+.smarterwiki-linkify{padding:0 0 0 52px;margin-bottom:10px;display:block;}

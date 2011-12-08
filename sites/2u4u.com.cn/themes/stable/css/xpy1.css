@@ -740,7 +740,7 @@ width:100%;
 	float:right;
 	margin:15px 35px 20px 0;
 }
-.links a.flag{
+.links .flag-favorite a.flag{
 	background-image: url(images/doc.gif);
 	width:92px;
 	display:block;
@@ -748,6 +748,16 @@ width:100%;
 	font-size:1px;
 	color:#FFFFFF;
 }
+
+.links .flag-recommand a.flag{
+        display:block;
+        height:25px;
+        font-size:15px;
+        margin-left:33px;
+        color:#FF0000;
+}
+
+
 
 .2u4u-shareto{
 	width:92px;

@@ -299,7 +299,7 @@
 </map></div>
 		  </div>
 		  
-<?php /* 暂时注释掉
+		  
 		  <div id= "view_shipin" class="clearfix library-bg">
 			<div id="shipin_title" class="redline-title"><a href="http://video.2u4u.com.cn" target="_blank" class="h">多媒体课堂</a></div>
 			<div id="shipin_left" class="left">
@@ -316,7 +316,6 @@
 					<? print phptemplate_get_video('whx_frontpage','attachment_13');?>
 			</div>
 		  </div>
- */ ?>
 		  
 		  <div id= "view_quiz" class="clearfix library-bg">
 			<div id="quiz_title" class="redline-title"><a href="http://quiz.2u4u.com.cn" target="_blank" class="h">测试中心</a></div>

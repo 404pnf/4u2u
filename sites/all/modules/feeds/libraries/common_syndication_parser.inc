@@ -1,5 +1,4 @@
 <?php
-// $Id: common_syndication_parser.inc,v 1.15 2010/09/07 22:26:02 alexb Exp $
 
 /**
  * @file
@@ -98,7 +97,8 @@ function _parser_common_syndication_atom10_parse($feed_XML) {
     "georss" => "http://www.georss.org/georss",
   );
 
-  $base = (string) array_shift($feed_XML->xpath("@base"));
+  $base = $feed_XML->xpath("@base");
+  $base = (string) array_shift($base);
   if (!valid_url($base, TRUE)) {
     $base = FALSE;
   }
@@ -168,7 +168,7 @@ function _parser_common_syndication_atom10_parse($feed_XML) {
       }
       $body .= "{$news->content}";
     }
-    else if (!empty($news->summary)) {
+    elseif (!empty($news->summary)) {
       foreach ($news->summary->children() as $child)  {
         $body .= $child->asXML();
       }
@@ -187,7 +187,7 @@ function _parser_common_syndication_atom10_parse($feed_XML) {
       $original_author = "{$news->source->author->name}";
       $author_found = TRUE;
     }
-    else if (!empty($news->author->name)) {
+    elseif (!empty($news->author->name)) {
       $original_author = "{$news->author->name}";
       $author_found = TRUE;
     }
@@ -347,10 +347,10 @@ function _parser_common_syndication_RDF10_item($rdf_data, $mappings) {
  */
 function _parser_common_syndication_RSS20_parse($feed_XML) {
 
-  $ns = array (
+  $ns = array(
     "content" => "http://purl.org/rss/1.0/modules/content/",
-     "dc" => "http://purl.org/dc/elements/1.1/",
-     "georss" => "http://www.georss.org/georss",
+    "dc" => "http://purl.org/dc/elements/1.1/",
+    "georss" => "http://www.georss.org/georss",
   );
 
   $parsed_source = array();
@@ -401,7 +401,7 @@ function _parser_common_syndication_RSS20_parse($feed_XML) {
     if (!empty($news['author'])) {
       $original_author = "{$news['author']}";
     }
-    elseif (isset($dc["creator"])) {
+    elseif (!empty($dc["creator"])) {
       $original_author = (string)$dc["creator"];
     }
 
@@ -410,11 +410,11 @@ function _parser_common_syndication_RSS20_parse($feed_XML) {
       $guid = $original_url;
     }
 
-    if (isset($news['guid'])) {
+    if (!empty($news['guid'])) {
       $guid = "{$news['guid']}";
     }
 
-    if (isset($georss['featureName'])) {
+    if (!empty($georss['featureName'])) {
       $geoname = "{$georss['featureName']}";
     }
 
@@ -422,7 +422,7 @@ function _parser_common_syndication_RSS20_parse($feed_XML) {
     $lon =
     $latlon =
     $geoname = NULL;
-    if (isset($georss['point'])) {
+    if (!empty($georss['point'])) {
       $latlon = explode(' ', $georss['point']);
       $lat = "{$latlon[0]}";
       $lon = "{$latlon[1]}";
@@ -453,8 +453,11 @@ function _parser_common_syndication_RSS20_parse($feed_XML) {
     $item['title'] = _parser_common_syndication_title($title, $body);
     $item['description'] = $body;
     $item['author_name'] = $original_author;
-    if (isset($news['pubDate'])) {
+    if (!empty($news['pubDate'])) {
       $item['timestamp'] = _parser_common_syndication_parse_date($news['pubDate']);
+    }
+    elseif (!empty($dc['date'])) {
+      $item['timestamp'] = _parser_common_syndication_parse_date($dc['date']);
     }
     else {
       $item['timestamp'] = time();

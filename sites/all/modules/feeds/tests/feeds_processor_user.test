@@ -1,42 +1,20 @@
 <?php
-// $Id: feeds_processor_user.test,v 1.2 2010/09/15 19:27:42 alexb Exp $
+module_load_include('test', 'feeds', 'test/feeds');
 
 /**
  * @file
  * Tests for plugins/FeedsUserProcessor.inc
  */
 
-// Require FeedsWebTestCase class definition.
-require_once(dirname(__FILE__) .'/feeds.test.inc');
-
 /**
  * Test aggregating a feed as data records.
  */
 class FeedsCSVtoUsersTest extends FeedsWebTestCase {
-
-  /**
-   * Describe this test.
-   */
-  public function getInfo() {
+  public static function getInfo() {
     return array(
-      'name' => t('CSV import to users'),
-      'description' => t('Tests a standalone import configuration that uses file fetcher and CSV parser to import users from a CSV file.'),
-      'group' => t('Feeds'),
-    );
-  }
-
-  /**
-   * Set up test.
-   */
-  public function setUp() {
-    parent::setUp('feeds', 'feeds_ui', 'ctools', 'job_scheduler');
-
-    $this->drupalLogin(
-      $this->drupalCreateUser(
-        array(
-          'administer feeds', 'administer users',
-        )
-      )
+      'name' => 'CSV import to users',
+      'description' => 'Tests a standalone import configuration that uses file fetcher and CSV parser to import users from a CSV file.',
+      'group' => 'Feeds',
     );
   }
 
@@ -44,7 +22,6 @@ class FeedsCSVtoUsersTest extends FeedsWebTestCase {
    * Test node creation, refreshing/deleting feeds and feed items.
    */
   public function test() {
-
     // Create an importer.
     $this->createImporterConfiguration('User import', 'user_import');
 
@@ -69,6 +46,11 @@ class FeedsCSVtoUsersTest extends FeedsWebTestCase {
         'source' => 'since',
         'target' => 'created',
         'unique' => FALSE,
+      ),
+      '3' => array(
+        'source' => 'password',
+        'target' => 'pass',
+        'unique' => 0,
       ),
     );
     $this->addMappings('user_import', $mappings);
@@ -107,5 +89,12 @@ class FeedsCSVtoUsersTest extends FeedsWebTestCase {
     $this->assertEqual($count, 0, t('No imported user was assigned the administrator role.'));
 
     // @todo Test status setting, update existing and role settings.
+
+    // Attempt to log in as one of the imported users.
+    $uid = db_result(db_query("SELECT uid FROM {users} WHERE name = 'Morticia'"));
+    $account = user_load($uid);
+    $this->assertTrue($account, 'Imported user account loaded.');
+    $account->pass_raw = 'mort';
+    $this->drupalLogin($account);
   }
 }

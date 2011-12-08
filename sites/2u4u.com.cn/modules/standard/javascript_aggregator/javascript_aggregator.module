@@ -1,5 +1,4 @@
 <?php
-// $Id: javascript_aggregator.module,v 1.17.2.21 2010/04/14 08:31:42 derjochenmeyer Exp $
 
 /**
  * Implementation of hook_help().
@@ -48,7 +47,8 @@ function javascript_aggregator_form_alter(&$form, $form_state, $form_id) {
 /**
  * Implementation of hook_theme_registry_alter().
  *
- * Make javascript_aggregator's page preprocess function run *after* everything else's (even jQuery Update).
+ * Make javascript_aggregator's page preprocess function run *after* everything
+ * else's (even jQuery Update).
  */
 function javascript_aggregator_theme_registry_alter(&$theme_registry) {
   if (isset($theme_registry['page'])) {
@@ -58,13 +58,14 @@ function javascript_aggregator_theme_registry_alter(&$theme_registry) {
     }
     // Now tack it on at the end so it runs after everything else.
     $theme_registry['page']['preprocess functions'][] = 'javascript_aggregator_preprocess_page';
-  } 
+  }
 }
 
 /**
  * Implementation of hook_preprocess_hook().
  *
- * Minify the aggregated JavaScript file if JavaScript Optimization is turned on.
+ * Minify the aggregated JavaScript file in the page header if JavaScript
+ * Optimization is turned on.
  */
 function javascript_aggregator_preprocess_page(&$variables) {
   // Only do this for pages that have JavaScript on them.
@@ -75,10 +76,13 @@ function javascript_aggregator_preprocess_page(&$variables) {
 
 /**
  * Implementation of theme_closure().
+ *
+ * Minify the aggregated JavaScript file in the page footer if JavaScript
+ * Optimization is turned on.
  */
 function phptemplate_closure($main = 0) {
   $footer = module_invoke_all('footer', $main);
-  
+
   $js_footer = drupal_get_js('footer');
   // Only do this for pages that have JavaScript on them.
   if (!empty($js_footer)) {
@@ -112,7 +116,7 @@ function _javascript_aggregator_minify($scripts) {
           // JSMin+ the contents of the aggregated file.
           require_once(drupal_get_path('module', 'javascript_aggregator') .'/jsminplus.php');
           // Strip Byte Order Marks (BOM's) from the file, JSMin+ cannot parse these.
-          $file = str_replace(pack("CCC",0xef,0xbb,0xbf), "", file_get_contents(file_directory_path() . $aggregated_file_name));
+          $file = str_replace(pack("CCC", 0xef, 0xbb, 0xbf), "", file_get_contents(file_directory_path() . $aggregated_file_name));
           $contents = JSMinPlus::minify($file);
         }
         else {
@@ -132,12 +136,14 @@ function _javascript_aggregator_minify($scripts) {
         if (variable_get('javascript_aggregator_gzip', FALSE)) {
 
           // Create the GZip file if it doesn't already exist.
-          if (!file_exists($jsmin_file_name .'.gz')) {
-            file_save_data(gzencode($contents, 9), $jsmin_file_name .'.gz', FILE_EXISTS_REPLACE);
+          if (!file_exists($jsmin_file_path .'.gz')) {
+            file_save_data(gzencode($contents, 9), $jsmin_file_path .'.gz', FILE_EXISTS_REPLACE);
+
           }
 
           // Make sure the .htaccess file is active to handle GZipped JavaScript files.
           if (!variable_get('javascript_aggregator_no_htaccess', FALSE) && !file_exists($htaccess)) {
+            $rewrite_base = base_path() . file_directory_path() .'/js/';
             $htaccess_contents = <<<EOT
 <Files *.js.gz>
 AddEncoding x-gzip .gz
@@ -145,6 +151,7 @@ ForceType text/javascript
 </Files>
 <IfModule mod_rewrite.c>
 RewriteEngine on
+RewriteBase $rewrite_base
 RewriteCond %{HTTP_USER_AGENT} !".*Safari.*"
 RewriteCond %{HTTP:Accept-encoding} gzip
 RewriteCond %{REQUEST_FILENAME}.gz -f
@@ -169,6 +176,6 @@ EOT;
       $scripts = str_replace($aggregated_file_name, $jsmin_file_name, $scripts);
     }
   }
-  
+
   return $scripts;
 }

@@ -1,4 +1,3 @@
-// $Id: functions.js,v 1.1.4.2 2008/12/05 10:59:28 wwalc Exp $
 
 function preinit() {
 	// Initialize

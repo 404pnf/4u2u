@@ -1,13 +1,10 @@
 <?php
-// $Id: feeds_import.test,v 1.2 2010/09/15 19:27:42 alexb Exp $
+module_load_include('test', 'feeds', 'test/feeds');
 
 /**
  * @file
  * Tests for feeds_import feature.
  */
-
-// Require FeedsWebTestCase class definition.
-require_once(dirname(__FILE__) .'/../tests/feeds.test.inc');
 
 /**
  * Test Node import configuration.
@@ -18,25 +15,14 @@ class FeedsExamplesNodeTestCase extends FeedsWebTestCase {
    * Set up test.
    */
   public function setUp() {
-    parent::setUp('feeds', 'feeds_ui', 'ctools', 'job_scheduler', 'feeds_import');
-
-    $this->drupalLogin(
-      $this->drupalCreateUser(
-        array(
-          'administer feeds', 'administer nodes',
-        )
-      )
-    );
+    parent::setUp(array('feeds_import'));
   }
 
-  /**
-   * Describe this test.
-   */
-  public function getInfo() {
+  public static function getInfo() {
     return array(
-      'name' => t('Feature: Node import'),
-      'description' => t('Test "Node import" default configuration.'),
-      'group' => t('Feeds'),
+      'name' => 'Feature: Node import',
+      'description' => 'Test "Node import" default configuration.',
+      'group' => 'Feeds',
     );
   }
 
@@ -128,31 +114,16 @@ class FeedsExamplesNodeTestCase extends FeedsWebTestCase {
  * Test User import configuration.
  */
 class FeedsExamplesUserTestCase extends FeedsWebTestCase {
-
-  /**
-   * Set up test.
-   */
-  public function setUp() {
-    parent::setUp('feeds', 'feeds_ui', 'ctools', 'job_scheduler', 'feeds_import');
-
-    $this->drupalLogin(
-      $this->drupalCreateUser(
-        array(
-          'administer feeds', 'administer users',
-        )
-      )
+  public static function getInfo() {
+    return array(
+      'name' => 'Feature: User import',
+      'description' => 'Test "User import" default configuration.',
+      'group' => 'Feeds',
     );
   }
 
-  /**
-   * Describe this test.
-   */
-  public function getInfo() {
-    return array(
-      'name' => t('Feature: User import'),
-      'description' => t('Test "User import" default configuration.'),
-      'group' => t('Feeds'),
-    );
+  public function setUp() {
+    parent::setUp(array('feeds_import'));
   }
 
   /**

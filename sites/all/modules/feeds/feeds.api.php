@@ -1,10 +1,8 @@
 <?php
-// $Id: feeds.api.php,v 1.16.2.1 2010/10/25 22:43:03 alexb Exp $
 
 /**
- * @mainpage
- *
- * @verbinclude README.txt
+ * @file
+ * Documentation of Feeds hooks.
  */
 
 /**

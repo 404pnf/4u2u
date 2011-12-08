@@ -1,5 +1,4 @@
 <?php
-// $Id: FeedsBatch.inc,v 1.15.2.1 2010/10/25 22:43:03 alexb Exp $
 
 // Batch stages.
 define('FEEDS_FETCHING', 'fetching');
@@ -194,7 +193,7 @@ class FeedsImportBatch extends FeedsBatch {
       }
       $dest = file_destination($dir . '/' . get_class($this) .'_'. drupal_get_token($this->url) .'_'. time(), FILE_EXISTS_RENAME);
       $this->file_path = file_save_data($this->getRaw(), $dest);
-      if($this->file_path === 0) {
+      if ($this->file_path === 0) {
         throw new Exception(t('Cannot write content to %dest', array('%dest' => $dest)));
       }
     }

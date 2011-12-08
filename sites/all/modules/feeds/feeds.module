@@ -1,5 +1,4 @@
 <?php
-// $Id: feeds.module,v 1.55.2.3 2010/10/28 19:58:22 alexb Exp $
 
 /**
  * @file
@@ -24,7 +23,7 @@ define('FEEDS_BATCH_ACTIVE', 0);
  */
 
 /**
- * Implementation of hook_cron().
+ * Implements hook_cron().
  */
 function feeds_cron() {
   if ($importers = feeds_reschedule()) {
@@ -66,7 +65,9 @@ function feeds_source_import($job) {
   try {
     $source->existing()->import();
   }
-  catch (FeedsNotExistingException $e) {}
+  catch (FeedsNotExistingException $e) {
+    // Do nothing.
+  }
   catch (Exception $e) {
     watchdog('feeds_source_import()', $e->getMessage(), array(), WATCHDOG_ERROR);
   }
@@ -81,7 +82,9 @@ function feeds_importer_expire($job) {
   try {
     $importer->existing()->expire();
   }
-  catch (FeedsNotExistingException $e) {}
+  catch (FeedsNotExistingException $e) {
+    // Do nothing.
+  }
   catch (Exception $e) {
     watchdog('feeds_importer_expire()', $e->getMessage(), array(), WATCHDOG_ERROR);
   }
@@ -235,11 +238,18 @@ function feeds_theme() {
  * Menu access callback.
  *
  * @param $action
- *   One of 'import' or 'clear'.
+ *   The action to be performed. Possible values are:
+ *   - import
+ *   - clear
  * @param $param
  *   Node object or FeedsImporter id.
  */
 function feeds_access($action, $param) {
+  if (!in_array($action, array('import', 'clear'))) {
+    // If $action is not one of the supported actions, we return access denied.
+    return FALSE;
+  }
+
   if (is_string($param)) {
     $importer_id = $param;
   }
@@ -351,7 +361,7 @@ function feeds_nodeapi(&$node, $op, $form) {
           }
           catch (Exception $e) {
             drupal_set_message($e->getMessage(), 'error');
-            form_set_error('title', t('Could not retrieve title from feed.'), 'error');
+            form_set_error('title', t('Could not retrieve title from feed.'));
           }
         }
         break;
@@ -419,9 +429,7 @@ function _feeds_nodeapi_node_processor($node, $op) {
       }
       break;
     case 'delete':
-      if (isset($node->feeds_node_item)) {
-        db_query("DELETE FROM {feeds_node_item} WHERE nid = %d", $node->nid);
-      }
+      db_query("DELETE FROM {feeds_node_item} WHERE nid = %d", $node->nid);
       break;
   }
 }
@@ -430,19 +438,19 @@ function _feeds_nodeapi_node_processor($node, $op) {
  * Implementation of hook_taxonomy().
  */
 function feeds_taxonomy($op = NULL, $type = NULL, $term = NULL) {
-  if ($type =='term' && $term['tid']) {
+  if ($type == 'term' && !empty($term['tid'])) {
     switch ($op) {
       case 'delete':
         db_query("DELETE FROM {feeds_term_item} WHERE tid = %d", $term['tid']);
         break;
       case 'update':
-        if (isset($term['importer_id'])) {
+        if (isset($term['feeds_term_item'])) {
           db_query("DELETE FROM {feeds_term_item} WHERE tid = %d", $term['tid']);
         }
       case 'insert':
-        if (isset($term['importer_id'])) {
-          $term['id'] = $term['importer_id'];
-          drupal_write_record('feeds_term_item', $term);
+        if (isset($term['feeds_term_item'])) {
+          $term['feeds_term_item']['tid'] = $term['tid'];
+          drupal_write_record('feeds_term_item', $term['feeds_term_item']);
         }
         break;
     }
@@ -450,27 +458,46 @@ function feeds_taxonomy($op = NULL, $type = NULL, $term = NULL) {
 }
 
 /**
- * Implementation of hook_form_alter().
+ * Implements hook_form_alter().
  */
 function feeds_form_alter(&$form, $form_state, $form_id) {
-  if ($form['#id'] == 'node-form') {
-    if ($importer_id = feeds_get_importer_id($form['type']['#value'])) {
+  if (isset($form['#node']->type) && $form['#node']->type . '_node_form' == $form_id) {
+    if ($importer_id = feeds_get_importer_id($form['#node']->type)) {
       // Set title to not required, try to retrieve it from feed.
-      $form['title']['#required'] = FALSE;
+      if (isset($form['title'])) {
+        $form['title']['#required'] = FALSE;
+      }
+
       // Enable uploads.
       $form['#attributes']['enctype'] = 'multipart/form-data';
 
       // Build form.
-      $source = feeds_source($importer_id, empty($form['nid']['#value']) ? 0 : $form['nid']['#value']);
+      $source = feeds_source($importer_id, empty($form['#node']->nid) ? 0 : $form['#node']->nid);
       $form['feeds'] = array(
         '#type' => 'fieldset',
         '#title' => t('Feed'),
         '#tree' => TRUE,
+        '#weight' => 0,
       );
       $form['feeds'] += $source->configForm($form_state);
       $form['#feed_id'] = $importer_id;
     }
   }
+}
+
+/**
+ * Implements hook_content_extra_fields().
+ */
+function feeds_content_extra_fields($type) {
+  $extras = array();
+  if (feeds_get_importer_id($type)) {
+    $extras['feeds'] = array(
+      'label' => t('Feed'),
+      'description' => t('Feeds module form elements'),
+      'weight' => 0,
+    );
+  }
+  return $extras;
 }
 
 /**
@@ -637,9 +664,9 @@ function feeds_export($importer_id, $indent = '') {
  * Logs to a file like /mytmp/feeds_my_domain_org.log in temporary directory.
  */
 function feeds_dbg($msg) {
-  if (variable_get('feeds_debug', false)) {
+  if (variable_get('feeds_debug', FALSE)) {
     if (!is_string($msg)) {
-      $msg = var_export($msg, true);
+      $msg = var_export($msg, TRUE);
     }
     $filename = trim(str_replace('/', '_', $_SERVER['HTTP_HOST'] . base_path()), '_');
     $handle = fopen(file_directory_temp() ."/feeds_$filename.log", 'a');
@@ -771,10 +798,10 @@ function feeds_plugin_instance($plugin, $id) {
   if ($class = ctools_plugin_load_class('feeds', 'plugins', $plugin, 'handler')) {
     return FeedsConfigurable::instance($class, $id);
   }
-  $args = array( '%plugin' => $plugin);
+  $args = array( '%plugin' => $plugin, '@id' => $id);
   if (user_access('administer feeds')) {
-    $args['!link'] = l($id, 'admin/build/feeds/edit/' . $id);
-    drupal_set_message(t('Missing Feeds plugin %plugin. See !link. Check whether all required libraries and modules are installed properly.', $args), 'warning');
+    $args['@link'] = url('admin/build/feeds/edit/' . $id);
+    drupal_set_message(t('Missing Feeds plugin %plugin. See <a href="@link">@id</a>. Check whether all required libraries and modules are installed properly.', $args), 'warning');
   }
   else {
     drupal_set_message(t('Missing Feeds plugin %plugin. Please contact your site administrator.', $args), 'warning');
@@ -882,7 +909,7 @@ function feeds_include_library($file, $library) {
       require libraries_get_path($library) ."/$file";
     }
     else {
-      require './'. drupal_get_path('module', 'feeds') ."/libraries/$file";
+      require './' . drupal_get_path('module', 'feeds') . "/libraries/$file";
     }
   }
   $included[$file] = TRUE;
@@ -902,7 +929,7 @@ function feeds_library_exists($file, $library) {
   if (module_exists('libraries') && file_exists(libraries_get_path($library) ."/$file")) {
     return TRUE;
   }
-  elseif (file_exists(drupal_get_path('module', 'feeds') ."/libraries/$file")) {
+  elseif (file_exists('./' . drupal_get_path('module', 'feeds') . "/libraries/$file")) {
     return TRUE;
   }
   return FALSE;
@@ -911,3 +938,34 @@ function feeds_library_exists($file, $library) {
 /**
  * @}
  */
+
+/**
+ * Copy of valid_url() that supports the webcal scheme.
+ *
+ * @see valid_url().
+ *
+ * @todo Replace with valid_url() when http://drupal.org/node/1191252 is fixed.
+ */
+function feeds_valid_url($url, $absolute = FALSE) {
+  if ($absolute) {
+    return (bool) preg_match("
+      /^                                                      # Start at the beginning of the text
+      (?:ftp|https?|feed|webcal):\/\/                         # Look for ftp, http, https, feed or webcal schemes
+      (?:                                                     # Userinfo (optional) which is typically
+        (?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*      # a username or a username and password
+        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@          # combination
+      )?
+      (?:
+        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+                        # A domain name or a IPv4 address
+        |(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\])         # or a well formed IPv6 address
+      )
+      (?::[0-9]+)?                                            # Server port number (optional)
+      (?:[\/|\?]
+        (?:[\w#!:\.\?\+=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})   # The path and query (optional)
+      *)?
+    $/xi", $url);
+  }
+  else {
+    return (bool) preg_match("/^(?:[\w#!:\.\?\+=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})+$/i", $url);
+  }
+}

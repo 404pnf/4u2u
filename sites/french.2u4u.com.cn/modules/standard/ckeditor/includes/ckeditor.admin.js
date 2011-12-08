@@ -23,7 +23,11 @@ $(document).ready(function() {
 
   Drupal.ckeditorUiColorOnChange = function() {
     var color = CKEDITOR.instances["edit-uicolor-textarea"].getUiColor();
-    if ($("#edit-uicolor").val() == "custom" && typeof(color) != "undefined") {
+    $("#edit-uicolor").val("custom");
+    if (typeof(color) != "undefined") {
+      if (color == "default"){
+        $("#edit-uicolor").val("default");
+      }
       $('#edit-uicolor-user').val(color);
     }
   };
@@ -55,5 +59,38 @@ $(document).ready(function() {
         $('#edit-uicolor-user').val(color);
       }
     }
+  });
+  
+  $(".cke_load_toolbar").click(function() {
+    var buttons = eval('Drupal.settings.'+$(this).attr("id"));
+    var text = "[\n";
+    for(i in buttons) {
+      if (typeof buttons[i] == 'string'){
+        text = text + "    '/',\n";
+      }
+      else {
+        text = text + "    [";
+        max = buttons[i].length - 1;
+        rows = buttons.length - 1;
+        for (j in buttons[i]) {
+          if (j < max){
+            text = text + "'" + buttons[i][j] + "',";
+          } else {
+            text = text + "'" + buttons[i][j] + "'";
+          }
+        }
+        if (i < rows){
+          text = text + "],\n";
+        } else {
+          text = text + "]\n";
+        }
+      }
+    }
+
+    text = text + "]";
+    text = text.replace(/\['\/'\]/g,"'/'");
+    $("#edit-toolbar").attr('value',text);
+    Drupal.ckeditorToolbarReload();
+    return false;
   });
 });

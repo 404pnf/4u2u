@@ -1,40 +1,21 @@
 <?php
-// $Id: feeds_mapper_content_taxonomy.test,v 1.1.2.1 2010/10/28 20:14:28 alexb Exp $
-
-require_once(drupal_get_path('module', 'feeds') . '/tests/feeds_mapper_test.inc');
+module_load_include('test', 'feeds', 'test/feeds_mapper');
 
 /**
  * Class for testing Feeds <em>content</em> mapper.
  */
 class FeedsMapperContentTaxonomyTestCase extends FeedsMapperTestCase {
-
   public static function getInfo() {
     return array(
-      'name' => t('Mapper: Content Taxonomy'),
-      'description' => t('Test Feeds Mapper support for Content Taxonomy CCK fields. <strong>Requires CCK and Content Taxonomy module</strong>.'),
-      'group' => t('Feeds'),
+      'name' => 'Mapper: Content Taxonomy',
+      'description' => 'Test Feeds Mapper support for Content Taxonomy CCK fields.',
+      'group' => 'Feeds',
+      'dependencies' => array('content', 'content_taxonomy'),
     );
   }
 
-  /**
-   * Set up test.
-   */
   public function setUp() {
-    // Call parent setup with the required module
-    parent::setUp(
-      'feeds', 'feeds_ui', 'job_scheduler', 'ctools', 'content',
-      'taxonomy', 'content_taxonomy', 'content_taxonomy_autocomplete', 'content_taxonomy_options'
-    );
-
-    // Create user and login
-    $this->drupalLogin($this->drupalCreateUser(
-      array(
-        'administer content types',
-        'administer feeds',
-        'administer nodes',
-        'administer site configuration',
-      )
-    ));
+    parent::setUp(array('content', 'content_taxonomy', 'content_taxonomy_autocomplete', 'content_taxonomy_options'));
   }
 
   /**
@@ -46,11 +27,11 @@ class FeedsMapperContentTaxonomyTestCase extends FeedsMapperTestCase {
     $vocabularies = array(
       'tags' => array(
         'name' => $this->randomName(),
-        'tags' => true,
+        'tags' => TRUE,
       ),
       'categories' => array(
         'name' => $this->randomName(),
-        'tags' => false,
+        'tags' => FALSE,
       )
     );
     foreach ($vocabularies as &$vocabulary) {
@@ -90,7 +71,7 @@ class FeedsMapperContentTaxonomyTestCase extends FeedsMapperTestCase {
     }
 
     // Create content type
-    $typename = $this->createContentType(NULL, array(
+    $typename = $this->createContentType(array(), array(
       'tags' => array(
         'type' => 'content_taxonomy',
         'widget' => 'content_taxonomy_autocomplete',
@@ -112,7 +93,7 @@ class FeedsMapperContentTaxonomyTestCase extends FeedsMapperTestCase {
 
     // Create importer configuration
     $this->createImporterConfiguration('Content Taxonomy CSV', 'csv'); // Create a default importer configuration
-    $this->setSettings('csv', NULL, array('content_type' => '','import_period' => FEEDS_SCHEDULE_NEVER,)); // Importer setting
+    $this->setSettings('csv', NULL, array('content_type' => '', 'import_period' => FEEDS_SCHEDULE_NEVER)); // Importer setting
     $this->setPlugin('csv', 'FeedsFileFetcher'); //Set fetcher
     $this->setPlugin('csv', 'FeedsCSVParser'); //Set parser
     $this->setSettings('csv', 'FeedsNodeProcessor', array('content_type' => $typename)); // Processor settings
@@ -158,7 +139,8 @@ class FeedsMapperContentTaxonomyTestCase extends FeedsMapperTestCase {
   protected function selectFieldWidget($field_name, $field_type) {
     if ($field_type == 'content_taxonomy') {
       return 'content_taxonomy_select';
-    } else {
+    }
+    else {
       return parent::selectFieldWidget($field_name, $field_type);
     }
   }
@@ -175,7 +157,7 @@ class FeedsMapperContentTaxonomyTestCase extends FeedsMapperTestCase {
   }
 
   protected function getFormFieldsValues($field_name, $value) {
-    switch($field_name) {
+    switch ($field_name) {
       case 'tags':
         if (is_array($value)) {
           // @todo sort tags by weight before joining

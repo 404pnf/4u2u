@@ -236,11 +236,14 @@ function themekey_help($path, $arg) {
  */
 function themekey_set_debug_message($msg, $placeholder = array(), $translate = TRUE) {
   static $msg_stack = array();
-  global $user;
+  global $user, $theme;
 
   if (1 == $user->uid || variable_get('themekey_debug_non_admin_users', FALSE)) {
     if ('flush' == $msg) {
       $messages = array();
+      if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+        $messages[] = t('Current theme: %theme', array('%theme' => $theme));
+      }
       foreach ($msg_stack as $key => $msg) {
         $messages[] = $msg['translate'] ? t($msg['msg'], $msg['placeholder']) : $msg['msg'];
         unset($msg_stack[$key]);

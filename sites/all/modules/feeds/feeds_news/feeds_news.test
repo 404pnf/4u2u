@@ -1,43 +1,26 @@
 <?php
-// $Id: feeds_news.test,v 1.2 2010/09/15 19:27:42 alexb Exp $
+module_load_include('test', 'feeds', 'test/feeds');
 
 /**
  * @file
  * Tests for feeds_news feature.
  */
 
-// Require FeedsWebTestCase class definition.
-require_once(dirname(__FILE__) .'/../tests/feeds.test.inc');
-
 /**
  * Test Feed configuration.
  */
 class FeedsExamplesFeedTestCase extends FeedsWebTestCase {
-
-  /**
-   * Set up test.
-   */
-  public function setUp() {
-    parent::setUp('feeds', 'feeds_ui', 'ctools', 'job_scheduler', 'features', 'feeds_news');
-
-    $this->drupalLogin(
-      $this->drupalCreateUser(
-        array(
-          'administer feeds', 'administer nodes',
-        )
-      )
+  public static function getInfo() {
+    return array(
+      'name' => 'Feature: Feed',
+      'description' => 'Test "Feed" default configuration.',
+      'group' => 'Feeds',
+      'dependencies' => array('features', 'views'),
     );
   }
 
-  /**
-   * Describe this test.
-   */
-  public function getInfo() {
-    return array(
-      'name' => t('Feature: Feed'),
-      'description' => t('Test "Feed" default configuration. <strong>Requires Features.</strong>'),
-      'group' => t('Feeds'),
-    );
+  public function setUp() {
+    parent::setUp(array('features', 'views', 'feeds_news'));
   }
 
   /**
@@ -45,6 +28,13 @@ class FeedsExamplesFeedTestCase extends FeedsWebTestCase {
    */
   public function test() {
     $nid = $this->createFeedNode('feed', NULL, '', 'feed');
+
+    // Assert menu tabs for feed nodes does not show up on non-feed nodes.
+    $this->drupalGet("node/{$nid}/feed-items");
+    $this->assertResponse(200);
+    $not_feed_node = $this->drupalCreateNode();
+    $this->drupalGet("node/{$not_feed_node->nid}/feed-items");
+    $this->assertResponse(404);
 
     // Assert results.
     $count = db_result(db_query("SELECT COUNT(*) FROM {node} WHERE type = 'feed_item'"));
@@ -117,14 +107,11 @@ class FeedsExamplesOPMLTestCase extends FeedsWebTestCase {
     );
   }
 
-  /**
-   * Describe this test.
-   */
-  public function getInfo() {
+  public static function getInfo() {
     return array(
-      'name' => t('Feature: OPML import'),
-      'description' => t('Test "OPML import" default configuration.'),
-      'group' => t('Feeds'),
+      'name' => 'Feature: OPML import',
+      'description' => 'Test "OPML import" default configuration.',
+      'group' => 'Feeds',
     );
   }
 

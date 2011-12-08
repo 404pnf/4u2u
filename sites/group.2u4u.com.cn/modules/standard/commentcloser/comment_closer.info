@@ -3,9 +3,9 @@ name = Comment closer
 description = Schedule automatic closing of comments for selected node types based on the age of the node
 core=6.x
 
-; Information added by drupal.org packaging script on 2009-01-10
-version = "6.x-1.3"
+; Information added by drupal.org packaging script on January 1, 1970 - 00:00
+version = "6.x-1.4"
 core = "6.x"
 project = "commentcloser"
-datestamp = "1231614908"
+datestamp = "1297538516"
 

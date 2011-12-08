@@ -1,4 +1,16 @@
-// $Id: CHANGELOG.txt,v 1.173.2.27 2010/10/29 16:21:33 alexb Exp $
+- Issue #980212 by joshuajabbour,David Goode: Added Support guid/url for
+  taxonomy term importer.
+- Issue #992590 by Jan van Diepen: Fixed Description and weight on
+  FeedsTermElement not saved during import
+- Issue #1057050 by joshuajabbour: Fixed Undefined variable: populate in
+  FeedsNodeProcessor->buildNode().
+- Issue #1008384 by twistor: Fixed feeds not pulling publication date with feed
+  using dc:date and RSS 2.0
+- Issue #1041646 by Dane Powell: Add check for permissions before creating a
+  node from a feed.
+- #718414 pvhee, twistor: Mapper for email field.
+- #791316 B-Prod: fix messages are not properly displayed by Feeds data
+  processor plugin.
 
 Feeds 6.x 1.0 Beta 10, 2010-10-29
 ---------------------------------

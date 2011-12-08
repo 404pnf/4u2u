@@ -1,5 +1,4 @@
 <?php
-// $Id: fckeditor.admin.inc,v 1.1.2.51 2010/01/31 14:49:58 jorrit Exp $
 /**
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2008 Frederico Caldeira Knabben
@@ -249,7 +248,7 @@ function fckeditor_admin_profile_form($form_state, $profile = NULL) {
     $maxsize=128;   //default max name length
 
     $res=array();
-    $pat = "/^(?<name>.*?)_(?<n>[0-9]*)$/";
+    $pat = "/^(?P<name>.*?)_(?P<n>[0-9]*)$/";
     if (preg_match_all($pat, $oldname, $res)) {     // oldname like 'name_nr'
       $name=$res['name'][0];
       $num=$res['n'][0]+1;
@@ -325,7 +324,7 @@ function fckeditor_admin_profile_form($form_state, $profile = NULL) {
   );
 
   //don't bother administrator with filters that definitely are not security filters
-  $modules_with_filters_to_skip = array('amazon_filter', 'asy', 'bbcode', 'biblio', 'blockquote', 'bookpost', 'chessboard', 'citation_filter', 'codefilter', 'collapse_text', 'contextlinks', 'coolfilter', 'dialectic', 'dript', 'dme', 'drutex', 'embedfilter', 'ext_link_page', 'extlink', 'elf', 'flickr', 'flickrstickr', 'footnotes', 'formdefaults', 'freelinking', 'gallery', 'geogebra', 'geshifilter', 'gotwo', 'googtube', 'gotcha', 'gtspam', 'hidden_content', 'img_assist', 'image_filter', 'inlinetags', 'insert_view', 'insertframe', 'insertnode', 'interwiki', 'jlightbox', 'jsmath', 'language_sections', 'link_node', 'lootz', 'markdown', 'marksmarty', 'mobile_codes', 'mykml', 'nofollowlist', 'oagwt', 'paging', 'pathfilter', 'pearwiki_filter', 'php', 'pirate', 'reptag', 'scrippet', 'scripturefilter', 'signwriter', 'slideshowpro', 'smartlinebreakconverter', 'smartypants', 'smileys', 'spamspan', 'spam_tokens', 'spoiler', 'table_altrow', 'tablemanager', 'tableofcontents', 'textile', 'tooltips', 'twikifilter', 'typogrify', 'unwrap', 'urlclass', 'urlicon', 'url_replace_filter', 'username_highlighter', 'video_filter', 'quote');
+  $modules_with_filters_to_skip = array('amazon_filter', 'asy', 'bbcode', 'biblio', 'blockquote', 'bookpost', 'chessboard', 'citation_filter', 'codefilter', 'collapse_text', 'contextlinks', 'coolfilter', 'dialectic', 'dript', 'dme', 'drutex', 'embedfilter', 'ext_link_page', 'extlink', 'elf', 'flickr', 'flickrstickr', 'footnotes', 'formdefaults', 'freelinking', 'gallery', 'geogebra', 'geshifilter', 'gotwo', 'googtube', 'gotcha', 'gtspam', 'hidden_content', 'img_assist', 'image_filter', 'inlinetags', 'insert_view', 'insertframe', 'insertnode', 'interwiki', 'jlightbox', 'jsmath', 'language_sections', 'link_node', 'lootz', 'markdown', 'marksmarty', 'mobile_codes', 'mykml', 'nofollowlist', 'oagwt', 'paging', 'pathfilter', 'pearwiki_filter', 'php', 'pirate', 'reptag', 'scrippet', 'scripturefilter', 'signwriter', 'slideshowpro', 'smartlinebreakconverter', 'smartypants', 'smileys', 'spamspan', 'spam_tokens', 'spoiler', 'table_altrow', 'tablemanager', 'tableofcontents', 'textile', 'tooltips', 'twikifilter', 'typogrify', 'unwrap', 'urlclass', 'urlicon', 'url_replace_filter', 'username_highlighter', 'video_filter', 'quote', 'insert_block', 'insert_view');
 
   if (!isset($profile->settings['ss'])) {
     $profile->settings['filters']['filter/0'] = 1;
@@ -601,6 +600,21 @@ function fckeditor_admin_profile_form($form_state, $profile = NULL) {
       )),
   );
 
+  $form['output']['autofixplaintext'] = array(
+    '#type' => 'radios',
+    '#title' => t('Automatically detect and convert plain text'),
+    '#default_value' => !empty($profile->settings['autofixplaintext']) ? $profile->settings['autofixplaintext'] : 'f',
+    '#options' => array(
+      't' => t('Yes'),
+      'f' => t('No')
+    ),
+    '#description' =>
+      t('When set to %true the editor will try to detect if a field was created using the plain text editor and convert line breaks to &lt;br /&gt; and &lt;p&gt; tags. This will alter the field contents and is not reversible.',
+      array(
+        '%true' => t('Yes'),
+      )),
+  );
+
   $form['css'] = array(
     '#type' => 'fieldset',
     '#title' => t('Style and template files'),
@@ -750,6 +764,10 @@ function fckeditor_admin_profile_form($form_state, $profile = NULL) {
     $filebrowsers['webfm'] = t('Web File Manager');
   }
 
+  if (file_exists(_fckeditor_ckfinder_path())) {
+    $filebrowsers['ckfinder'] = t('CKFinder');
+  }
+
   $form['fckeditor_upload_settings']['filebrowser'] = array(
     '#type' => 'select',
     '#title' => t('File browser type'),
@@ -827,10 +845,11 @@ function fckeditor_admin_profile_form($form_state, $profile = NULL) {
       'f' => t('No')
     ),
     '#description' =>
-      t('When set to %true the editor will try to load the %configfile file from theme directory.',
+      t('When set to %true the editor will try to load the %configfile file from theme directory (%theme_path).',
         array(
           '%true' => t('Yes'),
           '%configfile' => 'fckeditor.config.js',
+          '%theme_path' => base_path() . fckeditor_path_to_theme(),
         )),
   );
   $form['advanced']['js_conf'] = array(

@@ -1,3 +1,22 @@
+ThemeKey 6.x-3.6, 2011-09-19
+----------------------------
+[#1254144] mkalkbrenner: integration / support of Revisioning module
+[#1264310] tungscit, mkalkbrenner: Themekey path doesn't support special chars
+
+
+ThemeKey 6.x-3.5, 2011-08-17
+----------------------------
+[        ] mkalkbrenner: hide debug information about current theme if themekey_debug_trace_rule_switching not set
+
+
+ThemeKey 6.x-3.4, 2011-08-11
+----------------------------
+[#1159326] mkalkbrenner: drupal:path does not respect operator
+[#1214624] chawl, mkalkbrenner: New property: wurfl:is_mobile_browser
+[#1215656] mkalkbrenner: Avoid errors if a third party module gets deactivated
+[#1236886] mkalkbrenner: show current theme using ThemeKey Debug
+
+
 ThemeKey 6.x-3.3, 2011-04-27
 ----------------------------
 [#1030268] mkalkbrenner: Toggle "Property drupal:path is case sensitive" does not work; drupal:path is always case sensitive
@@ -240,8 +259,8 @@ ThemeKey 6.x-2.0-alpha2, 2009-11-25
 ThemeKey 6.x-2.0-alpha1, 2009-11-24
 -----------------------------------
 [       ] mkalkbrenner: API: hook_themekey_properties(): removed attributes 'multiple' and 'weight'
-[       ] mkalkbrenner: API: removed themekey custom path concept. Themekey custom paths became properties using drupal:path 
-[       ] mkalkbrenner: API: removed requirement to turn properties on or off 
+[       ] mkalkbrenner: API: removed themekey custom path concept. Themekey custom paths became properties using drupal:path
+[       ] mkalkbrenner: API: removed requirement to turn properties on or off
 [#625176] mkalkbrenner: Let admin adjust path and property weight
 [#591200] mkalkbrenner: Performance: Some property callbacks get called multiple times
 [#639808] mkalkbrenner: Conditions always return TRUE if property is NULL
@@ -284,7 +303,7 @@ ThemeKey 6.x-1.2-beta3, 2009-11-05
 
 ThemeKey 6.x-1.2-beta2, 2009-10-30
 ----------------------------------
-[#616946] mkalkbrenner: Temporally deactivated Taxonomy Menu custom path support because code is outdated since a long time 
+[#616946] mkalkbrenner: Temporally deactivated Taxonomy Menu custom path support because code is outdated since a long time
 [#617990] FVANtom, mkalkbrenner: Themekey disables themes after configuration
 [#442188] kratib, mkalkbrenner: Supporting regex
 [#615720] mkalkbrenner: Condition operators don't work on properties based on array values

@@ -1,27 +1,21 @@
 <?php
-// $Id: feeds_parser_syndication.test,v 1.2 2010/09/15 19:27:42 alexb Exp $
+module_load_include('test', 'feeds', 'test/feeds');
 
 /**
  * @file
  * Tests for plugins/FeedsSyndicationParser.inc.
  */
 
-// Require FeedsWebTestCase class definition.
-require_once(dirname(__FILE__) .'/feeds.test.inc');
-
 /**
  * Test single feeds.
  */
 class FeedsSyndicationParserTestCase extends FeedsWebTestCase {
-
-  /**
-   * Describe this test.
-   */
-  public function getInfo() {
+  public static function getInfo() {
     return array(
-      'name' => t('Syndication parsers'),
-      'description' => t('Regression tests for syndication parsers Common syndication and SimplePie. Tests parsers against a set of feeds in the context of Feeds module. <strong>Requires SimplePie parser to be configured correctly.</strong>'),
-      'group' => t('Feeds'),
+      'name' => 'Syndication parsers',
+      'description' => 'Regression tests for syndication parsers Common syndication and SimplePie. Tests parsers against a set of feeds in the context of Feeds module. <strong>Requires SimplePie parser to be configured correctly.</strong>',
+      'group' => 'Feeds',
+      'dependencies' => array('libraries'),
     );
   }
 
@@ -29,15 +23,7 @@ class FeedsSyndicationParserTestCase extends FeedsWebTestCase {
    * Set up test.
    */
   public function setUp() {
-    parent::setUp('feeds', 'feeds_ui', 'ctools', 'job_scheduler', 'libraries');
-
-    $this->drupalLogin(
-      $this->drupalCreateUser(
-        array(
-          'administer feeds', 'administer nodes',
-        )
-      )
-    );
+    parent::setUp(array('libraries'));
   }
 
   /**

@@ -1,9 +1,15 @@
 <?php
 // $Id: tvi.module,v 1.6 2010/01/13 00:20:20 collectivecolors Exp $
 
-//------------------------------------------------------------------------------
-// Constants
-//------------------------------------------------------------------------------
+/**
+ * @file
+ * Enables use of views for taxonomy pages.
+ */
+
+/**
+ * @defgroup constants
+ * @{
+ */
 
 /**
  * Default view display name
@@ -24,18 +30,38 @@ define('TVI_DATATYPE_TERM', 'term');
 define('TVI_DATATYPE_VIEW', 'view');
 define("TVI_DATATYPE_SETTINGS", 'settings');
 
-//------------------------------------------------------------------------------
-// Drupal hooks
-//------------------------------------------------------------------------------
+/**
+ * @} End of "defgroup constants".
+ *
+ * @defgroup drupal hooks
+ * @{
+ */
 
 /**
- * Implementation of hook_menu().
+ * Implementation of hook_perm().
+ */
+function tvi_perm() {
+  return array('administer taxonomy view integrator');
+}
+
+/**
+ * Implements hook_menu().
  * 
  * @see http://api.drupal.org/api/function/hook_menu/6
  */
 function tvi_menu() {
+  $items = array();
   
-	// Define a AHAH views display options callback.
+  $items['admin/content/taxonomy/tvi'] = array(
+    'title' => 'TVI settings',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tvi_settings_form'),
+    'access arguments' => array('administer taxonomy'),
+    'type' => MENU_LOCAL_TASK,
+    'file' => 'includes/tvi.admin.inc',
+  );
+  
+  // Define a AHAH views display options callback.
 	$items['tvi/js/display_options'] = array(
     'page callback' => 'tvi_display_options_ahah',
     'access arguments' => array('administer taxonomy'),
@@ -45,54 +71,47 @@ function tvi_menu() {
   return $items;	
 }
 
-//------------------------------------------------------------------------------
-
 /**
- * Implementation of hook_menu_alter().
+ * Implements hook_menu_alter().
  * 
  * @see http://api.drupal.org/api/function/hook_menu_alter/6
  */
 function tvi_menu_alter(&$items) {
-	$items['taxonomy/term/%']['page callback']    = 'tvi_render_view';
-	$items['taxonomy/term/%']['page arguments']   = array(2);
-	$items['taxonomy/term/%']['access callback']  = 'tvi_render_view_access';
+  $items['taxonomy/term/%']['page callback']    = 'tvi_render_view';
+  $items['taxonomy/term/%']['page arguments']   = array(2);
+  $items['taxonomy/term/%']['access callback']  = 'tvi_render_view_access';
   $items['taxonomy/term/%']['access arguments'] = array(2);
 }
 
-//------------------------------------------------------------------------------
-
 /**
- * Implementation of hook_form_alter().
+ * Implements hook_form_alter().
  * 
  * Used to add some items to the taxonomy term and vocab edit pages  
  *
  * @see http://api.drupal.org/api/function/hook_form_alter/6
  */
 function tvi_form_alter(&$form, $form_state, $form_id) {
-	
-	if ($form_id == 'taxonomy_form_term'
-	     && !isset($form_state['confirm_delete'])
-	     && !isset($form_state['confirm_parents'])) {
-	  
-		tvi_include('admin');
-		tvi_term_form($form);
-	}
-	elseif ($form_id == 'taxonomy_form_vocabulary') {
-	  
-		tvi_include('admin');
-		tvi_vocab_form($form);
-	}
+  if (user_access('administer taxonomy view integrator')) {
+    if ($form_id == 'taxonomy_form_term'
+         && !isset($form_state['confirm_delete'])
+         && !isset($form_state['confirm_parents'])) {
+      
+      tvi_include('admin');
+      tvi_term_form($form);
+    }
+    elseif ($form_id == 'taxonomy_form_vocabulary') {
+      tvi_include('admin');
+      tvi_vocab_form($form);
+    }
+  }
 }
 
-//------------------------------------------------------------------------------
-
 /**
- * Implementation of hook_taxonomy().
+ * Implements hook_taxonomy().
  * 
  * @see http://api.drupal.org/api/function/hook_taxonomy/6
  */
 function tvi_taxonomy($op, $type, $info = NULL) {
-	
 	switch ($op) {
 		// Remove TVI settings when vocabularies and terms are deleted.
 		case 'delete':
@@ -105,10 +124,8 @@ function tvi_taxonomy($op, $type, $info = NULL) {
 	}	
 }
 
-//------------------------------------------------------------------------------
-
 /**
- * Implementation of hook_theme().
+ * Implements hook_theme().
  * 
  * @see http://api.drupal.org/api/function/hook_theme/6
  */
@@ -126,12 +143,15 @@ function tvi_theme($existing, $type, $theme, $path) {
   );
 }
 
-//------------------------------------------------------------------------------
-// Theme functions
-//------------------------------------------------------------------------------
+/**
+ * @} End of "defgroup drupal hooks".
+ *
+ * @defgroup themeable
+ * @{
+ */
 
 /**
- * Return the taxonomy page title (for active view overrides).
+ * Returns the taxonomy page title (for active view overrides).
  * 
  * We just default to letting views take care of that.  Override if you wish.
  */
@@ -139,10 +159,8 @@ function theme_tvi_title($term, $view) {
 	return $view->get_title();	
 }
 
-//------------------------------------------------------------------------------
-
 /**
- * Return the taxonomy page breadcrumb (for active view overrides).
+ * Returns the taxonomy page breadcrumb (for active view overrides).
  * 
  * The algorithm we use is based off of $views->get_breadcrumb(), but has a few
  * important differences.  Override this if you have your own breadcrumb method. 
@@ -151,31 +169,32 @@ function theme_tvi_breadcrumb($term, $view) {
 	return tvi_get_breadcrumb($term, $view);
 }
 
-//------------------------------------------------------------------------------
-
 /**
- * Return the taxonomy description (for active view overrides).
+ * Returns the taxonomy description (for active view overrides).
  * 
  */
 function theme_tvi_term_description($term) {
   if (is_object($term)) {
-		return '<div class="tvi-term-desc">' . $term->description . '</div>';
+	return '<div class="tvi-term-desc">' . filter_xss_admin($term->description) . '</div>';
   }  
 }
 
-//------------------------------------------------------------------------------
-// TVI callbacks
-//------------------------------------------------------------------------------
+/**
+ * @} End of "defgroup themeable".
+ *
+ * @defgroup TVI callbacks
+ * @{
+ */
 
 /**
- * Check access for the current taxonomy page.
+ * Checks access for the current taxonomy page.
  * 
  * We start off by checking view overrides, then take the normal permission for
  * taxonomy/term pages, if no view is found.
  */
 function tvi_render_view_access($str_tids = '') {
   
-	list($view, $display) = tvi_get_view_info($str_tids);
+  list($view, $display) = tvi_get_view_info($str_tids);
   
   if (is_object($view) && $display) {
   	if ($view->access($display)) {
@@ -186,26 +205,25 @@ function tvi_render_view_access($str_tids = '') {
   return user_access('access content');	
 }
 
-//------------------------------------------------------------------------------
-
 /**
- * Replacement taxonomy page callback
+ * Replaces taxonomy page callback
  * 
  * If more or less than one term is given then pass the request off 
  * to the original taxonomy module page callback.
  *
- * @TODO: Enable support for > 1 term.
+ * @todo Enable support for > 1 term.
+ * @todo Enable views to use their own arguments - now only tid and depth are passed in (ln 229, 232)
  */
 function tvi_render_view($str_tids = '', $depth = 0, $op = 'page') {
 	
   list($view, $display, $term, $settings) = tvi_get_view_info($str_tids);
   
-  $desc = theme('tvi_term_description', $term);
+  $desc = $settings->description_enabled ? theme('tvi_term_description', $term) : '';
     
   if (is_object($view) && $display) {
-  	$view->set_display($display);
-  	
-  	// Using the TVI selected view.
+    $view->set_display($display);
+
+    // Using the TVI selected view.
     if (is_object($term) && is_object($settings) && $settings->status) {
     	$depth = tvi_get_view_depth($view, $display);
     	$view->set_arguments(array($term->tid, $depth));
@@ -219,37 +237,42 @@ function tvi_render_view($str_tids = '', $depth = 0, $op = 'page') {
     drupal_set_breadcrumb(theme('tvi_breadcrumb', $term, $view));
     
     // We might be using the default view.    
-    return (($desc) ? $desc : '') . $view->preview();    
+    return $desc . $view->preview();    
   }
   // Taxonomy is last resort - used if no standard views are found
   module_load_include('inc', 'taxonomy', 'taxonomy.pages');
   return taxonomy_term_page($str_tids, $depth, $op);
 }
 
-//------------------------------------------------------------------------------
-// Internal utilities
-//------------------------------------------------------------------------------
+/**
+ * @} End of "defgroup TVI callbacks".
+ *
+ * @defgroup internal utilities
+ * @{
+ */
 
 /**
- * Return information about the term, view, and settings found for the arguments
+ * Returns information about the term, view, and settings found for the arguments
  * given to the taxonomy term callback.
  */
 function tvi_get_view_info($str_tids) {
-  
   $terms = taxonomy_terms_parse_string($str_tids);
     
   if (count($terms['tids']) == 1) {    
-    $info = tvi_get_term_info($terms['tids'][0], TVI_DATATYPE_ALL);
-    
-    $term     = $info->term;
-    $view     = $info->view;
-    $settings = $info->settings;
+    if ($info = tvi_get_term_info($terms['tids'][0], TVI_DATATYPE_ALL)) {
+      $term     = $info->term;
+      $view     = $info->view;
+      $settings = $info->settings;
+    }
+    else {
+      $term = $view = $settings = NULL;
+    }
     
     if (is_object($view) && is_object($settings) && $settings->status) {
       $display = $settings->display;  
     }
   }
-  if (!($view && $display)) {
+  if (!variable_get('tvi_default_view_skip', 0) && !($view && $display)) {
     list($view, $display) = tvi_get_default_view($str_tids);
   }
   
@@ -262,10 +285,8 @@ function tvi_get_view_info($str_tids) {
   return array($view, $display, $term, $settings); 
 }
 
-//------------------------------------------------------------------------------
-
 /**
- * Return different data sets with the term, view, and settings information for
+ * Returns different data sets with the term, view, and settings information for
  * a specified term id.
  */
 function tvi_get_term_info($tid, $type = TVI_DATATYPE_VIEW) {
@@ -283,8 +304,8 @@ function tvi_get_term_info($tid, $type = TVI_DATATYPE_VIEW) {
       $settings = tvi_load_settings($term->vid, TVI_TYPE_VOCAB, FALSE);
     }
     
-    if ($settings && $settings->view_id) {
-      $view = views_get_view($settings->view_id);
+    if ($settings && $settings->view_name) {
+      $view = views_get_view($settings->view_name);
     }
    
     $term_info[$tid] = array(
@@ -310,10 +331,8 @@ function tvi_get_term_info($tid, $type = TVI_DATATYPE_VIEW) {
   return NULL;
 }
 
-//------------------------------------------------------------------------------
-
 /**
- * Find views in the system that can be used to display the specified taxonomy 
+ * Finds views in the system that can be used to display the specified taxonomy 
  * term(s) and are outside of the TVI framework.
  * 
  * This is a helper function so that we can, in the case there 
@@ -324,6 +343,7 @@ function tvi_get_default_view($str_tids) {
   static $default_views = array();
   
   if (!array_key_exists($str_tids, $default_views)) {
+    $default_views[$str_tids] = array(NULL, NULL);
     $views = views_get_all_views();
   
     foreach ($views as $view) {
@@ -342,19 +362,13 @@ function tvi_get_default_view($str_tids) {
             }          
             // Exact match
             if (preg_match("/^taxonomy\/term\/$str_tids/", $path)) {
-              $default_views[$str_tids] = array(
-                'view'    => $view,
-                'display' => $name,
-              );
+              $default_views[$str_tids] = array($view, $name);
               $is_done = TRUE;
               break;  // Return immediately     
             }
             // Generic match
             elseif (preg_match("/^taxonomy\/term\/%/", $path)) {
-              $default_views[$str_tids] = array(
-                'view'    => $view,
-                'display' => $name,
-              );
+              $default_views[$str_tids] = array($view, $name);
             }
           } 
         }        
@@ -364,17 +378,8 @@ function tvi_get_default_view($str_tids) {
       }
     }
   }
-  $info = $default_views[$str_tids];  
-  if (is_array($info)) {
-    return array(
-      $info['view'], 
-      $info['display']
-    );
-  }
-  return array(); 
+  return $default_views[$str_tids]; 
 }
-
-//------------------------------------------------------------------------------
 
 /**
  * Views only saves the depth to the default display if it is not overridden
@@ -394,10 +399,8 @@ function tvi_get_view_depth($view, $display) {
   return $view_depth; // Preferred pugin depth
 }
 
-//------------------------------------------------------------------------------
-
 /**
- * Get the taxonomy page breadcrumb links.
+ * Gets the taxonomy page breadcrumb links.
  * 
  * This is based off of the code for [ $views->get_breadcrumb() ].
  * 
@@ -441,10 +444,8 @@ function tvi_get_breadcrumb($term, $view) {
   return $breadcrumb;  
 }
 
-//------------------------------------------------------------------------------
-
 /**
- * Include various application logic into the module or in other module include
+ * Includes various application logic into the module or in other module include
  * files.
  * 
  * Note, that you only have to specify the name of the include.
@@ -468,5 +469,6 @@ function tvi_include() {
   }
 }
 
-//------------------------------------------------------------------------------
-/*---------- [ Click here to be transformed into a Spider Monkey ] -----------*/
+/**
+ * @} End of "defgroup internal utilities".
+ */

@@ -1,4 +1,3 @@
-//$Id: json_server.js,v 1.2.4.2 2010/05/04 20:04:26 skyredwang Exp $
 
 /**
  *  Convert a variable to a json string.

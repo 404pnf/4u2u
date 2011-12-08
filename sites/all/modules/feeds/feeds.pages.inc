@@ -1,5 +1,4 @@
 <?php
-// $Id: feeds.pages.inc,v 1.22.2.1 2010/10/25 22:14:58 alexb Exp $
 
 /**
  * @file
@@ -23,15 +22,21 @@ function feeds_page() {
         $link = 'import/'. $importer->id;
         $title = $importer->config['name'];
       }
-      elseif (user_access('create '. $importer->config['content_type'] .' content')) {
+      elseif (node_access('create', $importer->config['content_type'])) {
         $link = 'node/add/'. str_replace('_', '-', $importer->config['content_type']);
         $title = node_get_types('name', $importer->config['content_type']);
+      }
+      else {
+        continue;
       }
       $rows[] = array(
         l($title, $link),
         check_plain($importer->config['description']),
       );
     }
+  }
+  if (empty($rows)) {
+    drupal_set_message(t('There are no importers, go to <a href="@importers">Feed importers</a> to create one or enable an existing one.', array('@importers' => url('admin/build/feeds'))));
   }
   $header = array(
     t('Import'),
@@ -148,7 +153,9 @@ function feeds_fetcher_callback($importer, $feed_nid = 0) {
     try {
       return $importer->fetcher->request($feed_nid);
     }
-    catch(Exception $e) {}
+    catch (Exception $e) {
+      // Do nothing.
+    }
   }
   drupal_access_denied();
 }

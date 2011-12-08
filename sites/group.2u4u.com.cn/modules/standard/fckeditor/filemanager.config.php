@@ -1,6 +1,5 @@
 <?php
 
-// $Id: filemanager.config.php,v 1.2.2.4.2.4 2008/12/23 15:41:49 wwalc Exp $
 /**
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2008 Frederico Caldeira Knabben

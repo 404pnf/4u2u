@@ -1,43 +1,25 @@
 <?php
-// $Id: feeds_mapper_taxonomy.test,v 1.6 2010/09/15 19:27:42 alexb Exp $
+module_load_include('test', 'feeds', 'test/feeds_mapper');
 
 /**
  * @file
  * Test case for taxonomy mapper mappers/taxonomy.inc.
  */
 
-require_once(drupal_get_path('module', 'feeds') . '/tests/feeds_mapper_test.inc');
-
 /**
  * Class for testing Feeds <em>content</em> mapper.
  */
 class FeedsMapperTaxonomyTestCase extends FeedsMapperTestCase {
-
   public static function getInfo() {
     return array(
-      'name' => t('Mapper: Taxonomy'),
-      'description' => t('Test Feeds Mapper support for Taxonomy.'),
-      'group' => t('Feeds'),
+      'name' => 'Mapper: Taxonomy',
+      'description' => 'Test Feeds Mapper support for Taxonomy.',
+      'group' => 'Feeds',
     );
   }
 
-  /**
-   * Set up the test.
-   */
   function setUp() {
-    // Call parent setup with required modules.
-    parent::setUp('feeds', 'feeds_ui', 'ctools', 'job_scheduler', 'taxonomy');
-
-    // Create user and login.
-    $this->drupalLogin($this->drupalCreateUser(
-        array(
-          'administer content types',
-          'administer feeds',
-          'administer nodes',
-          'administer site configuration',
-          'administer taxonomy',
-        )
-    ));
+    parent::setUp();
 
     // Add a new taxonomy vocabulary, add to story content type.
     $edit = array(

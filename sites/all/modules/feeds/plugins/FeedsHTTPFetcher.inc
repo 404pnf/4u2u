@@ -1,5 +1,4 @@
 <?php
-// $Id: FeedsHTTPFetcher.inc,v 1.25 2010/09/15 19:40:57 alexb Exp $
 
 /**
  * @file
@@ -43,7 +42,7 @@ class FeedsHTTPBatch extends FeedsImportBatch {
 class FeedsHTTPFetcher extends FeedsFetcher {
 
   /**
-   * Implementation of FeedsFetcher::fetch().
+   * Implements FeedsFetcher::fetch().
    */
   public function fetch(FeedsSource $source) {
     $source_config = $source->getConfigFor($this);
@@ -64,7 +63,7 @@ class FeedsHTTPFetcher extends FeedsFetcher {
   }
 
   /**
-   * Implementation of FeedsFetcher::request().
+   * Implements FeedsFetcher::request().
    */
   public function request($feed_nid = 0) {
     feeds_dbg($_GET);
@@ -80,12 +79,12 @@ class FeedsHTTPFetcher extends FeedsFetcher {
       }
       catch (Exception $e) {
         // In case of an error, respond with a 503 Service (temporary) unavailable.
-        header('HTTP/1.1 503 "Not Found"', null, 503);
+        header('HTTP/1.1 503 "Not Found"', NULL, 503);
         exit();
       }
     }
     // Will generate the default 200 response.
-    header('HTTP/1.1 200 "OK"', null, 200);
+    header('HTTP/1.1 200 "OK"', NULL, 200);
     exit();
   }
 
@@ -150,7 +149,11 @@ class FeedsHTTPFetcher extends FeedsFetcher {
    * Override parent::sourceFormValidate().
    */
   public function sourceFormValidate(&$values) {
-    if ($this->config['auto_detect_feeds']) {
+    if (!feeds_valid_url($values['source'], TRUE)) {
+      $form_key = 'feeds][' . get_class($this) . '][source';
+      form_set_error($form_key, t('The URL %source is invalid.', array('%source' => $values['source'])));
+    }
+    elseif ($this->config['auto_detect_feeds']) {
       feeds_include_library('http_request.inc', 'http_request');
       if ($url = http_request_get_common_syndication($values['source'])) {
         $values['source'] = $url;
@@ -278,14 +281,14 @@ class PuSHEnvironment implements PuSHSubscriberEnvironmentInterface {
   }
 
   /**
-   * Implementation of PuSHSubscriberEnvironmentInterface::msg().
+   * Implements PuSHSubscriberEnvironmentInterface::msg().
    */
   public function msg($msg, $level = 'status') {
     drupal_set_message($msg, $level);
   }
 
   /**
-   * Implementation of PuSHSubscriberEnvironmentInterface::log().
+   * Implements PuSHSubscriberEnvironmentInterface::log().
    */
   public function log($msg, $level = 'status') {
     switch ($level) {

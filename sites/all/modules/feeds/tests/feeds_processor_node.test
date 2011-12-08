@@ -1,27 +1,21 @@
 <?php
-// $Id: feeds_processor_node.test,v 1.2 2010/09/15 19:27:42 alexb Exp $
+module_load_include('test', 'feeds', 'test/feeds');
 
 /**
  * @file
  * Tests for plugins/FeedsNodeProcessor.inc.
  */
 
-// Require FeedsWebTestCase class definition.
-require_once(dirname(__FILE__) .'/feeds.test.inc');
-
 /**
  * Test aggregating a feed as node items.
  */
 class FeedsRSStoNodesTest extends FeedsWebTestCase {
 
-  /**
-   * Describe this test.
-   */
-  public function getInfo() {
+  public static function getInfo() {
     return array(
-      'name' => t('RSS import to nodes'),
-      'description' => t('Tests a feed configuration that is attached to a content type, uses HTTP fetcher, common syndication parser and a node processor. Repeats the same test for an importer configuration that is not attached to a content type and for a configuration that is attached to a content type and uses the file fetcher.'),
-      'group' => t('Feeds'),
+      'name' => 'RSS import to nodes',
+      'description' => 'Tests a feed configuration that is attached to a content type, uses HTTP fetcher, common syndication parser and a node processor. Repeats the same test for an importer configuration that is not attached to a content type and for a configuration that is attached to a content type and uses the file fetcher.',
+      'group' => 'Feeds',
     );
   }
 
@@ -29,26 +23,14 @@ class FeedsRSStoNodesTest extends FeedsWebTestCase {
    * Set up test.
    */
   public function setUp() {
-    parent::setUp('feeds', 'feeds_ui', 'ctools', 'job_scheduler');
-    $this->drupalLogin(
-      $this->drupalCreateUser(
-        array(
-          'administer feeds', 'administer nodes', 'administer content types',
-        )
-      )
-    );
-  }
+    parent::setUp();
 
-  /**
-   * Test node creation, refreshing/deleting feeds and feed items.
-   */
-  public function test() {
-    // Set the teaser length to unlimited otherwise tests looking for text on
-    // nodes will fail.
-    $edit = array(
-      'teaser_length' => 0,
-    );
-    $this->drupalPost('admin/content/node-settings', $edit, 'Save configuration');
+    // Set the front page to show 20 nodes so we can easily see what is aggregated.
+    variable_set('default_nodes_main', 20);
+
+    // Set the teaser length display to unlimited otherwise tests looking for
+    // text on nodes will fail.
+    variable_set('teaser_length', 0);
 
     // Create an importer configuration.
     $this->createImporterConfiguration('Syndication', 'syndication');
@@ -81,22 +63,23 @@ class FeedsRSStoNodesTest extends FeedsWebTestCase {
         ),
       )
     );
+  }
 
+  /**
+   * Test node creation, refreshing/deleting feeds and feed items.
+   */
+  public function test() {
     $nid = $this->createFeedNode();
+
     // Assert 10 items aggregated after creation of the node.
     $this->assertText('Created 10 Story nodes.');
+    $story_nid = db_result(db_query_range('SELECT nid FROM {node} WHERE type = "story"', 0, 1));
+    $this->assertEqual("Created/updated by FeedsNodeProcessor", db_result(db_query("SELECT nr.log FROM {node} n JOIN {node_revisions} nr ON n.vid = nr.vid WHERE n.nid = %d", $story_nid)));
 
     // Navigate to feed node, there should be Feeds tabs visible.
     $this->drupalGet('node/'. $nid);
     $this->assertRaw('node/'. $nid .'/import');
     $this->assertRaw('node/'. $nid .'/delete-items');
-
-    // Navigate to a non-feed node, there should be no Feeds tabs visible.
-    $story_nid = db_result(db_query_range('SELECT nid FROM {node} WHERE type = "story"', 0, 1));
-    $this->drupalGet('node/'. $story_nid);
-    $this->assertNoRaw('node/'. $story_nid .'/import');
-    $this->assertNoRaw('node/'. $story_nid .'/delete-items');
-    $this->assertEqual("Created/updated by FeedsNodeProcessor", db_result(db_query("SELECT nr.log FROM {node} n JOIN {node_revisions} nr ON n.vid = nr.vid WHERE n.nid = %d", $story_nid)));
 
     // Assert accuracy of aggregated information.
     $this->drupalGet('node');
@@ -403,5 +386,57 @@ class FeedsRSStoNodesTest extends FeedsWebTestCase {
     $this->drupalPost('node/add/page', $edit, 'Save');
     $this->assertText('has been created.');
     $this->assertText('Created 25 Story nodes.');
+  }
+
+  /**
+   * Check that the total number of nodes in the feeds_node_item table is correct.
+   */
+  function assertFeedItemCount($num) {
+    $count = db_result(db_query("SELECT COUNT(*) FROM {feeds_node_item}"));
+    $this->assertEqual($count, $num, 'Accurate number of items in database.');
+  }
+
+  /**
+   * Test validation of feed URLs.
+   */
+  function testFeedURLValidation() {
+    $edit['feeds[FeedsHTTPFetcher][source]'] = 'invalid://url';
+    $this->drupalPost('node/add/page', $edit, 'Save');
+    $this->assertText('The URL invalid://url is invalid.');
+  }
+
+  /**
+   * Test using non-normal URLs like feed:// and webcal://.
+   */
+  function testOddFeedSchemes() {
+    $url = $GLOBALS['base_url'] . '/' . drupal_get_path('module', 'feeds') .'/tests/feeds/developmentseed.rss2';
+
+    $schemes = array('feed');
+    $item_count = 0;
+    foreach ($schemes as $scheme) {
+      $feed_url = strtr($url, array('http://' => $scheme . '://', 'https://' => $scheme . '://'));
+
+      $edit['feeds[FeedsHTTPFetcher][source]'] = $feed_url;
+      $this->drupalPost('node/add/page', $edit, 'Save');
+      $this->assertText('Basic page Development Seed - Technological Solutions for Progressive Organizations has been created.');
+      $this->assertText('Created 10 Story nodes.');
+      $this->assertFeedItemCount($item_count + 10);
+      $item_count += 10;
+    }
+  }
+
+  /**
+   * Test that feed elements and links are not found on non-feed nodes.
+   */
+  function testNonFeedNodeUI() {
+    // There should not be feed links on an article node.
+    $non_feed_node = $this->drupalCreateNode(array('type' => 'story'));
+    $this->drupalGet('node/'. $non_feed_node->nid);
+    $this->assertNoLink('Import');
+    $this->assertNoLink('Delete items');
+
+    // Navigat to a non-feed node form, there should be no Feed field visible.
+    $this->drupalGet('node/add/article');
+    $this->assertNoFieldByName('feeds[FeedsHTTPFetcher][source]');
   }
 }

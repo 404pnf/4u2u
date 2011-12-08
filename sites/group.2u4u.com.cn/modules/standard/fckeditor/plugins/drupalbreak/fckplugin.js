@@ -1,4 +1,3 @@
-// $Id: fckplugin.js,v 1.2.4.5 2009/01/28 15:03:51 wwalc Exp $
 /*
  * FCKeditor - The text editor for Internet - http://www.fckeditor.net
  * Copyright (C) 2003-2007 Frederico Caldeira Knabben

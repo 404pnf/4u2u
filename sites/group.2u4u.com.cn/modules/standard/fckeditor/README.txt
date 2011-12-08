@@ -1,4 +1,3 @@
-$Id: README.txt,v 1.16.2.5.2.17 2010/01/30 18:33:28 jorrit Exp $
 
 CONTENTS OF THIS FILE
 ---------------------

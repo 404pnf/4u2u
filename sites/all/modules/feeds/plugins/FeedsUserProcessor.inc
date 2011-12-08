@@ -1,5 +1,4 @@
 <?php
-// $Id: FeedsUserProcessor.inc,v 1.19 2010/09/07 17:29:36 alexb Exp $
 
 /**
  * @file
@@ -39,7 +38,7 @@ class FeedsUserProcessor extends FeedsProcessor {
 
         // Save the user.
         user_save($account, (array) $account);
-        if ($account->uid && $account->openid) {
+        if ($account->uid && !empty($account->openid)) {
           $authmap = array(
             'uid' => $account->uid,
             'module' => 'openid',
@@ -94,9 +93,12 @@ class FeedsUserProcessor extends FeedsProcessor {
   /**
    * Execute mapping on an item.
    */
-  protected function map(FeedsImportBatch $batch) {
-    // Prepare term object.
-    $target_account = new stdClass();
+  protected function map(FeedsImportBatch $batch, $target_account = NULL) {
+    // Prepare user account object.
+    if (empty($target_account)) {
+      $target_account = new stdClass();
+    }
+
     $target_account->uid = 0;
     $target_account->roles = array_filter($this->config['roles']);
     $target_account->status = $this->config['status'];
@@ -178,6 +180,10 @@ class FeedsUserProcessor extends FeedsProcessor {
         'name' => t('Created date'),
         'description' => t('The created (e. g. joined) data of the user.'),
        ),
+      'pass' => array(
+        'name' => t('Unencrypted Password'),
+        'description' => t('The unencrypted user password.'),
+      ),
     );
     if (module_exists('openid')) {
       $targets['openid'] = array(

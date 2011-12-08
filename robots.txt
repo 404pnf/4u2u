@@ -1,4 +1,3 @@
-# $Id: robots.txt,v 1.9.2.2 2010/09/06 10:37:16 goba Exp $
 #
 # robots.txt
 #
@@ -19,7 +18,8 @@
 
 User-agent: *
 Crawl-delay: 10
-# boost
+
+#boost 
 Disallow: /boost_stats.php
 # Directories
 Disallow: /includes/
@@ -43,7 +43,6 @@ Disallow: /xmlrpc.php
 # Paths (clean URLs)
 Disallow: /admin/
 Disallow: /comment/reply/
-Disallow: /contact/
 Disallow: /logout/
 Disallow: /node/add/
 Disallow: /search/
@@ -53,7 +52,6 @@ Disallow: /user/login/
 # Paths (no clean URLs)
 Disallow: /?q=admin/
 Disallow: /?q=comment/reply/
-Disallow: /?q=contact/
 Disallow: /?q=logout/
 Disallow: /?q=node/add/
 Disallow: /?q=search/

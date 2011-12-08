@@ -1,42 +1,26 @@
 <?php
-// $Id: feeds_processor_data.test,v 1.2.2.1 2010/10/28 19:58:22 alexb Exp $
+module_load_include('test', 'feeds', 'test/feeds');
 
 /**
  * @file
  * Tests for plugins/FeedsDataProcessor.inc.
  */
 
-// Require FeedsWebTestCase class definition.
-require_once(dirname(__FILE__) .'/feeds.test.inc');
-
 /**
  * Test aggregating a feed as data records.
  */
 class FeedsRSStoDataTest extends FeedsWebTestCase {
-
-  /**
-   * Describe this test.
-   */
-  public function getInfo() {
+  public static function getInfo() {
     return array(
-      'name' => t('RSS import to data records'),
-      'description' => t('Tests a feed configuration that is attached to a content type, uses common syndication parser and a node processor. <strong>Requires Data module and Views module</strong>.'),
-      'group' => t('Feeds'),
+      'name' => 'RSS import to data records',
+      'description' => 'Tests a feed configuration that is attached to a content type, uses common syndication parser and a node processor.',
+      'group' => 'Feeds',
+      'dependencies' => array('data', 'views'),
     );
   }
 
-  /**
-   * Set up test.
-   */
   public function setUp() {
-    parent::setUp('feeds', 'feeds_ui', 'ctools', 'job_scheduler', 'data', 'data_ui', 'views');
-    $this->drupalLogin(
-      $this->drupalCreateUser(
-        array(
-          'administer feeds', 'create page content',
-        )
-      )
-    );
+    parent::setUp(array('data', 'data_ui', 'views'));
   }
 
   /**

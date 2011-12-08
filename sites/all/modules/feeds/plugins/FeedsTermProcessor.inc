@@ -1,5 +1,4 @@
 <?php
-// $Id: FeedsTermProcessor.inc,v 1.20.2.2 2010/10/28 20:48:10 alexb Exp $
 
 /**
  * @file
@@ -20,20 +19,50 @@ class FeedsTermProcessor extends FeedsProcessor {
       throw new Exception(t('You must define a vocabulary for Taxonomy term processor before importing.'));
     }
 
-    // Count number of created and updated nodes.
-    $created  = $updated = $no_name = 0;
+    // Count created, updated, and invalid terms.
+    $created = $updated = $no_name = 0;
 
     while ($item = $batch->shiftItem()) {
 
+      // Create/update if item does not exist or update existing is enabled.
       if (!($tid = $this->existingItemId($batch, $source)) || $this->config['update_existing'] != FEEDS_SKIP_EXISTING) {
 
-        // Map item to a term.
+        // Map feed item to a term.
         $term = array();
-        if ($tid && $this->config['update_existing'] == FEEDS_UPDATE_EXISTING) {
-          $term = (array) taxonomy_get_term($tid, TRUE);
-          $term = module_invoke_all('feeds_taxonomy_load', $term);
+
+        // Add term id if available.
+        if ($tid) {
+          $term['tid'] = $tid;
         }
-        $term = $this->map($batch, $term, $source->feed_nid);
+
+        // Load the term if configured to update existing terms.
+        if (!empty($term['tid']) && $this->config['update_existing'] == FEEDS_UPDATE_EXISTING) {
+          // Load term.
+          $term = (array) taxonomy_get_term($term['tid'], TRUE);
+
+          // Load feeds_term_item data.
+          if ($feeds_term_item = db_fetch_array(db_query("SELECT imported, guid, url, feed_nid FROM {feeds_term_item} WHERE tid = %d", $term['tid']))) {
+            $term['feeds_term_item'] = $feeds_term_item;
+          }
+
+          // Allow other modules to act.
+          // @todo this breaks if hooks don't exist, or hooks don't return the term
+          if (module_implements('feeds_taxonomy_load')) {
+            $term = module_invoke_all('feeds_taxonomy_load', $term);
+          }
+        }
+
+        // Add feeds_term_item data.
+        $term['feeds_term_item']['id'] = $this->id;
+        if (!isset($term['feeds_term_item']['feed_nid'])) {
+          $term['feeds_term_item']['feed_nid'] = $source->feed_nid;
+        }
+        if (!isset($term['feeds_term_item']['imported'])) {
+          $term['feeds_term_item']['imported'] = FEEDS_REQUEST_TIME;
+        }
+
+        // Map targets.
+        $term = $this->map($batch, $term);
 
         // Check if term name is set, otherwise continue.
         if (empty($term['name'])) {
@@ -41,19 +70,14 @@ class FeedsTermProcessor extends FeedsProcessor {
           continue;
         }
 
-        // Add term id if available.
-        if (!empty($tid)) {
-          $term['tid'] = $tid;
-        }
-
         // Save the term.
-        $term['importer_id'] = $this->id;
-        $term['feed_nid'] = $source->feed_nid;
-        taxonomy_save_term($term);
-        if ($tid) {
+        $status = taxonomy_save_term($term);
+
+        // Track new and updated terms.
+        if ($status === SAVED_UPDATED) {
           $updated++;
         }
-        else {
+        elseif ($status === SAVED_NEW) {
           $created++;
         }
       }
@@ -65,8 +89,8 @@ class FeedsTermProcessor extends FeedsProcessor {
       drupal_set_message(
         format_plural(
           $no_name,
-          'There was @number term that could not be imported because their name was empty. Check mapping settings on Taxomy term processor.',
-          'There were @number terms that could not be imported because their name was empty. Check mapping settings on Taxomy term processor.',
+          'There was @number term that could not be imported because its name was empty. Check the mapping settings for the associated taxonomy term processor.',
+          'There were @number terms that could not be imported because their names were empty. Check the mapping settings for the associated taxonomy term processor.',
           array('@number' => $no_name)
         ),
         'error'
@@ -114,19 +138,25 @@ class FeedsTermProcessor extends FeedsProcessor {
    * Execute mapping on an item.
    */
   protected function map(FeedsImportBatch $batch, $target_term = NULL) {
-    // Prepare term object, have parent class do the iterating.
-    if (!$target_term) {
+    // Prepare term object.
+    if (empty($target_term)) {
       $target_term = array();
     }
+
+    // Verify vocabulary.
     if (!$vocabulary = $this->vocabulary()) {
       throw new Exception(t('No vocabulary specified for term processor'));
     }
     $target_term['vid'] = $vocabulary->vid;
+
+    // Have parent class do the mapping.
     $target_term = parent::map($batch, $target_term);
+
     // Taxonomy module expects synonyms to be supplied as a single string.
     if (isset($target_term['synonyms']) && is_array($target_term['synonyms'])) {
       $target_term['synonyms'] = implode("\n", $target_term['synonyms']);
     }
+
     return $target_term;
   }
 
@@ -186,6 +216,18 @@ class FeedsTermProcessor extends FeedsProcessor {
   }
 
   /**
+   * Override setTargetElement to operate on a target item that is a term.
+   */
+  public function setTargetElement(&$target_item, $target_element, $value) {
+    if (in_array($target_element, array('url', 'guid'))) {
+      $target_item['feeds_term_item'][$target_element] = $value;
+    }
+    else {
+      parent::setTargetElement($target_item, $target_element, $value);
+    }
+  }
+
+  /**
    * Return available mapping targets.
    */
   public function getMappingTargets() {
@@ -194,15 +236,25 @@ class FeedsTermProcessor extends FeedsProcessor {
         'name' => t('Term name'),
         'description' => t('Name of the taxonomy term.'),
         'optional_unique' => TRUE,
-       ),
+      ),
       'description' => array(
         'name' => t('Term description'),
         'description' => t('Description of the taxonomy term.'),
-       ),
+      ),
       'synonyms' => array(
         'name' => t('Term synonyms'),
         'description' => t('One synonym or an array of synonyms of the taxonomy term.'),
-       ),
+      ),
+      'url' => array(
+        'name' => t('URL'),
+        'description' => t('The external URL of the term. E. g. the feed item URL in the case of a syndication feed. May be unique.'),
+        'optional_unique' => TRUE,
+      ),
+      'guid' => array(
+        'name' => t('GUID'),
+        'description' => t('The external GUID of the term. E. g. the feed item GUID in the case of a syndication feed. May be unique.'),
+        'optional_unique' => TRUE,
+      ),
     );
     // Let implementers of hook_feeds_term_processor_targets() add their targets.
     $vocabulary = $this->vocabulary();
@@ -214,14 +266,22 @@ class FeedsTermProcessor extends FeedsProcessor {
    * Get id of an existing feed item term if available.
    */
   protected function existingItemId(FeedsImportBatch $batch, FeedsSource $source) {
-
-    // The only possible unique target is name.
+    // Iterate through all unique targets and test whether they already
+    // exist in the database.
     foreach ($this->uniqueTargets($batch) as $target => $value) {
-      if ($target == 'name') {
-        $vocabulary = $this->vocabulary();
-        if ($tid = db_result(db_query("SELECT tid FROM {term_data} WHERE name = '%s' AND vid = %d", $value, $vocabulary->vid))) {
-          return $tid;
-        }
+      switch ($target) {
+        case 'url':
+        case 'guid':
+          $tid = db_result(db_query("SELECT tid FROM {feeds_term_item} WHERE feed_nid = %d AND id = '%s' AND %s = '%s'", $source->feed_nid, $this->id, $target, $value));
+          break;
+        case 'name':
+          $vocabulary = $this->vocabulary();
+          $tid = db_result(db_query("SELECT tid FROM {term_data} WHERE name = '%s' AND vid = %d", $value, $vocabulary->vid));
+          break;
+      }
+      if ($tid) {
+        // Return the first tid found.
+        return $tid;
       }
     }
     return 0;

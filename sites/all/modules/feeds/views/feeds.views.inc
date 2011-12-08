@@ -1,5 +1,4 @@
 <?php
-// $Id: feeds.views.inc,v 1.3 2010/07/11 16:57:02 alexb Exp $
 
 /**
  * @file
@@ -9,7 +8,7 @@
  */
 
 /**
- * Implementation of hook_views_data().
+ * Implements hook_views_data().
  */
 function feeds_views_data() {
   $data = array();
@@ -68,7 +67,7 @@ function feeds_views_data() {
    * Expose feeds_node_item table to views.
    */
   $data['feeds_node_item']['table'] = array(
-    'group' => 'Feeds Item',
+    'group' => 'Feeds item',
     'join' => array(
       'node' => array(
         'left_field' => 'nid',
@@ -79,7 +78,7 @@ function feeds_views_data() {
   );
   $data['feeds_node_item']['feed_nid'] = array(
     'title' => t('Owner feed nid'),
-    'help' => t('The node id of the owner feed if available.'),
+    'help' => t('The node id of the owner feed node if available.'),
     'field' => array(
       'handler' => 'views_handler_field_numeric',
       'click sortable' => TRUE,
@@ -100,7 +99,7 @@ function feeds_views_data() {
     ),
     'relationship' => array(
       'title' => t('Owner feed'),
-      'help' => t('Relate a node to its owner feed node if available.'),
+      'help' => t('Relate a feed item to its owner feed node if available.'),
       'label' => t('Owner feed'),
       'base' => 'node',
       'base field' => 'nid',

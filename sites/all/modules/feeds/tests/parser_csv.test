@@ -1,5 +1,4 @@
 <?php
-// $Id: parser_csv.test,v 1.1 2010/09/09 22:44:23 alexb Exp $
 
 /**
  * @file
@@ -14,14 +13,12 @@
  * Feeds at some time.
  */
 class ParserCSVTest extends DrupalWebTestCase  {
-  /**
-   * Describe this test.
-   */
-  public function getInfo() {
+
+  public static function getInfo() {
     return array(
-      'name' => t('CSV Parser unit tests'),
-      'description' => t('Base level test for Feeds\' built in CSV parser.'),
-      'group' => t('Feeds'),
+      'name' => 'CSV Parser unit tests',
+      'description' => 'Base level test for Feeds\' built in CSV parser.',
+      'group' => 'Feeds',
     );
   }
 

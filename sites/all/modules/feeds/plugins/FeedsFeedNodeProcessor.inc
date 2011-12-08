@@ -1,5 +1,4 @@
 <?php
-// $Id: FeedsFeedNodeProcessor.inc,v 1.15 2010/09/07 17:29:36 alexb Exp $
 
 /**
  * @file
@@ -68,15 +67,18 @@ class FeedsFeedNodeProcessor extends FeedsProcessor {
   /**
    * Execute mapping on an item.
    */
-  protected function map(FeedsImportBatch $batch) {
-
-    // Prepare node object.
+  protected function map(FeedsImportBatch $batch, $target_node = NULL) {
     static $included;
     if (!$included) {
       module_load_include('inc', 'node', 'node.pages');
       $included = TRUE;
     }
-    $target_node = new stdClass();
+
+    // Prepare node object.
+    if (!isset($target_node)) {
+      $target_node = new stdClass();
+    }
+
     $target_node->type = $this->config['content_type'];
     $target_node->feeds = array();
     // Suppress auto import, we may be creating many feeds
@@ -148,7 +150,7 @@ class FeedsFeedNodeProcessor extends FeedsProcessor {
   /**
    * Override setTargetElement to operate on a target item that is a node.
    */
-  public function setTargetElement($target_node, $target_element, $value) {
+  public function setTargetElement(&$target_node, $target_element, $value) {
     if ($target_element == 'source') {
       // Get the class of the feed node importer's fetcher and set the source
       // property. See feeds_nodeapi() how $node->feeds gets stored.

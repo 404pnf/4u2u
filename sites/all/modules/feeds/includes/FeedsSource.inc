@@ -1,5 +1,4 @@
 <?php
-// $Id: FeedsSource.inc,v 1.21.2.1 2010/09/26 17:39:45 alexb Exp $
 
 /**
  * @file
@@ -91,7 +90,7 @@ class FeedsSource extends FeedsConfigurable {
    * Instantiate a unique object per class/id/feed_nid. Don't use
    * directly, use feeds_source() instead.
    */
-  public static function instance($importer_id, $feed_nid = 0) {
+  public static function instance($importer_id, $feed_nid) {
     $class = variable_get('feeds_source_class', 'FeedsSource');
     static $instances = array();
     if (!isset($instances[$class][$importer_id][$feed_nid])) {

@@ -1,4 +1,3 @@
-// $Id: img_assist_fckeditor.js,v 1.1.4.3.2.6 2009/08/02 20:31:21 jorrit Exp $
 /**
  * This script loads img_assist_textarea.js and modifies its functionality to
  * work with FCKeditor.

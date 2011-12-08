@@ -1,42 +1,27 @@
 <?php
-// $Id: feeds_mapper_content.test,v 1.5 2010/09/15 19:27:42 alexb Exp $
+module_load_include('test', 'feeds', 'test/feeds_mapper');
 
 /**
  * @file
  * Test case for simple CCK field mapper mappers/content.inc.
  */
 
-require_once(drupal_get_path('module', 'feeds') . '/tests/feeds_mapper_test.inc');
-
 /**
  * Class for testing Feeds <em>content</em> mapper.
  */
 class FeedsMapperContentTestCase extends FeedsMapperTestCase {
-
   public static function getInfo() {
     return array(
-      'name' => t('Mapper: Content'),
-      'description' => t('Test Feeds Mapper support for CCK fields. <strong>Requires CCK module</strong>.'),
-      'group' => t('Feeds'),
+      'name' => 'Mapper: Content',
+      'description' => 'Test Feeds Mapper support for CCK fields.',
+      'group' => 'Feeds',
+      'dependencies' => array('content'),
     );
   }
 
-  /**
-   * Set up the test.
-   */
   function setUp() {
     // Call parent setup with required modules.
-    parent::setUp('feeds', 'feeds_ui', 'ctools', 'job_scheduler', 'content', 'number', 'text');
-
-    // Create user and login.
-    $this->drupalLogin($this->drupalCreateUser(
-        array(
-          'administer content types',
-          'administer feeds',
-          'administer nodes',
-          'administer site configuration'
-        )
-    ));
+    parent::setUp(array('content', 'number', 'text'));
   }
 
   /**
@@ -45,7 +30,7 @@ class FeedsMapperContentTestCase extends FeedsMapperTestCase {
   function test() {
 
     // Create content type.
-    $typename = $this->createContentType(NULL, array(
+    $typename = $this->createContentType(array(), array(
       'alpha' => 'text',
       'beta' => 'number_integer',
       'gamma' => 'number_decimal',
@@ -54,7 +39,7 @@ class FeedsMapperContentTestCase extends FeedsMapperTestCase {
 
     // Create and configure importer.
     $this->createImporterConfiguration('Content CSV', 'csv');
-    $this->setSettings('csv', NULL, array('content_type' => '','import_period' => FEEDS_SCHEDULE_NEVER,));
+    $this->setSettings('csv', NULL, array('content_type' => '', 'import_period' => FEEDS_SCHEDULE_NEVER));
     $this->setPlugin('csv', 'FeedsFileFetcher');
     $this->setPlugin('csv', 'FeedsCSVParser');
     $this->setSettings('csv', 'FeedsNodeProcessor', array('content_type' => $typename));

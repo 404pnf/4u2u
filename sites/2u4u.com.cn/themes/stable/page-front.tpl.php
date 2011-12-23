@@ -376,7 +376,7 @@
 		   <div class="qz-bg">
 			<div id="xiaozu_remenziyuan" class="qz-xz">
 				<div id="xiaozu">				<!--小组-->	
-						<? print phptemplate_get_group('whx_frontpage','default');?>
+						<? print phptemplate_get_group('whx_frontpage','defaults');?>
 				</div>				
 			</div>
 			

@@ -1,7 +1,7 @@
-; $Id: xmlrpc_server.info,v 1.5.2.1 2008/09/06 04:13:07 marcingy Exp $
-name = XMLRPC Server
-description = Provides an XMLRPC server.
-package = Services - servers
+; $Id: system_service.info,v 1.5 2008/01/10 00:35:53 robloach Exp $
+name = System Service
+description = Provides system services.
+package = Services - services
 dependencies[] = services
 core = 6.x
 ; Information added by drupal.org packaging script on 2010-12-06

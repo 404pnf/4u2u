@@ -501,7 +501,7 @@ function phptemplate_get_quizs($view_name,$display_id='default'){
 	return $output;
 }
 
-function phptemplate_get_group($view_name,$display_id = 'default'){
+function phptemplate_get_group($view_name,$display_id){
 	$args=func_get_args();
 	array_shift($args);	//remove $view_name
 	if(count($args)){

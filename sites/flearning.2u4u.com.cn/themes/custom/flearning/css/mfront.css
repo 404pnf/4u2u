@@ -1,0 +1,40 @@
+.fenglei table{
+	width:100%;
+}
+.fenglei table td{
+	/*width:170px;*/
+	padding:14px 13px 6px;
+	vertical-align: top;
+}
+
+.fenglei,.fenglei a{
+	color:white;
+}
+.term_image a,.term_image a:link,.term_image a:visited{
+	display:block;
+	width:162px;
+	height:162px;
+	background:url("images/border.png") no-repeat scroll center center transparent;
+	text-align:center;
+	vertical-align:middle;
+}
+.term_image a:hover{
+	background:url("images/border_selected.png") no-repeat scroll center center transparent;
+}
+.term_image img{
+	padding: 18px 0;
+}
+.term_name,.term_description{
+	padding:1px 15px;
+}
+
+.term_name{
+	font-size:1.7em;
+	font-weight:normal;
+}
+
+.term_description{
+	font-size:0.5em;
+	font-weight:normal;
+	color:#e6ebf0;
+}

@@ -1,0 +1,215 @@
+<?php
+
+/**
+ * @file
+ * Installation file for TVI module.
+ */
+
+/**
+ * @defgroup drupal hooks
+ * @{
+ */
+
+/**
+ * Implements hook_schema().
+ * 
+ * @see http://api.drupal.org/api/function/hook_schema/6
+ */
+function tvi_schema() {
+  module_load_include('module', 'tvi');
+  $schema = array();
+  
+	$schema['tvi_settings'] = array(
+		'description' => 'Stores data relating a view display with a taxonomy term or vocabulary.',
+    'fields' => array(
+      'type' => array(
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'default' => TVI_TYPE_TERM,
+        'description' => 'The type of taxonomy view setting. Can be; TVI_TYPE_TERM or TVI_TYPE_VOCAB.',
+      ),
+      'xid' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Taxonomy vocabulary or term ID.',
+      ),
+      'view_name' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The view name that is used for this taxonomy display.',
+      ),
+      'display' => array(
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => TVI_DEFAULT_DISPLAY,
+        'description' => 'The view display to use.',
+      ),
+      'status' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'A flag to indicate whether to use or not.',
+      ),
+      'description_enabled' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 1,
+        'description' => 'A flag to indicate whether to display the term/voc description or not.',
+      ),
+    ),
+    'primary key' => array('type', 'xid'),
+  );
+	
+	return $schema;
+}
+
+/**
+ * Implements hook_install().
+ * 
+ * @see http://api.drupal.org/api/function/hook_install/6
+ */
+function tvi_install() {
+  // Create tables.
+  drupal_install_schema('tvi');
+  
+  // Ensure weights are ok.
+  $view_info = db_fetch_object(db_query('SELECT s.weight FROM {system} s WHERE s.name = \'views\' LIMIT 1'));
+  db_query("UPDATE {system} SET weight = ".($view_info->weight + 5)." WHERE name = 'tvi'");
+}
+
+/**
+ * Implements hook_uninstall().
+ * 
+ * @see http://api.drupal.org/api/function/hook_uninstall/6
+ */
+function tvi_uninstall() {
+  // Remove tables.
+  drupal_uninstall_schema('tvi');
+
+  // Delete variables
+  variable_del('tvi_default_view_skip');
+}
+
+/**
+ * Implements tvi_hook_update_N().
+ * 
+ * @see http://api.drupal.org/api/function/hook_update_N/6
+ */
+function tvi_update_6001() {
+  
+  // Create new tvi schema.
+  $ret = drupal_install_schema('tvi');
+  
+  // Copy old table values into new table.
+  _tvi_update_move_6001($ret, 'tvi_vocab', 'vocid', TVI_TYPE_VOCAB);
+  _tvi_update_move_6001($ret, 'tvi_term', 'termid', TVI_TYPE_TERM);
+  
+  return $ret;
+}
+
+/**
+ * Implements tvi_hook_update_N().
+ */
+function tvi_update_6002() {
+  $ret = array();
+  
+  //  We don't want to lose our mappings
+  $map = _tvi_update_load_6002();
+  
+  // Transform view_id column into view_name
+  db_change_field($ret, 'tvi_settings', 'view_id', 'view_name', array(
+    'type' => 'varchar',
+    'length' => 32,
+    'not null' => TRUE,
+    'default' => '',
+    'description' => 'The view name that is used for this taxonomy display.',
+  ));
+  // Populate the empty view_name fields
+  _tvi_update_store_6002($ret, $map);
+  
+  return $ret;
+}
+
+/**
+ * Implements tvi_hook_update_N().
+ */
+function tvi_update_6003() {
+  $ret = array();
+  db_add_field($ret, 'tvi_settings', 'description_enabled', array(
+    'type' => 'int',
+    'unsigned' => TRUE,
+    'not null' => TRUE,
+    'default' => 1,
+    'description' => 'A flag to indicate whether to display the term/voc description or not.',
+  ));
+  
+  return $ret;
+}
+
+/**
+ * @}
+ */
+
+/**
+ * Moves all records from the previous table into the new one and remove the old
+ * table afterwords, if all records were transferred successfully.
+ */
+function _tvi_update_move_6001(&$ret, $table, $id_field, $type) {
+  
+  // Copy old table values into new table.
+  $results = db_query("SELECT * FROM {$table}");
+  while($settings = db_fetch_array($results)) {
+    
+    $xid     = $settings[$id_field];
+    $view_id = $settings['viewid'];
+    
+    $display = $settings['display'];
+    $status  = $settings['status'];
+    
+    $result = update_sql(
+      'INSERT INTO {tvi_settings}'
+      . ' (type, xid, view_id, display, status)'
+      . " VALUES ('$type', $xid, $view_id, '$display', $status)"
+    );    
+    $ret[] = $result;
+    
+    if (!$result['success']) {
+      $failed = TRUE;
+    }
+  }
+  if (!$failed) {
+    db_drop_table($ret, $table);
+  } 
+}
+
+function _tvi_update_load_6002() {
+  // get results as they stand (currently has view_id not view_name
+  $results = db_query("SELECT * FROM {tvi_settings}");
+  
+  $map = array(); 
+  while ($row = db_fetch_object($results)) {
+    if ($view = views_get_view($row->view_id)) {
+      $row->view_name = $view->name;
+      $map[] = $row;
+    }   
+  }
+  return $map;
+}
+
+function _tvi_update_store_6002(&$ret, $map) {
+  foreach ($map as $row) {
+    $query = "UPDATE {tvi_settings} t SET t.view_name = '$row->view_name' WHERE type = '$row->type' AND t.xid = $row->xid";
+    $ret[] = update_sql($query);
+  }
+  
+  return $ret;
+}
+ 

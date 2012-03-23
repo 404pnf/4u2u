@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print $language->language ?>" lang="<?php print $language->language ?>" dir="<?php print $language->dir ?>">
+
+  <head>
+    <title><?php print $head_title; ?></title>
+    <?php print $head; ?>
+
+	<meta name="viewport" content="width=device-width;"/>
+
+	<link href="<?php print $base_path.$directory?>/css/common.css" media="all" rel="stylesheet" type="text/css">
+	
+	<link href="<?php print $base_path.$directory?>/css/mfront.css" media="all" rel="stylesheet" type="text/css">
+
+	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.js"></SCRIPT>
+	<script language="javascript" type="text/javascript" src="<?php print $base_path.$directory?>/js/txgenerictools.js" ></script>
+	<?php $clienttype = $_REQUEST['clienttype']; echo '<script> var clienttype = "'. $clienttype.'"; </script>';?>
+	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.m2u4u.common.js"></SCRIPT>
+	
+  </head>
+
+  <body class="<?php print $body_classes; ?>">
+ <?php 
+ 	$url = "http://test.2u4u.com.cn/html/appstats/ip_stats.php?type=". $clienttype;
+ 	$process = curl_init($url); 
+ 	curl_exec($process); 
+ 	curl_close($process); 
+ 	//$is_ok = http_response($url);
+
+  ?>
+    <div id="main">
+	  <div class="toolbar">
+		<span class="button touched_btn">排行</span>
+		<span class="button common_btn">收藏</span> <span class="button title_btn"> <img src="<?php print $base_path.$directory?>/css/images/fltrp.png" /> 精华版</span>
+		<span class="button common_btn info_btn"> <img src="<?php print $base_path.$directory?>/css/images/info.png" /> </span> 
+		<span class="button common_btn">历史</span>
+		<span class="button touched_btn">登陆</span>
+		<? //print views_embed_view('mobile_fp', $display_id = 'attachment_11');?>
+		
+	  </div>
+	
+	
+      <div id="page">
+        <div id="page-inner" class="inner column center">
+		
+		
+			<!--内容-->
+			<div id= "page_content" >
+			
+				
+				<? print views_embed_view('mobile', $display_id = 'tuijian');?>	
+			</div>		
+		 </div> <!-- /page-inner -->
+	  </div> <!-- /page -->
+	  
+	  <div class="footbar">
+		应用框架底栏（搜索栏）
+		<? //print views_embed_view('mobile_fp', $display_id = 'attachment_11');?>
+		
+	  </div>
+	  
+	</div> <!-- /main -->
+
+	
+<script type="text/javascript">
+var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
+document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F116fea821e3bfb6c5a7d4b187a50b502' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+  </body>
+</html>

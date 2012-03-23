@@ -1,0 +1,56 @@
+/*----------新闻页面--------*/
+.titlebar{
+	background:none;
+	background-image:-webkit-gradient(linear,0% 0%, 0% 100%, from(#F3F3F3), to(#d5d6d6), color-stop(0.5,#e7e8e8));
+	border:none;
+	border-top:1px solid #012526;
+    border-bottom: 1px solid #dfdfdf;
+    color: #676766;
+    font-size: 1.2em;
+    font-weight: bold;
+    text-align: center;
+    padding: 0.3em;
+}
+
+.title{
+	line-height:24px;
+}
+.back {
+    margin: 0 5px 0 0;
+}
+.titlebar input.backbutton {
+     background: url("images/titleback.png") no-repeat scroll left center transparent;
+     border: 0pt none;
+     color: #FFFFFF;
+     height: 26px;
+     padding: 0 0 3px 10px;
+     width: 51px;
+     cursor: pointer;
+     font-size:12px;
+}
+.views-field-body{
+	margin:10px 0 20px 20px;
+	text-align:justify;
+/*	text-justify:newspaper;
+	
+	background-color: #EDEDED;
+	border:1px solid red;*/
+}
+/*.field-content p {
+
+	text-align: justify;
+	padding:0px;
+	margin:0px;
+	word-wrap: break-word;
+	color:red;
+}*/
+@media only screen and (max-device-width: 480px){
+	.title{
+		 padding-top: 3px;
+	}
+	.views-field-body{
+		margin:10px 0 10px 10px;
+	}
+}
+
+

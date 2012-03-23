@@ -17,8 +17,8 @@ if(date('w')==5){
 } 
 
 if($_GET['op']=="test"){
-	$time = " uo.order_id>118 AND uo.created > unix_timestamp('2011-09-24 0-0-0') AND uo.created < unix_timestamp('2011-09-30 0-0-0') AND ( uo.order_status = 'payment_received' OR uo.order_status = 'completed')";
- 	$filename = '2011-09-24到2011-09-30的订单';
+	$time = " uo.order_id>118 AND uo.created > unix_timestamp('2012-01-13 0-0-0') AND uo.created < unix_timestamp('2012-02-03 0-0-0') AND ( uo.order_status = 'payment_received' OR uo.order_status = 'completed')";
+ 	$filename = '2012-01-13到2012-02-03的订单';
 }
 else if($_GET['op']=="latest"){
  	$time = " uo.order_id>118 AND uo.created<$end AND ( uo.order_status = 'payment_received' OR uo.order_status = 'completed')";

@@ -1,4 +1,3 @@
-// $Id: custom_search_sort.js,v 1.1.2.1 2010/11/01 17:07:43 jdanthinne Exp $
 
 /**
  * Move a block in the blocks table from one region to another via select list.

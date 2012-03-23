@@ -1,5 +1,4 @@
 <?php
-// $Id: custom_search-results.tpl.php,v 1.1.2.3 2010/11/09 20:19:39 jdanthinne Exp $
 
 /**
  * @file custom_search-results.tpl.php

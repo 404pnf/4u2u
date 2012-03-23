@@ -1,5 +1,4 @@
 <?php
-// $Id: custom_search_blocks.admin.inc,v 1.1.2.4 2010/07/15 09:15:11 jdanthinne Exp $
 
 /**
  * @file

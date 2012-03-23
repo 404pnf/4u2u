@@ -1,5 +1,4 @@
 <?php
-// $Id: custom_search.install,v 1.1.2.13 2010/11/05 00:12:30 jdanthinne Exp $
 
 /**
  * @file
@@ -20,6 +19,8 @@ function custom_search_uninstall() {
   variable_del('custom_search_label_visibility');
   variable_del('custom_search_label');
   variable_del('custom_search_text');
+  variable_del('custom_search_size');
+  variable_del('custom_search_max_length');
   variable_del('custom_search_submit_text');
   variable_del('custom_search_image_path');
   variable_del('custom_search_criteria_or_display');
@@ -58,6 +59,8 @@ function custom_search_uninstall() {
   variable_del('custom_search_any_force');
   variable_del('custom_search_results_search');
   variable_del('custom_search_results_advanced_search');
+  variable_del('custom_search_results_advanced_search_collapsible');
+  variable_del('custom_search_results_advanced_search_collapsed');
   variable_del('custom_search_advanced_or_display');
   variable_del('custom_search_advanced_phrase_display');
   variable_del('custom_search_advanced_negative_display');

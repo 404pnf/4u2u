@@ -1,4 +1,3 @@
-// $Id: custom_search.js,v 1.1.2.15 2010/12/22 13:36:36 jdanthinne Exp $
 
 Drupal.behaviors.custom_search = function (context) {
 

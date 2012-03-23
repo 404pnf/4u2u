@@ -1,5 +1,4 @@
 <?php
-// $Id: custom_search_taxonomy.admin.inc,v 1.1.2.2 2010/11/28 20:13:14 jdanthinne Exp $
 
 /**
  * @file
@@ -42,6 +41,7 @@ function custom_search_taxonomy_admin() {
         '#description'    => t('Choose which selector type to use.'),
         '#default_value'  => variable_get('custom_search_voc' . $voc->vid . '_selector', 'disabled'),
       );
+      if (module_exists('hs_taxonomy')) $form[$voc->name]['custom_search_voc' . $voc->vid . '_selector']['#options']['hierarchical_select'] = t('Hierarchical selector');
       $form[$voc->name]['custom_search_voc' . $voc->vid . '_selector_depth'] = array(
         '#type'           => 'textfield',
         '#title'          => t('Depth'),

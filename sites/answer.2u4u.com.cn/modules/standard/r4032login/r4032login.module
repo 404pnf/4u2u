@@ -81,15 +81,13 @@ function r4032login_redirect() {
   global $user;
   $redirect = variable_get('r4032login_redirect_authenticated_users_to', '');
   if (user_is_anonymous()) {
-    if (variable_get('r4032login_display_denied_message', 'Access denied. You must login to view this page.')) {
-      drupal_set_message(variable_get('r4032login_display_denied_message', 'Access denied. You must login to view this page.'), 'error');
-    }
-    // A special case for the homepage.
-    if (empty($_REQUEST['q'])) {
-      $_REQUEST['q'] = '<front>';
+    // Only display the message if there is one.
+    $message = variable_get('r4032login_display_denied_message', 'Access denied. You must login to view this page.');
+    if (!empty($message)) {
+      drupal_set_message(t($message), 'error');
     }
     // Check for path prefix and strip it out if its found.
-    $path = _r4032login_remove_language(drupal_urlencode($_REQUEST['q']));
+    $path = _r4032login_remove_language(request_uri());
     // using drupal_goto() with destination set causes a recursive redirect loop
     header('Location: '. url('user/login', array('query' => 'destination='. $path, 'absolute' => TRUE)), TRUE, 302);
     exit;
@@ -133,5 +131,6 @@ function theme_r4032login_denied() {
 
 function theme_r4032login_user_register() {
   drupal_set_title(t('Access denied'));
-  return '<p>'. variable_get('r4032login_user_register_message', t('You are not authorized to access this page.')) .'</p>';
+  $message = variable_get('r4032login_user_register_message', 'You are not authorized to access this page.');
+  return '<p>'. t($message) .'</p>';
 }

@@ -1,5 +1,4 @@
 <?php
-// $Id: custom_search.admin.inc,v 1.1.2.19 2010/11/01 17:07:43 jdanthinne Exp $
 
 /**
  * @file
@@ -16,113 +15,12 @@ function custom_search_admin() {
     }
   }
 
-  // Labels & default text.
-  $form['search_box'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Search box'),
-  );
-  $form['search_box']['custom_search_label_visibility'] = array(
-    '#type'           => 'checkbox',
-    '#title'          => t('Display label'),
-    '#default_value'  => variable_get('custom_search_label_visibility', TRUE),
-  );
-  $form['search_box']['custom_search_label'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Search box label'),
-    '#default_value'  => variable_get('custom_search_label', CUSTOM_SEARCH_LABEL_DEFAULT),
-    '#description'    => t('Enter the label text for the search box. The default value is "!default".', array('!default' => CUSTOM_SEARCH_LABEL_DEFAULT)),
-  );
-  $form['search_box']['custom_search_text'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Search box default text'),
-    '#default_value'  => variable_get('custom_search_text', ''),
-    '#description'    => t('This will change the default text inside the search form. Leave blank for no text. This field is blank by default.'),
-  );
-
-  // Submit button.
-  $form['submit_button'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Submit button'),
-  );
-  $form['submit_button']['custom_search_submit_text'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Submit button text'),
-    '#default_value'  => variable_get('custom_search_submit_text', CUSTOM_SEARCH_SUBMIT_TEXT_DEFAULT),
-    '#description'    => t('Enter the text for the submit button. Leave blank to hide it. The default value is "!default".', array('!default' => CUSTOM_SEARCH_SUBMIT_TEXT_DEFAULT)),
-  );
-  $form['submit_button']['custom_search_image_path'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Submit image path'),
-    '#description'    => t('The path to the file you would like to use as submit button instead of the default text button.'),
-    '#default_value'  => variable_get('custom_search_image_path', ''),
-  );
-  $form['submit_button']['custom_search_image'] = array(
-    '#type'           => 'file',
-    '#title'          => t('Submit image'),
-    '#description'    => t('If you don\'t have direct file access to the server, use this field to upload your image.'),
-  );
-
-  // Criteria.
-  $form['criteria'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Advanced search criteria'),
-  );
-  $form['criteria']['or'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Or'),
-    '#collapsible'  => TRUE,
-    '#collapsed'    => TRUE,
-  );
-  $form['criteria']['or']['custom_search_criteria_or_display'] = array(
-    '#type'           => 'checkbox',
-    '#title'          => t('Display'),
-    '#default_value'  => variable_get('custom_search_criteria_or_display', FALSE),
-  );
-  $form['criteria']['or']['custom_search_criteria_or_label'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Label'),
-    '#default_value'  => variable_get('custom_search_criteria_or_label', CUSTOM_SEARCH_CRITERIA_OR_LABEL_DEFAULT),
-    '#description'    => t('Enter the label text for this field. The default value is "!default".', array('!default' => CUSTOM_SEARCH_CRITERIA_OR_LABEL_DEFAULT)),
-  );
-  $form['criteria']['phrase'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Phrase'),
-    '#collapsible'  => TRUE,
-    '#collapsed'    => TRUE,
-  );
-  $form['criteria']['phrase']['custom_search_criteria_phrase_display'] = array(
-    '#type'           => 'checkbox',
-    '#title'          => t('Display'),
-    '#default_value'  => variable_get('custom_search_criteria_phrase_display', FALSE),
-  );
-  $form['criteria']['phrase']['custom_search_criteria_phrase_label'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Label'),
-    '#default_value'  => variable_get('custom_search_criteria_phrase_label', CUSTOM_SEARCH_CRITERIA_PHRASE_LABEL_DEFAULT),
-    '#description'    => t('Enter the label text for this field. The default value is "!default".', array('!default' => CUSTOM_SEARCH_CRITERIA_PHRASE_LABEL_DEFAULT)),
-  );
-  $form['criteria']['negative'] = array(
-    '#type'         => 'fieldset',
-    '#title'        => t('Negative'),
-    '#collapsible'  => TRUE,
-    '#collapsed'    => TRUE,
-  );
-  $form['criteria']['negative']['custom_search_criteria_negative_display'] = array(
-    '#type'           => 'checkbox',
-    '#title'          => t('Display'),
-    '#default_value'  => variable_get('custom_search_criteria_negative_display', FALSE),
-  );
-  $form['criteria']['negative']['custom_search_criteria_negative_label'] = array(
-    '#type'           => 'textfield',
-    '#title'          => t('Label'),
-    '#default_value'  => variable_get('custom_search_criteria_negative_label', CUSTOM_SEARCH_CRITERIA_NEGATIVE_LABEL_DEFAULT),
-    '#description'    => t('Enter the label text for this field. The default value is "!default".', array('!default' => CUSTOM_SEARCH_CRITERIA_NEGATIVE_LABEL_DEFAULT)),
-  );
-
-  // Custom search paths
-  $form = array_merge($form, custom_search_custom_paths_admin_form());
+  // Basic settings.
+  $form = _custom_search_default_admin_form();
+  // Custom search paths.
+  $form = array_merge($form, _custom_search_custom_paths_admin_form());
   // Ordering.
-  $form = array_merge($form, custom_search_ordering_admin_form());
+  $form = array_merge($form, _custom_search_ordering_admin_form());
 
   $form['#attributes'] = array('enctype' => 'multipart/form-data');
   $form['#submit'][] = 'custom_search_admin_submit';
@@ -140,7 +38,7 @@ function custom_search_admin_submit($form, &$form_state) {
 }
 
 function custom_search_content_admin() {
-  return system_settings_form(custom_search_content_admin_form());
+  return system_settings_form(_custom_search_content_admin_form());
 }
 
 function custom_search_results_admin() {
@@ -173,6 +71,16 @@ function custom_search_results_admin() {
     '#type'           => 'checkbox',
     '#title'          => t('Display advanced search'),
     '#default_value'  => variable_get('custom_search_results_advanced_search', TRUE),
+  );
+  $form['search_form']['advanced']['custom_search_results_advanced_search_collapsible'] = array(
+    '#type'           => 'checkbox',
+    '#title'          => t('Collapsible'),
+    '#default_value'  => variable_get('custom_search_results_advanced_search_collapsible', TRUE),
+  );
+  $form['search_form']['advanced']['custom_search_results_advanced_search_collapsed'] = array(
+    '#type'           => 'checkbox',
+    '#title'          => t('Collapsed'),
+    '#default_value'  => variable_get('custom_search_results_advanced_search_collapsed', TRUE),
   );
   $form['search_form']['advanced']['criteria'] = array(
     '#type'         => 'fieldset',

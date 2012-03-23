@@ -1,5 +1,4 @@
 <?php
-// $Id: less.admin.inc,v 1.1.2.3 2011/01/19 22:45:36 coreym29 Exp $
 
 /**
  * @file

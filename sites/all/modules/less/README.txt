@@ -1,4 +1,3 @@
-// $Id: README.txt,v 1.1.2.4 2010/12/09 03:22:13 coreym29 Exp $
 
 LESS CSS Preprocessor
 

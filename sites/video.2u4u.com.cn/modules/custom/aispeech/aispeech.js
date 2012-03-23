@@ -67,7 +67,7 @@
         //var html = '';
        // html += $("#charsContainer").html();
 				//alert(r.overall+ '123');
-				if(r.overall == 'A'){
+				if(r.overall == 4){
 
 					$.ajax({
 						type: 'POST',
@@ -87,18 +87,18 @@
         //html += "&nbsp;score: <b>" + r.overall + "</b>";
 				
 
-				if(r.overall =='A'){
+				if(r.overall ==4){
 				  $("#aispeech-result-A").css('display','block');
 
-				}else if(r.overall =='B'){
+				}else if(r.overall ==3){
 
 					$("#aispeech-result-B").css('display','block');
 
-				}else if(r.overall =='C'){
+				}else if(r.overall ==2){
 
 					$("#aispeech-result-C").css('display','block');
 
-				}else if(r.overall =='D'){
+				}else if(r.overall ==1){
 
 					$("#aispeech-result-D").css('display','block');
 				}else{

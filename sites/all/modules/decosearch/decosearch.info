@@ -1,0 +1,7 @@
+name = "decosearch"
+description = "Deco全站搜索"
+core = "6.x"
+package = "Features"
+dependencies[] = "views"
+features[views][] = "mysitemap"
+features[views_api][] = "api:2"

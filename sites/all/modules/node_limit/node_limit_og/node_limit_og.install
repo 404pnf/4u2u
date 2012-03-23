@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Installation functions for module node_limit_og.
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function node_limit_og_install() {
+  drupal_install_schema('node_limit_og');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function node_limit_og_schema() {
+  $schema['node_limit_og'] = array(
+    'description' => t('The table for applying node limits to a time interval'),
+    'fields' => array(
+      'lid' => array(
+        'description' => t('The {node_limit}.lid'),
+        'type' => 'int',
+        'not null' => TRUE
+      ),
+      'ogid' => array(
+        'description' => t('The {og}.nid for this limit'),
+        'type' => 'int',
+        'not null' => TRUE
+      )
+    ),
+    'primary key' => array('lid')
+  );
+
+  return $schema;
+}
+
+
+/*
+ * Implementation of hook_uninstall().
+ */
+function node_limit_og_uninstall() {
+  drupal_uninstall_schema('node_limit_og');
+}

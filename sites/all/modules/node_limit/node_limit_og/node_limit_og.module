@@ -1,0 +1,93 @@
+<?php
+
+/**
+ * @file
+ * Module to restrict the number of nodes within an organic group.
+
+/**
+ * Implementation of hook_node_limit_applies_in_context().
+ */
+function node_limit_og_node_limit_applies_in_context($lid, $node, $user) {
+  //TODO
+  //return DOES_APPLY iff the $node is being created in this limit's group
+  //return NEUTRAL iff the $node is for an OG, but not this OG
+  //return DOESNT_APPLY iff the $node is not for an OG
+  $limit = node_limit_og_node_limit_load($lid);
+  if (empty($limit)) {
+    return NODE_LIMIT_LIMIT_NEUTRAL;
+  }
+  return array('node_limit_og' => NODE_LIMIT_LIMIT_DOES_APPLY);
+}
+
+/**
+ * Implementation of hook_node_limit_sql().
+ */
+function node_limit_og_node_limit_sql($lid) {
+  $limit = node_limit_og_node_limit_load($lid);
+  if (empty($limit)) {
+    return array();
+  }
+  //TODO
+
+  return array(
+    'where' => array(
+      sprintf('n.nid IN (SELECT og.nid FROM {og_ancestry} AS og WHERE og.group_nid = \'%d\')', $limit['node_limit_og'])
+    )
+  );
+}
+
+/**
+ * Implementation of hook_node_limit_element().
+ */
+function node_limit_og_node_limit_element($lid = 0) {
+  $limit = node_limit_og_node_limit_load($lid);
+  return array(
+    'node_limit_og' => array(
+      '#title' => t('Organic Group'),
+      '#type' => 'select',
+      '#options' => og_all_groups_options(),
+      '#default_value' => $limit['node_limit_og']
+    )
+  );
+}
+
+/**
+ * Implementation of hook_node_limit_element_validate().
+ */
+function node_limit_og_node_limit_element_validate($element) {
+  /**
+   * Validation:
+   * must be a valid organic group
+   */
+  return TRUE;
+}
+
+/**
+ * Implementation of hook_node_limit_save().
+ */
+function node_limit_og_node_limit_save($lid, $applies, $element) {
+  if ($applies) {
+    db_query("INSERT INTO {node_limit_og} VALUES('%d', '%d')", $lid, $element);
+  }
+}
+
+/**
+ * Implementation of hook_node_limit_delete().
+ */
+function node_limit_og_node_limit_delete($lid) {
+  db_query("DELETE FROM {node_limit_og} WHERE `lid`='%d'", $lid);
+}
+
+/**
+ * Implementation of hook_node_limit_load().
+ */
+function node_limit_og_node_limit_load($lid) {
+  $sql = "SELECT * FROM {node_limit_og} WHERE `lid` = '%d'";
+  $info = db_fetch_array(db_query($sql, $lid));
+  if (intval($info['lid']) == 0) {
+    return array();
+  }
+  return array(
+    'node_limit_og' => $info['ogid']
+  );
+}

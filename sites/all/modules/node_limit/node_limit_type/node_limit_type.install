@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * @file
+ * Installation functions for module node_limit_type.
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function node_limit_type_install() {
+  drupal_install_schema('node_limit_type');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function node_limit_type_schema() {
+  $schema['node_limit_type'] = array(
+    'description' => t('The table for applying node limits to a content type'),
+    'fields' => array(
+      'lid' => array(
+        'description' => t('The {node_limit}.lid'),
+        'type' => 'int',
+        'not null' => TRUE
+      ),
+      'type' => array(
+        'description' => t('The {node}.type to which this limit applies'),
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => ''
+      )
+    ),
+    //the limit-type combination is unique
+    /**
+     * this means that in the future, we may allow a limit to be applied to more
+     * than one type.  right now, though, its one-type-per-limit
+     */
+    'primary key' => array('lid', 'type')
+  );
+
+  return $schema;
+}
+
+
+/*
+ * Implementation of hook_uninstall().
+ */
+function node_limit_type_uninstall() {
+  drupal_uninstall_schema('node_limit_type');
+}

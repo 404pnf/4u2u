@@ -1,0 +1,165 @@
+<?php
+
+/**
+ * @file
+ * Module to restrict the number of nodes within a time interval.
+ */
+
+  define("NODE_LIMIT_INTERVAL_SECONDS", "1");
+  define("NODE_LIMIT_INTERVAL_MINUTES", "60");
+  define("NODE_LIMIT_INTERVAL_HOURS", "3600");
+  define("NODE_LIMIT_INTERVAL_DAYS", "86400");
+  define("NODE_LIMIT_INTERVAL_WEEKS", "604800");
+  define("NODE_LIMIT_INTERVAL_MONTHS", "2419200");
+  define("NODE_LIMIT_INTERVAL_YEARS", "31536000");
+
+/**
+ * Implementation of hook_node_limit_applies_in_context().
+ */
+function node_limit_interval_node_limit_applies_in_context($lid, $node, $user) {
+  $limit = node_limit_interval_node_limit_load($lid);
+  if (empty($limit)) {
+    return NODE_LIMIT_LIMIT_NEUTRAL;
+  }
+  return array('node_limit_interval' => NODE_LIMIT_LIMIT_DOES_APPLY);
+}
+
+/**
+ * Implementation of hook_node_limit_sql().
+ */
+function node_limit_interval_node_limit_sql($lid) {
+  $limit = node_limit_interval_node_limit_load($lid);
+  if (empty($limit)) {
+    return array();
+  }
+  if ($limit['node_limit_interval'] != NODE_LIMIT_INTERVAL_MONTHS) {
+    $interval = floatval($limit['node_limit_interval']['ninterval']) *
+                intval($limit['node_limit_interval']['unit']);
+  }
+  else {
+    $then = mktime(date('H'), date('i'), date('s'), date('n')-floatval($limit['node_limit_interval']['ninterval']));
+    $now = mktime();
+    $interval = $now - $then;
+  }
+  return array(
+    'where' => array(
+      sprintf('n.created + %d >= %d', $interval, time())
+    )
+  );
+}
+
+/**
+ * Implementation of hook_node_limit_render_element().
+ */
+function node_limit_interval_node_limit_render_element(&$element) {
+  $title = $element['ninterval']['#title'];
+  unset($element['ninterval']['#title']);
+  $interval = drupal_render($element['ninterval']);
+  $unit = drupal_render($element['unit']);
+  $html = str_replace('div', 'span', $title . $interval . $unit);
+  return $html;
+}
+
+/**
+ * Implementation of hook_node_limit_element().
+ */
+function node_limit_interval_node_limit_element($lid = 0) {
+  $limit = node_limit_interval_node_limit_load($lid);
+  $interval_options = _node_limit_interval_interval_options();
+  return array(
+    'node_limit_interval' => array(
+      '#title' => t('Time Interval'),
+      '#custom_render' => TRUE,
+      'ninterval' => array(
+        '#type' => 'textfield',
+        '#title' => t('Within the past'),
+        '#size' => 10,
+        '#default_value' => $limit['node_limit_interval']['ninterval']
+      ),
+      'unit' => array(
+        '#type' => 'select',
+        '#options' => $interval_options,
+        '#default_value' => $limit['node_limit_interval']['unit']
+      )
+    )
+  );
+}
+
+function _node_limit_interval_interval_options() {
+  $names = _node_limit_interval_interval_names();
+  return array(
+    NODE_LIMIT_INTERVAL_SECONDS => t($names[NODE_LIMIT_INTERVAL_SECONDS]),
+    NODE_LIMIT_INTERVAL_MINUTES => t($names[NODE_LIMIT_INTERVAL_MINUTES]),
+    NODE_LIMIT_INTERVAL_HOURS => t($names[NODE_LIMIT_INTERVAL_HOURS]),
+    NODE_LIMIT_INTERVAL_DAYS => t($names[NODE_LIMIT_INTERVAL_DAYS]),
+    NODE_LIMIT_INTERVAL_WEEKS => t($names[NODE_LIMIT_INTERVAL_WEEKS]),
+    NODE_LIMIT_INTERVAL_MONTHS => t($names[NODE_LIMIT_INTERVAL_MONTHS]),
+    NODE_LIMIT_INTERVAL_YEARS => t($names[NODE_LIMIT_INTERVAL_YEARS]),
+  );
+}
+
+function _node_limit_interval_interval_names() {
+  return array(
+    NODE_LIMIT_INTERVAL_SECONDS => 'Seconds',
+    NODE_LIMIT_INTERVAL_MINUTES => 'Minutes',
+    NODE_LIMIT_INTERVAL_HOURS => 'Hours',
+    NODE_LIMIT_INTERVAL_DAYS => 'Days',
+    NODE_LIMIT_INTERVAL_WEEKS => 'Weeks',
+    NODE_LIMIT_INTERVAL_MONTHS => 'Months',
+    NODE_LIMIT_INTERVAL_YEARS => 'Years',
+  );
+}
+
+/**
+ * Implementation of hook_node_limit_element_validate().
+ */
+function node_limit_interval_node_limit_element_validate($element) {
+  /**
+   * Validation:
+   * interval must be an integer greater than 0
+   * User must be in the {user} table
+   */
+  if (!is_numeric($element['ninterval']) || floatval($element['ninterval']) <= 0) {
+    //less than 0
+    return array(
+      'error' => t('Time intervals must be an integer greater than 0'),
+      'element' => 'ninterval'
+    );
+  }
+  return TRUE;
+}
+
+/**
+ * Implementation of hook_node_limit_save().
+ */
+function node_limit_interval_node_limit_save($lid, $applies, $element) {
+  if ($applies) {
+    $interval = intval($element['ninterval']);
+    $unit = intval($element['unit']);
+    db_query("INSERT INTO {node_limit_interval} VALUES('%d', '%d', '%d')", $lid, $interval, $unit);
+  }
+}
+
+/**
+ * Implementation of hook_node_limit_delete().
+ */
+function node_limit_interval_node_limit_delete($lid) {
+  db_query("DELETE FROM {node_limit_interval} WHERE `lid`='%d'", $lid);
+}
+
+/**
+ * Implementation of hook_node_limit_load().
+ */
+function node_limit_interval_node_limit_load($lid) {
+  $sql = "SELECT * FROM {node_limit_interval} WHERE `lid` = '%d'";
+  $info = db_fetch_array(db_query($sql, $lid));
+  if (intval($info['lid']) == 0) {
+    return array();
+  }
+  return array(
+    'node_limit_interval' => array(
+      'ninterval' => $info['ninterval'],
+      'unit' => $info['unit']
+    )
+  );
+}

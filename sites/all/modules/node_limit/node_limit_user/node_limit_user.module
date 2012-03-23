@@ -1,0 +1,130 @@
+<?php
+
+/**
+ * @file
+ * Module to restrict the number of nodes by user.
+ */
+
+/**
+ * Implementation of hook_user().
+ *
+ * Delete all limit rules related to the deleted user.
+ */
+function node_limit_user($op, &$edit, $account, $category = NULL) {
+  switch ($op) {
+    case 'delete':
+      $sql = 'DELETE FROM {node_limit_user} WHERE uid = %d';
+      db_query($sql, $account->uid);
+      $num = db_affected_rows();
+      if ($num > 0) {
+        drupal_set_message(t('Deleted !num limit rules.', array('!num' => $num)));
+      }
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_node_limit_applies_in_context().
+ */
+function node_limit_user_node_limit_applies_in_context($lid, $node, $user) {
+  $limit = node_limit_user_node_limit_load($lid);
+  if (empty($limit)) {
+    return NODE_LIMIT_LIMIT_NEUTRAL;
+  }
+  if ($limit['node_limit_user']['uid'] != $user->uid) {
+    return array('node_limit_user' => NODE_LIMIT_LIMIT_DOESNT_APPLY);
+  }
+  return array('node_limit_user' => NODE_LIMIT_LIMIT_DOES_APPLY);
+}
+
+/**
+ * Implementation of hook_node_limit_sql().
+ */
+function node_limit_user_node_limit_sql($lid) {
+  $limit = node_limit_user_node_limit_load($lid);
+  if (empty($limit)) {
+    return array();
+  }
+  return array(
+    'where' => array(
+      sprintf("n.uid = '%d'", $limit['node_limit_user']['uid'])
+    )
+  );
+}
+
+/**
+ * Implementation of hook_node_limit_element().
+ */
+function node_limit_user_node_limit_element($lid = 0) {
+  $limit = node_limit_user_node_limit_load($lid);
+  return array(
+    'node_limit_user' => array(
+      '#type' => 'textfield',
+      '#title' => t('User'),
+      '#autocomplete_path' => 'user/autocomplete',
+      '#default_value' => $limit['node_limit_user']['name']
+    )
+  );
+}
+
+/**
+ * Implementation of hook_node_limit_element_validate().
+ */
+function node_limit_user_node_limit_element_validate($element) {
+  /**
+   * Validation:
+   * User cannot be user:1
+   * User must be in the {user} table
+   */
+  $potential_user = user_load(array('name' => $element));
+  if ($potential_user->uid == 1) {
+    //we cannot apply a limit to user:1
+    return array(
+      'error' => t('Node Limits cannot be applied to User #1')
+    );
+  }
+  else if ($potential_user === FALSE) {
+    //unknown user
+    return array(
+      'error' => t('Unknown user "!user"', array('!user' => $element))
+    );
+  }
+  return TRUE;
+}
+
+/**
+ * Implementation of hook_node_limit_save().
+ */
+function node_limit_user_node_limit_save($lid, $applies, $element) {
+  if ($applies) {
+    // $element contains the username of the user
+    // user_load based on the name to get the uid
+    $user = user_load(array('name' => $element));
+    $uid = $user->uid;
+    db_query("INSERT INTO {node_limit_user} VALUES('%d', '%d')", $lid, $uid);
+  }
+}
+
+/**
+ * Implementation of hook_node_limit_delete().
+ */
+function node_limit_user_node_limit_delete($lid) {
+  db_query("DELETE FROM {node_limit_user} WHERE `lid`='%d'", $lid);
+}
+
+/**
+ * Implementation of hook_node_limit_load().
+ */
+function node_limit_user_node_limit_load($lid) {
+  $sql = "SELECT nlu.*, u.name FROM {node_limit_user} AS nlu INNER JOIN {users} AS u ON (u.uid=nlu.uid) WHERE `lid` = '%d'";
+  $info = db_fetch_array(db_query($sql, $lid));
+  if (intval($info['uid']) == 0) {
+    return array();
+  }
+  return array(
+    'node_limit_user' => array(
+      'uid' => $info['uid'],
+      'name' => $info['name']
+    )
+  );
+}

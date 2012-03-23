@@ -1,0 +1,81 @@
+<?php
+
+/**
+ * @file
+ * Installation functions for module node_limit.
+ */
+
+define("NODE_LIMIT_NO_LIMIT", -1);
+
+/**
+ * Implementation of hook_install().
+ */
+function node_limit_install() {
+  drupal_install_schema('node_limit');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function node_limit_schema() {
+  $schema['node_limit'] = array(
+    'description' => t('The base Node Limit table'),
+    'fields' => array(
+      'lid' => array(
+        'description' => t('The limit id'),
+        'type' => 'int',
+        'not null' => TRUE
+      ),
+      'nlimit' => array(
+        'description' => t('The node limit for this limit'),
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => NODE_LIMIT_NO_LIMIT
+      ),
+      'title' => array(
+        'description' => t('The display name for this limit'),
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => ''
+      ),
+      'weight' => array(
+        'description' => t('The weight of this limit'),
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0
+      ),
+    ),
+    'primary key' => array('lid')
+  );
+  return $schema;
+}
+
+function node_limit_update_6001() {
+  if (!module_exists('node_limit_type')) {
+    $ret = array();
+    drupal_set_message(t('node_limit module cannot be updated until after node_limit_type has been enabled. Please enable node_limit_type and then return to <a href="@update-php">update.php</a> and run the remaining updates.', array('@update-php' => base_path() .'update.php?op=selection')), 'warning', FALSE);
+    $ret['#abort'] = array('success' => FALSE, 'query' => t('node_limit.module has updates, but cannot be updated until after node_limit_type.module is enabled.'));
+    
+    return $ret;
+  }
+  db_query("INSERT INTO {node_limit_type} (SELECT lid, type FROM {node_limit})");
+  $ret = update_sql("ALTER TABLE {node_limit} DROP COLUMN `type`");
+  return $ret;
+}
+
+/**
+ * Renaming limit field to avoid mysql restricted name usage
+ */
+function node_limit_update_6002() {
+  // Cannot use db_change_field() because of the restricted name
+  $ret = db_query("ALTER TABLE {node_limit} CHANGE `limit` `nlimit` INT(11) NOT NULL DEFAULT '-1' COMMENT 'The node limit for this limit'");
+  return !empty($ret);
+}
+
+/*
+ * Implementation of hook_uninstall().
+ */
+function node_limit_uninstall() {
+  drupal_uninstall_schema('node_limit');
+}

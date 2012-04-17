@@ -1,0 +1,287 @@
+<?php
+/**
+function iLearning_serial_menu(){
+   $items['chongzhi'] = array (
+      'title' => t('积分充值'),
+      'page callback' => 'iLearning_serial_topup_page',
+      'access callback' => true,      
+      'type' => MENU_CALLBACK,
+   );
+   $items['admin/settings/iLearning_serial'] = array(
+	'title'=>t('Gift Points Settings'),
+	'page callback' => 'drupal_get_form', 
+	'page arguments' => array('iLearning_serial_setting_form'),
+	'access arguments' => array('administer users'),
+   );
+   $items['userpoints/gift/promote'] = array(
+   	'title' => t(''),
+   	'page callback' => 'iLearning_serial_promote',
+    'page arguments' =>array(3),
+   	'access callback'=>true,
+   );
+   return $items;
+} 
+
+function iLearning_serial_topup_page(){
+	global $user;
+	if($user->uid >0)
+		return drupal_get_form('iLearning_serial_topup_form');
+	else {
+		return '您好，只有<a href="http://2u4u.com.cn/user?destination=chongzhi">登录</a>后，才能把积分充入您的账号。如果您还没有账号，<a
+href="http://2u4u.com.cn/user/register">注册</a>只需半分钟。';
+	}
+	
+}
+
+function iLearning_serial_setting_form()
+{
+   $form = array();
+   $form['content_type'] = array(
+	'#title'=>t('Media/Book Product Content Type'),
+	'#type' => 'textfield',
+	'#default_value' => variable_get('gpoints_type',''),
+   ); 
+   $form['emno_field'] = array(
+	'#title'=>t('Matieral number field name'),
+	'#type' => 'textfield',
+	'#default_value' => variable_get('gpoints_emno',''),
+   );
+   $form['award_field'] = array(
+	'#title' => t('Userpoints field name'),
+	'#type' => 'textfield',
+	'#default_value' => variable_get('gpoints_award',''),
+   );
+   $form['userpoints_tid']= array (
+	'#title' => t('Userpoints tid'),
+	'#type' => 'textfield',
+	'#default_value' => variable_get('gpoints_tid',''),
+   );
+   $form['submit'] = array (
+	'#value'=>t('Submit'),
+	'#type' => 'submit',
+
+   );
+   return $form;
+
+}
+
+function iLearning_serial_setting_form_submit($form,$form_stat){
+   $values = $form_stat['values'];
+   variable_set('gpoints_type',$values['content_type']);   
+   variable_set('gpoints_emno',$values['emno_field']);
+   variable_set('gpoints_award',$values['award_field']);
+   variable_set('gpoints_tid',$values['userpoints_tid']);
+}
+**/
+/**
+ * 
+ *  用户验证区块
+ * 
+ *  by whx 20120413
+ * 
+ * 
+ * 
+ */
+
+function iLearning_serial_block($op = 'list', $delta = 0, $edit = array()){
+
+  global $user;
+
+  if ($op == 'list') {
+    $blocks[0]['info'] = t('用户验证');
+    // Not worth caching.
+    $blocks[0]['cache'] = BLOCK_NO_CACHE;
+    return $blocks;
+  }
+	
+  if($op == 'view'){
+  	$block['content'] = drupal_get_form('iLearning_serial_verify_form');
+  	return $block;
+  }   
+}
+
+function iLearning_serial_verify_form(){
+   global $user;
+   
+   $form = array();
+   if($user->uid>0){
+	   $form ['tips'] = array(
+		'#value' => '您已登录',
+		'#type' => 'item',
+	
+	   );
+   }
+  $form['machineID'] = array(
+	'#title' => t(''),
+	'#description' => t(''),
+	 '#type' => 'hidden',
+   );
+   $form['scode'] = array(
+	'#title' => t(''),
+	'#description' => t(''),
+	 '#type' => 'textfield',
+   );
+   $form['submit'] = array(
+		'#type' => 'submit',
+		'#value' => t('验证'),
+   );
+   
+   /*
+   $form ['help'] = array(
+	'#value' => '<a href=http://2u4u.com.cn/chongzhi>帮助</a>',
+	'#type' => 'item',
+
+   );
+   */
+   
+	return $form;
+	
+}
+
+
+
+function iLearning_serial_verify_form_submit($form,$form_stat){
+
+  global $user;
+  
+  $values = $form_stat['values'];
+  $machineID = $values['machineID'];
+  $scode = $values['scode'];
+/*
+	if($user->uid>0){
+	 	drupal_set_message ("已登录");
+	 	
+	    //whx 考虑是否做其他处理	
+	    
+	}else { 
+*/	
+	//判断机器码格式
+	if(empty($machineID)){
+		$xieUrl = 'news://i_无法获得机器码，请联系开发者。';
+		drupal_goto ( $xieUrl );
+		return;
+	}	
+	
+	
+	$rs = preg_match("/[A-Za-z0-9]{6}/",$scode); 
+	if(!$rs || empty($scode)){
+
+		$xieUrl = 'news://f_无效序列号，序列号由大写字母与数字构成，不包含空格。';
+		drupal_goto ( $xieUrl );
+	}
+	else{
+		$sql_obj = "SELECT * FROM {ilearning_serial} WHERE serial = '%s' ";
+		$scode_obj = db_fetch_object(db_query($sql_obj,$scode));
+		
+		//检查scode对象是否存在，如果不存在，则表示序列号无效，如果存在，但是状态status的值为1，则表示已经验证过了，并且绑定了drupal的用户ID；
+		if(empty($scode_obj)){
+			
+			$xieUrl = 'news://f_您输入的序列号不对，序列号由大写字母与数字构成，不包含空格。';
+			drupal_goto ( $xieUrl );
+			return;
+		}elseif(isset($scode_obj->status) && $scode_obj->status >= 1){
+			//检测机器ID与序列号是否匹配，匹配则登录并返回序列号，否则提示错误。
+			
+			$suser_obj = "SELECT * FROM {ilearning_serial_user} WHERE serial = '%s' ";
+			$suser_obj = db_fetch_object(db_query($suser_obj,$scode));
+			
+			if(empty($suser_obj)||$suser_obj->machineID != $machineID){
+				$xieUrl = 'news://i_您输入的序列号已被使用，请再试一个。';
+				drupal_goto ( $xieUrl );
+			}
+			else if($suser_obj->machineID == $machineID){
+				
+				$iuser = user_load(array('uid'=>$suser_obj->uid));//登录
+				$xieUrl = 'news://s_'.$scode;
+				drupal_goto ( $xieUrl );	
+				
+			}	
+			return;
+		}
+		else{	
+			//仅status==0的，添加新用户，并在此验证，绑定序列号与uid，返回userinfo_json。
+			
+			$newuser = array (
+				'name' => $machineID.'__'.$scode, 
+				'mail' => $scode . "@iLearning.com", 
+				'status' => 1, 
+				'pass' => 'Fltrp9671',
+				'created' => time () ,
+				'login' => time ()
+			);
+		
+			$iuser = user_save ( '', $newuser, "资源库客户端" );
+			//添加新用户，并登录
+			
+			
+			$status = 1;
+			$update_status = update_iLearning_secial_status($scode,$status);  
+			//修改序列号验证状态
+			
+			if($update_status == 0){
+				$xieUrl = 'news://i_序列号状态更新失败。';
+				drupal_goto ( $xieUrl );
+				return;
+			}
+			
+			
+			$params = array (
+				'uid' => $iuser->uid,
+				'serial' => $scode,
+				'machineID' => $machineID,
+			);
+			$insertid = insert_iLearning_serial_user($params);
+			//绑定序列号、用户id、机器ID
+			
+			//各种成功后，访问xieq自定义的路径
+			//	goto_xieq_client();
+			//setcookie("DRUPAL_UID",$user->uid);
+			//setcookie("username",$user->name);
+	
+			//$xieUrl = 'news://www.userlogin.com?DRUPAL_UID='.$user->uid.'&username='.$user->name.'&SESS91221ff3cf4beed0c6b4c2b84e46910f='.$_COOKIE["SESS91221ff3cf4beed0c6b4c2b84e46910f"];
+			$xieUrl = 'news://'.$scode;
+			drupal_goto ( $xieUrl );	
+				return $iuser;  
+			
+		}
+		
+ 
+	}
+	  
+
+}
+ 
+ function update_iLearning_secial_status($scode,$status){//更新序列号的对应记录，将其状态修改为已验证，status=1，已绑定，status=2。
+		
+	$sql_update = "UPDATE {ilearning_serial} SET status = %d, updated = %d  WHERE serial = '%s' ";
+	
+	if(db_query($sql_update, $status, time(), $scode))
+		return $status;
+	else
+		return 0;
+}
+ 
+
+function insert_iLearning_serial_user($params){
+	$sql_insert = "INSERT INTO {ilearning_serial_user}( `serial` , `uid` ,  `machineID` ,`updated` , `created` )
+VALUES ( '%s', %d, '%s', %d, %d)";
+	
+	return db_query($sql_insert, $params['serial'], $params['uid'], $params['machineID'], time(),  time());
+} 
+ /*
+function goto_xieq_client(){
+
+	$ch = curl_init();
+	
+	// set URL and other appropriate options
+	curl_setopt($ch, CURLOPT_URL, "http://www.ttt.com");
+	curl_setopt($ch, CURLOPT_HEADER, 0);
+	
+	// grab URL and pass it to the browser
+	curl_exec($ch);
+	
+	// close cURL resource, and free up system resources
+	//curl_close($ch);
+
+}
+*/

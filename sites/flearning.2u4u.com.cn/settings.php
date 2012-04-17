@@ -186,7 +186,7 @@ ini_set('url_rewriter.tags',        '');
  * shared base domain. Doing so assures that users remain logged in as they
  * cross between your various domains.
  */
-# $cookie_domain = 'example.com';
+ $cookie_domain = 'ilearning.2u4u.com.cn'; 
 
 /**
  * Variable overrides:

@@ -18,7 +18,7 @@
 
 body {
   	margin: 0;
-  	font: 1em/1.7em "黑体", "Helvetica Neue", helvetica, Arial, sans-serif;
+  	font: 12px/1.7em "黑体", "Helvetica Neue", helvetica, Arial, sans-serif;
   	letter-spacing:0.03em;
 	/*background-color:#1b2730;*/
 	color:#ffffff;
@@ -35,9 +35,8 @@ body {
 }
 
 
-/* ------------toolbar,footbar,page------------- */
+/* ------------toolbar,footbar,page------------- 
 .toolbar,.footbar{
-	/*background: url("images/toolbarbg.gif") repeat-x scroll 0 0 transparent;*/
 	background-image:-webkit-gradient(linear,0% 0%, 0% 100%, from(#26aedb), to(#1e90bb), color-stop(0.5,#229fcb));
 	height: 50px;
 	line-height: 50px;
@@ -58,10 +57,13 @@ body {
 }
 
 #page{
-	position: absolute;
+	position: relative;
 	top: 50px;
+	height: 924px;
+	overflow-y: scroll;
+	overflow-x: hidden;
 }
-/*-------end toolbar,footbar------*/
+-------end toolbar,footbar------*/
 
 
 @media only screen and (max-device-width: 480px){
@@ -157,7 +159,7 @@ tbody tr.odd td,tbody  tr.even td {
 	padding:3px 3px 3px 0;
 }
 tbody tr.odd,tbody  tr.even{
-	background-color: #fff;
+	/*background-color: #fff;*/
 }
 
 /* Code */
@@ -335,16 +337,16 @@ div.warning {
 
 
 /* ---------- 搜索栏 --------- */
-#block-views--exp-search-default .views-exposed-widget{
+#block-views--exp-search-search_page .views-exposed-widget{
 	float:left;
 	margin-top: -5px;
 }
 
 /*---搜索框 搜索按钮---*/
-#block-views--exp-search-default{
+#block-views--exp-search-search_page{
 	float:left;
 }
-#block-views--exp-search-default input[type="text"]{
+#block-views--exp-search-search_page input[type="text"]{
 	background-image: -webkit-gradient(linear,0% 0%, 0% 100%, from(#33A6D7), to(#116286), color-stop(0.5,#2184AE));
 	background-color: #2184AE;
 	line-height: 28px;
@@ -367,7 +369,7 @@ div.warning {
 }
 #advanced_search a,
 #edit-submit-search,
-#block-views--exp-search-default{
+#block-views--exp-search-search_page{
 	color:#ffffff;
 	font-size:15px;
 	font-family:"黑体", "Helvetica Neue", helvetica, Arial, sans-serif;
@@ -380,16 +382,13 @@ div.warning {
 #over_content{
     /*background-color: #000000;*/
     position: absolute;
-    top: 55px;
+    top: 5px;
     left: 0;
     z-index:9999;
     width:768px;
 }
 #over_content .overlayer{
 
-    position: absolute;
-    top: 0;
-    z-index: 999;
     
     display:none;
 }
@@ -398,16 +397,25 @@ div.warning {
 	background: url("images/arrow.png") no-repeat scroll 0 0 transparent;
     height: 12px;
     left: 50px;
-    margin-bottom: -2px;
-    position: relative;
+
+    position: absolute;
     width: 23px;
     z-index: 9999;
 }
 #over_content .overlayer .content{
+	
+    position: absolute;
+    top: 10px;
+    width: 300px;
+    z-index: 999;
+
 	background-color: #000000;
 	opacity: 0.85;
 	border:1px solid #393939;
 	border-radius:0.5em;
+}
+#over_content #over_info .content{
+	width: 600px;
 }
 #over_content .overlayer .content .content-inner{
 	border-radius:0.5em;
@@ -420,7 +428,22 @@ div.warning {
 	font-family: "黑体";
 }
 
+/*-----控制验证输入框-----*/
 
+#iLearning-serial-verify-form #edit-scode{
+	width: 180px;
+	float: left;
+	margin: 2px 10px;
+	padding: 2px;
+	font-size: 16px;
+}
+#iLearning-serial-verify-form #edit-submit{
+	background: url("images/yanzheng_btn.png") no-repeat;
+	padding: 5px 9px 5px 11px;
+	border: 0px;
+	letter-spacing: 2px;
+	font-size: 16px;
+}
 /* ------- end toolbar 栏 的内容层 ------- */
 
 /*--------节点页面共同需要隐藏掉的内容--------*/

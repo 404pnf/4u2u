@@ -1,0 +1,4 @@
+name = iLearning Serial verify
+description = "Verify user using iLearning Serial Code"
+package = 2u4u
+core = 6.x

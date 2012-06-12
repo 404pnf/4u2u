@@ -12,9 +12,10 @@
  
  function iLearning_serial_menu() {
 
-	 $items['serial'] = array(
+	 $items['serial/%'] = array(
 		'title' => '绑定AppleID',
 		'page callback' => 'iLearning_serial_AppleID',
+			'page arguments' => array(1),
 		'access callback' => true ,
 		'type' => MENU_CALLBACK
 	  );
@@ -187,7 +188,7 @@ function iLearning_serial_verify_form_submit($form,$form_stat){
  
  
  
-function iLearning_serial_generate_scode( $length = 16 ) {
+function scode_generate_scode( $length = 16 ) {
   // 密码字符集，可任意添加你需要的字符
   $chars = 'abcdefghijkmnopqrstuvwxyz0123456789';
 
@@ -203,13 +204,13 @@ function iLearning_serial_generate_scode( $length = 16 ) {
 }
 
 /*---- 生成一个个人用户的验证码 ----*/
-function iLearning_serial_create(){
+function scode_create(){
   	$total = 1;
 	$school = '个人';
 	
 	$i=0; 
 	while($i<$total){
-	  $scode = 'as_'.iLearning_serial_generate_scode(16);
+	  $scode = 'as_'.scode_generate_scode(16);
 	  
 		$sql = "SELECT COUNT(ID) FROM {ilearning_serial} WHERE serial = '%s' ";
 		$count = db_result(db_query($sql,$scode));
@@ -234,22 +235,16 @@ function iLearning_serial_create(){
 }
  
 
-function iLearning_serial_AppleID(){
-	//echo $AppleID.' :::: '.$machineID;
-	$AppleID = arg(1);
-	$machineID = arg(2);
-
- // $machineID = $AppleID;
+function iLearning_serial_AppleID($AppleID=''){
+	//echo $AppleID;
+	
+  //global $user;
+  
+  //$values = $form_stat['values'];
+  $machineID = $AppleID;
   	//判断机器码格式
-	if(empty($AppleID)){
-		$message = 'AppleID无效，请联系开发者。';
-		echo $message;
-		//$xieUrl = 'news://i_';
-		//drupal_goto ( $xieUrl );
-		return;
-	}	
 	if(empty($machineID)){
-		$message = 'machineID无效，请联系开发者。';
+		$message = 'AppleID为空，请联系开发者。';
 		echo $message;
 		//$xieUrl = 'news://i_';
 		//drupal_goto ( $xieUrl );
@@ -269,7 +264,7 @@ function iLearning_serial_AppleID(){
 		
 	}
 	
-	$scode = iLearning_serial_create();
+	$scode = scode_create();
 //加入查询，判断此AppleID是否已有绑定的serial，有，则判断serial的status，update为2，并登录；无，则生成新的scode，绑定用户，登录
  
 
@@ -353,11 +348,10 @@ function iLearning_serial_AppleID(){
 			$params = array (
 				'uid' => $user->uid,
 				'serial' => $scode,
-				'AppleID' => $AppleID,
 				'machineID' => $machineID,
 			);
-			$insertid = insert_iLearning_serial_user_AppleID($params);
-			//绑定序列号、用户id、AppleID、机器ID
+			$insertid = insert_iLearning_serial_user($params);
+			//绑定序列号、用户id、机器ID
 			
 			//各种成功后，访问xieq自定义的路径
 			//$xieUrl = 'news://'.$scode;
@@ -374,12 +368,6 @@ function iLearning_serial_AppleID(){
 	
 
 }
-function insert_iLearning_serial_user_AppleID($params){
-	$sql_insert = "INSERT INTO {ilearning_serial_user}( `serial` , `uid` ,  `AppleID` ,`machineID` ,`updated` , `created` )
-VALUES ( '%s', %d, '%s', '%s', %d, %d)";
-	$current = time();
-	return db_query($sql_insert, $params['serial'], $params['uid'], $params['AppleID'], $params['machineID'], $current,  $current);
-} 
 
  
  function update_iLearning_secial_status($scode,$status){

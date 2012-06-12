@@ -82,7 +82,7 @@ body {
 
 	<div id="left_21st">
 		<div class="21st" id="zhichang">
-                <a href="http://www.i21st.cn/job/" target="_blank"><h2>职场直通车</h2></a>
+                <a href="http://bbs.i21st.cn/" target="_blank"><h2>互动社区</h2></a>
                 <?php print views_embed_view('21st_page', $display_id = 'block_1');?>
                 </div>
 

@@ -1,6 +1,4 @@
-#page{
-	
-}
+
 /*------- 列表页、视频页标题 样式 -------*/
 
 #page_title{
@@ -45,17 +43,17 @@
 }
 
 .term-search .views-field-title{
-	font-size: 1.6em;
+	font-size: 1.5em;
 	font-weight: normal;
 	text-shadow:2px 2px 2px #000000;
 }
-.term-search .views-field-field-ebook-cover-fid-1{
+.term-search .views-field-title-ebook{
 	margin-left:45px;
 }
-.term-search .views-field-field-shipin-cover-fid-1{
+.term-search .views-field-title-shipin{
 	margin-left:50px;
 }
-.term-search .views-field-field-app-icon-fid-1{
+.term-search .views-field-title-app{
 	margin-left:40px;
 }
 
@@ -68,15 +66,15 @@
 	padding-left: 22px;
 	margin-top: -5px;
 }
-.redirect-url-view .views-field-type .icon-ebook, .term-search .views-field-type .icon-ebook{
-	background: url("images/shu.png") no-repeat scroll center center transparent;
+.term-search .views-field-type .icon-ebook{
+	background: url("images/ebook.png") no-repeat scroll center center transparent;
 	width: 25px;
 }
-.redirect-url-view .views-field-type .icon-shipin, .term-search .views-field-type .icon-shipin{
+.term-search .views-field-type .icon-shipin{
 	background: url("images/shipin.png") no-repeat scroll center center transparent;
 	width: 30px;
 }
-.redirect-url-view .views-field-type .icon-app, .term-search .views-field-type .icon-app{
+.term-search .views-field-type .icon-app{
 	background: url("images/app.png") no-repeat scroll center center transparent;
 	width: 20px;
 }
@@ -85,6 +83,11 @@
 	text-shadow:2px 2px 2px #000000;
 	margin-top: 4px;
 }
+.term-search .views-field-tid a{
+	padding: 0 2px;
+	white-space: nowrap;
+}
+
 .term-search .view-footer{
 	font-size:1.5em;
 	text-align:center;
@@ -99,6 +102,8 @@
 .flag-lishi{
 	display:none;
 }
+/*---历史页面除外---*/
+
 
 /*---------- end分类、搜索列表页样式 --------*/
 
@@ -132,11 +137,11 @@
 	font-size: 1.6em;
 	padding: 40px 130px 40px 95px;
 }
-#advanced-search-condition #views-exposed-form-search-advanced-search .views-exposed-widget{
+#advanced-search-condition  .views-exposed-widget{
 	clear:both;
 	height:55px;
 }
-#advanced-search-condition #views-exposed-form-search-advanced-search  label{
+#advanced-search-condition   label{
 	float: left;
 	display: block;
 	width: 90px;
@@ -144,27 +149,27 @@
 	padding: 5px 20px;
 	letter-spacing: 0.2em;
 }
-#advanced-search-condition #views-exposed-form-search-advanced-search  .views-widget{
+#advanced-search-condition   .views-widget{
 	float:left;
 }
-#advanced-search-condition #views-exposed-form-search-advanced-search #edit-type,
-#advanced-search-condition #views-exposed-form-search-advanced-search #edit-tid,
-#advanced-search-condition #views-exposed-form-search-advanced-search #edit-title{
+#advanced-search-condition  #edit-type,
+#advanced-search-condition  #edit-tid,
+#advanced-search-condition  #edit-title{
 	font-size: 1.0em;
 	color: #516F88;
 	width: 275px;
 	border-radius: 8px;
 	height: 30px;
 }
-#advanced-search-condition #views-exposed-form-search-advanced-search #edit-type{
+#advanced-search-condition  #edit-type{
 	width:155px;
 }
-#advanced-search-condition #views-exposed-form-search-advanced-search .views-reset-button,#advanced-search-condition #views-exposed-form-search-advanced-search .views-submit-button{
+#advanced-search-condition  .views-reset-button,#advanced-search-condition  .views-submit-button{
 	float:right;
 	clear:none;
 }
-#advanced-search-condition #views-exposed-form-search-advanced-search #edit-submit-search,
-#advanced-search-condition #views-exposed-form-search-advanced-search #edit-reset{
+#advanced-search-condition  #edit-submit-search,
+#advanced-search-condition  #edit-reset{
 	border: none;
 	letter-spacing: 0.7em;
 	text-shadow: 1px 2px 2px #333;
@@ -177,16 +182,40 @@
 	box-shadow: none;
 	padding: 0px 0.7em 4px 1em;
 }
-#advanced-search-condition #views-exposed-form-search-advanced-search #edit-submit-search{
+#advanced-search-condition  #edit-submit-search{
 	background:url("images/search_btn.png") no-repeat scroll center center transparent;
 }
-#advanced-search-condition #views-exposed-form-search-advanced-search #edit-reset{
+#advanced-search-condition  #edit-reset{
 	background:url("images/cancel_btn.png") no-repeat scroll center center transparent;
 }
 
 
 
 /*-------- end 高级搜索页面------*/
+
+
+/*---返回按钮--*/
+.flag-wrapper .fanhui {
+	display: block;
+	width: 75px;
+	height: 30px;
+	margin-top: 10px;
+	font-size: 16px;
+	color: #1E3037;
+	line-height: 30px;
+	text-indent: 23px;
+	position: absolute;
+	top: 0px;
+	right: 22px;
+
+	background: url("images/back_btn.png") no-repeat;
+	left: 22px;
+	letter-spacing: 6px;
+	text-indent: 10px;
+	
+	cursor: pointer;
+}
+/*---end 返回按钮--*/
 
 
 

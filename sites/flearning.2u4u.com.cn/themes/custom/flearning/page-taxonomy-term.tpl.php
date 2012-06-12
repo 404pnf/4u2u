@@ -11,75 +11,40 @@
 	<link href="<?php print $base_path.$directory?>/css/common.css" media="all" rel="stylesheet" type="text/css">
 	
 	<link href="<?php print $base_path.$directory?>/css/mobile.css" media="all" rel="stylesheet" type="text/css">
-
+	
+	<link href="<?php print $base_path.$directory?>/css/shipin_mobile.css" media="all" rel="stylesheet" type="text/css">
+	
 	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.js"></SCRIPT>
 	<script language="javascript" type="text/javascript" src="<?php print $base_path.$directory?>/js/txgenerictools.js" ></script>
 	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.flearning.common.js"></SCRIPT>
 
-	
   </head>
 
   <body class="<?php print $body_classes; ?>">
 
     <div id="main">
-    
-    	<!--
-		<div class="toolbar">
-			<span class="button touched_btn"><a href="/paihang">排行</a></span>
-			<span class="button common_btn"><a href="/shoucang">收藏</a></span> <span class="button title_btn"> <a href="/"><img src="<?php print $base_path.$directory?>/css/images/fltrp.png" /> 精华版</a></span>
-			<span class="button common_btn info_btn"> <img src="<?php print $base_path.$directory?>/css/images/info.png" /> </span> 
-			<span class="button common_btn"><a href="/lishi">历史</a></span>
-			<span class="button touched_btn"><a href="/denglu">验证</a></span>
-			
-		</div>
-		-->
-		
+    	
+	
+	
       <div id="page">
         <div id="page-inner" class="inner column center">
-		<!--
-			<div id="page_title">
-			
-			</div>
-		-->
-			<!--内容-->
 			<div id= "page_content" >
-				<div id="advanced-search-block">
-					<div id="advanced-search-title">
-						高级搜索
-					</div>
-					<div id="advanced-search-condition">
-					
-						<?
+				<?
 				
-						global $user;
-						if($user->uid>0){
-						//验证用户访问的内容
-							$block = module_invoke("views","block", "view","-exp-search-advanced_search_yanzheng");
-						
-							print $block["content"]; 
-						}
-						else{
-						//未验证用户访问的内容
-							$block = module_invoke("views","block", "view","-exp-search-advanced_search");
-						
-							print $block["content"]; 
-						}
-						
-						?>
-					</div>
-				</div>
+				global $user;
+				if($user->uid>0)//验证用户访问的内容
+					print views_embed_view('taxonomy_term', $display_id = 'page_yanzheng', arg(2));
+				else//未验证用户访问的内容
+					print views_embed_view('taxonomy_term', $display_id = 'page', arg(2));
+
 				
+				?>
 			</div>		
 		 </div> <!-- /page-inner -->
 	  </div> <!-- /page -->
 	  
-	  <!--
-	  <div class="footbar">
-		<?php //print $footer_block; ?>
-		<div id="advanced_search"><a class="button common_btn" href="/advanced/search">高级检索</a></div>
-        
-	  </div>
-	  -->
+	  
+	 
 	  
 	  
 <!-- toolbar 中显示与隐藏的内容 -->
@@ -159,12 +124,6 @@ CHINADAILY等），顶尖教育出版机构（剑桥、牛津、培生、麦克�
 <!--  end toolbar 中显示与隐藏的内容 -->	 
 	 
 	</div> <!-- /main -->
-
-	
-<script type="text/javascript">
-var _bdhmProtocol = (("https:" == document.location.protocol) ? " https://" : " http://");
-document.write(unescape("%3Cscript src='" + _bdhmProtocol + "hm.baidu.com/h.js%3F116fea821e3bfb6c5a7d4b187a50b502' type='text/javascript'%3E%3C/script%3E"));
-</script>
 
   </body>
 </html>

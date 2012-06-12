@@ -64,19 +64,12 @@ function displayOverlayer(cmdName, btnleft, btnwidth, btnstatus){
 		
 		//因为视频node页在客户端中处于最高层，本内容中的链接无法点击，所以先尝试显示此内容时，隐藏video标签。
 		
-		$('.page-mshipin video').attr('style','display:none;').next('.video-pause').attr('style','display:block;');
-		var myVideo = document.getElementsByTagName('video')[0];
-		myVideo.pause();
+		$('.page-mshipin video').attr('style','display:none;');
 	}				
 	else {
 		$('.overlayer').hide('fast');
 		
 		//显示video标签
-		$('.page-mshipin video').attr('style','display:block;').next('.video-pause').attr('style','display:none;');
-		var myVideo = document.getElementsByTagName('video')[0];
-        if (myVideo.paused)
-			myVideo.play();
-
 	}
 	
 	return 'success';
@@ -87,7 +80,7 @@ function yanzhengAddMachineID(cmdName){
 	var machineIDinput = $('#over_'+cmdName+' .content #edit-machineID');
 	
 	machineIDinput.val(machineID);
-	//alert(' machineID:'+machineID);
+	alert(' machineID:'+machineID);
 	
 }
 
@@ -120,48 +113,26 @@ function ajaxcontent(cmdName){
 				yanzhengAddMachineID(cmdName);
 			//为验证区块添加machineID
 
-/*
 			$('.redirect-url-view .views-field-title a').click(function (){
 
 				markClick(this);
 				//点击图书、视频、应用时，加入历史，并跳转到相应的资源地址
 			});
-*/			
-			if(cmdName == 'shoucang'){
-				$('.redirect-url-view .termrow .flag-bookmarks-delete').click(function (){
-					
-					var that = this;
-					var nid = $(that).attr('nid');
-					$(that).parents('li.termrow').remove();
-					
-					flag_bookmarks_delete(nid);
-				});
-			}
-			if(cmdName == 'lishi'){
-				$('.redirect-url-view .remove-user-lishi').click(function (){
-					
-					var that = this;
-					$(that).attr('style','visibility:hidden;').parents('.redirect-url-view').children('.view-content').html('您还没有历史记录!');
-					
-					remove_user_lishi();
-				});
-				
-				
-				$('.redirect-url-view .termrow .flag-lishi-delete').click(function (){
-					
-					var that = this;
-					var nid = $(that).attr('nid');
-					$(that).parents('li.termrow').remove();
-					
-					flag_lishi_delete(nid);
-				});
 			
-			}
+			
+			$('.redirect-url-view .termrow .flag-bookmarks-delete').click(function (){
+				
+				var that = this;
+				var nid = $(that).attr('nid');
+				$(that).parents('li.termrow').remove();
+				
+				flag_bookmarks_delete(nid);
+			});
 		}
 	});
 }
 
-/*
+
 
 //------加入历史部分----------
 function markHistory(histroyUrl,gotoUrl){
@@ -216,7 +187,7 @@ $(function(){
 });
 
 //--------end 加入历史完成--------
-	*/
+	
 
 	
 	
@@ -255,82 +226,3 @@ function flag_bookmarks_delete(nid){
 
 
 //-------end -收藏夹 及时删除收藏功能------
-
-
-
-//--------清空历史记录功能 ------
-
-function remove_user_lishi(){
-	
-	var flagUrl = "/remove_user_lishi";
-	
-	$.ajax({ 
-		type: "get",// 指定是post还是get,只获取内容用get  
-		cache: "false",// 默认: true,dataType为script时默认为false) jQuery 1.2 新功能，设置为 false 将不会从浏览器缓存中加载请求信息。   
-		url: flagUrl,// 发送请求的地址。   
-		//data: 'uid='+uid+'&sess_id='+session+'&key=aa',//发送到服务器的数据   
-		dataType: "text",// 返回纯文本字符串 
-		timeout:20000,// 设置请求超时时间（毫秒）。 
-		error: function (error) {// 请求失败时调用函数。  
-			alert(" 请求失败!"+error);
-		 }, 
-		success: function(message) 
-		{  //请求成功后回调函数。
-		
-			//alert( message);
-			
-			//$('#over_'+cmdName+' .content-inner').html(message);
-			
-			
-		}
-	}); 
-		
-	return 'success';
-}
-
-//-------end 清空历史记录功能------
-
-//--------历史记录 单个 及时删除功能 ------
-
-function flag_lishi_delete(nid){
-	
-	
-	var flagUrl = "/flag_lishi_tx/"+nid+"/unflag";
-
-	$.ajax({ 
-		type: "get",// 指定是post还是get,只获取内容用get  
-		cache: "false",// 默认: true,dataType为script时默认为false) jQuery 1.2 新功能，设置为 false 将不会从浏览器缓存中加载请求信息。   
-		url: flagUrl,// 发送请求的地址。   
-		//data: 'uid='+uid+'&sess_id='+session+'&key=aa',//发送到服务器的数据   
-		dataType: "text",// 返回纯文本字符串 
-		timeout:20000,// 设置请求超时时间（毫秒）。 
-		error: function (error) {// 请求失败时调用函数。  
-			alert(" 请求失败!"+error);
-		 }, 
-		success: function(message) 
-		{  //请求成功后回调函数。
-		
-			//alert( message);
-			
-			//$('#over_'+cmdName+' .content-inner').html(message);
-			
-			
-		}
-	}); 
-		
-	return 'success';
-}
-
-
-
-//-------end -历史记录 单个 及时删除功能 ------
-
-
-//------- 返回按钮-------
-$(function(){
-	$('.fanhui').click(function (){
-		history.go(-1);
-
-	});
-});
-//-------end 返回按钮-------

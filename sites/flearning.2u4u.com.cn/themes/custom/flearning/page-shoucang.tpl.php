@@ -1,0 +1,1 @@
+<? print views_embed_view('flag_bookmarks_lishi', $display_id = 'shoucang_page');?>

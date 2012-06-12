@@ -1,4 +1,5 @@
 <?php
+// $Id: views-view-field.tpl.php,v 1.1 2008/05/16 22:22:32 merlinofchaos Exp $
  /**
   * This template is used to print a single field in a view. It is not
   * actually used in default Views, as this is registered as a theme
@@ -11,7 +12,7 @@
   * - $row: The raw SQL result that can be used
   * - $output: The processed output that will normally be used.
   *
-  * When fetching output from the $row, copy and paste the following snippet:
+  * When fetching output from the $row, this construct should be used:
   * $data = $row->{$field->field_alias}
   *
   * The above will guarantee that you'll always get the correct data,
@@ -19,6 +20,6 @@
   * the view is modified.
   */
 ?>
-<?php if($output):?>
-<a href="#" gotoURL="txbookurl:##<?php print $row->nid; ?>##http://2u4u.com.cn/xieq/<?php print $row->node_data_field_ebook_link_field_ebook_link_value; ?>"  nid="<?php print $row->nid; ?>"><?php print $output; ?></a>
-<?php endif;?>
+
+<video controls autoplay width="768px"  height="570px" src="http://ilearning.2u4u.com.cn/<?php print $output; ?>">Your browser does not support the video (mp4) tag.</video>
+<div class="video-pause" style="display:none;"><img src="/sites/flearning.2u4u.com.cn/themes/custom/flearning/css/images/pause.png"/></div>

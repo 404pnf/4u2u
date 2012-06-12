@@ -1,0 +1,135 @@
+<?php
+// $Id: scode.install,v 1.1 2009/01/05 23:27:34 yangyicn Exp $
+
+/**
+ * @file
+ * scode.module的安装文件.
+ */
+/**
+ * Implements hook_schema().
+ */
+function scode_schema() {
+  $schema = array();
+
+  $schema['ilearning_serial'] = array(
+    'description' => '验证码：status:0-未使用；1-已发放；2-已验证',
+    'fields' => array(
+		 'ID' => array(
+			'description' => 'The primary key.',
+			'type' => 'serial',
+			'not null' => TRUE,
+		 ),
+		 'serial' => array(
+			'description' => 'A 16 character unique identifier for the serial code.',
+			'type' => 'varchar',
+			'length' => 125,
+			'not null' => TRUE,
+			'default' => '',
+		 ),
+		'school_ID' => array(
+			'description' => 'School ID .mark一下，无实际意义',
+			'type' => 'varchar',
+			'length' => 125,
+			'not null' => TRUE,
+			'default' => ''
+		),
+		'school_name' => array(
+			'description' => 'School name .mark一下，无实际意义',
+			'type' => 'varchar',
+			'length' => 125,
+			'not null' => TRUE,
+			'default' => ''
+		),
+		'status' => array(
+			'description' => 'The status of serial code.',
+			'type' => 'int',
+			'not null' => TRUE,
+			'default' => 0
+		),
+		'created' => array(
+			'description' => 'The Unix timestamp when the record was created.',
+			'type' => 'int',
+			'not null' => TRUE,
+			'default' => 0
+		),
+		'updated' => array(
+			'description' => 'The Unix timestamp when the record was updated.',
+			'type' => 'int',
+			'not null' => TRUE,
+			'default' => 0
+		),   
+    ),
+    'primary key' => array('ID'),
+  );
+
+  $schema['ilearning_serial_user'] = array(
+    'description' => '验证码与机器码、用户ID绑定',
+    'fields' => array(
+		 'ID' => array(
+			'description' => 'The primary key.',
+			'type' => 'serial',
+			'not null' => TRUE,
+		 ),
+		 'serial' => array(
+			'description' => 'A 16 character unique identifier for the serial code.',
+			'type' => 'varchar',
+			'length' => 125,
+			'not null' => TRUE,
+			'default' => '',
+		 ),
+		'uid' => array(
+			'description' => 'User id of Serial code Binding.',
+			'type' => 'int',
+			'not null' => TRUE,
+			'default' => 0
+		),
+		'AppleID' => array(
+			'description' => 'Apple id of Serial code Binding. 无实际意义，目前不传值。',
+			'type' => 'varchar',
+			'length' => 125,
+			'not null' => TRUE,
+			'default' => '',
+		),
+		'machineID' => array(
+			'description' => 'machine id of Serial code Binding.',
+			'type' => 'varchar',
+			'length' => 125,
+			'not null' => TRUE,
+			'default' => '',
+		),
+		'created' => array(
+			'description' => 'The Unix timestamp when the record was created.',
+			'type' => 'int',
+			'not null' => TRUE,
+			'default' => 0
+		),
+		'updated' => array(
+			'description' => 'The Unix timestamp when the record was updated.',
+			'type' => 'int',
+			'not null' => TRUE,
+			'default' => 0
+		),   
+    ),
+    'primary key' => array('ID'),
+  );
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */ 
+function scode_install() {
+  drupal_install_schema('ilearning_serial');
+  drupal_install_schema('ilearning_serial_user');
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function scode_uninstall() {
+  	drupal_uninstall_schema('ilearning_serial');
+  	drupal_uninstall_schema('ilearning_serial_user');
+	db_query("DELETE FROM {variable} WHERE name LIKE 'ilearning_serial_%%'");
+}
+
+

@@ -1,0 +1,5 @@
+; $Id$
+name = Flag Bookmarks Topx
+description = Flag Bookmarks Topx
+package = 2u4u
+core = 6.x

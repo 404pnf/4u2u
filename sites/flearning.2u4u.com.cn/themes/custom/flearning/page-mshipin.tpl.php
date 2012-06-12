@@ -17,40 +17,34 @@
 	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.js"></SCRIPT>
 	<script language="javascript" type="text/javascript" src="<?php print $base_path.$directory?>/js/txgenerictools.js" ></script>
 	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.flearning.common.js"></SCRIPT>
-	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.flearning.lishi.js"></SCRIPT>
+
   </head>
 
   <body class="<?php print $body_classes; ?>">
 
     <div id="main">
-    	<!--
-		<div class="toolbar">
-			<span class="button touched_btn"><a href="/paihang">排行</a></span>
-			<span class="button common_btn"><a href="/shoucang">收藏</a></span> <span class="button title_btn"> <a href="/"><img src="<?php print $base_path.$directory?>/css/images/fltrp.png" /> 精华版</a></span>
-			<span class="button common_btn info_btn"> <img src="<?php print $base_path.$directory?>/css/images/info.png" /> </span> 
-			<span class="button common_btn"><a href="/lishi">历史</a></span>
-			<span class="button touched_btn"><a href="/denglu">验证</a></span>
-			
-		</div>
-		-->
+    	
 	
 	
       <div id="page">
         <div id="page-inner" class="inner column center">
 			<div id= "page_content" >
-				<?php print $content; ?>
+				<?
+				
+				global $user;
+				if($user->uid>0)//验证用户访问的内容
+					print views_embed_view('mobile', $display_id = 'mshipin_yanzheng', arg(1));
+				else//未验证用户访问的内容
+					print views_embed_view('mobile', $display_id = 'mshipin_page', arg(1));
+
+				
+				?>
 			</div>		
 		 </div> <!-- /page-inner -->
 	  </div> <!-- /page -->
 	  
 	  
-	  <!--
-	  <div class="footbar">
-		<?php //print $footer_block; ?>
-		<div id="advanced_search"><a class="button common_btn" href="/advanced/search">高级检索</a></div>
-        
-	  </div>
-	  -->
+	 
 	  
 	  
 <!-- toolbar 中显示与隐藏的内容 -->
@@ -63,7 +57,7 @@
 		
 		<div class="content">
 			<div class="content-inner">
-				<? print views_embed_view('paihang', $display_id = 'paihang_page');?>
+				<? print views_embed_view('paihangbang', $display_id = 'paihang_page');?>
 			</div>
 		</div>
 	</div>
@@ -75,7 +69,7 @@
 		
 		<div class="content">
 			<div class="content-inner">
-				<? print views_embed_view('flag_bookmarks', $display_id = 'shoucang_page');?>
+				<? print views_embed_view('flag_bookmarks_lishi', $display_id = 'shoucang_page');?>
 			</div>
 		</div>
 	</div>
@@ -102,7 +96,7 @@ CHINADAILY等），顶尖教育出版机构（剑桥、牛津、培生、麦克�
 		
 		<div class="content">
 			<div class="content-inner">
-				<? print views_embed_view('flag_bookmarks', $display_id = 'lishi_page');?>
+				<? print views_embed_view('flag_bookmarks_lishi', $display_id = 'lishi_page');?>
 			
 			</div>
 		</div>
@@ -139,7 +133,7 @@ function tabshipin(e,t) {
 		$(this).addClass("on");
 		$(t).hide();
 		$(this).next('.tabcontent').show();
-
+		$('#main').height($(this).next('.tabcontent').height()+770);
 	});
 }
 
@@ -150,7 +144,12 @@ $(document).ready(
 		tabshipin(".tab-"+i,".content-wrapper .tabcontent");
 	}
 }); 
-</script>
 
+/*
+$(function(){
+	var params ={"btnLeft" : "600", "btnwidth" : "60","btnstatus":"","machineID":"7ccc31e0ddd2a215938c0f8fbc223056"};//btnLeft:按钮位置，距离左侧边距绝对位置，btnwidth：按钮宽度大小，btnstatus：按钮状态，""或者"normal"表示未点击的按钮，"touched"或其他值表示已经点击过，再次点击，则收回正在显示的内容。
+	performRequest( 'paihang', params);
+});*/
+</script>
   </body>
 </html>

@@ -1,0 +1,476 @@
+<?php
+// $Id: uc_alipay.pages.inc,v 1.1 2009/01/05 23:27:34 yangyicn Exp $
+
+/**
+ * Menu callback; Retrieve a JSON object containing autocomplete suggestions for existing school.
+ */
+function school_autocomplete($string = '') {
+  $matches = array();
+  if ($string) {
+    $result = db_query_range("SELECT distinct school_name FROM {ilearning_serial} WHERE LOWER(school_name) LIKE LOWER('%s%%')", $string, 0, 15);
+    while ($school = db_fetch_object($result)) {
+      $matches[$school->school_name] = check_plain($school->school_name);
+    }
+  }
+
+  drupal_json($matches);
+}
+
+
+function scode_generate_page() {
+	$output = "";
+	$output .= drupal_get_form('scode_generate_form');
+	return $output;
+}
+
+function scode_generate_form(){
+  $form['total'] = array(
+	  '#type' =>'textfield',
+		'#title' => t('序列号数量'),
+		'#description' =>t('一次生成的验证码序列号记录数。'),
+		'#default_value' => 500,
+	);
+
+	$form['school'] = array(
+		'#title' => t('学校'),
+		'#type' =>'textfield',
+		'#description' =>t('为哪个学校生成验证码'),
+		//'#default_value' => 50,
+		'#autocomplete_path' => 'school/autocomplete',
+	);
+	
+	$form['submit'] = array(
+		'#type' =>'submit',
+		'#value' => t('提交'),
+	);
+	return $form;
+}
+
+function scode_generate_form_validate($form,&$form_state){
+
+  $total = $form_state['values']['total'];
+	if(!preg_match("/^[0-9]*[1-9][0-9]*$/",$total)){
+	  form_set_error('total',t('必须是整数').preg_match("^[0-9]*[1-9][0-9]*$",$total));
+	}
+	
+	
+}
+
+//whx here 提交生成，需要添加 序列号 在页面中列出，或者导出txt文件
+function scode_generate_form_submit($form,&$form_state){
+  $total = $form_state['values']['total'];
+	$school = $form_state['values']['school'];
+	
+	$i=0; 
+	while($i<$total){
+	  $scode = scode_generate_scode(16);
+		$sql = "SELECT COUNT(ID) FROM {ilearning_serial} WHERE serial = '%s' ";
+		$count = db_result(db_query($sql,$scode));
+		if($count <=0){
+		  $sql = "INSERT INTO {ilearning_serial} (serial, school_ID, school_name , status, created, updated) VALUES('%s', '%s', '%s', %d, %d, %d)";
+			$current_time = time();
+			//status的值可以为0,1,2；0表示刚刚创建的；1表示已经发送给用户的；2表示用户已经验证过了。
+			$status = 0; 
+
+			db_query($sql, $scode, $school, $school, $status, $current_time, $current_time);
+		  $i++;
+		}
+	  
+	
+	}
+	drupal_set_message(t('已生成 ').$total.t(' 个 ').$school.t(' 学校的验证码'));
+	
+}
+
+function scode_generate_scode( $length = 16 ) {
+  // 密码字符集，可任意添加你需要的字符
+  $chars = 'abcdefghijkmnopqrstuvwxyz0123456789';
+
+  $scode = '';
+  for ( $i = 0; $i < $length; $i++ ) {
+    // 这里提供两种字符获取方式
+    // 第一种是使用 substr 截取$chars中的任意一位字符；
+    // 第二种是取字符数组 $chars 的任意元素
+    // $password .= substr($chars, mt_rand(0, strlen($chars) - 1), 1);
+    $scode .= $chars[ mt_rand(0, strlen($chars) - 1) ];
+  }
+  return $scode;
+}
+
+/*---- 生成一个个人用户的验证码 ----*/
+function scode_create(){
+  	$total = 1;
+	$school = '个人';
+	
+	$i=0; 
+	while($i<$total){
+	  $scode = 'as_'.scode_generate_scode(16);
+	  
+		$sql = "SELECT COUNT(ID) FROM {ilearning_serial} WHERE serial = '%s' ";
+		$count = db_result(db_query($sql,$scode));
+		if($count <=0){
+		  $sql = "INSERT INTO {ilearning_serial} (serial, school_ID, school_name , status, created, updated) VALUES('%s', '%s', '%s', %d, %d, %d)";
+			$current_time = time();
+			//status的值可以为0,1,2；0表示刚刚创建的；1表示已经发送给用户的；2表示用户已经验证过了。
+			$status = 1; 
+
+			db_query($sql, $scode, $school, $school, $status, $current_time, $current_time);
+		  $i++;
+		  
+		  //return $scode;
+		  echo $scode;
+		}
+	  
+		
+	}
+	
+	
+	
+}
+/********************新生成的验证码列表页面的代码 **************************************************************************/
+
+function scode_admin_page(){
+	$output = "";
+  $output = "";
+  /*
+	$output .="<div id ='filter-form'>";
+	$output .= drupal_get_form('scode_filter_form');
+	$output .="</div>"; */
+	$output .= drupal_get_form("scode_admin_form");
+	//$output .="123456";
+	return $output;
+}
+
+function scode_admin_form(){
+
+  $options = array(
+	  '1' => '改为已发放',
+	//	'2' => '改为已使用',
+	);
+
+  $form['options']['operation'] = array(
+    '#type' => 'select',
+    '#options' => $options,
+    '#default_value' => '1',
+  );
+  $form['options']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Update'),
+    '#submit' => array('scode_admin_code_submit'),
+  );
+
+  $languages = language_list();
+  $destination = drupal_get_destination();
+  $scodes = array();
+	$result = pager_query(db_rewrite_sql('SELECT * FROM {ilearning_serial} WHERE status = 0'), 50, 0, NULL);
+  $status_array = array(
+	  0 => t('新生成'),
+		1 => t('已发放'),
+		2 => t('已使用'),
+	);
+  while ($scode = db_fetch_object($result)) {
+    $scodes[$scode->ID] = '';
+    $options = empty($scode->language) ? array() : array('language' => $languages[$node->language]);
+    $form['id'][$scode->ID] = array('#value' => $scode->ID);
+    $form['serial'][$scode->ID] =  array('#value' => $scode->serial);
+    $form['school'][$scode->ID] = array('#value' => $scode->school_name);
+    $form['status'][$scode->ID] =  array('#value' => $status_array[$scode->status]);
+	/*
+		$username = "";
+		if($scode->uid <=0){
+		  // $temp_user = user_load($scode->uid);
+		  //$username = $temp_user->name;
+			//$username = "123456";
+			//$username = l($username,'user/'.$scode->uid);
+		}else{
+		  $temp_user = user_load($scode->uid);
+		  $username = $temp_user->name;
+			$username = l($username,'user/'.$scode->uid);
+		}
+		$form['uid'][$scode->ID] =  array('#value' => $username);
+		
+
+    //$form['operations'][$scode->ID] = array('#value' => l(t('公开'), 'scode/open/'. $scode->ID , array('query' => $destination)));
+    */
+  }
+  $form['scodes'] = array('#type' => 'checkboxes', '#options' => $scodes);
+  $form['pager'] = array('#value' => theme('pager', NULL, 50, 0));
+  $form['#theme'] = 'scode_admin_codes';
+  return $form;
+}
+
+
+/**
+ * Theme node administration overview.
+ *
+ * @ingroup themeable
+ */
+ 
+function theme_scode_admin_codes($form) {
+  // If there are rows in this form, then $form['title'] contains a list of
+  // the title form elements.
+  $has_posts = isset($form['serial']) && is_array($form['serial']);
+  $select_header = $has_posts ? theme('table_select_header_cell') : '';
+  $header = array($select_header, t('ID'), t('验证码'), t('状态'), t('学校'));
+
+  //$header[] = t('Operations');
+  $output = '';
+
+  $output .= drupal_render($form['options']);
+  if ($has_posts) {
+    foreach (element_children($form['serial']) as $key) {
+      $row = array();
+      $row[] = drupal_render($form['scodes'][$key]);
+      $row[] = drupal_render($form['id'][$key]);
+      $row[] = drupal_render($form['serial'][$key]);
+      $row[] = drupal_render($form['status'][$key]);
+      $row[] = drupal_render($form['school'][$key]);
+
+      //$row[] = drupal_render($form['operations'][$key]);
+      $rows[] = $row;
+    }
+
+  }
+  else {
+    $rows[] = array(array('data' => t('No posts available.'), 'colspan' => '5'));
+  }
+
+  $output .= theme('table', $header, $rows);
+  if ($form['pager']['#value']) {
+    $output .= drupal_render($form['pager']);
+  }
+
+  $output .= drupal_render($form);
+
+  return $output;
+}
+function scode_admin_code_submit($form, &$form_state){
+	$operation = $form_state['values']['operation'];
+  // Filter out unchecked nodes
+  $scodes = array_filter($form_state['values']['scodes']);
+	$scodes_filter = '('. implode(', ', $scodes) .')';
+	$sql = "UPDATE {ilearning_serial} SET status = %d , updated = %d  WHERE id IN ".$scodes_filter;
+	db_query($sql, $operation, time());
+}
+/*
+function scode_filter_form(){
+  $school_options = array(
+	  '' => '请选择积分额度',
+	  10 => 10,
+		20 => 20,
+		30 => 30,
+		40 => 40,
+		50 => 50,
+		60 => 60,
+		70 => 70,
+		80 => 80,
+		90 => 90,
+		100 => 100,
+	);
+	$form['school'] = array(
+		'#title' => t('积分'),
+		'#type' =>'select',
+		'#description' =>t('验证码的积分。'),
+		//'#default_value' => 50,
+		'#options' => $school_options,
+	);
+	$form['submit'] = array(
+		'#type' =>'submit',
+		'#value' => t('提交'),
+	);
+  $form['submit'] = array(
+		'#type' =>'submit',
+		'#value' => t('过滤'),
+	);
+	return $form;
+}
+*/
+
+/********************已发放验证码的代码 **************************************************************************/
+
+function scode_admin_open_page(){
+	$output = "";
+
+	$output .= drupal_get_form("scode_admin_open_form");
+	//$output .="123456";
+	return $output;
+}
+
+function scode_admin_open_form(){
+
+  $scodes = array();
+	$result = pager_query(db_rewrite_sql('SELECT * FROM {ilearning_serial} WHERE status = 1 ORDER BY updated DESC'), 50, 0, NULL);
+  $status_array = array(
+	  0 => t('新生成'),
+		1 => t('已发放'),
+		2 => t('已验证'),
+	);
+  while ($scode = db_fetch_object($result)) {
+    //$scodes[$scode->ID] = '';
+    $options = empty($scode->language) ? array() : array('language' => $languages[$node->language]);
+    $form['id'][$scode->ID] = array('#value' => $scode->ID);
+    $form['serial'][$scode->ID] =  array('#value' => $scode->serial);
+    $form['school'][$scode->ID] = array('#value' => $scode->school_name);
+    $form['status'][$scode->ID] =  array('#value' => $status_array[$scode->status]);
+    /*
+		$username = "";
+		if($scode->uid <=0){
+		  // $temp_user = user_load($scode->uid);
+		  //$username = $temp_user->name;
+			//$username = "123456";
+			//$username = l($username,'user/'.$scode->uid);
+		}else{
+		  $temp_user = user_load($scode->uid);
+		  $username = $temp_user->name;
+			$username = l($username,'user/'.$scode->uid);
+		}
+		$form['uid'][$scode->ID] =  array('#value' => $username);
+	*/	
+
+    //$form['operations'][$scode->ID] = array('#value' => l(t('公开'), 'scode/open/'. $scode->ID , array('query' => $destination)));
+  }
+ // $form['scodes'] = array('#type' => 'checkboxes', '#options' => $scodes);
+  $form['pager'] = array('#value' => theme('pager', NULL, 50, 0));
+  $form['#theme'] = 'scode_admin_open_codes';
+  return $form;
+}
+
+
+/**
+ * Theme node administration overview.
+ *
+ * @ingroup themeable
+ */
+ 
+function theme_scode_admin_open_codes($form) {
+  // If there are rows in this form, then $form['title'] contains a list of
+  // the title form elements.
+  $has_posts = isset($form['serial']) && is_array($form['serial']);
+  //$select_header = $has_posts ? theme('table_select_header_cell') : '';
+  $header = array(t('ID'), t('验证码'), t('状态'), t('学校'));
+
+  //$header[] = t('Operations');
+  $output = '';
+
+  $output .= drupal_render($form['options']);
+  if ($has_posts) {
+    foreach (element_children($form['serial']) as $key) {
+      $row = array();
+      //$row[] = drupal_render($form['scodes'][$key]);
+      $row[] = drupal_render($form['id'][$key]);
+      $row[] = drupal_render($form['serial'][$key]);
+      $row[] = drupal_render($form['status'][$key]);
+      $row[] = drupal_render($form['school'][$key]);
+
+      //$row[] = drupal_render($form['operations'][$key]);
+      $rows[] = $row;
+    }
+
+  }
+  else {
+    $rows[] = array(array('data' => t('No posts available.'), 'colspan' => '4'));
+  }
+
+  $output .= theme('table', $header, $rows);
+  if ($form['pager']['#value']) {
+    $output .= drupal_render($form['pager']);
+  }
+
+  $output .= drupal_render($form);
+
+  return $output;
+}
+
+
+/********************已验证验证码的代码 **************************************************************************/
+function scode_admin_used_page(){
+	$output = "";
+
+	$output .= drupal_get_form("scode_admin_used_form");
+	//$output .="123456";
+	return $output;
+}
+
+function scode_admin_used_form(){
+
+  $scodes = array();
+	$result = pager_query(db_rewrite_sql('SELECT s.ID, s.serial, s.school_name, s.status, u.uid, u.machineID, u.AppleID FROM {ilearning_serial} s, {ilearning_serial_user} u WHERE s.serial = u.serial AND s.status = 2 ORDER BY s.updated DESC'), 50, 0, NULL);
+  $status_array = array(
+	  0 => t('新生成'),
+		1 => t('已发放'),
+		2 => t('已验证'),
+	);
+  while ($scode = db_fetch_object($result)) {
+    //$scodes[$scode->ID] = '';
+    $options = empty($scode->language) ? array() : array('language' => $languages[$node->language]);
+    $form['id'][$scode->ID] = array('#value' => $scode->ID);
+    $form['serial'][$scode->ID] =  array('#value' => $scode->serial);
+    $form['school'][$scode->ID] = array('#value' => $scode->school_name);
+    $form['status'][$scode->ID] =  array('#value' => $status_array[$scode->status]);
+		$machineID = "";
+		if($scode->uid <=0){
+		  // $temp_user = user_load($scode->uid);
+		  //$username = $temp_user->name;
+			//$username = "123456";
+			//$username = l($username,'user/'.$scode->uid);
+		}else{
+
+			$machineID = l($scode->machineID,'user/'.$scode->uid);
+		}
+		$form['machineID'][$scode->ID] =  array('#value' => $machineID);
+		
+
+    //$form['operations'][$scode->ID] = array('#value' => l(t('公开'), 'scode/open/'. $scode->ID , array('query' => $destination)));
+  }
+ // $form['scodes'] = array('#type' => 'checkboxes', '#options' => $scodes);
+  $form['pager'] = array('#value' => theme('pager', NULL, 50, 0));
+  $form['#theme'] = 'scode_admin_used_codes';
+  return $form;
+}
+
+
+/**
+ * Theme node administration overview.
+ *
+ * @ingroup themeable
+ */
+ 
+function theme_scode_admin_used_codes($form) {
+  $has_posts = isset($form['serial']) && is_array($form['serial']);
+  //$select_header = $has_posts ? theme('table_select_header_cell') : '';
+  $header = array(t('ID'), t('验证码'),  t('状态'), t('机器码'), t('学校'));
+  
+
+  //$header[] = t('Operations');
+  $output = '';
+
+  $output .= drupal_render($form['options']);
+  if ($has_posts) {
+    foreach (element_children($form['serial']) as $key) {
+      $row = array();
+      //$row[] = drupal_render($form['scodes'][$key]);
+      $row[] = drupal_render($form['id'][$key]);
+      $row[] = drupal_render($form['serial'][$key]);
+      $row[] = drupal_render($form['status'][$key]);
+	  $row[] = drupal_render($form['machineID'][$key]);
+      $row[] = drupal_render($form['school'][$key]);
+
+      //$row[] = drupal_render($form['operations'][$key]);
+      $rows[] = $row;
+    }
+
+  }
+  else {
+    $rows[] = array(array('data' => t('No posts available.'), 'colspan' => '5'));
+  }
+
+  $output .= theme('table', $header, $rows);
+  if ($form['pager']['#value']) {
+    $output .= drupal_render($form['pager']);
+  }
+
+  $output .= drupal_render($form);
+
+  return $output;
+}
+

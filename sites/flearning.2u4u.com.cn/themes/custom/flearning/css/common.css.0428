@@ -401,7 +401,6 @@ div.warning {
     position: absolute;
     width: 23px;
     z-index: 10000;
-    top: 1px;
 }
 #over_content .overlayer .content{
 	
@@ -410,9 +409,9 @@ div.warning {
     width: 300px;
     z-index: 9999;
 
-	background-color: #152029;
-	opacity: 0.95;
-	border:1px solid #494d52;
+	background-color: #000000;
+	opacity: 0.85;
+	border:1px solid #393939;
 	border-radius:0.5em;
 }
 #over_content #over_info .content{
@@ -420,29 +419,14 @@ div.warning {
 }
 #over_content .overlayer .content .content-inner{
 	border-radius:0.5em;
-	border:2px groove #7c8083;
+	border:1px solid #7d8183;
 	padding:30px 15px;
 	
 	line-height: 2.2em;
 	font-size: 16px;
 	font-weight: normal;
-	/*font-family: "黑体";*/
+	font-family: "黑体";
 }
-/*图表位置的控制*/
-.redirect-url-view .views-field-type img{
-	vertical-align: middle;
-	margin-bottom: 10px;
-}
-.view-flag-bookmarks-lishi .view-header{
-	text-align: right;
-	margin-bottom: 5px;
-	margin-top: -15px;
-}
-.redirect-url-view .flag-lishi-delete{
-	vertical-align: middle;
-	margin-left: 5px;
-}
-
 
 /*-----控制验证输入框-----*/
 #iLearning-serial-verify-form #edit-scode{
@@ -459,7 +443,11 @@ div.warning {
 	letter-spacing: 2px;
 	font-size: 16px;
 }
-
+/*图表位置的控制*/
+.redirect-url-view .views-field-type img{
+	vertical-align: middle;
+	margin-bottom: 10px;
+}
 
 /* ------- end toolbar 栏 的内容层 ------- */
 

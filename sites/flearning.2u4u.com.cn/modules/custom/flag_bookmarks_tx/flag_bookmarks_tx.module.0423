@@ -1,0 +1,75 @@
+<?php
+// $Id$
+function flag_bookmarks_tx_menu() {
+	$items = array ();
+	$items ['bookmarks_tx'] = array (
+	    'title' => '收藏图书接口', 
+	    'page callback' => 'flag_bookmarks_tx_action',
+	    'type' => MENU_CALLBACK,
+	    'access callback' => true );
+	$items ['bookmarks_tx_flaged'] = array (
+	    'title' => '查看是否已收藏', 
+	    'page callback' => 'bookmarks_tx_flaged',
+	    'type' => MENU_CALLBACK,
+	    'access callback' => true );
+
+	return $items;
+}
+
+
+function flag_bookmarks_tx_action(){
+  global $user;
+  drupal_bootstrap(DRUPAL_BOOTSTRAP_PATH);
+	
+	$nid = arg(1);
+	$flag_action = arg(2);
+	
+	if(is_numeric($nid)){
+	//如果第二个参数是节点ID	
+		$flag_bookmarks = flag_get_flag('bookmarks'); 
+		
+		if ($flag_action == "" || $flag_action == "flag") {
+		//需要收藏，或者不知道是否需要收藏，则通过判断，来确定走向
+		
+			
+			if($flag_bookmarks && $flag_bookmarks->is_flagged($nid)){
+			//如果本资源已经收藏，则返回谢琼，“已收藏，是否移除？”，通过“确定”按钮来决定是否移除收藏。移除收藏则重新调用接口，并且提供 $flag_action 值为 unflag。否则不做任何操作
+			
+				echo 'success';	
+				
+			}
+			else if($flag_bookmarks && !($flag_bookmarks->is_flagged($nid))){
+			//本资源没有收藏，则直接加入收藏
+				$flag_action = 'flag';
+				$flag_bookmarks->flag($flag_action,$nid,$user); 
+				echo 'success';	
+			}
+			
+			
+		}
+		else if ($flag_action == "unflag" && $flag_bookmarks && $flag_bookmarks->is_flagged($nid)){
+		//如果需要移除出收藏夹，并且本资源已经在收藏夹了，则取消收藏
+				$flag_bookmarks->flag($flag_action,$nid,$user); 
+				echo 'false';	
+		}
+	}	
+
+}
+
+function bookmarks_tx_flaged(){
+	global $user;
+	$nid = arg(1);
+	if(is_numeric($nid)){
+	//如果第二个参数是节点ID	
+		$flag_bookmarks = flag_get_flag('bookmarks'); 
+		
+		if ($flag_bookmarks && $flag_bookmarks->is_flagged($nid)) {
+			echo 'flaged';
+		}
+		else if ($flag_bookmarks && !($flag_bookmarks->is_flagged($nid))) {
+			echo 'unflaged';
+		}
+		else
+			echo 'false';
+	}
+}

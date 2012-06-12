@@ -15,7 +15,6 @@
 	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.js"></SCRIPT>
 	<script language="javascript" type="text/javascript" src="<?php print $base_path.$directory?>/js/txgenerictools.js" ></script>
 	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.flearning.common.js"></SCRIPT>
-	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.flearning.lishi.js"></SCRIPT>
 		
   </head>
 
@@ -55,25 +54,25 @@
 						<tr>
 							<td>
 								<div class="term_image">
-									<a href="search/term?tid=四级"><img src="<?php print $base_path.$directory?>/css/images/siji.png" /></a>
+									<a href="search/term?tid=四六级"><img src="<?php print $base_path.$directory?>/css/images/siji.png" /></a>
 								</div>
 								<div class="term_name">
-									<a href="search/term?tid=四级">四级</a>
+									<a href="search/term?tid=四六级">四六级</a>
 								</div>
 								<div class="term_description">
-									大学英语四级考试资源
+									大学英语四六级考试
 								</div>
 								
 							</td>
 							<td>
 								<div class="term_image">
-									<a href="search/term?tid=六级"><img src="<?php print $base_path.$directory?>/css/images/liuji.png" /></a>
+									<a href="search/term?tid=考试"><img src="<?php print $base_path.$directory?>/css/images/liuji.png" /></a>
 								</div>
 								<div class="term_name">
-									<a href="search/term?tid=六级">六级</a>
+									<a href="search/term?tid=考试">其他考试</a>
 								</div>
 								<div class="term_description">
-									大学英语六级考试资源
+									其他考试资源
 								</div>
 								
 							</td>
@@ -91,13 +90,13 @@
 							</td>
 							<td>
 								<div class="term_image">
-									<a href="search/term?tid=egs"><img src="<?php print $base_path.$directory?>/css/images/egs.png" /></a>
+									<a href="http://test.2u4u.com.cn/flearningegs/www/mobile_index.html"><img src="<?php print $base_path.$directory?>/css/images/egs.png" /></a>
 								</div>
 								<div class="term_name">
-									<a href="search/term?tid=egs">EGS 测试</a>
+									<a href="http://test.2u4u.com.cn/flearningegs/www/mobile_index.html">EGS 测试</a>
 								</div>
 								<div class="term_description">
-									诊断性测试以及专项练习
+									诊断性测试及专项练习
 								</div>
 								
 							</td>
@@ -169,18 +168,6 @@
 							</td>
 							<td>
 								<div class="term_image">
-									<a href="search/term?tid=六级"><img src="<?php print $base_path.$directory?>/css/images/liuji.png" /></a>
-								</div>
-								<div class="term_name">
-									<a href="search/term?tid=六级">六级</a>
-								</div>
-								<div class="term_description">
-									英语六级考试资源
-								</div>
-								
-							</td>
-							<td>
-								<div class="term_image">
 									<a href="search/term?tid=翻译"><img src="<?php print $base_path.$directory?>/css/images/fanyi.png" /></a>
 								</div>
 								<div class="term_name">
@@ -188,6 +175,18 @@
 								</div>
 								<div class="term_description">
 									翻译相关资源
+								</div>
+								
+							</td>
+							<td>
+								<div class="term_image">
+									<a href="search/term?tid=珠宝"><img src="<?php print $base_path.$directory?>/css/images/zhubao.png" /></a>
+								</div>
+								<div class="term_name">
+									<a href="search/term?tid=珠宝">珠宝</a>
+								</div>
+								<div class="term_description">
+									珠宝系列资源
 								</div>
 								
 							</td>
@@ -342,7 +341,7 @@
 		
 		<div class="content">
 			<div class="content-inner">
-				<? print views_embed_view('paihang', $display_id = 'paihang_page');?>
+				<? print views_embed_view('paihangbang', $display_id = 'paihang_page');?>
 			</div>
 		</div>
 	</div>
@@ -354,7 +353,7 @@
 		
 		<div class="content">
 			<div class="content-inner">
-				<? print views_embed_view('flag_bookmarks', $display_id = 'shoucang_page');?>
+				<? print views_embed_view('flag_bookmarks_lishi', $display_id = 'shoucang_page');?>
 			</div>
 		</div>
 	</div>
@@ -381,7 +380,7 @@ CHINADAILY等），顶尖教育出版机构（剑桥、牛津、培生、麦克�
 		
 		<div class="content">
 			<div class="content-inner">
-				<? print views_embed_view('flag_bookmarks', $display_id = 'lishi_page');?>
+				<? print views_embed_view('flag_bookmarks_lishi', $display_id = 'lishi_page');?>
 			
 			</div>
 		</div>
@@ -412,11 +411,11 @@ CHINADAILY等），顶尖教育出版机构（剑桥、牛津、培生、麦克�
 
 
 <script type="text/javascript">
-
+/*
 $(function(){
 	var params ={"btnLeft" : "600", "btnwidth" : "60","btnstatus":"","machineID":"7ccc31e0ddd2a215938c0f8fbc223056"};//btnLeft:按钮位置，距离左侧边距绝对位置，btnwidth：按钮宽度大小，btnstatus：按钮状态，""或者"normal"表示未点击的按钮，"touched"或其他值表示已经点击过，再次点击，则收回正在显示的内容。
-	performRequest( 'paihang', params);
-});/**/
+	performRequest( 'lishi', params);
+});*/
 </script>
 	
 <script type="text/javascript">

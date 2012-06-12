@@ -1,0 +1,7 @@
+name = 验证码序列号生成
+description = 给高校或者个人，生成验证码，用验证码登录.
+package = 2u4u
+core = 6.x
+php = 5.0
+
+

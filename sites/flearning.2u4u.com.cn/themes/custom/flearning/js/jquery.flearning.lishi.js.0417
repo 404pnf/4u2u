@@ -54,7 +54,7 @@ $(function(){
 
 $(function(){
 	$('.redirect-url-view .views-field-title a').click(function (){
-		alert('ad');
+		//alert('ad');
 		markClick(this);
 	});
 });

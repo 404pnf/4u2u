@@ -15,7 +15,6 @@
 	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.js"></SCRIPT>
 	<script language="javascript" type="text/javascript" src="<?php print $base_path.$directory?>/js/txgenerictools.js" ></script>
 	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.flearning.common.js"></SCRIPT>
-	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.flearning.lishi.js"></SCRIPT>
 	
   </head>
 
@@ -66,7 +65,7 @@
 		
 		<div class="content">
 			<div class="content-inner">
-				<? print views_embed_view('paihang', $display_id = 'paihang_page');?>
+				<? print views_embed_view('paihangbang', $display_id = 'paihang_page');?>
 			</div>
 		</div>
 	</div>
@@ -78,7 +77,7 @@
 		
 		<div class="content">
 			<div class="content-inner">
-				<? print views_embed_view('flag_bookmarks', $display_id = 'shoucang_page');?>
+				<? print views_embed_view('flag_bookmarks_lishi', $display_id = 'shoucang_page');?>
 			</div>
 		</div>
 	</div>
@@ -105,7 +104,7 @@ CHINADAILY等），顶尖教育出版机构（剑桥、牛津、培生、麦克�
 		
 		<div class="content">
 			<div class="content-inner">
-				<? print views_embed_view('flag_bookmarks', $display_id = 'lishi_page');?>
+				<? print views_embed_view('flag_bookmarks_lishi', $display_id = 'lishi_page');?>
 			
 			</div>
 		</div>
@@ -138,8 +137,8 @@ CHINADAILY等），顶尖教育出版机构（剑桥、牛津、培生、麦克�
 <script type="text/javascript">
 /*
 $(function(){
-	var params ={"btnLeft" : "400", "btnwidth" : "60","btnstatus":"","machineID":"48d5bd9c393db0159d95a989a891e54fedeb6f0f"};//btnLeft:按钮位置，距离左侧边距绝对位置，btnwidth：按钮宽度大小，btnstatus：按钮状态，""或者"normal"表示未点击的按钮，"touched"或其他值表示已经点击过，再次点击，则收回正在显示的内容。
-	performRequest( 'info', params);
+	var params ={"btnLeft" : "600", "btnwidth" : "60","btnstatus":"","machineID":"7ccc31e0ddd2a215938c0f8fbc223056"};//btnLeft:按钮位置，距离左侧边距绝对位置，btnwidth：按钮宽度大小，btnstatus：按钮状态，""或者"normal"表示未点击的按钮，"touched"或其他值表示已经点击过，再次点击，则收回正在显示的内容。
+	performRequest( 'paihang', params);
 });*/
 </script>
 	

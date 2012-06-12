@@ -1,0 +1,83 @@
+<?php
+// $Id$
+
+/**
+ * 实现钩子hook_menu().
+ */
+function scode_menu() {
+  $items['school/autocomplete'] = array(
+    'title' => 'School autocomplete',
+    'page callback' => 'school_autocomplete',
+    'access callback' => 'user_access',
+    'access arguments' => array('access administration pages'),
+    'type' => MENU_CALLBACK,
+    'file' => 'scode.pages.inc',
+  );
+  
+  $items['admin/content/scode/generate'] = array(
+    'title' => '生成验证码',
+    'page callback' => 'scode_generate_page',
+    'access callback' => 'user_access',
+		'access arguments' => array('access administration pages'),
+		'type' => MENU_LOCAL_TASK,
+    'file' => 'scode.pages.inc',
+		'weight' => 3,
+  );
+	$items['admin/content/scode'] = array(
+    'title' => '验证码管理',
+    'page callback' => 'scode_admin_page',
+    'access callback' => 'user_access',
+		'access arguments' => array('access administration pages'),
+    'file' => 'scode.pages.inc',
+  );
+	$items['admin/content/scode/new'] = array(
+    'title' => '验证码管理',
+    'page callback' => 'scode_admin_page',
+    'access callback' => 'user_access',
+		'access arguments' => array('access administration pages'),
+		'type' => MENU_DEFAULT_LOCAL_TASK,
+    'file' => 'scode.pages.inc',
+		'weight' => 0,
+  );
+	$items['admin/content/scode/open'] = array(
+    'title' => '已发放的验证码',
+    'page callback' => 'scode_admin_open_page',
+    'access callback' => 'user_access',
+		'access arguments' => array('access administration pages'),
+		'type' => MENU_LOCAL_TASK,
+    'file' => 'scode.pages.inc',
+		'weight' => 1,
+  );
+	$items['admin/content/scode/used'] = array(
+    'title' => '已使用的验证码',
+    'page callback' => 'scode_admin_used_page',
+    'access callback' => 'user_access',
+		'access arguments' => array('access administration pages'),
+		'type' => MENU_LOCAL_TASK,
+    'file' => 'scode.pages.inc',
+		'weight' => 2,
+  );
+  return $items;
+}
+/**
+ * 实现钩子hook_theme()
+ */
+function scode_theme() {
+ return array(
+    'scode_admin_codes' => array(
+      'arguments' => array('form' => NULL),
+      'file' => 'scode.pages.inc',
+    ),
+		'scode_admin_open_codes' => array(
+      'arguments' => array('form' => NULL),
+      'file' => 'scode.pages.inc',
+    ),
+		'scode_admin_used_codes' => array(
+      'arguments' => array('form' => NULL),
+      'file' => 'scode.pages.inc',
+    ),
+  );
+}
+
+
+

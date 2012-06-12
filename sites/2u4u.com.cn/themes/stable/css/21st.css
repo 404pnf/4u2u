@@ -12,7 +12,7 @@
 
 /* 全页公用样式布局 */
 #zhichang h2,#translate h2,#RSS h2,#baowanglianxian h2,#englishlearning h2,#englishquiz h2{ background-image: url("images/back01.gif");color: #990000;font-size: 14px;line-height:33px; text-indent:2em;}
-.view-content{ padding:10px 0 20px 0}
+.view-content{ padding:10px 0 10px 0}
 .view-content .views-row{ width:84%; height:24px; line-height:24px; overflow:hidden; margin:auto;}
 .view-content .views-row a{ color:#3d3d3d}
 .view-content .views-row .views-label-title{ color:#c60100; font-weight:700; margin-right:2px;}
@@ -72,12 +72,13 @@
 #RSS_text a:hover{ text-decoration:underline; color:#990000}
 #RSS_pic{float:right}
 #RSS_pic2{ padding:10px 0 0 0; border-top:1px dashed #CCC;}
-
+#rss_rss{*+overflow:auto;*+margin-left:2.6em;*+padding-top:.6em;_margin-left:0;_padding-top:0;}
+#rss_rss a{background: url("images/rss.gif") no-repeat scroll 2px 0 transparent;padding:6px 0 3px 2.6em;color: #1D77A0;font-weight:700;}
 
 /* 职场直通车局部布局 */
 #zhichang .view-content .views-row { background:url("images/style.gif") no-repeat scroll 2px -247px transparent; text-indent:1em;}
 #zhichang .view-content {padding-bottom:0;}
-#zhichang .view-footer{ text-align:right; padding:6px 30px 14px 0}
+#zhichang .view-footer{ text-align:right; padding:6px 30px 6px 0}
 #zhichang .view-footer a{ color:#B40000}
 
 /* 修正 FOOTER 的背景边距 */

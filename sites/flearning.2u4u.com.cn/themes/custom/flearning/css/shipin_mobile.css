@@ -1,23 +1,39 @@
 /* -------------------------------------视频开始啦 -------------------------------------*/
-
+video{
+	z-index: 100px;
+}
 /*---视频标题中 收藏 、分享等按钮--*/
-.mobile-shipin .flag-bookmarks a {
-	background: url("images/shoucang.png") no-repeat;
+.mobile-shipin .flag-wrapper a{
 	display: block;
 	width: 75px;
 	height: 30px;
-	float: right;
-	margin-right: 22px;
 	margin-top: 10px;
 	font-size: 16px;
 	color: #1E3037;
 	line-height: 30px;
 	text-indent: 23px;
+	position: absolute;
+	top: 0px;
+	right: 22px;
+}
+
+.mobile-shipin .flag-bookmarks a {
+	background: url("images/shoucang.png") no-repeat;
 
 }
+.mobile-shipin .flag-wrapper a.fenxiang {
+	right: 132px;
+}
+
 .mobile-shipin .flag-bookmarks a.unflag-action{
 	color: #738D97;
 }
+
+/*------暂停视频图片-------*/
+.video-pause{
+	display:none;
+}
+/*--------end 暂停视频图片---*/
 
 /* 保持附件的相对位置，clear:both让after不飘到before的位置 */
 
@@ -25,9 +41,14 @@
 	position: absolute;
 	display: block;
 	clear: both;
-	height: 400px;
+
 	left: 20px;
-	width: 728px;
+	width: 727px;
+	
+	background: url("images/Vtab_btn.png") repeat-x;
+	height: 56px;
+
+	border-right:1px solid #4F5A65;
 }
 /* 可点击的按钮 */
 
@@ -101,13 +122,14 @@
 	border-right:1px solid #4f5a65;
 	border-bottom:1px solid #9da2a6;
 	box-shadow:0px 1px 1px #49535c;
-	
+	/*
 	height: 400px;
 	overflow-y: scroll;
-	
+	*/
 	padding: 30px 15px;
 	font-size: 1.5em;
 	line-height: 1.7em;
+	width: 696px;
 
 }
 

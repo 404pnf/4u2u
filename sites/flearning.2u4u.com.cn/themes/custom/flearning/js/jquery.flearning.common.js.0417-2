@@ -1,0 +1,98 @@
+function performRequest( cmdName, params){
+	
+	
+	
+	switch(cmdName){
+		case "paihang":
+		;
+		case "shoucang":	
+		;
+		case "info":	
+		;
+		case "lishi":	
+			var btnleft = params.btnLeft;
+			var btnwidth = params.btnwidth;
+			var btnstatus = params.btnstatus;
+			var re = displayOverlayer(cmdName, btnleft, btnwidth, btnstatus);
+		break;
+		case "yanzheng":
+			var btnleft = params.btnLeft;
+			var btnwidth = params.btnwidth;
+			var btnstatus = params.btnstatus;
+			var machineID = params.machineID;
+			yanzhengAddMachineID(cmdName, machineID)
+			var re = displayOverlayer(cmdName, btnleft, btnwidth, btnstatus);
+		break;
+		default:
+			alert('cmdName:'+cmdName);
+		break;
+	}
+	
+	return re;
+}
+
+
+function displayOverlayer(cmdName, btnleft, btnwidth, btnstatus){
+	
+	
+	
+	var contentId = $('#over_'+cmdName+' .content');
+	var contentW = contentId.width()>300?contentId.width():300;
+	var arrowleft = Number(btnleft) + btnwidth/2-8;
+	var contentleft = Number(btnleft)+contentW;
+//alert(' cmdName:'+cmdName+' btnleft:'+btnleft+' contentleft:'+contentleft+' btnstatus:'+btnstatus);
+
+	$('#over_'+cmdName+' .arrow').css({'left':arrowleft+'px'});
+
+	if(contentleft>600){
+		contentId.css({'right':'20px'});
+		
+	}
+	else{
+		contentId.css({'left':btnleft+'px'});
+	}
+	
+	if(btnstatus == '' || btnstatus == 'normal' || btnstatus == 'touched'){
+		
+		$('.overlayer').hide('fast');
+		ajaxcontent(cmdName);
+		
+		$('#over_'+cmdName).toggle('slow');
+	}				
+	else {
+		$('.overlayer').hide('fast');
+	}
+	
+	return 'success';
+}
+
+function yanzhengAddMachineID(cmdName, machineID){
+	var machineIDinput = $('#over_'+cmdName+' .content #edit-machineID');
+	
+	machineIDinput.val(machineID);
+	alert(' machineID:'+machineID);
+	
+}
+
+function ajaxcontent(cmdName){
+	var cmdurl = 'http://ilearning.2u4u.com.cn/'+cmdName;
+	//alert(cmdurl);
+	$.ajax({ 
+		type: "get",// 指定是post还是get,当然此处要提交,当然就要用post了   
+		cache: "false",// 默认: true,dataType为script时默认为false) jQuery 1.2 新功能，设置为 false 将不会从浏览器缓存中加载请求信息。   
+		url: cmdurl,// 发送请求的地址。   
+		//data: 'uid='+uid+'&sess_id='+session+'&key=aa',//发送到服务器的数据   
+		dataType: "text",// 返回纯文本字符串 
+		timeout:20000,// 设置请求超时时间（毫秒）。 
+		error: function (error) {// 请求失败时调用函数。  
+			//alert(" 请求失败!"+error);
+		 }, 
+		success: function(message) 
+		{  //请求成功后回调函数。
+		
+			//alert( message);
+			
+			$('#over_'+cmdName+' .content-inner').html(message);
+		}
+	});
+}

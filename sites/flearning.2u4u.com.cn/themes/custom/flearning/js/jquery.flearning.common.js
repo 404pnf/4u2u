@@ -44,14 +44,18 @@ function displayOverlayer(cmdName, btnleft, btnwidth, btnstatus){
 	var contentleft = Number(btnleft)+contentW;
 //alert(' cmdName:'+cmdName+' btnleft:'+btnleft+' contentleft:'+contentleft+' btnstatus:'+btnstatus);
 
-	$('#over_'+cmdName+' .arrow').css({'left':arrowleft+'px'});
+	var contenttop = 0; 
+	if(cmdName == 'yanzheng')
+		contenttop = 60;
+
+	$('#over_'+cmdName+' .arrow').css({'left':arrowleft+'px','top':contenttop+'px'});
 
 	if(contentleft>600){
-		contentId.css({'right':'20px'});
+		contentId.css({'right':'20px','top':contenttop+'px'});
 		
 	}
 	else{
-		contentId.css({'left':btnleft+'px'});
+		contentId.css({'left':btnleft+'px','top':contenttop+'px'});
 	}
 	
 	if(btnstatus == '' || btnstatus == 'normal' || btnstatus == 'touched'){
@@ -70,6 +74,9 @@ function displayOverlayer(cmdName, btnleft, btnwidth, btnstatus){
 	}				
 	else {
 		$('.overlayer').hide('fast');
+		
+		if(cmdName == 'yanzheng') 		
+			location.reload();
 		
 		//显示video标签
 		$('.page-mshipin video').attr('style','display:block;').next('.video-pause').attr('style','display:none;');
@@ -326,11 +333,26 @@ function flag_lishi_delete(nid){
 //-------end -历史记录 单个 及时删除功能 ------
 
 
-//------- 返回按钮-------
+//------- 返回按钮、验证取消按钮-------
 $(function(){
 	$('.fanhui').click(function (){
 		history.go(-1);
 
 	});
+	
+	$('.cancle_btn').click(function (){
+		$('#over_yanzheng').hide('fast');
+
+	});
+	
 });
 //-------end 返回按钮-------
+
+
+//---------- 页面内验证注册码按钮--------
+
+function yanzheng_btn_click(){
+
+	
+	location.href = "news://yz_yanzheng";
+}

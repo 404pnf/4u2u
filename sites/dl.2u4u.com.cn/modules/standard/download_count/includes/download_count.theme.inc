@@ -1,5 +1,4 @@
 <?php
-// $Id: download_count.theme.inc,v 1.1.2.4 2010/12/20 18:41:47 worldfallz Exp $
 
 /**
  * @file
@@ -9,12 +8,12 @@ function theme_download_count_upload_attachments($files, $downloads) {
   $header = array(t('Attachment'), t('Size'), t('Downloads'), t('Last Download'));
   $rows = array();
   foreach ($files as $file) {
-    $file = (object)$file;
+    $file = (object) $file;
     if (isset($file->list) && empty($file->remove)) {
       $href = function_exists('_private_upload_create_url') ? _private_upload_create_url($file) : file_create_url($file->filepath);
       $text = $file->description ? $file->description : $file->filename;
       $last = isset($downloads[$file->filename]['last']) ? t('@time ago', array('@time' => format_interval(time() - $downloads[$file->filename]['last']))) : 'never';
-      $count = isset($downloads[$file->filename]['count']) ? $downloads[$file->filename]['count'] : 0 ;
+      $count = isset($downloads[$file->filename]['count']) ? $downloads[$file->filename]['count'] : 0;
       $rows[] = array(l($text, $href), format_size($file->filesize), $count, $last);
     }
   }
@@ -33,7 +32,7 @@ function theme_download_count_formatter_download_count($element) {
   $file = $element['#item'];
   $node = $element['#node'];
   $field = content_fields($element['#field_name']);
-  $filepath=$file['filepath'];
+  $filepath = $file['filepath'];
 
   if (user_access('view own download counts') && $user->uid != 1) {
     $count = db_result(db_query("SELECT COUNT(dc.dcid) FROM {download_count} dc JOIN {files} f ON dc.fid = f.fid WHERE f.filepath = '%s' AND dc.nid = %d AND dc.uid = %d", $filepath, $node->nid, $user->uid));
@@ -42,11 +41,11 @@ function theme_download_count_formatter_download_count($element) {
     $count = db_result(db_query("SELECT COUNT(dc.dcid) FROM {download_count} dc JOIN {files} f ON dc.fid = f.fid WHERE f.filepath = '%s' AND dc.nid = %d", $filepath, $node->nid));
   }
 
-  $output=theme('filefield_file', $file);
+  $output = theme('filefield_file', $file);
   if ($output) {
 
     if (user_access('view all download counts') || user_access('view own download counts')) {
-      $text=' &mdash; ';
+      $text = ' &mdash; ';
       if ($count) {
         $text .= format_plural($count, 'Downloaded 1 time', 'Downloaded @count times');
       }
@@ -55,10 +54,10 @@ function theme_download_count_formatter_download_count($element) {
       }
     }
     else {
-      $text='';
+      $text = '';
     }
 
-    if (drupal_substr($output, -6)=='</div>') {
+    if (drupal_substr($output, -6) == '</div>') {
       return drupal_substr($output, 0, -6) . $text . '</div>';
     }
     else {

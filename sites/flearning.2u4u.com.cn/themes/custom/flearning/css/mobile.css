@@ -194,8 +194,9 @@
 /*-------- end 高级搜索页面------*/
 
 
-/*---返回按钮--*/
-.flag-wrapper .fanhui {
+/*---返回按钮、验证按钮--*/
+.flag-wrapper .fanhui ,
+.yanzheng-wrapper .yanzheng{
 	display: block;
 	width: 75px;
 	height: 30px;
@@ -206,7 +207,7 @@
 	text-indent: 23px;
 	position: absolute;
 	top: 0px;
-	right: 22px;
+	left: 22px;
 
 	background: url("images/back_btn.png") no-repeat;
 	left: 22px;
@@ -214,6 +215,10 @@
 	text-indent: 10px;
 	
 	cursor: pointer;
+}
+.yanzheng-wrapper .yanzheng{
+	top: 0px;
+	left: 671px;
 }
 /*---end 返回按钮--*/
 

@@ -1,5 +1,4 @@
 <?php
-// $Id: download_count.views_default.inc,v 1.1.2.1 2010/12/20 18:41:47 worldfallz Exp $
 
 /**
  * @file

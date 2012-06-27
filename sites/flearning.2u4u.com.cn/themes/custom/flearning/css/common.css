@@ -418,6 +418,9 @@ div.warning {
 #over_content #over_info .content{
 	width: 600px;
 }
+#over_content #over_yanzheng .content{
+	width: 360px;
+}
 #over_content .overlayer .content .content-inner{
 	border-radius:0.5em;
 	border:2px groove #7c8083;
@@ -452,15 +455,21 @@ div.warning {
 	padding: 2px;
 	font-size: 16px;
 }
-#iLearning-serial-verify-form #edit-submit{
+#iLearning-serial-verify-form #edit-submit,
+#iLearning-serial-verify-form .cancle_btn{
 	background: url("images/yanzheng_btn.png") no-repeat;
 	padding: 5px 9px 5px 11px;
 	border: 0px;
 	letter-spacing: 2px;
 	font-size: 16px;
+	float: left;
 }
 
-
+#iLearning-serial-verify-form .cancle_btn{
+	line-height: 20px;
+	color: #000000;
+	padding-top: 4px;
+}
 /* ------- end toolbar 栏 的内容层 ------- */
 
 /*--------节点页面共同需要隐藏掉的内容--------*/

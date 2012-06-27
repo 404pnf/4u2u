@@ -1,5 +1,4 @@
 <?php
-// $Id: download_count.views.inc,v 1.1.2.6 2010/12/22 21:32:41 worldfallz Exp $
 
 /**
  * @file
@@ -12,7 +11,7 @@
 function download_count_views_handlers() {
   return array(
     'info' => array(
-      'path' => drupal_get_path('module', 'download_count') .'/includes',
+      'path' => drupal_get_path('module', 'download_count') . '/includes',
     ),
     'handlers' => array(
       'download_count_views_handler_field_file' => array(

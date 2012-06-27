@@ -1,5 +1,4 @@
 <?php
-// $Id: download_count.module,v 1.20.2.21 2011/01/20 21:43:20 worldfallz Exp $
 
 /**
  * @file
@@ -12,7 +11,7 @@
 function download_count_help($path, $arg) {
   switch ($path) {
     case 'admin/help#download_count':
-    return '<p>'. t("Tracks file downloads for files stored in the drupal files table. Requires either the 'private' download method setting or the method for combined public and private files described at <a href=@link>http://drupal.org/node/189239</a>. Also logs a message to the watchdog table.", array('@link' => url('http://drupal.org/node/189239'))) .'</p>';
+      return '<p>' . t("Tracks file downloads for files stored in the drupal files table. Requires either the 'private' download method setting or the method for combined public and private files described at <a href=@link>http://drupal.org/node/189239</a>. Also logs a message to the watchdog table.", array('@link' => url('http://drupal.org/node/189239'))) . '</p>';
   }
 }
 
@@ -37,12 +36,12 @@ function download_count_menu() {
     'page arguments' => array('download_count_admin_settings'),
     'access arguments' => array('administer site configuration'),
     'file' => 'includes/download_count.admin.inc',
-    );
+  );
   $items['admin/settings/download_count/general'] = array(
     'title' => 'General',
     'weight' => 1,
     'type' => MENU_DEFAULT_LOCAL_TASK,
-    );
+  );
   $items['download_count/%download_count_entry/reset'] = array(
     'title' => 'Download Count Reset',
     'page callback' => 'drupal_get_form',
@@ -50,7 +49,7 @@ function download_count_menu() {
     'access arguments' => array('administer site configuration'),
     'type' => MENU_CALLBACK,
     'file' => 'includes/download_count.pages.inc',
-    );
+  );
   $items['download_count/%download_count_entry/export'] = array(
     'title' => 'Download Count Export CSV',
     'page callback' => 'drupal_get_form',
@@ -58,7 +57,7 @@ function download_count_menu() {
     'access arguments' => array('export download counts'),
     'type' => MENU_CALLBACK,
     'file' => 'includes/download_count.export.inc',
-    );
+  );
   $items['download_count'] = array(
     'title' => 'Download Count',
     'page callback' => 'download_count_view_page',
@@ -66,7 +65,7 @@ function download_count_menu() {
     'access arguments' => array('view all download counts'),
     'type' => MENU_NORMAL_ITEM,
     'file' => 'includes/download_count.pages.inc',
-    );
+  );
   $items['my_download_count'] = array(
     'title' => 'My Download Count',
     'page callback' => 'download_count_view_page',
@@ -74,7 +73,7 @@ function download_count_menu() {
     'access arguments' => array('view own download counts'),
     'type' => MENU_NORMAL_ITEM,
     'file' => '/includes/download_count.pages.inc',
-    );
+  );
 
   return $items;
 }
@@ -92,7 +91,7 @@ function download_count_entry_load($dcid) {
 function download_count_nodeapi(&$node, $op, $teaser) {
   $result = array();
   switch ($op) {
-    case 'view' :
+    case 'view':
       if (isset($node->files) && count($node->files) && user_access('view uploaded files') && !$teaser) {
         global $user;
         if (user_access('view own download counts') && $user->uid != 1) {
@@ -119,14 +118,14 @@ function download_count_nodeapi(&$node, $op, $teaser) {
  */
 function download_count_theme() {
   return array(
-    'download_count_upload_attachments'  => array(
+    'download_count_upload_attachments' => array(
       'arguments' => array('files' => NULL, 'downloads' => NULL),
       'file' => 'includes/download_count.theme.inc',
     ),
     'download_count_formatter_download_count' => array(
       'arguments' => array('element' => NULL),
       'file' => 'includes/download_count.theme.inc',
-  ),
+    ),
   );
 }
 
@@ -137,7 +136,8 @@ function download_count_field_formatter_info() {
       'field types' => array('filefield'),
       'multiple values' => CONTENT_HANDLE_CORE,
       'description' => t('Displays all kinds of files with an icon and a linked file description with download count information.'),
-  ));
+    ),
+  );
 }
 
 /**
@@ -146,7 +146,7 @@ function download_count_field_formatter_info() {
 function download_count_views_api() {
   return array(
     'api' => 2.0,
-    'path' => drupal_get_path('module', 'download_count') . '/includes'
+    'path' => drupal_get_path('module', 'download_count') . '/includes',
   );
 }
 
@@ -155,7 +155,9 @@ function download_count_views_api() {
  */
 function download_count_file_download($filename, $checkonly = FALSE) {
   // Special use of hook_file_download() - 2nd argument added to indicate that it is not a download, but only an access check.
-  if ($checkonly) return;
+  if ($checkonly) {
+    return;
+  }
 
   global $user;
 
@@ -171,23 +173,23 @@ function download_count_file_download($filename, $checkonly = FALSE) {
   // NULL: not known
   // FALSE: not accessible
   // TRUE: accessible
-  $accessible_file=NULL;
+  $accessible_file = NULL;
 
   // check if the file is known by Upload
-  $accessible_file=_download_count_is_accessible_by_upload($filepath);
+  $accessible_file = _download_count_is_accessible_by_upload($filepath);
 
-  if ($accessible_file===NULL) {
+  if ($accessible_file === NULL) {
     // check if the file is known by CCK FileField
-    $accessible_file=_download_count_is_accessible_by_filefield($filepath);
+    $accessible_file = _download_count_is_accessible_by_filefield($filepath);
   }
 
-  if ($accessible_file===NULL) {
+  if ($accessible_file === NULL) {
     // not known by any hooks, so we don't care about this file
     return;
   }
 
   // inaccessible file
-  if ($accessible_file===FALSE) {
+  if ($accessible_file === FALSE) {
     watchdog('download_count', 'Failed to download %file', array('%file' => $filename), WATCHDOG_ERROR);
     return;
   }
@@ -223,7 +225,7 @@ function download_count_file_download($filename, $checkonly = FALSE) {
  * Implementation of hook_block().
  *
  */
-function download_count_block($op='list' , $delta=0, $edit=array()) {
+function download_count_block($op = 'list', $delta = 0, $edit = array()) {
   switch ($op) {
 
     case 'list':
@@ -239,57 +241,57 @@ function download_count_block($op='list' , $delta=0, $edit=array()) {
         '#title' => t('Number of items to display'),
         '#size' => 5,
         '#default_value' => variable_get('download_count_' . $delta . '_block_limit', 10),
-        );
+      );
       $form['download_count_' . $delta . '_show_size'] = array(
         '#type' => 'checkbox',
         '#title' => t('Display aggregated filesize'),
         '#default_value' => variable_get('download_count_' . $delta . '_show_size', 0),
-        );
+      );
       $form['download_count_' . $delta . '_show_last'] = array(
         '#type' => 'checkbox',
         '#title' => t('Display last download datetime'),
         '#default_value' => variable_get('download_count_' . $delta . '_show_last', 0),
-        );
+      );
       if ($delta == 'files') {
         $form['download_count_files_file_links'] = array(
           '#type' => 'checkbox',
           '#title' => t('Display files names as links (based on permissions).'),
           '#default_value' => variable_get('download_count_files_file_links', 1),
-          );
+        );
       }
       return $form;
 
-    case 'save' :
+    case 'save':
       variable_set('download_count_' . $delta . '_block_limit', $edit['download_count_' . $delta . '_block_limit']);
       variable_set('download_count_' . $delta . '_show_size', $edit['download_count_' . $delta . '_show_size']);
       variable_set('download_count_' . $delta . '_show_last', $edit['download_count_' . $delta . '_show_last']);
       $delta == 'files' ? variable_set('download_count_files_file_links', $edit['download_count_files_file_links']) : NULL;
       break;
 
-      case 'view':
-        switch ($delta) {
-          case 'files':
-            $blocks['subject'] = t('Top Downloaded Files');
-            $blocks['content'] = _download_count_block_contents('files');
-            break;
+    case 'view':
+      switch ($delta) {
+        case 'files':
+          $blocks['subject'] = t('Top Downloaded Files');
+          $blocks['content'] = _download_count_block_contents('files');
+          break;
 
-          case 'downloaders':
-            $blocks['subject'] = t('Top Downloaders');
-            $blocks['content'] = _download_count_block_contents('downloaders');
-            break;
+        case 'downloaders':
+          $blocks['subject'] = t('Top Downloaders');
+          $blocks['content'] = _download_count_block_contents('downloaders');
+          break;
 
-          case 'users':
-            $blocks['subject'] = t('Top Downloaded Users');
-            $blocks['content'] = _download_count_block_contents('users');
-            break;
+        case 'users':
+          $blocks['subject'] = t('Top Downloaded Users');
+          $blocks['content'] = _download_count_block_contents('users');
+          break;
 
-          case 'nodes':
-            $blocks['subject'] = t('Top Downloaded Nodes');
-            $blocks['content'] = _download_count_block_contents('nodes');
-            break;
-        }
+        case 'nodes':
+          $blocks['subject'] = t('Top Downloaded Nodes');
+          $blocks['content'] = _download_count_block_contents('nodes');
+          break;
+      }
 
-    return $blocks;
+      return $blocks;
   }
 }
 
@@ -298,7 +300,9 @@ function download_count_block($op='list' , $delta=0, $edit=array()) {
  */
 function _download_count_get_file_by_upload($filepath) {
   // check if Upload is enabled
-  if (!function_exists('upload_perm')) return NULL; // upload not enabled
+  if (!function_exists('upload_perm')) {
+    return NULL;
+  } // upload not enabled
 
   $result = db_query("SELECT u.nid, u.vid, f.filepath, f.fid FROM {upload} u JOIN {files} f ON f.fid = u.fid WHERE f.filepath = '%s'", $filepath);
   return db_fetch_object($result);
@@ -317,15 +321,21 @@ function _download_count_is_accessible_by_upload($filepath) {
 }
 
 function _download_count_is_accessible_by_filefield($file) {
-  $nodes=_download_count_get_nodes_by_filefield($file);
-  if ($nodes===FALSE) return FALSE;
-  if ($nodes===NULL) return NULL;
+  $nodes = _download_count_get_nodes_by_filefield($file);
+  if ($nodes === FALSE) {
+    return FALSE;
+  }
+  if ($nodes === NULL) {
+    return NULL;
+  }
   return TRUE;
 }
 
 function _download_count_get_nodes_by_filefield($file) {
   // check if FileField is enabled
-  if (!function_exists('filefield_view_access')) return NULL; // not enabled
+  if (!function_exists('filefield_view_access')) {
+    return NULL;
+  } // not enabled
 
   // The following logic is snipped from filefield.module 1.209 2009/10/20 17:46:22
   // which is part of CCK FileField 6.x-3.2 release, see http://drupal.org/project/filefield
@@ -347,11 +357,11 @@ function _download_count_get_nodes_by_filefield($file) {
 
       $columns = array('vid', 'nid');
       foreach ($db_info['columns'] as $property_name => $column_info) {
-        $columns[] = $column_info['column'] .' AS '. $property_name;
+        $columns[] = $column_info['column'] . ' AS ' . $property_name;
       }
-      $result = db_query("SELECT ". implode(', ', $columns) ."
-                          FROM {". $table ."}
-                          WHERE ". $fid_column ." = %d", $file->fid);
+      $result = db_query("SELECT " . implode(', ', $columns) . "
+                          FROM {" . $table . "}
+                          WHERE " . $fid_column . " = %d", $file->fid);
 
       while ($content = db_fetch_array($result)) {
         $content['field'] = $field;
@@ -410,10 +420,22 @@ function _download_count_block_contents($block) {
   switch ($block) {
     case 'files':
       $rows = array();
-      $header[] = array('data' => t('Filename'), 'class' => 'filename');
-      $header[] = $show_size ? array('data' => t('Size'), 'class' => 'size') : '';
-      $header[] = array('data' => t('Count'), 'class' => 'count');
-      $header[] = $show_last ? array('data' => t('Last Downloaded'), 'class' => 'last') : '';
+      $header[] = array(
+        'data' => t('Filename'),
+        'class' => 'filename',
+      );
+      $header[] = $show_size ? array(
+        'data' => t('Size'),
+        'class' => 'size',
+      ) : '';
+      $header[] = array(
+        'data' => t('Count'),
+        'class' => 'count',
+      );
+      $header[] = $show_last ? array(
+        'data' => t('Last Downloaded'),
+        'class' => 'last',
+      ) : '';
 
       if (user_access('view all download counts')) {
         $result = db_query('SELECT COUNT(dc.dcid) AS count, f.filename, f.filepath, f.fid, SUM(f.filesize) AS size, MAX(dc.timestamp) as last FROM {download_count} dc JOIN {files} f ON dc.fid = f.fid GROUP BY f.filename ORDER BY count DESC LIMIT %d', (int) $limit);
@@ -435,10 +457,22 @@ function _download_count_block_contents($block) {
 
     case 'downloaders':
       $rows = array();
-      $header[] = array('data' => t('User'), 'class' => 'user');
-      $header[] = $show_size ? array('data' => t('Size'), 'class' => 'size') : '';
-      $header[] = array('data' => t('Count'), 'class' => 'count');
-      $header[] = $show_last ? array('data' => t('Last Downloaded'), 'class' => 'last') : '';
+      $header[] = array(
+        'data' => t('User'),
+        'class' => 'user',
+      );
+      $header[] = $show_size ? array(
+        'data' => t('Size'),
+        'class' => 'size',
+      ) : '';
+      $header[] = array(
+        'data' => t('Count'),
+        'class' => 'count',
+      );
+      $header[] = $show_last ? array(
+        'data' => t('Last Downloaded'),
+        'class' => 'last',
+      ) : '';
 
       if (user_access('view all download counts')) {
         $result = db_query('SELECT COUNT(dc.dcid) AS count, SUM(f.filesize) AS size, u.name, u.uid, MAX(dc.timestamp) as last FROM {download_count} dc JOIN {users} u ON dc.uid = u.uid JOIN {files} f on dc.fid = f.fid GROUP BY u.name ORDER BY count DESC LIMIT %d', (int) $limit);
@@ -460,10 +494,22 @@ function _download_count_block_contents($block) {
 
     case 'users':
       $rows = array();
-      $header[] = array('data' => t('User'), 'class' => 'user');
-      $header[] = $show_size ? array('data' => t('Size'), 'class' => 'size') : '';
-      $header[] = array('data' => t('Count'), 'class' => 'count');
-      $header[] = $show_last ? array('data' => t('Last Downloaded'), 'class' => 'last') : '';
+      $header[] = array(
+        'data' => t('User'),
+        'class' => 'user',
+      );
+      $header[] = $show_size ? array(
+        'data' => t('Size'),
+        'class' => 'size',
+      ) : '';
+      $header[] = array(
+        'data' => t('Count'),
+        'class' => 'count',
+      );
+      $header[] = $show_last ? array(
+        'data' => t('Last Downloaded'),
+        'class' => 'last',
+      ) : '';
 
       if (user_access('view all download counts')) {
         $result = db_query('SELECT COUNT(dc.dcid) AS count, SUM(f.filesize) AS size, u.name, u.uid, MAX(dc.timestamp) as last FROM {download_count} dc JOIN {files} f on dc.fid = f.fid JOIN {users} u ON f.uid = u.uid GROUP BY u.name ORDER BY count DESC LIMIT %d', (int) $limit);
@@ -485,10 +531,22 @@ function _download_count_block_contents($block) {
 
     case 'nodes':
       $rows = array();
-      $header[] = array('data' => t('Page'), 'class' => 'node');
-      $header[] = $show_size ? array('data' => t('Size'), 'class' => 'size') : '';
-      $header[] = array('data' => t('Count'), 'class' => 'count');
-      $header[] = $show_last ? array('data' => t('Last Downloaded'), 'class' => 'last') : '';
+      $header[] = array(
+        'data' => t('Page'),
+        'class' => 'node',
+      );
+      $header[] = $show_size ? array(
+        'data' => t('Size'),
+        'class' => 'size',
+      ) : '';
+      $header[] = array(
+        'data' => t('Count'),
+        'class' => 'count',
+      );
+      $header[] = $show_last ? array(
+        'data' => t('Last Downloaded'),
+        'class' => 'last',
+      ) : '';
 
       if (user_access('view all download counts')) {
         $result = db_query('SELECT COUNT(dc.dcid) AS count, SUM(f.filesize) AS size, dc.nid, MAX(dc.timestamp) as last FROM {download_count} dc JOIN {files} f on dc.fid = f.fid GROUP BY dc.nid ORDER BY count DESC LIMIT %d', (int) $limit);
@@ -524,12 +582,30 @@ function download_count_rules_event_info() {
       'label' => t('A file has been downloaded'),
       'module' => 'Download Count',
       'arguments' => array(
-        'filename' => array('type' => 'file', 'label' => t('Filename of the downloaded file.')),
-        'user' => array('type' => 'file', 'label' => t('User object of the user downloading the file.')),
-        'nid' => array('type' => 'file', 'label' => t('Filename of the downloaded file.')),
-        'ip' => array('type' => 'file', 'label' => t('Node id from which the file was downloaded.')),
-        'referrer' => array('type' => 'file', 'label' => t('HTTP Referrer of the downloaded file.')),
-        'time' => array('type' => 'file', 'label' => t('Timestamp of the download.')),
+        'filename' => array(
+          'type' => 'file',
+          'label' => t('Filename of the downloaded file.'),
+        ),
+        'user' => array(
+          'type' => 'file',
+          'label' => t('User object of the user downloading the file.'),
+        ),
+        'nid' => array(
+          'type' => 'file',
+          'label' => t('Filename of the downloaded file.'),
+        ),
+        'ip' => array(
+          'type' => 'file',
+          'label' => t('Node id from which the file was downloaded.'),
+        ),
+        'referrer' => array(
+          'type' => 'file',
+          'label' => t('HTTP Referrer of the downloaded file.'),
+        ),
+        'time' => array(
+          'type' => 'file',
+          'label' => t('Timestamp of the download.'),
+        ),
       ),
     ),
   );

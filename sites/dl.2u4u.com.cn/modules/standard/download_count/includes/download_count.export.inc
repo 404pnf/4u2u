@@ -1,5 +1,4 @@
 <?php
-// $Id: download_count.export.inc,v 1.1.2.3 2011/01/21 19:15:33 worldfallz Exp $
 
 /**
  * @file
@@ -10,6 +9,7 @@
  * Download_count export form.
  */
 function download_count_export_form($form_state, $dc_entry = array()) {
+  drupal_add_js(drupal_get_path('module', 'download_count') . '/download_count.js');
   if ($dc_entry == 'all') {
     drupal_set_title(t('Download Count Export CSV - All Files'));
   }
@@ -95,7 +95,7 @@ function download_count_export_form_submit($form, &$form_state) {
     return;
   }
 
-  drupal_set_header('Content-Disposition: attachment; filename="'. basename($export_file_path) .'"');
+  drupal_set_header('Content-Disposition: attachment; filename="' . basename($export_file_path) . '"');
   drupal_set_header("Content-Length: $file_size");
   drupal_set_header('Content-Type: application/csv; charset=utf-8');
   drupal_set_header('CacheControl: no-cache');

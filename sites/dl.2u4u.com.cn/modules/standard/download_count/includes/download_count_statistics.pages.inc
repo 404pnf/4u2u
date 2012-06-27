@@ -1,5 +1,4 @@
 <?php
-// $Id: download_count_statistics.pages.inc,v 1.1.2.3 2010/12/27 20:44:53 worldfallz Exp $
 
 /**
  * @file
@@ -29,8 +28,17 @@ function download_count_statistics_details_page($arg = NULL) {
   //daily statistics table
   if (variable_get('download_count_statistics_daily', 1)) {
     $caption = "Daily Statistics";
-    $header[] = array('data' => t('Day'), 'field' => 'date', 'sort' => 'desc', 'class' => 'day');
-    $header[] = array('data' => t('Count'), 'field' => 'count', 'class' => 'count');
+    $header[] = array(
+      'data' => t('Day'),
+      'field' => 'date',
+      'sort' => 'desc',
+      'class' => 'day',
+    );
+    $header[] = array(
+      'data' => t('Count'),
+      'field' => 'count',
+      'class' => 'count',
+    );
 
     $rows = array();
     $values = '[';
@@ -58,7 +66,12 @@ function download_count_statistics_details_page($arg = NULL) {
   if (variable_get('download_count_statistics_weekly', 1)) {
     $rows = array();
     $values = '[';
-    $header[0] = array('data' => t('Week'), 'field' => 'date', 'sort' => 'desc', 'class' => 'week');
+    $header[0] = array(
+      'data' => t('Week'),
+      'field' => 'date',
+      'sort' => 'desc',
+      'class' => 'week',
+    );
     $caption = "Weekly Statistics";
     $first_day = variable_get('date_first_day', '0');
     if ($first_day == 0) {
@@ -72,7 +85,7 @@ function download_count_statistics_details_page($arg = NULL) {
     $result = db_query("SELECT *, SUM(count) as count, WEEK(DATE(FROM_UNIXTIME(datestamp)), $mode) as week FROM {download_count_statistics} dcs WHERE dcs.fid = $fid GROUP BY WEEK(DATE(FROM_UNIXTIME(datestamp)), $mode) ORDER BY datestamp DESC" . ($limit > 0 ? " LIMIT $limit" : NULL));
     while ($file = db_fetch_object($result)) {
       $row = array();
-      $row[] = $file->week . ' (ending '. date('l m-d-Y', strtotime('+6 days', strtotime(_download_count_statistics_week_start_date($file->week, date('Y', $file->datestamp), $first_day)))) . ')';
+      $row[] = $file->week . ' (ending ' . date('l m-d-Y', strtotime('+6 days', strtotime(_download_count_statistics_week_start_date($file->week, date('Y', $file->datestamp), $first_day)))) . ')';
       $row[] = $file->count;
       $values .= $file->count . ',';
       $rows[] = $row;
@@ -91,7 +104,12 @@ function download_count_statistics_details_page($arg = NULL) {
   if (variable_get('download_count_statistics_monthly', 1)) {
     $rows = array();
     $values = '[';
-    $header[0] = array('data' => t('Month'), 'field' => 'date', 'sort' => 'desc', 'class' => 'month');
+    $header[0] = array(
+      'data' => t('Month'),
+      'field' => 'date',
+      'sort' => 'desc',
+      'class' => 'month',
+    );
     $caption = "Monthly Statistics";
     $limit = check_plain(variable_get('download_count_statistics_monthly_limit', 0));
 
@@ -117,7 +135,12 @@ function download_count_statistics_details_page($arg = NULL) {
   if (variable_get('download_count_statistics_yearly', 1)) {
     $rows = array();
     $values = '[';
-    $header[0] = array('data' => t('Year'), 'field' => 'date', 'sort' => 'desc', 'class' => 'year');
+    $header[0] = array(
+      'data' => t('Year'),
+      'field' => 'date',
+      'sort' => 'desc',
+      'class' => 'year',
+    );
     $caption = "Yearly Statistics";
     $limit = check_plain(variable_get('download_count_statistics_yearly_limit', 0));
 

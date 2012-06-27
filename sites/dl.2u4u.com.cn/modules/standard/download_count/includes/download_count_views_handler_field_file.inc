@@ -1,5 +1,4 @@
 <?php
-// $Id: download_count_views_handler_field_file.inc,v 1.1.2.3 2010/12/22 21:32:41 worldfallz Exp $
 
 /**
  * @file
@@ -40,7 +39,7 @@ class download_count_views_handler_field_file extends views_handler_field_file {
       $this->options['alter']['make_link'] = TRUE;
       $this->options['alter']['path'] = function_exists('_private_upload_create_url') ? _private_upload_create_url($file) : file_create_url($values->{$this->aliases['filepath']});
       if ($data == $file->filepath) {
-        $data = drupal_substr($this->options['alter']['path'], drupal_strlen($base_url)+1);
+        $data = drupal_substr($this->options['alter']['path'], drupal_strlen($base_url) + 1);
       }
     }
     return $data;

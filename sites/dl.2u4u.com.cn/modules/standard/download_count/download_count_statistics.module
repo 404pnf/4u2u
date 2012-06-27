@@ -1,5 +1,4 @@
 <?php
-// $Id: download_count_statistics.module,v 1.1.2.3 2011/01/20 22:01:43 worldfallz Exp $
 
 /**
  * @file
@@ -10,7 +9,7 @@
  * Implementation of hook_init().
  */
 function download_count_statistics_init() {
-  if (arg(0) == 'download_count' && arg(2) == 'details' && variable_get('download_count_statistics_sparklines', 1)) {
+  if (arg(0) == 'download_count' && arg(2) == 'details' && variable_get('download_count_statistics_sparklines', 0)) {
     drupal_add_js(drupal_get_path('module', 'download_count_statistics') . '/jquery.sparkline.min.js');
   }
 }
@@ -21,7 +20,7 @@ function download_count_statistics_init() {
 function download_count_statistics_help($path, $arg) {
   switch ($path) {
     case 'admin/help#download_count_statistics':
-    return '<p>'. t("Provides daily, weekly, monthly, and yearly statistics for <a href=@link>download_count module</a> data. Statistics are cached and updated via cron.", array('@link' => url('http://drupal.org/project/download_count'))) .'</p>';
+      return '<p>' . t("Provides daily, weekly, monthly, and yearly statistics for <a href=@link>download_count module</a> data. Statistics are cached and updated via cron.", array('@link' => url('http://drupal.org/project/download_count'))) . '</p>';
   }
 }
 
@@ -47,7 +46,7 @@ function download_count_statistics_menu() {
     'weight' => 2,
     'type' => MENU_LOCAL_TASK,
     'file' => 'includes/download_count_statistics.admin.inc',
-    );
+  );
   $items['download_count/%download_count_statistics_entry/details'] = array(
     'title' => 'Download Count Details',
     'page callback' => 'download_count_statistics_details_page',
@@ -55,7 +54,7 @@ function download_count_statistics_menu() {
     'access arguments' => array('view download count statistics'),
     'type' => MENU_CALLBACK,
     'file' => 'includes/download_count_statistics.pages.inc',
-    );
+  );
 
   return $items;
 }
@@ -104,5 +103,5 @@ function download_count_statistics_cron() {
  */
 function download_count_statistics_get_daily_count($fid, $date) {
   $sql = "SELECT * FROM {download_count_statistics} WHERE fid = $fid AND DATE(FROM_UNIXTIME(timestamp)) = '$date'";
-return db_result(db_query($sql, $fid, $date));
+  return db_result(db_query($sql, $fid, $date));
 }

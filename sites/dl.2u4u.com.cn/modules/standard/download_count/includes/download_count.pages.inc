@@ -1,5 +1,4 @@
 <?php
-// $Id: download_count.pages.inc,v 1.2.2.23 2011/01/21 19:15:33 worldfallz Exp $
 
 /**
  * @file
@@ -12,13 +11,30 @@ function download_count_view_page($arg = NULL) {
   $header = array();
   $result = NULL;
 
-  $header[] = array('data' => t('Count'), 'field' => 'count', 'sort' => 'desc', 'class' => 'count');
-  $header[] = array('data' => t('File'), 'field' => 'filename', 'class' => 'file');
-  $header[] = array('data' => t('Page'), 'field' => 'title', 'class' => 'page');
-  $header[] = array('data' => t('Last Download'), 'field' => 'last', 'class' => 'date');
+  $header[] = array(
+    'data' => t('Count'),
+    'field' => 'count',
+    'sort' => 'desc',
+    'class' => 'count',
+  );
+  $header[] = array(
+    'data' => t('File'),
+    'field' => 'filename',
+    'class' => 'file',
+  );
+  $header[] = array(
+    'data' => t('Page'),
+    'field' => 'title',
+    'class' => 'page',
+  );
+  $header[] = array(
+    'data' => t('Last Download'),
+    'field' => 'last',
+    'class' => 'date',
+  );
 
   if ($arg == 'download_count') {
-    drupal_set_title(t(variable_get('download_count_view_page_title', 'Download Count')));
+    drupal_set_title(check_plain(variable_get('download_count_view_page_title', t('Download Count'))));
     $limit = (int) variable_get('download_count_view_page_limit', '');
     $file_links = variable_get('download_count_file_links', 1);
 
@@ -31,7 +47,7 @@ function download_count_view_page($arg = NULL) {
     $output = '<div id="download_count_page">';
   }
   elseif ($arg == 'my_download_count') {
-    drupal_set_title(t(variable_get('download_count_mypage_view_page_title', 'My Download Counts')));
+    drupal_set_title(check_plain(variable_get('download_count_mypage_view_page_title', t('My Download Counts'))));
     $limit = (int) variable_get('download_count_mypage_view_page_limit', '');
     $file_links = variable_get('download_count_mypage_file_links', 1);
 
@@ -47,6 +63,7 @@ function download_count_view_page($arg = NULL) {
   $total_downloads = 0;
   $files = array();
   $nodes = array();
+  $colspan = 0;
 
   while ($file = db_fetch_object($result)) {
     $row = array();
@@ -67,7 +84,10 @@ function download_count_view_page($arg = NULL) {
   }
 
   if (empty($rows)) {
-    $rows[] = array(array('data' => t('No files have been downloaded.'), 'colspan' => '4'));
+    $rows[] = array(array(
+        'data' => t('No files have been downloaded.'),
+        'colspan' => '4',
+      ));
   }
 
   if ($colspan > 1) {
@@ -75,7 +95,6 @@ function download_count_view_page($arg = NULL) {
       'data' => t('Action')
         . (user_access('export download counts') ? l(t(' (Export All)'), 'download_count/all/export') : NULL)
         . (user_access('administer site configuration') ? l(t(' (Reset All)'), 'download_count/all/reset') : NULL),
-
       'colspan' => $colspan,
     );
   }
@@ -92,10 +111,22 @@ function download_count_view_page($arg = NULL) {
 function download_count_reset_form($form_state, $dc_entry = array()) {
   $form = array();
   if ($dc_entry != 'all') {
-    $form['dcid'] = array('#type' => 'value', '#value' => $dc_entry['dcid']);
-    $form['filename'] = array('#type' => 'value', '#value' => $dc_entry['filename']);
-    $form['fid'] = array('#type' => 'value', '#value' => $dc_entry['fid']);
-    $form['nid'] = array('#type' => 'value', '#value' => $dc_entry['nid']);
+    $form['dcid'] = array(
+      '#type' => 'value',
+      '#value' => $dc_entry['dcid'],
+    );
+    $form['filename'] = array(
+      '#type' => 'value',
+      '#value' => $dc_entry['filename'],
+    );
+    $form['fid'] = array(
+      '#type' => 'value',
+      '#value' => $dc_entry['fid'],
+    );
+    $form['nid'] = array(
+      '#type' => 'value',
+      '#value' => $dc_entry['nid'],
+    );
     return confirm_form(
       $form,
       t('Are you sure you want to reset the download count for %filename?',
@@ -103,17 +134,20 @@ function download_count_reset_form($form_state, $dc_entry = array()) {
       ),
       'download_count',
       t('This action cannot be undone.'),
-      t('Reset'),  t('Cancel')
+      t('Reset'),   t('Cancel')
     );
   }
   else {
-    $form['dcid'] = array('#type' => 'value', '#value' => 'all');
+    $form['dcid'] = array(
+      '#type' => 'value',
+      '#value' => 'all',
+    );
     return confirm_form(
       $form,
       t('Are you sure you want to reset all download counts?'),
       'download_count',
       t('This action cannot be undone.'),
-      t('Reset All'),  t('Cancel')
+      t('Reset All'),   t('Cancel')
     );
   }
 }

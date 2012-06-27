@@ -1,5 +1,4 @@
 <?php
-// $Id: download_count_statistics.admin.inc,v 1.1.2.3 2011/01/20 21:26:40 worldfallz Exp $
 
 /**
  * @file
@@ -93,7 +92,7 @@ function download_count_statistics_admin_settings() {
   $form['sparklines'] = array(
     '#type' => 'fieldset',
     '#title' => t('Sparkline Options'),
-    '#description' => is_file(drupal_get_path('module', 'download_count_statistics') .'/jquery.sparkline.min.js') ? t('The jquery sparkline plugin is available at: ') . drupal_get_path('module', 'download_count_statistics') .'/jquery.sparkline.min.js' : '<em><span style="color: #A50000;">'. t('This option requires the jquery.sparkline.min.js plugin which is unavailable-- you can download it at <a href="http://omnipotent.net/jquery.sparkline">http://omnipotent.net/jquery.sparkline</a> (just copy the file to the download_count module directory).') .'</span></em>',
+    '#description' => is_file(drupal_get_path('module', 'download_count_statistics') . '/jquery.sparkline.min.js') ? t('The jquery sparkline plugin is available at: ') . drupal_get_path('module', 'download_count_statistics') . '/jquery.sparkline.min.js' : '<em><span style="color: #A50000;">' . t('This option requires the jquery.sparkline.min.js plugin which is unavailable-- you can download it at <a href="http://omnipotent.net/jquery.sparkline">http://omnipotent.net/jquery.sparkline</a> (just copy the file to the download_count module directory).') . '</span></em>',
     '#collapsible' => TRUE,
     '#collapsed' => FALSE,
   );
@@ -107,9 +106,12 @@ function download_count_statistics_admin_settings() {
     '#type' => 'select',
     '#title' => t('Sparkline Type'),
     '#default_value' => variable_get('download_count_statistics_sparkline_type', 'line'),
-    '#options' => array('line' => t('Line'), 'bar' => t('Bar')),
+    '#options' => array(
+      'line' => t('Line'),
+      'bar' => t('Bar'),
+    ),
     '#disabled' => !is_file(drupal_get_path('module', 'download_count_statistics') . '/jquery.sparkline.min.js'),
-    '#description' => 'Specify line or bar graph type.'
+    '#description' => 'Specify line or bar graph type.',
   );
   $form['sparklines']['download_count_statistics_sparkline_min'] = array(
     '#type' => 'textfield',

@@ -64,6 +64,10 @@ function iLearning_serial_verify_form(){
 		'#type' => 'submit',
 		'#value' => t('验证'),
    );
+   $form['cancle'] = array(
+		'#type' => 'item',
+		'#value' => '<div id=yanzheng_cancle class=cancle_btn>取消</div>',
+   );
    
    /*
    $form ['help'] = array(
@@ -256,8 +260,8 @@ function iLearning_serial_AppleID(){
 		return;
 	}	
  
- 	$suser_obj_sql = "SELECT * FROM {ilearning_serial_user} WHERE machineID = '%s' ";
-	$suser_obj = db_fetch_object(db_query($suser_obj_sql,$machineID));
+ 	$suser_obj_sql = "SELECT * FROM {ilearning_serial_user} WHERE machineID = '%s' AND AppleID = '%s' ";
+	$suser_obj = db_fetch_object(db_query($suser_obj_sql,$machineID,$AppleID));
 	if(!empty($suser_obj)){
 		//$user = user_load(array('uid'=>$suser_obj->uid));//登录
 		$xieUrl = 'news://s_'.$suser_obj->serial;

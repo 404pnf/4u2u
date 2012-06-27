@@ -41,7 +41,8 @@
 			<!--内容-->
 			<div id= "page_content" >
 				<?php print $content; ?>
-			</div>		
+			</div>	
+			
 		 </div> <!-- /page-inner -->
 	  </div> <!-- /page -->
 	  
@@ -91,8 +92,7 @@
 			<div class="content-inner">
 				<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;本版是外研社iLearning外语自主学习资源库的移动学习客户端，iLearning以全球化的国际视野，与国际顶尖合作伙伴共同打造非母语环境下的外语学习解决方案。资源整合了国内外知名媒体（BBC、VOA、ITN
 CHINADAILY等），顶尖教育出版机构（剑桥、牛津、培生、麦克米伦等）的优质专业内容，为广大学习者构建了一个自主学习的多媒体、多语种、多终端外语学习平台。</p>
-<center>更多海量资源，请登录iLearning外语自主学习资源库。</center>
-    <center>网站主页：http://ilearning.fltrp.com</center>
+
 			</div>
 		</div>
 	</div>

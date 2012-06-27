@@ -1,0 +1,345 @@
+var machineID='';
+function performRequest( cmdName, params){
+	
+	var re='false';
+	
+	switch(cmdName){
+		case "paihang":
+		;
+		case "shoucang":	
+		;
+		case "info":	
+		;
+		case "lishi":	
+			var btnleft = params.btnLeft;
+			var btnwidth = params.btnwidth;
+			var btnstatus = params.btnstatus;
+			re = displayOverlayer(cmdName, btnleft, btnwidth, btnstatus);
+		break;
+		case "yanzheng":
+			var btnleft = params.btnLeft;
+			var btnwidth = params.btnwidth;
+			var btnstatus = params.btnstatus;
+			machineID = params.machineID;
+			//yanzhengAddMachineID(cmdName, machineID)
+			re = displayOverlayer(cmdName, btnleft, btnwidth, btnstatus);
+		break;
+		
+		default:
+			alert('cmdName:'+cmdName);
+		break;
+	}
+	
+	return re;
+}
+
+//控制标题栏按钮内容显示
+function displayOverlayer(cmdName, btnleft, btnwidth, btnstatus){
+	
+	
+	
+	var contentId = $('#over_'+cmdName+' .content');
+	var contentW = contentId.width()>300?contentId.width():300;
+	var arrowleft = Number(btnleft) + btnwidth/2-8;
+	var contentleft = Number(btnleft)+contentW;
+//alert(' cmdName:'+cmdName+' btnleft:'+btnleft+' contentleft:'+contentleft+' btnstatus:'+btnstatus);
+
+	$('#over_'+cmdName+' .arrow').css({'left':arrowleft+'px'});
+
+	if(contentleft>600){
+		contentId.css({'right':'20px'});
+		
+	}
+	else{
+		contentId.css({'left':btnleft+'px'});
+	}
+	
+	if(btnstatus == '' || btnstatus == 'normal' || btnstatus == 'touched'){
+		
+		$('.overlayer').hide('fast');
+		ajaxcontent(cmdName);
+		
+				
+		$('#over_'+cmdName).toggle('slow');
+		
+		//因为视频node页在客户端中处于最高层，本内容中的链接无法点击，所以先尝试显示此内容时，隐藏video标签。
+		
+		$('.page-mshipin video').attr('style','display:none;').next('.video-pause').attr('style','display:block;');
+		var myVideo = document.getElementsByTagName('video')[0];
+		myVideo.pause();
+	}				
+	else {
+		$('.overlayer').hide('fast');
+		
+		//显示video标签
+		$('.page-mshipin video').attr('style','display:block;').next('.video-pause').attr('style','display:none;');
+		var myVideo = document.getElementsByTagName('video')[0];
+        if (myVideo.paused)
+			myVideo.play();
+
+	}
+	
+	return 'success';
+}
+
+//验证序列号时，给hidden的machineID赋值
+function yanzhengAddMachineID(cmdName){
+	var machineIDinput = $('#over_'+cmdName+' .content #edit-machineID');
+	
+	machineIDinput.val(machineID);
+	//alert(' machineID:'+machineID);
+	
+}
+
+//及时更新导航按钮的内容，如果没有登录，收藏、历史的内容无法获取，使用原有内容。
+function ajaxcontent(cmdName){
+	var cmdurl = 'http://ilearning.2u4u.com.cn/'+cmdName;
+	//alert(cmdurl);
+	$.ajax({ 
+		type: "get",// 指定是post还是get,当然此处要提交,当然就要用post了   
+		cache: "false",// 默认: true,dataType为script时默认为false) jQuery 1.2 新功能，设置为 false 将不会从浏览器缓存中加载请求信息。   
+		url: cmdurl,// 发送请求的地址。   
+		//data: 'uid='+uid+'&sess_id='+session+'&key=aa',//发送到服务器的数据   
+		dataType: "text",// 返回纯文本字符串 
+		timeout:20000,// 设置请求超时时间（毫秒）。 
+		error: function (error) {// 请求失败时调用函数。  
+			//alert(" 请求失败!"+error);
+		 }, 
+		success: function(message) 
+		{  //请求成功后回调函数。
+		
+			//alert( message);
+			
+			$('#over_'+cmdName+' .content-inner').html(message);
+			
+			
+		},
+		complete:function(){
+		//请求成功与否都执行本操作
+			if(cmdName == 'yanzheng')
+				yanzhengAddMachineID(cmdName);
+			//为验证区块添加machineID
+
+/*
+			$('.redirect-url-view .views-field-title a').click(function (){
+
+				markClick(this);
+				//点击图书、视频、应用时，加入历史，并跳转到相应的资源地址
+			});
+*/			
+			if(cmdName == 'shoucang'){
+				$('.redirect-url-view .termrow .flag-bookmarks-delete').click(function (){
+					
+					var that = this;
+					var nid = $(that).attr('nid');
+					$(that).parents('li.termrow').remove();
+					
+					flag_bookmarks_delete(nid);
+				});
+			}
+			if(cmdName == 'lishi'){
+				$('.redirect-url-view .remove-user-lishi').click(function (){
+					
+					var that = this;
+					$(that).attr('style','visibility:hidden;').parents('.redirect-url-view').children('.view-content').html('您还没有历史记录!');
+					
+					remove_user_lishi();
+				});
+				
+				
+				$('.redirect-url-view .termrow .flag-lishi-delete').click(function (){
+					
+					var that = this;
+					var nid = $(that).attr('nid');
+					$(that).parents('li.termrow').remove();
+					
+					flag_lishi_delete(nid);
+				});
+			
+			}
+		}
+	});
+}
+
+/*
+
+//------加入历史部分----------
+function markHistory(histroyUrl,gotoUrl){
+	
+	//var unflagUrl = "/flag/unflag/lishi/"+nid;
+	//var flagUrl = "/flag/flag/lishi/"+nid;
+	
+		// 提交到后台进行验证
+	$.ajax({ 
+		type: "get",// 指定是post还是get,当然此处要提交,当然就要用post了   
+		cache: "false",// 默认: true,dataType为script时默认为false) jQuery 1.2 新功能，设置为 false 将不会从浏览器缓存中加载请求信息。   
+		url: histroyUrl,// 发送请求的地址。   
+		//data: 'uid='+uid+'&sess_id='+session+'&key=aa',//发送到服务器的数据   
+		dataType: "text",// 返回纯文本字符串 
+		timeout:20000,// 设置请求超时时间（毫秒）。 
+		complete:function(){
+			
+			location.href = gotoUrl;
+		}
+	}); 
+		
+	return false;
+		
+}
+
+
+function markClick(that){
+	
+	var gotoUrl = $(that).attr('gotoUrl');
+	var histroyUrl = '';
+	var nid = $(that).attr('nid');
+	
+	if(gotoUrl==undefined || gotoUrl=='')
+		gotoUrl = $(that).attr('href');
+	
+	histroyUrl = $(that).parents('.termrow').find('.flag-nid-'+nid+' .flag-lishi a.flag-action').attr('href');
+	
+	markHistory(histroyUrl,gotoUrl);
+	
+}
+
+$(function(){
+	$('.term-search .views-field-cover a').click(function (){
+		markClick(this);
+	});
+});
+
+$(function(){
+	$('.term-search .views-field-title a').click(function (){
+		markClick(this);
+	});
+});
+
+//--------end 加入历史完成--------
+	*/
+
+	
+	
+//--------收藏夹 及时删除收藏功能 ------
+
+
+function flag_bookmarks_delete(nid){
+	
+	
+	var flagUrl = "/bookmarks_tx/"+nid+"/unflag";
+	
+	$.ajax({ 
+		type: "get",// 指定是post还是get,只获取内容用get  
+		cache: "false",// 默认: true,dataType为script时默认为false) jQuery 1.2 新功能，设置为 false 将不会从浏览器缓存中加载请求信息。   
+		url: flagUrl,// 发送请求的地址。   
+		//data: 'uid='+uid+'&sess_id='+session+'&key=aa',//发送到服务器的数据   
+		dataType: "text",// 返回纯文本字符串 
+		timeout:20000,// 设置请求超时时间（毫秒）。 
+		error: function (error) {// 请求失败时调用函数。  
+			alert(" 请求失败!"+error);
+		 }, 
+		success: function(message) 
+		{  //请求成功后回调函数。
+		
+			//alert( message);
+			
+			//$('#over_'+cmdName+' .content-inner').html(message);
+			
+			
+		}
+	}); 
+		
+	return 'success';
+}
+
+
+
+//-------end -收藏夹 及时删除收藏功能------
+
+
+
+//--------清空历史记录功能 ------
+
+function remove_user_lishi(){
+	
+	var flagUrl = "/remove_user_lishi";
+	
+	$.ajax({ 
+		type: "get",// 指定是post还是get,只获取内容用get  
+		cache: "false",// 默认: true,dataType为script时默认为false) jQuery 1.2 新功能，设置为 false 将不会从浏览器缓存中加载请求信息。   
+		url: flagUrl,// 发送请求的地址。   
+		//data: 'uid='+uid+'&sess_id='+session+'&key=aa',//发送到服务器的数据   
+		dataType: "text",// 返回纯文本字符串 
+		timeout:20000,// 设置请求超时时间（毫秒）。 
+		error: function (error) {// 请求失败时调用函数。  
+			alert(" 请求失败!"+error);
+		 }, 
+		success: function(message) 
+		{  //请求成功后回调函数。
+		
+			//alert( message);
+			
+			//$('#over_'+cmdName+' .content-inner').html(message);
+			
+			
+		}
+	}); 
+		
+	return 'success';
+}
+
+//-------end 清空历史记录功能------
+
+//--------历史记录 单个 及时删除功能 ------
+
+function flag_lishi_delete(nid){
+	
+	
+	var flagUrl = "/flag_lishi_tx/"+nid+"/unflag";
+
+	$.ajax({ 
+		type: "get",// 指定是post还是get,只获取内容用get  
+		cache: "false",// 默认: true,dataType为script时默认为false) jQuery 1.2 新功能，设置为 false 将不会从浏览器缓存中加载请求信息。   
+		url: flagUrl,// 发送请求的地址。   
+		//data: 'uid='+uid+'&sess_id='+session+'&key=aa',//发送到服务器的数据   
+		dataType: "text",// 返回纯文本字符串 
+		timeout:20000,// 设置请求超时时间（毫秒）。 
+		error: function (error) {// 请求失败时调用函数。  
+			alert(" 请求失败!"+error);
+		 }, 
+		success: function(message) 
+		{  //请求成功后回调函数。
+		
+			//alert( message);
+			
+			//$('#over_'+cmdName+' .content-inner').html(message);
+			
+			
+		}
+	}); 
+		
+	return 'success';
+}
+
+
+
+//-------end -历史记录 单个 及时删除功能 ------
+
+
+//------- 返回按钮-------
+$(function(){
+	$('.fanhui').click(function (){
+		history.go(-1);
+
+	});
+});
+//-------end 返回按钮-------
+
+
+//---------- 页面内验证注册码按钮--------
+
+function yanzheng_btn_click(){
+
+	
+	location.href = "news://yz_yanzheng";
+}

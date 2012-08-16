@@ -25,13 +25,8 @@ function performRequest( cmdName, params){
 			re = displayOverlayer(cmdName, btnleft, btnwidth, btnstatus);
 		break;
 		
-		case "network":
-			var status = params.status;
-			re = displayDependNet(status);
-		break;
-		
 		default:
-			alert('performRequest cmdName:'+cmdName);
+			alert('cmdName:'+cmdName);
 		break;
 	}
 	
@@ -361,36 +356,3 @@ function yanzheng_btn_click(){
 	
 	location.href = "news://yz_yanzheng";
 }
-//---------end
-
-
-
-//---------- 根据网络情况，控制视频是否显示--------
-function displayDependNet(status){
-	//alert("displayDependNet status:"+status);
-	switch(status){
-		
-		case "wifi":	
-			$(".playReplace").css("display","none");
-			$(".netNotPlay").css("display","block");
-			return 'success';
-		break;
-		
-		case "none":	
-		;
-		case "mobile":
-			$(".playReplace").html("请切换到wifi网络观看视频。").css("display","block");
-			$(".netNotPlay").css("display","none");
-			return 'success';
-		break;
-		
-		default :
-			alert("status:"+status);
-		break;
-		
-	}
-	
-	return 'false';
-}
-
-

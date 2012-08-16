@@ -18,26 +18,6 @@
 	<script language="javascript" type="text/javascript" src="<?php print $base_path.$directory?>/js/txgenerictools.js" ></script>
 	<SCRIPT type="text/javascript" src="<?php print $base_path.$directory?>/js/jquery.flearning.common.js"></SCRIPT>
 
-	<script type="text/javascript">
-	
-		//非wifi网络时，替换成图片，不播放视频
-		$(function(){
-			html = '<div class="playReplace">检测网络状况......</div>';
-			$('video').addClass('netNotPlay').css("display","none").after(html);
-			location.href = "news://checknet";
-		});
-	</script>
-	<style type="text/css">
-		.playReplace{
-			width:768px;
-			height:570px;
-			text-align:center;
-			
-			font-size: 1.8em;
-			line-height: 500px;
-		}
-	</style>
-	
   </head>
 
   <body class="<?php print $body_classes; ?>">

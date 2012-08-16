@@ -1,0 +1,82 @@
+<?php 
+function video_perm_menu(){
+	$items = array ();
+	 $items['shipin/buy']= array (
+    'page callback' => 'video_perm_buy_access', 'access callback' => true, 'type' => MENU_CALLBACk 
+  );
+  return $items;
+}
+function video_perm_file_download($file) {
+  //drupal_set_message(serialize($file)); 
+  
+}
+
+function video_perm_check_access($nid){
+	global $user;
+
+	foreach($user->roles as $role){
+		if($role == "频道管理员" || $role == "频道编辑" || $role == "视频包月用户"  ){
+			return true;
+		}
+	}
+	//Anoym user
+        $node = node_load($nid);
+        $price = $node->field_shipin_points[0]['value'];
+
+
+	if($user->uid == null&&$price>0){
+		return false;
+	}
+	if($price){
+	 $sql = "select * from {shipin_transaction} where nid=%d AND uid=%d";
+     $transaction = db_fetch_object(db_query($sql, $nid,$user->uid));
+     if($transaction!=null)
+     {
+     	
+     	return true;
+     }else
+     {
+     	return false;
+     }
+	}
+	else
+	{
+		return true;
+	}
+}
+
+
+function video_perm_buy_access($nid){
+	global $user; 
+	$node = node_load($nid);
+	if($node->type =='shipin'){
+	
+		$price = $node->field_shipin_points[0]['value'];
+		if($user->uid <= 0)
+		{
+			drupal_set_message('请先登录');
+		drupal_goto('user',"destination=node/$nid");
+		}
+		$hasAccess = video_perm_check_access($nid);
+		if($hasAccess)
+		{
+			drupal_set_message('您已拥有访问权限，无需重复购买');
+		}else
+		{
+			
+			$totalPoints = userpoints_get_current_points();
+			if($price>$totalPoints){
+				drupal_set_message('您的积分不足');
+					
+			}else{
+				userpoints_userpointsapi(-$price);
+				$sql = "insert into {shipin_transaction} (nid, uid, time) values(%d,%d,%d)";
+				db_query($sql,$nid,$user->uid,time());
+				drupal_set_message("成功购买，扣除积分 $price");
+				$flag = flag_get_flag('shipin_buy') or die('no "bookmarks" flag defined');
+				$flag->flag('flag', $nid); 
+			}
+		}
+	}
+      return drupal_goto("node/$nid");
+}

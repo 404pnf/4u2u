@@ -1,0 +1,4 @@
+; $Id$
+name = 批量删除节点
+description = 快速批量删除节点
+core = 6.x

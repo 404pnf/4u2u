@@ -1,0 +1,5 @@
+name = Video Permission
+description = Video Permission Control
+core = 6.x
+package = 2u4u 
+version = 6.01

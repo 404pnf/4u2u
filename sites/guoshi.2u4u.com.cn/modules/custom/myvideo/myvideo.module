@@ -1,0 +1,48 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * 2u4u用户中心"我做过的测试".
+ */
+ 
+/**
+ * Implementation of hook_service().
+ */
+
+function myvideo_service() {
+  return array(
+
+    array(
+      '#method'   => 'myvideo.get',
+      '#callback' => 'myvideo_get',
+			'#access callback'  => 'myvideo_service_access',
+      '#args'     => array(
+        array(
+          '#name' => 'uid',
+          '#type' => 'int',
+          '#description' => t('A valid Drupal User ID.'),
+        ),
+      ),
+      '#return'   => 'struct',
+      '#help'     => t('Retrieves the number of points the user has.')
+		),
+  );
+}
+function myvideo_get($uid){
+  $output = "";
+  $sql = "SELECT * FROM shipin_transaction st  WHERE st.uid = %d  ORDER BY st.time DESC ";
+	$dbresult = db_query($sql, $uid);
+
+  while ($line = db_fetch_object($dbresult)) {
+    //$results[$line['result_id']] = $line;
+		$output .= views_embed_view('myvideo_service', 'default', $line->nid);
+  }
+	if(empty($output)){
+	  $output = t("您还没有购买任何视频");
+	}
+	return $output;
+}
+function myvideo_service_access(){
+  return TRUE;
+}

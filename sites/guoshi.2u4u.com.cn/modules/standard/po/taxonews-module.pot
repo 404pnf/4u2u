@@ -1,0 +1,41 @@
+# LANGUAGE translation of Drupal (taxonews.module)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from file: 
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2005-11-09 21:18+0100\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: taxonews.module:47
+msgid "<p>Publish node teasers into blocks based on a taxonomy vocabulary.</p>"
+msgstr ""
+
+#: taxonews.module:97
+msgid "Vocabulary"
+msgstr ""
+
+#: taxonews.module:101
+msgid "Vocabulary to be used for the generation of blocks. A block will be defined for each term in the vocabulary"
+msgstr ""
+
+#: taxonews.module:108
+msgid "Lifetime of news before expiration"
+msgstr ""
+
+#: taxonews.module:113
+msgid "The number of days a news item remains displayed in blocks."
+msgstr ""
+
+#: taxonews.module:0
+msgid "taxonews"
+msgstr ""
+

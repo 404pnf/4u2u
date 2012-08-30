@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * @file
+ * guoshi.
+ */
+
+/**
+ * Implements hook_boot().
+ *
+ */
+function guoshi_boot() {
+  global $user;
+  $guoshi_flag = FALSE;
+  $guoshi_url = 'http://waiyu.guoshi.com';
+  if(!(strpos($_SERVER['HTTP_REFERER'], $guoshi_url) === FALSE)){
+    $guoshi_flag = TRUE;
+	$_SESSION['guoshi'] = 'guoshi';
+  }
+  if(!$guoshi_flag && !empty($_SESSION['guoshi'])){
+    $guoshi_flag = TRUE;
+  }
+  require_once './includes/path.inc';
+  if(empty($guoshi_flag) && $user->uid ==0 && arg(0) != 'user'){
+    print 'access denied';
+	exit();
+  }else{
+  }
+}

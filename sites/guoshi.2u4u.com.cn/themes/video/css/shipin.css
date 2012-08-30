@@ -1064,3 +1064,22 @@ ul#primary li.blob a{ _background:url("/sites/2u4u.com.cn/themes/stable/css/fp_i
 	top:3px;
 	border:1px solid #ddd;
 }
+ #header #header-region{
+    
+    width: 966px;
+	right:none;
+	margin:0 auto 20px;
+	position:relative;
+	padding:0;
+	overflow:none;
+	float:none;
+	
+	
+}
+ #header{height:255px;
+background:url("fp_images/bg-5.gif") repeat-x 0 140px;
+}
+
+#page #header .top{
+  overflow:visible;
+}

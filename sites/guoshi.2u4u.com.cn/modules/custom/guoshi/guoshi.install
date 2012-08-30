@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @file
+ * bdshare installation file
+ */
+
+/**
+ * Implementation of hook_install().
+ */
+function guoshi_install() {
+  db_query("UPDATE {system} SET bootstrap = 1 WHERE name ='guoshi'");
+}

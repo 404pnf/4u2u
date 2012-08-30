@@ -19,26 +19,18 @@
 
 	
     <div id="header">
-	<div id="header-middle">
-      <div id="logo-title">
 	
-        <?php if (!empty($logo)): ?>
-		  <a href="http://2u4u.com.cn"  title="悠游网" rel="home" id="logo">
-            <img src="<?php print $logo; ?>" alt="<?php print $site_name; ?>"/>
-          </a>
-        <?php endif; ?>
-
-      </div> <!-- /logo-title -->
-
       <?php if ($header): ?>
-        <div id="header-region">
+        <div id="header-guoshi-region">
           <?php print $header; ?>
         </div>
+		 
+		 
+		  
+            <img src="<?php print $logo; ?>" alt="<?php print $site_name; ?>"/>
+         
+		
       <?php endif; ?>
-
-      <?php print $search_box; ?>
-	</div>
-	
 	
 	    <?php if (!empty($primary_links) or !empty($secondary_links)): ?>
           <div id="navigation" class="menu <?php if (!empty($primary_links)) { print "with-main-menu"; } if (!empty($secondary_links)) { print " with-sub-menu"; } ?>">
